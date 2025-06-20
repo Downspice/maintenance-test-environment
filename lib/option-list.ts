@@ -1,0 +1,104 @@
+export const vendorTypeOptions = [
+  { value: "8", label: "All Vendors" },
+  { value: "7", label: "Dealer" },
+  { value: "6", label: "Fuel" },
+  { value: "5", label: "Insurance" },
+  { value: "4", label: "Loan/Lease" },
+  { value: "3", label: "Maintenance" },
+  { value: "2", label: "Rentals" },
+  { value: "1", label: "Wholesale" }, 
+]
+
+export const locationOptionsList = [
+  { value: "1", label: "All locations" }, 
+  { value: "2", label: "General Equipments" }, 
+  { value: "3", label: "Plants" }, 
+  { value: "4", label: "Production Equipments" }, 
+]
+
+export const termsOptionsList = [
+  { value: "1", label: "COD" }, 
+  { value: "2", label: "Cash" }, 
+  { value: "3", label: "NET 30" }, 
+  { value: "4", label: "Prepaid" }, 
+]
+
+export const makeOptionsList = [
+  { value: "1", label: "Azure" },
+  { value: "2", label: "Test 2" },
+  { value: "3", label: "NET 30" },
+  { value: "4", label: "Prepaid" },
+]
+
+export const carModelOptionsList = [
+  { value: "1", label: "Toyota Corolla" },
+  { value: "2", label: "Honda Civic" },
+  { value: "3", label: "Ford Mustang" },
+  { value: "4", label: "Tesla Model 3" },
+  { value: "5", label: "Chevrolet Silverado" },
+  { value: "6", label: "BMW 3 Series" },
+  { value: "7", label: "Audi A4" },
+];
+
+export const carTypeOptionsList = [
+  { value: "1", label: "Sedan" },
+  { value: "2", label: "SUV" },
+  { value: "3", label: "Hatchback" },
+  { value: "4", label: "Coupe" },
+  { value: "5", label: "Convertible" },
+  { value: "6", label: "Wagon" },
+  { value: "7", label: "Pickup Truck" },
+  { value: "8", label: "Van" },
+  { value: "9", label: "Crossover" },
+  { value: "10", label: "Electric" },
+];
+
+
+
+export const equipmentCheckboxOptions: CheckboxOption[] = [
+  {
+    id: "attachments",
+    label: "Attachments",
+    description: "Include relevant files and documents"
+  },
+  {
+    id: "expenses",
+    label: "Expenses",
+    description: "Track all associated costs"
+  },
+  {
+    id: "images",
+    label: "Images",
+    description: "Add visual references or photos"
+  },
+  {
+    id: "insurance",
+    label: "Insurance",
+    description: "Details about coverage and providers"
+  },
+  {
+    id: "loans",
+    label: "Loans",
+    description: "Information about loan agreements"
+  },
+  {
+    id: "notes",
+    label: "Notes",
+    description: "Add any additional notes or comments"
+  },
+  {
+    id: "purchase",
+    label: "Purchase",
+    description: "Purchase information and details"
+  },
+  {
+    id: "specifications",
+    label: "Specifications",
+    description: "Technical or functional specifications"
+  },
+  {
+    id: "warranty",
+    label: "Warranty",
+    description: "Warranty terms and conditions"
+  }
+];
