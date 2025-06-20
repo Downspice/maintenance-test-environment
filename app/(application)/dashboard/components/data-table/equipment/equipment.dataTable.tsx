@@ -727,7 +727,7 @@ export function EquipmentDataTable({ realServer }: DataTableProps) {
                           </Badge>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="font-medium">
+                          {/* <span className="font-medium">
                             {car.tasksPending} Tasks
                           </span>
                           <div className="flex gap-1">
@@ -755,7 +755,7 @@ export function EquipmentDataTable({ realServer }: DataTableProps) {
                                 </Tooltip>
                               </TooltipProvider>
                             )}
-                          </div>
+                          </div> */}
                         </div>
                       </div>
                     </TableCell>

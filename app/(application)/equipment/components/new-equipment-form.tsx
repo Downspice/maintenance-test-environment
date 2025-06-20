@@ -123,7 +123,7 @@ export default function EquipmentForm() {
   const watchPrimary = form.watch("primaryMeterUnit");
   const watchSecondary = form.watch("secondaryMeterUnit");
 
-  function onSubmit(data: FormData) {
+  function onSubmit(data: EquipmentFormValues) {
     console.log("Form submitted with VALUES:", data);
 
     const getLabel = (options: ComboboxOption[], value: string) =>
@@ -141,6 +141,30 @@ export default function EquipmentForm() {
 
     setOpen(false);
     form.reset();
+  }
+
+    function onError(errors: any) {
+    // Get all error messages
+    const errorMessages = Object.entries(errors).map(([field, error]: [string, any]) => {
+      const fieldLabels: Record<string, string> = {
+        unit: "Project Name", 
+      }
+
+      return `${fieldLabels[field] || field}: ${error.message}`
+    })
+
+    toast.error("Please fix the following errors:", {
+      description: (
+        <div className="mt-2">
+          <ul className="list-disc list-inside space-y-1 text-sm">
+            {errorMessages.map((message, index) => (
+              <li key={index}>{message}</li>
+            ))}
+          </ul>
+        </div>
+      ),
+      duration: 8000,
+    })
   }
 
   return (
@@ -161,7 +185,7 @@ export default function EquipmentForm() {
 
         <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit,onError)} className="space-y-6">
               <div className="flex">
                 <Tabs
                   defaultValue="main"
