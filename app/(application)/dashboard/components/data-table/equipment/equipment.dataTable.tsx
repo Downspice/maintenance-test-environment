@@ -562,6 +562,44 @@ export function EquipmentDataTable({ realServer }: DataTableProps) {
   return (
     <div className="space-y-4 shadow-primary">
       <div className="rounded-md border">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="default" className="w-auto">
+              <Filter className="mr-2 h-4 w-4" />
+              {filterOption}
+              <ChevronDown className="ml-2 h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-56">
+            <DropdownMenuItem
+              onClick={() => handleFilterChange("All Due Equipment")}
+            >
+              All Due Equipment ({counts.all})
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleFilterChange("Due")}>
+              Due ({counts.due})
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleFilterChange("Due Soon")}>
+              Due Soon ({counts.dueSoon})
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleFilterChange("Repairs Due")}>
+              Repairs Due ({counts.repairs})
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleFilterChange("PM Due")}>
+              PM Due ({counts.pm})
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => handleFilterChange("Renewals Due")}
+            >
+              Renewals Due ({counts.renewals})
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => handleFilterChange("Inspections Pending")}
+            >
+              Inspections Pending ({counts.inspections})
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
         <Table>
           <TableHeader>
             <TableRow>
@@ -573,9 +611,10 @@ export function EquipmentDataTable({ realServer }: DataTableProps) {
                 />
               </TableHead>
               <TableHead className="w-[50px]"></TableHead>
-              <TableHead colSpan={3} className="w-full">
-                {selectedRows.size > 0 ? (
-                  // Show actions dropdown when rows are selected
+
+              {selectedRows.size > 0 ? (
+                // Show actions dropdown when rows are selected
+                <TableHead colSpan={3} className="w-full">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="default" className="w-auto">
@@ -587,72 +626,25 @@ export function EquipmentDataTable({ realServer }: DataTableProps) {
                       <DropdownMenuItem
                         onClick={() => handleBulkAction("schedule")}
                       >
-                        Schedule Maintenance
+                        Create Work Order
                       </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => handleBulkAction("assign")}
-                      >
-                        Assign to Technician
-                      </DropdownMenuItem>
+
                       <DropdownMenuItem
                         onClick={() => handleBulkAction("export")}
                       >
-                        Export Details
+                        Email
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
-                ) : (
-                  // Show filter dropdown when no rows are selected
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="default" className="w-auto">
-                        <Filter className="mr-2 h-4 w-4" />
-                        {filterOption}
-                        <ChevronDown className="ml-2 h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start" className="w-56">
-                      <DropdownMenuItem
-                        onClick={() => handleFilterChange("All Due Equipment")}
-                      >
-                        All Due Equipment ({counts.all})
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => handleFilterChange("Due")}
-                      >
-                        Due ({counts.due})
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => handleFilterChange("Due Soon")}
-                      >
-                        Due Soon ({counts.dueSoon})
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => handleFilterChange("Repairs Due")}
-                      >
-                        Repairs Due ({counts.repairs})
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => handleFilterChange("PM Due")}
-                      >
-                        PM Due ({counts.pm})
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => handleFilterChange("Renewals Due")}
-                      >
-                        Renewals Due ({counts.renewals})
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() =>
-                          handleFilterChange("Inspections Pending")
-                        }
-                      >
-                        Inspections Pending ({counts.inspections})
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                )}
-              </TableHead>
+                </TableHead>
+              ) : (
+                // Show filter dropdown when no rows are selected
+                <>
+                  <TableHead>Unit</TableHead>
+                  <TableHead>Due Status</TableHead>
+                  <TableHead>Actions</TableHead>
+                </>
+              )}
             </TableRow>
           </TableHeader>
           <TableBody key={data.length}>
@@ -697,13 +689,7 @@ export function EquipmentDataTable({ realServer }: DataTableProps) {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-4">
-                        <div className="flex-shrink-0">
-                          <img
-                            src={car.carImage || "/placeholder.svg"}
-                            alt={car.carName}
-                            className="h-8 w-5 object-cover rounded-md"
-                          />
-                        </div>
+                         
                         <div className="flex flex-col">
                           <div className="font-medium text-sm text-gray-600">
                             {car.carNumber} • {car.carModel}
