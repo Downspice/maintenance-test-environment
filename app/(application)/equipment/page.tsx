@@ -14,10 +14,11 @@ import { Button } from "@/components/ui/button";
 import { EquipmentPageDataTable } from "./components/equipment.page.dataTable";
 import WorkOrderForm from "@/components/forms/actualForms/work-order-form";
 import { useSheet } from "@/lib/sheet-providers";
- import NewEquipmentSheet from "@/components/forms/sheets/newEquipmentForm";
+import NewEquipmentSheet from "@/components/forms/sheets/newEquipmentForm";
 import FormSheet from "@/components/form-sheet";
 import EquipmentForm from "./components/new-equipment-form";
 import NotCompleteMessage from "../messages/page";
+import NewEquipmentDataTable from "./components/table/equipmentDatatable";
 
 const equipmentActiveDropdown = [
   { value: "my", label: "My" },
@@ -111,7 +112,7 @@ export default function EquipmentPage() {
   };
 
   return (
-    <div className="p-4 flex flex-col space-y-4">
+    <div className="flex flex-col container mx-auto py-10 space-y-4">
       <div className="flex flex-row items-center space-x-2">
         <h1 className="text-xl font-semibold">Equipment</h1>
         <Badge>10</Badge>
@@ -146,33 +147,23 @@ export default function EquipmentPage() {
               ))}
             </SelectContent>
           </Select>
-
-          {/* New Location Trigger */}
-          <Select onValueChange={(val) => handleSelectChange("custom", val)}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="More Options" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="new" className="text-blue-500 font-medium">
-                + New Location
-              </SelectItem>
-            </SelectContent>
-          </Select>
         </div>
-        <div className="flex flex-row space-x-0.5">
-          {/* Search Input */}
+        <div className="flex flex-row space-x-2">
+          {/* Search Input
           <Input
             type="text"
             placeholder="Search Equipment..."
             className="w-[240px]"
             value={filters.search}
             onChange={handleSearchChange}
-          />
-          <EquipmentForm/>
+          /> */}
+          <EquipmentForm />
+          <Button variant="secondary">Update Meters</Button>
         </div>
       </div>
       <div>
-        <EquipmentPageDataTable realServer={false} />
+        {/* <EquipmentPageDataTable realServer={false} /> */}
+        <NewEquipmentDataTable />
       </div>
     </div>
   );
