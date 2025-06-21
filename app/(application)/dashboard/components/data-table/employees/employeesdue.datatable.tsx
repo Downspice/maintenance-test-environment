@@ -25,25 +25,54 @@ import {
 } from "@/components/ui/table";
 import { useDialog } from "@/lib/dialog-provider";
 import UpdateEmployeeForm from "@/components/forms/actualForms/update-employee";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Label } from "@/components/ui/label";
 
 // Define the data structure
 interface EmployeesDueItem {
   id: number;
   name: string;
+  phone: string;
+  cell: string;
+  email: string;
+  status: string;
+  type: string; // e.g., "Technician"
+  DLClass: string; // e.g., "A"
+  DWClass: string; // e.g., "WY"
+  hireDate: string; // format: YYYY-MM-DD
+  address: string;
+  city: string;
+  stateProv: string;
+  postalCode: string;
   renewal: string;
-  issued: string;
-  expired: string;
+  issued: string; // format: YYYY-MM-DD
+  expired: string; // format: YYYY-MM-DD
 }
 
 type SortField = keyof EmployeesDueItem | null;
 type SortDirection = "asc" | "desc";
 
 // Mock inventory data
-
 const mockEmployeesDueData: EmployeesDueItem[] = [
   {
     id: 1,
     name: "Alice Johnson",
+    phone: "555-123-4567",
+    cell: "555-987-6543",
+    email: "alice.johnson@example.com",
+    status: "Active",
+    type: "Technician",
+    DLClass: "A",
+    DWClass: "WY",
+    hireDate: "2020-03-15",
+    address: "123 Maple St",
+    city: "Cheyenne",
+    stateProv: "WY",
+    postalCode: "82001",
     renewal: "CDL",
     issued: "2024-06-01",
     expired: "2025-05-31",
@@ -51,6 +80,18 @@ const mockEmployeesDueData: EmployeesDueItem[] = [
   {
     id: 2,
     name: "Bob Smith",
+    phone: "555-234-5678",
+    cell: "555-876-5432",
+    email: "bob.smith@example.com",
+    status: "Active",
+    type: "Technician",
+    DLClass: "A",
+    DWClass: "WY",
+    hireDate: "2019-07-10",
+    address: "456 Oak Ave",
+    city: "Laramie",
+    stateProv: "WY",
+    postalCode: "82070",
     renewal: "Training",
     issued: "2024-07-15",
     expired: "2025-07-14",
@@ -58,6 +99,18 @@ const mockEmployeesDueData: EmployeesDueItem[] = [
   {
     id: 3,
     name: "Charlie Williams",
+    phone: "555-345-6789",
+    cell: "555-765-4321",
+    email: "charlie.williams@example.com",
+    status: "Active",
+    type: "Technician",
+    DLClass: "A",
+    DWClass: "WY",
+    hireDate: "2018-11-20",
+    address: "789 Pine Rd",
+    city: "Casper",
+    stateProv: "WY",
+    postalCode: "82601",
     renewal: "Professional",
     issued: "2024-08-10",
     expired: "2025-08-09",
@@ -65,6 +118,18 @@ const mockEmployeesDueData: EmployeesDueItem[] = [
   {
     id: 4,
     name: "Diana Rose",
+    phone: "555-456-7890",
+    cell: "555-654-3210",
+    email: "diana.rose@example.com",
+    status: "Active",
+    type: "Technician",
+    DLClass: "A",
+    DWClass: "WY",
+    hireDate: "2021-01-05",
+    address: "321 Birch Blvd",
+    city: "Gillette",
+    stateProv: "WY",
+    postalCode: "82718",
     renewal: "Contract",
     issued: "2024-09-20",
     expired: "2025-09-19",
@@ -72,6 +137,18 @@ const mockEmployeesDueData: EmployeesDueItem[] = [
   {
     id: 5,
     name: "Edward King",
+    phone: "555-567-8901",
+    cell: "555-543-2109",
+    email: "edward.king@example.com",
+    status: "Active",
+    type: "Technician",
+    DLClass: "A",
+    DWClass: "WY",
+    hireDate: "2022-05-22",
+    address: "654 Cedar Ln",
+    city: "Rock Springs",
+    stateProv: "WY",
+    postalCode: "82901",
     renewal: "Professional",
     issued: "2024-10-05",
     expired: "2025-10-04",
@@ -91,8 +168,10 @@ export function EmployeesDataTable({ realServer }: EmployeesDueDataTableProps) {
 
   const [sortField, setSortField] = useState<SortField>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
-const { openDialog } = useDialog()
-  const [dialogSize, setDialogSize] = useState<"sm" | "md" | "lg" | "xl" | "full">("md")
+  const { openDialog } = useDialog();
+  const [dialogSize, setDialogSize] = useState<
+    "sm" | "md" | "lg" | "xl" | "full"
+  >("md");
   const sortData = (
     data: EmployeesDueItem[],
     field: SortField,
@@ -193,11 +272,11 @@ const { openDialog } = useDialog()
   };
 
   // Handle row actions
- 
+
   const handleOpenWorkOrderDialog = (item: EmployeesDueItem) => {
     console.log("Creating updating Employee order for:", item);
     openDialog({
-      title: `Update User (${item.name}'s)` ,
+      title: `Update User (${item.name}'s)`,
       description: `Fill out the form to update an ${item.name}'s due date`,
       content: <UpdateEmployeeForm />,
       size: dialogSize,
@@ -280,7 +359,7 @@ const { openDialog } = useDialog()
 
               {selectedRows.size > 0 ? (
                 <Button onClick={createNewPO} size="sm">
-                  Update Renewals ({selectedRows.size})
+                  Email ({selectedRows.size})
                 </Button>
               ) : (
                 <>
@@ -306,16 +385,109 @@ const { openDialog } = useDialog()
                     aria-label={`Select ${item.name}`}
                   />
                 </TableCell>
-                <TableCell className="font-medium">{item.name}</TableCell>
+                <TableCell className="font-medium">
+                  <div className="flex flex-col">
+                    <Popover>
+                      <PopoverTrigger>
+                        <span className="w-fit flex flex-row text-primary text-bold hover:shadow cursor-pointer">
+                          {item.id}
+                        </span>
+                      </PopoverTrigger>
+                      <PopoverContent>
+                        <div className="grid gap-2">
+                          <div className="space-y-1">
+                            <h4 className="leading-none font-medium">
+                              {item.name}
+                            </h4>
+                            <p className="text-muted-foreground text-sm">
+                              Short details of the employee.
+                            </p>
+                          </div>
+                          <div className="grid ">
+                            <div className="grid grid-cols-3 items-center gap-1">
+                              <Label htmlFor="width">Employee #</Label>
+                              <span className="col-span-2  ">{item.id}</span>
+                            </div>
+                            <div className="grid grid-cols-3 items-center gap-1">
+                              <Label htmlFor="width">Phone #</Label>
+                              <span className="col-span-2  ">
+                                {item.phone}
+                              </span>
+                            </div>
+                            <div className="grid grid-cols-3 items-center gap-1">
+                              <Label htmlFor="width">Email</Label>
+                              <span className="col-span-2  ">
+                                {item.email}
+                              </span>
+                            </div>
+
+                            <div className="grid grid-cols-3 items-center gap-1">
+                              <Label htmlFor="width">Status</Label>
+                              <span className="col-span-2  ">
+                                {item.status}
+                              </span>
+                            </div>
+
+                            <div className="grid grid-cols-3 items-center gap-1">
+                              <Label htmlFor="width">DL Class</Label>
+                              <span className="col-span-2  ">
+                                {item.DLClass}
+                              </span>
+                            </div>
+                            <div className="grid grid-cols-3 items-center gap-1">
+                              <Label htmlFor="width">DW state</Label>
+                              <span className="col-span-2  ">
+                                {item.DWClass}
+                              </span>
+                            </div>
+
+                            <div className="grid grid-cols-3 items-center gap-1">
+                              <Label htmlFor="width">Hire Date</Label>
+                              <span className="col-span-2  ">
+                                {item.hireDate}
+                              </span>
+                            </div>
+
+                            <div className="grid grid-cols-3 items-center gap-1">
+                              <Label htmlFor="width">Address</Label>
+                              <span className="col-span-2  ">
+                                {item.address}
+                              </span>
+                            </div>
+                            <div className="grid grid-cols-3 items-center gap-1">
+                              <Label htmlFor="width">City</Label>
+                              <span className="col-span-2  ">
+                                {item.city}
+                              </span>
+                            </div>
+                            <div className="grid grid-cols-3 items-center gap-1">
+                              <Label htmlFor="width">State/Prov</Label>
+                              <span className="col-span-2  ">
+                                {item.stateProv}
+                              </span>
+                            </div>
+                            <div className="grid grid-cols-3 items-center gap-1">
+                              <Label htmlFor="width">Postal Code</Label>
+                              <span className="col-span-2  ">
+                                {item.postalCode}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+
+                    <div>{item.name}</div>
+                  </div>
+                </TableCell>
                 <TableCell>{item.renewal}</TableCell>
                 <TableCell>{item.issued}</TableCell>
                 <TableCell>{item.expired}</TableCell>
                 <TableCell className="text-right">
-                  {" "}
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => handleOpenWorkOrderDialog(  item)}
+                    onClick={() => handleOpenWorkOrderDialog(item)}
                   >
                     Update
                   </Button>

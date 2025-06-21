@@ -642,8 +642,8 @@ export function EquipmentDataTable({ realServer }: DataTableProps) {
                 // Show filter dropdown when no rows are selected
                 <>
                   <TableHead>Unit</TableHead>
-                  <TableHead>Due Status</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead className="w-[50px]">Due Status</TableHead>
+                  <TableHead className="w-[50px]">Actions</TableHead>
                 </>
               )}
             </TableRow>
@@ -668,6 +668,7 @@ export function EquipmentDataTable({ realServer }: DataTableProps) {
                         aria-label={`Select ${car.carName}`}
                       />
                     </TableCell>
+
                     <TableCell>
                       {car.tasks && car.tasks.length > 0 && (
                         <Button
@@ -688,6 +689,7 @@ export function EquipmentDataTable({ realServer }: DataTableProps) {
                         </Button>
                       )}
                     </TableCell>
+
                     <TableCell>
                       <div className="flex items-center gap-4">
                          
@@ -699,7 +701,8 @@ export function EquipmentDataTable({ realServer }: DataTableProps) {
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell>
+
+                    <TableCell className="whitespace-nowrap">
                       <div className="flex flex-col gap-2">
                         <div>
                           <Badge
@@ -746,7 +749,8 @@ export function EquipmentDataTable({ realServer }: DataTableProps) {
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell>
+
+                    <TableCell className="w-fit px-2">
                       <Button
                         onClick={() => createWorkOrder(car)}
                         size="sm"

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { GitPullRequestArrow, UserRoundCheck } from "lucide-react";
 import DatePickerWrapper from "../wrappers/DatePickerWrapper";
 import { toast } from "sonner";
+import InputWrapper from "../wrappers/InputWrapper";
 // Define the form schema with Zod
 export const updateEmployeeSchema = z.object({
   // employeeId: z.string({
@@ -19,6 +20,7 @@ export const updateEmployeeSchema = z.object({
   expires_on: z.date({
     required_error: "Date is required",
   }),
+  empNotes: z.string({}).optional(),
 });
 
 export default function UpdateEmployeeForm() {
@@ -59,6 +61,11 @@ export default function UpdateEmployeeForm() {
                   name="expires_on"
                   required={true}
                   label="Expires"
+                />
+                <InputWrapper
+                  control={updateEmployee.control}
+                  name="empNotes"
+                  label="NOTES"
                 />
               </div>
             </div>
