@@ -17,20 +17,17 @@ import { useSheet } from "@/lib/sheet-providers";
 import EquipmentForm from "@/app/(application)/equipment/components/new-equipment-form";
 import WorkOrdersTable from "./components/work-orders-table";
 import NotCompleteMessage from "../messages/page";
+import WorkOrderDataTable from "./components/table/workOrderTable";
 
-const equipmentActiveDropdown = [
-  { value: "my", label: "My" },
-  { value: "Active", label: "Active" },
-  { value: "due", label: "Due" },
-  { value: "work_order_assigned", label: "Work Order Assigned" },
-  { value: "parent_equipment", label: "Parent" },
-  { value: "In Shop", label: "In Shop" },
+const equipmentActiveDropdown = [ 
+  { value: "Active", label: "All Outstanding" },
+  { value: "due", label: "Open" },
+  { value: "work_order_assigned", label: "In Progress" },
+  { value: "parent_equipment", label: "On Hold" },
+  { value: "In Shop", label: "Assigned" },
   { value: "Inactive", label: "Inactive" },
-  { value: "Out of Service", label: "Out of Service" },
-  { value: "Sold", label: "Sold" },
-  { value: "Transferred", label: "Transferred" },
-  { value: "deleted", label: "Deleted" },
-  { value: "all", label: "All" },
+  { value: "Out of Service", label: "Unassigned" },
+  { value: "Sold", label: "Closed" }
 ];
 
 const locations = [
@@ -121,7 +118,7 @@ export default function EquipmentPage() {
         <div className="flex flex-row space-x-0.5">
           <Select onValueChange={(val) => handleSelectChange("equipment", val)}>
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Active" />
+              <SelectValue placeholder="All Outstanding" />
             </SelectTrigger>
             <SelectContent>
               {equipmentActiveDropdown.map((item) => (
@@ -146,17 +143,7 @@ export default function EquipmentPage() {
             </SelectContent>
           </Select>
 
-          {/* New Location Trigger */}
-          <Select onValueChange={(val) => handleSelectChange("custom", val)}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="More Options" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="new" className="text-blue-500 font-medium">
-                + New Location
-              </SelectItem>
-            </SelectContent>
-          </Select>
+          
         </div>
         <div className="flex flex-row space-x-0.5">
           {/* Search Input */}
@@ -171,7 +158,8 @@ export default function EquipmentPage() {
         </div>
       </div>
       <div>
-        <WorkOrdersTable/>
+        {/* <WorkOrdersTable/> */}
+        <WorkOrderDataTable/>
       </div>
     </div>
   );

@@ -30,6 +30,7 @@ export interface WorkOrder {
   createdDate: string
   dueDate?: string
   description?: string
+  total:string
 }
 
 
@@ -73,6 +74,7 @@ export const mockWorkOrders: WorkOrder[] = [
       completed: 2,
       total: 4,
     },
+    total:"400.40",
     tasks: [
       {
         id: "task-1",
@@ -109,7 +111,7 @@ export const mockWorkOrders: WorkOrder[] = [
     description: "Routine maintenance and inspection",
   },
   {
-    id: "WO-2024-002",
+    id: "WO-2024-002",total:"40.40",
     number: "WO-2024-002",
     equipment: {
       id: "1311828",
@@ -152,7 +154,7 @@ export const mockWorkOrders: WorkOrder[] = [
     description: "Weekly maintenance check",
   },
   {
-    id: "WO-2024-003",
+    id: "WO-2024-003",total:"0.40",
     number: "WO-2024-003",
     equipment: {
       id: "1311829",
@@ -213,7 +215,7 @@ export const mockWorkOrders: WorkOrder[] = [
   },
   {
     id: "WO-2024-004",
-    number: "WO-2024-004",
+    number: "WO-2024-004",total:"30.40",
     equipment: {
       id: "1311830",
       name: "TR-004-12 Trailer",
@@ -249,7 +251,7 @@ export const mockWorkOrders: WorkOrder[] = [
   },
   {
     id: "WO-2024-005",
-    number: "WO-2024-005",
+    number: "WO-2024-005",total:"1.40",
     equipment: {
       id: "1311831",
       name: "FL-005-08 Forklift",
