@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/select";
 import { useSheet } from "@/lib/sheet-providers";
 import NewInspection from "@/components/forms/actualForms/new-inspection-form";
+import NotCompleteMessage from "../messages/page";
 
 const locations = [
   { value: "delete_filter", label: "All Locations" },
@@ -84,7 +85,7 @@ export default function CalendarPage() {
     openSheet({
       title: "Create Inspection",
       description: "Fill out the form below to create a Inspection order.",
-      content: <NewInspection />,
+      content: <NotCompleteMessage />,
     });
   };
 

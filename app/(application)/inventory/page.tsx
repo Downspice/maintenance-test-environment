@@ -18,6 +18,7 @@ import { VendorPageDataTable } from "./components/vendors.page.datatable";
 import NewVendor from "@/components/forms/actualForms/new-vendor-form";
 import { InventoryPageDataTable } from "./component/inventory.datatable";
 import NewInventory from "@/components/forms/actualForms/new-inventory-form";
+import NotCompleteMessage from "../messages/page";
  
 const ActiveDropdown = [
   {
@@ -118,7 +119,7 @@ export default function EmployeesPage() {
     openSheet({
       title: "Create Inventory",
       description: "Fill out the form below to create a new Inventory.",
-      content: <NewInventory />,
+      content: <NotCompleteMessage />,
     });
   };
 

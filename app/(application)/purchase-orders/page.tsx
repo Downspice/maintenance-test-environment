@@ -18,6 +18,7 @@ import { VendorPageDataTable } from "./components/vendors.page.datatable";
 import NewVendor from "@/components/forms/actualForms/new-vendor-form";
 import { PurchaseOrderPageDataTable } from "./component/purchase.order.page.dataTable";
 import NewPurchaseOrderForm from "@/components/forms/actualForms/new-purchase-order-form";
+import NotCompleteMessage from "../messages/page";
  
 const ActiveDropdown = [
   { "label": "My Incomplete", "value": "my_open" },
@@ -103,7 +104,7 @@ export default function EmployeesPage() {
     openSheet({
       title: "Create Purchase Order",
       description: "Fill out the form below to create a new Purchase Order.",
-      content: <NewPurchaseOrderForm />,
+      content: <NotCompleteMessage />,
     });
   };
 

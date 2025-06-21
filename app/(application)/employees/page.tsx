@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { useSheet } from "@/lib/sheet-providers"; 
 import { EmployeePageDataTable } from "./components/employees.page.datatable";
 import NewEmployeeForm from "@/components/forms/actualForms/new-employee-form";
+import NotCompleteMessage from "../messages/page";
 
 const ActiveDropdown = [
   { label: "All", value: "all" },
@@ -98,7 +99,7 @@ export default function EmployeesPage() {
     openSheet({
       title: "Create Employee",
       description: "Fill out the form below to create a new Employee.",
-      content: <NewEmployeeForm />,
+      content: <NotCompleteMessage />,
     });
   };
 

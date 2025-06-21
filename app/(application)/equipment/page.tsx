@@ -17,6 +17,7 @@ import { useSheet } from "@/lib/sheet-providers";
  import NewEquipmentSheet from "@/components/forms/sheets/newEquipmentForm";
 import FormSheet from "@/components/form-sheet";
 import EquipmentForm from "./components/new-equipment-form";
+import NotCompleteMessage from "../messages/page";
 
 const equipmentActiveDropdown = [
   { value: "my", label: "My" },
@@ -105,7 +106,7 @@ export default function EquipmentPage() {
     openSheet({
       title: "Create New Equipment",
       description: "Fill out the form below to create a new equipment.",
-      content: <EquipmentForm />,
+      content: <NotCompleteMessage />,
     });
   };
 

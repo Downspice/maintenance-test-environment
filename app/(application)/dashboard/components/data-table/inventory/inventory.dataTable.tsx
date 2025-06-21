@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge"
 import { useSheet } from "@/lib/sheet-providers"
 import WorkOrderForm from "@/components/forms/actualForms/work-order-form"
 import ReceiptForm from "@/components/forms/actualForms/receipt-form"
+import NotCompleteMessage from "@/app/(application)/messages/page"
 
 // Define the data structure
 interface InventoryItem {
@@ -309,7 +310,7 @@ export function InventoryDataTable({ realServer }: InventoryDataTableProps) {
         title: `Receipt: ${item.partNumber} ${item.name}`,
         description: "",
         content: (
-          <ReceiptForm/>
+          <NotCompleteMessage/>
         ),
       })
     }

@@ -18,6 +18,7 @@ import EquipmentForm from "@/app/(application)/equipment/components/new-equipmen
 import WorkOrdersTable from "./components/work-orders-table";
 import { InspectionPageDataTable } from "./components/inspections.page.dataTable";
 import NewInspection from "@/components/forms/actualForms/new-inspection-form";
+import NotCompleteMessage from "../messages/page";
 
 const equipmentActiveDropdown = [
   { value: "Failed", label: "Failed" },
@@ -101,7 +102,7 @@ export default function InspectionsPage() {
     openSheet({
       title: "Create Inspection",
       description: "Fill out the form below to create a Inspection order." ,
-      content: <NewInspection />,
+      content: <NotCompleteMessage />,
     });
   };
 

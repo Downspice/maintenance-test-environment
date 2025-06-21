@@ -16,6 +16,7 @@ import WorkOrderForm from "@/components/forms/actualForms/work-order-form";
 import { useSheet } from "@/lib/sheet-providers";
 import EquipmentForm from "@/app/(application)/equipment/components/new-equipment-form";
 import WorkOrdersTable from "./components/work-orders-table";
+import NotCompleteMessage from "../messages/page";
 
 const equipmentActiveDropdown = [
   { value: "my", label: "My" },
@@ -104,7 +105,7 @@ export default function EquipmentPage() {
     openSheet({
       title: "Create New Work Order",
       description: "Fill out the form below to create a new work order." ,
-      content: <WorkOrderForm />,
+      content: <NotCompleteMessage />,
     });
   };
 

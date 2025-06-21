@@ -15,6 +15,7 @@ import { useSheet } from "@/lib/sheet-providers";
 import { VendorPageDataTable } from "./components/vendors.page.datatable";
 import NewVendor from "@/components/forms/actualForms/new-vendor-form";
 import { locationOptionsList, vendorTypeOptions } from "@/lib/option-list";
+import NotCompleteMessage from "../messages/page";
 
 export default function VendorsPage() {
   const [filters, setFilters] = useState({
@@ -82,7 +83,7 @@ export default function VendorsPage() {
     openSheet({
       title: "Create Vendor",
       description: "Fill out the form below to create a new Vendor." ,
-      content: <NewVendor />,
+      content: <NotCompleteMessage />,
     });
   };
 
