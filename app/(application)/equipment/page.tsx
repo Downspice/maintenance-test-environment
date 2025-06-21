@@ -19,6 +19,7 @@ import FormSheet from "@/components/form-sheet";
 import EquipmentForm from "./components/new-equipment-form";
 import NotCompleteMessage from "../messages/page";
 import NewEquipmentDataTable from "./components/table/equipmentDatatable";
+import UpdateMeters from "./components/update-meters-form";
 
 const equipmentActiveDropdown = [
   { value: "my", label: "My" },
@@ -158,7 +159,7 @@ export default function EquipmentPage() {
             onChange={handleSearchChange}
           /> */}
           <EquipmentForm />
-          <Button variant="secondary">Update Meters</Button>
+           <UpdateMeters/>
         </div>
       </div>
       <div>
