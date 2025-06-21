@@ -18,8 +18,9 @@ import EquipmentForm from "@/app/(application)/equipment/components/new-equipmen
 import WorkOrdersTable from "./components/work-orders-table";
 import NotCompleteMessage from "../messages/page";
 import WorkOrderDataTable from "./components/table/workOrderTable";
+import NewWorkOrderForm from "@/components/forms/actualForms/work-order-form";
 
-const equipmentActiveDropdown = [ 
+const equipmentActiveDropdown = [
   { value: "Active", label: "All Outstanding" },
   { value: "due", label: "Open" },
   { value: "work_order_assigned", label: "In Progress" },
@@ -27,7 +28,7 @@ const equipmentActiveDropdown = [
   { value: "In Shop", label: "Assigned" },
   { value: "Inactive", label: "Inactive" },
   { value: "Out of Service", label: "Unassigned" },
-  { value: "Sold", label: "Closed" }
+  { value: "Sold", label: "Closed" },
 ];
 
 const locations = [
@@ -101,7 +102,7 @@ export default function EquipmentPage() {
     console.log("ïn the function");
     openSheet({
       title: "Create New Work Order",
-      description: "Fill out the form below to create a new work order." ,
+      description: "Fill out the form below to create a new work order.",
       content: <NotCompleteMessage />,
     });
   };
@@ -110,7 +111,7 @@ export default function EquipmentPage() {
     <div className="p-4 flex flex-col space-y-4">
       <div className="flex flex-row items-center space-x-2">
         <h1 className="text-xl font-semibold">Work Orders</h1>
-        <Badge>10</Badge>
+        <Badge>5</Badge>
       </div>
 
       <div className="flex justify-between items-center space-x-4">
@@ -142,8 +143,6 @@ export default function EquipmentPage() {
               ))}
             </SelectContent>
           </Select>
-
-          
         </div>
         <div className="flex flex-row space-x-0.5">
           {/* Search Input */}
@@ -154,12 +153,12 @@ export default function EquipmentPage() {
             value={filters.search}
             onChange={handleSearchChange}
           />
-          <Button onClick={createEquipment}>New</Button>
+          <NewWorkOrderForm />
         </div>
       </div>
       <div>
         {/* <WorkOrdersTable/> */}
-        <WorkOrderDataTable/>
+        <WorkOrderDataTable />
       </div>
     </div>
   );
