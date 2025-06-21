@@ -364,7 +364,9 @@ export function EmployeesDataTable({ realServer }: EmployeesDueDataTableProps) {
               ) : (
                 <>
                   <SortableHeader field="name">Name</SortableHeader>
-                  <SortableHeader field="renewal">Renewal</SortableHeader>
+                  <SortableHeader field="renewal">
+                    Expiration Date
+                  </SortableHeader>
                   <SortableHeader field="issued">Issued</SortableHeader>
                   <SortableHeader field="expired">Expired</SortableHeader>
                   <TableHead className="text-right">Action </TableHead>
@@ -410,24 +412,18 @@ export function EmployeesDataTable({ realServer }: EmployeesDueDataTableProps) {
                             </div>
                             <div className="grid grid-cols-3 items-center gap-1">
                               <Label htmlFor="width">Phone #</Label>
-                              <span className="col-span-2  ">
-                                {item.phone}
-                              </span>
+                              <span className="col-span-2  ">{item.phone}</span>
                             </div>
                             <div className="grid grid-cols-3 items-center gap-1">
                               <Label htmlFor="width">Email</Label>
-                              <span className="col-span-2  ">
-                                {item.email}
-                              </span>
+                              <span className="col-span-2  ">{item.email}</span>
                             </div>
-
                             <div className="grid grid-cols-3 items-center gap-1">
                               <Label htmlFor="width">Status</Label>
                               <span className="col-span-2  ">
                                 {item.status}
                               </span>
                             </div>
-
                             <div className="grid grid-cols-3 items-center gap-1">
                               <Label htmlFor="width">DL Class</Label>
                               <span className="col-span-2  ">
@@ -440,14 +436,12 @@ export function EmployeesDataTable({ realServer }: EmployeesDueDataTableProps) {
                                 {item.DWClass}
                               </span>
                             </div>
-
                             <div className="grid grid-cols-3 items-center gap-1">
                               <Label htmlFor="width">Hire Date</Label>
                               <span className="col-span-2  ">
                                 {item.hireDate}
                               </span>
                             </div>
-
                             <div className="grid grid-cols-3 items-center gap-1">
                               <Label htmlFor="width">Address</Label>
                               <span className="col-span-2  ">
@@ -456,9 +450,7 @@ export function EmployeesDataTable({ realServer }: EmployeesDueDataTableProps) {
                             </div>
                             <div className="grid grid-cols-3 items-center gap-1">
                               <Label htmlFor="width">City</Label>
-                              <span className="col-span-2  ">
-                                {item.city}
-                              </span>
+                              <span className="col-span-2  ">{item.city}</span>
                             </div>
                             <div className="grid grid-cols-3 items-center gap-1">
                               <Label htmlFor="width">State/Prov</Label>
@@ -476,7 +468,6 @@ export function EmployeesDataTable({ realServer }: EmployeesDueDataTableProps) {
                         </div>
                       </PopoverContent>
                     </Popover>
-
                     <div>{item.name}</div>
                   </div>
                 </TableCell>

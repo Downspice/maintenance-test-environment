@@ -38,6 +38,12 @@ import {
 import { useSheet } from "@/lib/sheet-providers";
 import WorkOrderForm from "@/components/forms/actualForms/work-order-form";
 import NotCompleteMessage from "@/app/(application)/messages/page";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Label } from "@/components/ui/label";
 
 // Define the data structure
 interface Task {
@@ -59,6 +65,11 @@ interface CarData {
   taskStatus: "due soon" | "overdue";
   taskTypes: ("maintenance" | "incident" | "inspection" | "renewal" | "pm")[];
   tasks?: Task[]; // Added tasks array for sub-rows
+  make: string; // e.g., Toyota, Honda
+  type: string; // e.g., SUV, Sedan, Truck
+  serialNumber: string; // VIN or internal serial
+  location: string; // e.g., "Nairobi Garage", "Lot 5"
+  category: string;
 }
 
 // Filter types
@@ -78,6 +89,11 @@ const mockCarData: CarData[] = [
     carName: "Toyota Camry",
     carModel: "2020",
     carNumber: "KAB 123A",
+    make: "Toyota",
+    type: "Sedan",
+    serialNumber: "JTNB11HK2L3056789",
+    location: "Nairobi Garage A",
+    category: "Fleet",
     tasksPending: 3,
     carImage: "/placeholder.svg?height=60&width=100",
     taskStatus: "due soon",
@@ -114,6 +130,11 @@ const mockCarData: CarData[] = [
     carName: "Honda Accord",
     carModel: "2019",
     carNumber: "KCE 456B",
+    make: "Honda",
+    type: "Sedan",
+    serialNumber: "1HGCV1F33KA078963",
+    location: "Garage B - West Lot",
+    category: "Leased",
     tasksPending: 1,
     carImage: "/placeholder.svg?height=60&width=100",
     taskStatus: "overdue",
@@ -134,6 +155,11 @@ const mockCarData: CarData[] = [
     carName: "Mazda CX-5",
     carModel: "2021",
     carNumber: "KBX 789C",
+    make: "Mazda",
+    type: "SUV",
+    serialNumber: "JM3KFBCM6M0334567",
+    location: "Mombasa Depot",
+    category: "Fleet",
     tasksPending: 2,
     carImage: "/placeholder.svg?height=60&width=100",
     taskStatus: "due soon",
@@ -162,6 +188,11 @@ const mockCarData: CarData[] = [
     carName: "Subaru Forester",
     carModel: "2018",
     carNumber: "KDD 321D",
+    make: "Subaru",
+    type: "SUV",
+    serialNumber: "JF2SKABC2JH567890",
+    location: "Central Yard",
+    category: "Owned",
     tasksPending: 4,
     carImage: "/placeholder.svg?height=60&width=100",
     taskStatus: "overdue",
@@ -206,6 +237,11 @@ const mockCarData: CarData[] = [
     carName: "Ford Ranger",
     carModel: "2022",
     carNumber: "KCZ 654E",
+    make: "Ford",
+    type: "Truck",
+    serialNumber: "1FT7W2B68NEG12345",
+    location: "Offsite Lot 3",
+    category: "Fleet",
     tasksPending: 1,
     carImage: "/placeholder.svg?height=60&width=100",
     taskStatus: "due soon",
@@ -226,6 +262,11 @@ const mockCarData: CarData[] = [
     carName: "Nissan X-Trail",
     carModel: "2020",
     carNumber: "KCL 987F",
+    make: "Nissan",
+    type: "SUV",
+    serialNumber: "JN1BJ1CW3LW321654",
+    location: "Nairobi Garage B",
+    category: "Leased",
     tasksPending: 2,
     carImage: "/placeholder.svg?height=60&width=100",
     taskStatus: "overdue",
@@ -254,6 +295,11 @@ const mockCarData: CarData[] = [
     carName: "Volkswagen Golf",
     carModel: "2017",
     carNumber: "KAR 741G",
+    make: "Volkswagen",
+    type: "Hatchback",
+    serialNumber: "WVWZZZAUZHP567321",
+    location: "Garage A - East Lot",
+    category: "Owned",
     tasksPending: 3,
     carImage: "/placeholder.svg?height=60&width=100",
     taskStatus: "due soon",
@@ -290,6 +336,11 @@ const mockCarData: CarData[] = [
     carName: "BMW X3",
     carModel: "2023",
     carNumber: "KDA 852H",
+    make: "BMW",
+    type: "SUV",
+    serialNumber: "5UXTY5C02P9J98765",
+    location: "Inspection Bay",
+    category: "Fleet",
     tasksPending: 1,
     carImage: "/placeholder.svg?height=60&width=100",
     taskStatus: "due soon",
@@ -310,6 +361,11 @@ const mockCarData: CarData[] = [
     carName: "Mercedes-Benz C200",
     carModel: "2021",
     carNumber: "KBM 963J",
+    make: "Mercedes-Benz",
+    type: "Sedan",
+    serialNumber: "WDDWF4JB8MR123456",
+    location: "Garage C",
+    category: "Leased",
     tasksPending: 5,
     carImage: "/placeholder.svg?height=60&width=100",
     taskStatus: "overdue",
@@ -362,6 +418,11 @@ const mockCarData: CarData[] = [
     carName: "Hyundai Tucson",
     carModel: "2020",
     carNumber: "KCX 159K",
+    make: "Hyundai",
+    type: "SUV",
+    serialNumber: "KM8J3CA46LU123789",
+    location: "Main Warehouse",
+    category: "Fleet",
     tasksPending: 2,
     carImage: "/placeholder.svg?height=60&width=100",
     taskStatus: "due soon",
@@ -692,11 +753,67 @@ export function EquipmentDataTable({ realServer }: DataTableProps) {
 
                     <TableCell>
                       <div className="flex items-center gap-4">
-                         
                         <div className="flex flex-col">
-                          <div className="font-medium text-sm text-gray-600">
-                            {car.carNumber} • {car.carModel}
-                          </div>
+                          <Popover>
+                            <PopoverTrigger>
+                              <span className="w-fit font-bold flex flex-row text-primary text-bold hover:shadow cursor-pointer">
+                                {car.carNumber}
+                              </span>
+                            </PopoverTrigger>
+                            <PopoverContent className="bg-white">
+                              <div className="grid gap-2">
+                                <div className="space-y-1">
+                                  <h4 className="leading-none font-medium">
+                                    Unit #{car.carNumber}
+                                  </h4>
+                                  <p className="text-muted-foreground text-sm">
+                                    Short details of the equipment.
+                                  </p>
+                                </div>
+                                <div className="grid space-y-0.5">
+                                  <div className="flex justify-center items-center">
+                                    <img src={car.carImage} className="w-20" />
+                                  </div>
+                                  <div className="grid grid-cols-3 items-center gap-1">
+                                    <Label htmlFor="width">Make</Label>
+                                    <span className="col-span-2  ">
+                                      {car.make}
+                                    </span>
+                                  </div>
+                                  <div className="grid grid-cols-3 items-center gap-1">
+                                    <Label htmlFor="width">Model</Label>
+                                    <span className="col-span-2  ">
+                                      {car.carModel}
+                                    </span>
+                                  </div>
+                                  <div className="grid grid-cols-3 items-center gap-1">
+                                    <Label htmlFor="width">Type</Label>
+                                    <span className="col-span-2  ">
+                                      {car.type}
+                                    </span>
+                                  </div>
+                                  <div className="grid grid-cols-3 items-center gap-1">
+                                    <Label htmlFor="width">Serial #</Label>
+                                    <span className="col-span-2  ">
+                                      {car.serialNumber}
+                                    </span>
+                                  </div>
+                                  <div className="grid grid-cols-3 items-center gap-1">
+                                    <Label htmlFor="width">Location</Label>
+                                    <span className="col-span-2  ">
+                                      {car.location}
+                                    </span>
+                                  </div>
+                                  <div className="grid grid-cols-3 items-center gap-1">
+                                    <Label htmlFor="width">Category</Label>
+                                    <span className="col-span-2  ">
+                                      {car.category}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            </PopoverContent>
+                          </Popover>
                           <div className="font-semibold">{car.carName}</div>
                         </div>
                       </div>
