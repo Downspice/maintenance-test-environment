@@ -393,7 +393,7 @@ export function EmployeesDataTable({ realServer }: EmployeesDueDataTableProps) {
                           {item.id}
                         </span>
                       </PopoverTrigger>
-                      <PopoverContent>
+                      <PopoverContent className="bg-white">
                         <div className="grid gap-2">
                           <div className="space-y-1">
                             <h4 className="leading-none font-medium">
@@ -403,7 +403,7 @@ export function EmployeesDataTable({ realServer }: EmployeesDueDataTableProps) {
                               Short details of the employee.
                             </p>
                           </div>
-                          <div className="grid ">
+                          <div className="grid space-y-0.5">
                             <div className="grid grid-cols-3 items-center gap-1">
                               <Label htmlFor="width">Employee #</Label>
                               <span className="col-span-2  ">{item.id}</span>
