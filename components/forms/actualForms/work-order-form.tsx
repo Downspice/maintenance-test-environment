@@ -160,7 +160,7 @@ export default function NewWorkOrderForm() {
           Create New Work Order
         </Button>
       </SheetTrigger>
-      <SheetContent className="w-3/4 ">
+      <SheetContent className="w-5/6 ">
         <SheetHeader>
           <SheetTitle>Create New Order</SheetTitle>
           <SheetDescription>
@@ -176,113 +176,149 @@ export default function NewWorkOrderForm() {
                   handleSubmit(data)
                 )}
               >
-                <Fieldset
-                  content={
-                    <>
-                      <InputWrapper
-                        control={workOrderForm.control}
-                        name="workOrderNumber"
-                        label="WO Number"
-                        type="text"
-                        value={""}
-                        required
-                      />
-                      <ComboboxFieldWrapper
-                        control={workOrderForm.control}
-                        name="priority"
-                        label="Priority"
-                        options={priorityOptions}
-                        required={true}
-                      />
-                    </>
-                  }
-                />
+                <div className="grid grid-cols-7">
+                  <div className="col-span-2">
+                    <Fieldset
+                      content={
+                        <>
+                          <InputWrapper
+                            control={workOrderForm.control}
+                            name="workOrderNumber"
+                            label="WO Number"
+                            type="text"
+                            value={""}
+                            required
+                          />
+                          <ComboboxFieldWrapper
+                            control={workOrderForm.control}
+                            name="priority"
+                            label="Priority"
+                            options={priorityOptions}
+                            required={true}
+                          />
+                        </>
+                      }
+                    />
 
-                <Fieldset
-                  legend="Dates"
-                  content={
-                    <>
-                      <DatePickerWrapper
-                        control={workOrderForm.control}
-                        name="scheduledOn"
-                        label="Scheduled"
-                      />
+                    <Fieldset
+                      legend="Dates"
+                      content={
+                        <>
+                          <DatePickerWrapper
+                            control={workOrderForm.control}
+                            name="scheduledOn"
+                            label="Scheduled"
+                          />
 
-                      <DatePickerWrapper
-                        control={workOrderForm.control}
-                        name="dueOn"
-                        label="Due"
-                      />
-                      <DatePickerWrapper
-                        control={workOrderForm.control}
-                        name="startedOn"
-                        label="Started On"
-                      />
-                      <DatePickerWrapper
-                        control={workOrderForm.control}
-                        name="completedOn"
-                        label="Completed On"
-                      />
-                    </>
-                  }
-                />
-                <Fieldset
-                  legend="Assignees"
-                  content={
-                    <>
-                      <MultiComboboxWrapper
-                        control={workOrderForm.control}
-                        name="assigneeIds"
-                        label="Assignee"
-                        options={assigneeOptions}
-                        placeholder="Select assignees"
-                        searchPlaceholder="Search assignees..."
-                        maxSelections={2}
-                      />
-                    </>
-                  }
-                />
+                          <DatePickerWrapper
+                            control={workOrderForm.control}
+                            name="dueOn"
+                            label="Due"
+                          />
+                          <DatePickerWrapper
+                            control={workOrderForm.control}
+                            name="startedOn"
+                            label="Started On"
+                          />
+                          <DatePickerWrapper
+                            control={workOrderForm.control}
+                            name="completedOn"
+                            label="Completed On"
+                          />
+                        </>
+                      }
+                    />
+                    <Fieldset
+                      legend="Assignees"
+                      content={
+                        <>
+                          <MultiComboboxWrapper
+                            control={workOrderForm.control}
+                            name="assigneeIds"
+                            label="Assignee"
+                            options={assigneeOptions}
+                            placeholder="Select assignees"
+                            searchPlaceholder="Search assignees..."
+                            maxSelections={2}
+                          />
+                        </>
+                      }
+                    />
 
-                <Fieldset
-                  legend="Misc. Details"
-                  content={
-                    <>
-                      <ComboboxFieldWrapper
-                        control={workOrderForm.control}
-                        name="workOrderType"
-                        label="Type"
-                        options={workOrderTypeOptions}
-                      />
+                    <Fieldset
+                      legend="Misc. Details"
+                      content={
+                        <>
+                          <ComboboxFieldWrapper
+                            control={workOrderForm.control}
+                            name="workOrderType"
+                            label="Type"
+                            options={workOrderTypeOptions}
+                          />
 
-                      <ComboboxFieldWrapper
-                        control={workOrderForm.control}
-                        name="costCenter"
-                        label="Cost center"
-                        options={costCenterOptions}
-                      />
+                          <ComboboxFieldWrapper
+                            control={workOrderForm.control}
+                            name="costCenter"
+                            label="Cost center"
+                            options={costCenterOptions}
+                          />
 
-                      <ComboboxFieldWrapper
-                        control={workOrderForm.control}
-                        name="po"
-                        label="PO#"
-                        options={PurchaseOrderOptions}
-                      />
-                      <InputWrapper
-                        control={workOrderForm.control}
-                        name="invoice"
-                        label="Invoice"
-                        value={""}
-                        type={"text"}
-                      />
-                      <CustomFieldsWrapper
-                        control={workOrderForm.control}
-                        name="custom"
-                        label={"Custom Fields"}
-                      />
-                    </>
-                  }
-                />
-
+                          <ComboboxFieldWrapper
+                            control={workOrderForm.control}
+                            name="po"
+                            label="PO#"
+                            options={PurchaseOrderOptions}
+                          />
+                          <InputWrapper
+                            control={workOrderForm.control}
+                            name="invoice"
+                            label="Invoice"
+                            value={""}
+                            type={"text"}
+                          />
+                          <CustomFieldsWrapper
+                            control={workOrderForm.control}
+                            name="custom"
+                            label={"Custom Fields"}
+                          />
+                        </>
+                      }
+                    />
+                  </div>
+                  <div className="col-span-5">
+                    <div className="flex justify-end space-x-1 border border-b-black/20">
+                      <Button>Open</Button>
+                      <Button>In Progress</Button>
+                      <Button>On Hold</Button>
+                      <Button>Complete</Button>
+                    </div>
+                    <div>
+                      <div className="flex flex-row justify-between space-x-2 ">
+                        <div className="flex w-fit items-end">
+                          <ComboboxFieldWrapper
+                            control={workOrderForm.control}
+                            name="equipment"
+                            label="Unit"
+                            options={equipmentOptions}
+                            required={true}
+                          />
+                          <Button variant="secondary" size={"icon"}>
+                            <Plus />
+                          </Button>
+                        </div>
+                        <div className="flex w-fit">
+                          <InputWrapper
+                            control={workOrderForm.control}
+                            name="hours"
+                            label="Hours"
+                            value={""}
+                            type={"number"}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
                 <div className="flex justify-between gap-x-4 my-8 w-full">
                   <Button className=" w-full">
                     <GitPullRequestArrow className="mr-2" /> Create Work Order
