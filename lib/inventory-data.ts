@@ -27,6 +27,7 @@ export interface InventoryDataInterface {
   warehouse_name: string;
   tracking_enabled: string;
   url: string;
+  purchase_order?: string;
 }
 
 
@@ -34,6 +35,7 @@ export const InventoryData:InventoryDataInterface[]=[
   {
     "id": 4248679,
     "part_number": "404040",
+    purchase_order: "po 5605",
     "name": "V Belt",
     "category": null,
     "manufacturers": "",
@@ -119,6 +121,8 @@ export const InventoryData:InventoryDataInterface[]=[
     "custom_fields": {},
     "warehouse_name": "Warehouse #1",
     "tracking_enabled": "Yes",
+    purchase_order: "po 56405",
+
     "url": "/inventories/4248681"
   },
   {
@@ -189,6 +193,8 @@ export const InventoryData:InventoryDataInterface[]=[
     "manufacturers": "CoolFlow",
     "supplier_part_numbers": "COOL-9090",
     "quantity": 80,
+    purchase_order: "po 560445",
+
     "order_quantity": 0,
     "quantity_sort": 80,
     "unit_cost": 12.0,

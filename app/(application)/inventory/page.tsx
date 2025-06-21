@@ -19,41 +19,28 @@ import NewVendor from "@/components/forms/actualForms/new-vendor-form";
 import { InventoryPageDataTable } from "./component/inventory.datatable";
 import NewInventory from "@/components/forms/actualForms/new-inventory-form";
 import NotCompleteMessage from "../messages/page";
- 
+import InventoryDataTable from "./table/inventoryTable";
+
 const ActiveDropdown = [
   {
     label: "All",
     value: "all",
   },
   {
-    label: "Stock",
-    value: "stock",
-  },
-  {
     label: "Low-Stock",
     value: "low_stock",
   },
   {
-    label: "PO Pending",
-    value: "po_pending",
+    label: "out",
+    value: "Out of Stock",
   },
   {
-    label: "Non-Stock",
-    value: "non_stock",
-  },
-  {
-    label: "Deleted",
-    value: "deleted",
+    label: "out",
+    value: "PO Assigned",
   },
 ];
 
-const locations = [
-  { value: "delete_filter", label: "All Locations" },
-  { value: "56533", label: "Location #1" },
-  { value: "56534", label: "Location #2" },
-  { value: "56532", label: "Main Location" },
-];
-
+ 
 export default function EmployeesPage() {
   const [filters, setFilters] = useState({
     equipment: "",
@@ -137,7 +124,7 @@ export default function EmployeesPage() {
           {/* Location Filter */}
           <Select onValueChange={(val) => handleSelectChange("equipment", val)}>
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="All" />
+              <SelectValue placeholder="All Parts" />
             </SelectTrigger>
             <SelectContent>
               {ActiveDropdown.map((item) => (
@@ -147,46 +134,16 @@ export default function EmployeesPage() {
               ))}
             </SelectContent>
           </Select>
-
-          <Select onValueChange={(val) => handleSelectChange("location", val)}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="All Locations" />
-            </SelectTrigger>
-            <SelectContent>
-              {locations.map((item) => (
-                <SelectItem value={item.value} key={item.value}>
-                  {item.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          {/* New Location Trigger */}
-          <Select onValueChange={(val) => handleSelectChange("custom", val)}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Filter" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="new" className="text-blue-500 font-medium">
-                + New Filter
-              </SelectItem>
-            </SelectContent>
-          </Select>
         </div>
         <div className="flex flex-row space-x-0.5">
           {/* Search Input */}
-          <Input
-            type="text"
-            placeholder="Search ..."
-            className="w-[240px]"
-            value={filters.search}
-            onChange={handleSearchChange}
-          />
+
           <Button onClick={createEquipment}>New</Button>
         </div>
       </div>
       <div>
-        <InventoryPageDataTable />
+        {/* <InventoryPageDataTable /> */}
+        <InventoryDataTable />
       </div>
     </div>
   );
