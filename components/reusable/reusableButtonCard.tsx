@@ -38,7 +38,7 @@ export default function ReusableButtonCard({
       </CardContent>
       <Separator />
       <CardFooter className="flex justify-between">
-        {data.overdue} Overdue <Separator orientation="vertical" />
+        <span className="text-destructive">{data.overdue} Overdue </span><Separator orientation="vertical" />
         {data.soon} Soon
       </CardFooter>
     </Card>

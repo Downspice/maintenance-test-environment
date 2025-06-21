@@ -31,7 +31,7 @@ const dropdownItemsSection2 = [
   { label: "Choice Lists", onSelect: genericDropdown },
   { label: "Scheduled reports", onSelect: genericDropdown },
 ];
- 
+
 const dropdownItemsSection3 = [
   { label: "Equipment", onSelect: genericDropdown },
   { label: "Employees", onSelect: genericDropdown },
@@ -52,26 +52,26 @@ export default function HeaderSettingsButton() {
         // side={isMobile ? "bottom" : "right"}
         // align={isMobile ? "end" : "start"}
       >
-        Company
+        <span className="font-bold">Company</span>
         {dropdownItemsSection1.map((item) => (
           <DropdownMenuItem key={item.label} onSelect={item.onSelect}>
             <span>{item.label}</span>
           </DropdownMenuItem>
         ))}
-        Maintenance
+        <span className="font-bold">Maintenance</span>
         <Separator className="text-red-900" orientation="horizontal" />
         {dropdownItemsSection2.map((item) => (
           <DropdownMenuItem key={item.label} onSelect={item.onSelect}>
             <span>{item.label}</span>
           </DropdownMenuItem>
         ))}
-        Import
+        <span className="font-bold">Import</span>
         <Separator orientation="horizontal" />
         {dropdownItemsSection3.map((item) => (
           <DropdownMenuItem key={item.label} onSelect={item.onSelect}>
             <span>{item.label}</span>
           </DropdownMenuItem>
-        ))}   
+        ))}
       </DropdownMenuContent>
     </DropdownMenu>
   );

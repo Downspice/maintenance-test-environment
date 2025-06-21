@@ -38,7 +38,7 @@ export default function ReusableButtonInventoryCard({
       <Separator />
 
       <CardFooter className="flex justify-between">
-        {data.outOfStock} Out of stock
+        <span className="text-destructive">{data.outOfStock} Out of stock</span>
         <Separator orientation="vertical" />
         {data.soon} Low
       </CardFooter>
