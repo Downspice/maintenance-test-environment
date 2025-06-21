@@ -2,7 +2,23 @@
 
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import {
+  ErrorOption,
+  FieldArray,
+  FieldArrayPath,
+  FieldError,
+  FieldErrors,
+  FieldName,
+  FieldValues,
+  FormState,
+  InternalFieldName,
+  ReadFormState,
+  RegisterOptions,
+  SubmitErrorHandler,
+  SubmitHandler,
+  useForm,
+  UseFormRegisterReturn,
+} from "react-hook-form";
 import { useState } from "react";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
@@ -14,7 +30,10 @@ import TextareaWrapper from "../wrappers/TextareaWrapper";
 import InputWrapper from "../wrappers/InputWrapper";
 import CheckboxWrapper from "../wrappers/CheckboxWrapper";
 import { toast } from "sonner";
-import { ComboboxFieldWrapper, MultiComboboxWrapper } from "../wrappers/ComboboxWrapper";
+import {
+  ComboboxFieldWrapper,
+  MultiComboboxWrapper,
+} from "../wrappers/ComboboxWrapper";
 import {
   Sheet,
   SheetContent,
@@ -25,6 +44,11 @@ import {
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Fieldset from "@/components/customUI/fieldset";
+import {
+  PurchaseOrderData,
+  PurchaseOrderOptions,
+} from "@/lib/purcahse-order-data";
+import CustomFieldsWrapper from "../wrappers/CustomFieldsWrapper";
 
 // Define the form schema with Zod
 export const workOrderSchema = z.object({
@@ -85,6 +109,12 @@ const workOrderTypeOptions = [
   { value: "other", label: "Other" },
 ];
 
+const costCenterOptions = [
+  { value: "preventive", label: "Preventive Cost Center" },
+  { value: "corrective", label: "Corrective Cost Center" },
+  { value: "inspection", label: "Inspection Cost Center" },
+  { value: "other", label: "Other" },
+];
 // Task options
 const taskOptions = [
   {
@@ -196,173 +226,62 @@ export default function NewWorkOrderForm() {
                     </>
                   }
                 />
-                 <Fieldset
+                <Fieldset
                   legend="Assignees"
                   content={
                     <>
-                    <MultiComboboxWrapper
-                          control={workOrderForm.control}
-                          name="assigneeIds"
-                          label="Assignee"
-                          options={assigneeOptions}
-                          placeholder="Select assignees"
-                          searchPlaceholder="Search assignees..."
-                          maxSelections={2}
-                        />
-
-                    </>}/>
-                <div className="work-order-form-wrapper">
-                  <div className="pt-2">
-                    <ComboboxFieldWrapper
-                      control={workOrderForm.control}
-                      name="equipmentId"
-                      label="Equipment"
-                      options={equipmentOptions}
-                      required={true}
-                      searchPlaceholder="Search equipment..."
-                    />
-                  </div>
-
-                  <div className="disable-fields-without-equipment pt-4">
-                    <div id="fields">
-                      <div className="pt-4">
-                        <MultiSelectWrapper
-                          control={workOrderForm.control}
-                          name="assigneeIds"
-                          label="Assignee"
-                          options={assigneeOptions}
-                          placeholder="Select assignees"
-                          searchPlaceholder="Search assignees..."
-                        />
-                        <div className="quick-add-links flex justify-end space-x-2 mt-1">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            className="text-xs"
-                          >
-                            <Plus className="h-3 w-3 mr-1" />{" "}
-                            <Building className="h-3 w-3" />
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            className="text-xs"
-                          >
-                            <Plus className="h-3 w-3 mr-1" />{" "}
-                            <User className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4 pt-4"></div>
-
-                      <div className="grid grid-cols-2 gap-4 pt-4">
-                        <SelectWrapper
-                          control={workOrderForm.control}
-                          name="workOrderType"
-                          label="Type"
-                          options={workOrderTypeOptions}
-                        />
-                      </div>
-
-                      <div className="pt-4">
-                        <TextareaWrapper
-                          control={workOrderForm.control}
-                          name="initialNotes"
-                          label="Initial Notes"
-                          value={undefined}
-                          rows={4}
-                        />
-                      </div>
-
-                      <div className="pt-6">
-                        <h2
-                          className="form-section text-xl font-semibold"
-                          id="custom-fields"
-                        >
-                          Custom Fields
-                        </h2>
-                        <div className="pt-2" id="custom-field-section">
-                          {customFields.map((field, index) => (
-                            <div
-                              key={index}
-                              className="grid grid-cols-2 gap-4 mb-2"
-                            >
-                              <InputWrapper
-                                control={workOrderForm.control}
-                                type="text"
-                                name={`customFields.${index}.name`}
-                                label="Field Name"
-                                value={field.name}
-                              />
-                              <InputWrapper
-                                control={workOrderForm.control}
-                                type="text"
-                                name={`customFields.${index}.value`}
-                                label="Field Value"
-                                value={field.value}
-                              />
-                            </div>
-                          ))}
-                          <div className="pt-2">
-                            <Button
-                              type="button"
-                              variant="outline"
-                              onClick={addCustomField}
-                              className="text-[#1A79FF] border-[#1A79FF]"
-                            >
-                              <Plus className="mr-2 h-4 w-4" /> New Custom Field
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div id="task-selection-table" className="pt-6">
-                      <h2 className="text-xl font-semibold mb-4">Tasks</h2>
-                      <CheckboxWrapper
+                      <MultiComboboxWrapper
                         control={workOrderForm.control}
-                        name="taskIds"
-                        label="Select Tasks"
-                        options={taskOptions}
+                        name="assigneeIds"
+                        label="Assignee"
+                        options={assigneeOptions}
+                        placeholder="Select assignees"
+                        searchPlaceholder="Search assignees..."
+                        maxSelections={2}
                       />
-                      <div className="repair-section pt-2">
-                        <div className="add-task-link">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            className="text-[#1A79FF] border-[#1A79FF]"
-                          >
-                            <Plus className="mr-2 h-4 w-4" /> Add Task
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
+                    </>
+                  }
+                />
 
-                    <div className="info-box bg-blue-50 border border-blue-100 rounded-md p-4 flex mt-6">
-                      <div className="info-icon text-blue-500 mr-3">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-5 w-5"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      </div>
-                      <div className="info-text text-sm text-blue-800">
-                        You may enter parts, labor, and other details after
-                        creating the Work Order.
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <Fieldset
+                  legend="Misc. Details"
+                  content={
+                    <>
+                      <ComboboxFieldWrapper
+                        control={workOrderForm.control}
+                        name="workOrderType"
+                        label="Type"
+                        options={workOrderTypeOptions}
+                      />
+
+                      <ComboboxFieldWrapper
+                        control={workOrderForm.control}
+                        name="costCenter"
+                        label="Cost center"
+                        options={costCenterOptions}
+                      />
+
+                      <ComboboxFieldWrapper
+                        control={workOrderForm.control}
+                        name="po"
+                        label="PO#"
+                        options={PurchaseOrderOptions}
+                      />
+                      <InputWrapper
+                        control={workOrderForm.control}
+                        name="invoice"
+                        label="Invoice"
+                        value={""}
+                        type={"text"}
+                      />
+                      <CustomFieldsWrapper
+                        control={workOrderForm.control}
+                        name="custom"
+                        label={"Custom Fields"}
+                      />
+                    </>
+                  }
+                />
 
                 <div className="flex justify-between gap-x-4 my-8 w-full">
                   <Button className=" w-full">

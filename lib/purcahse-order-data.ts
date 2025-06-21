@@ -19,7 +19,20 @@ export interface  PurchaseOrderInterface {
   id: number;
   url: string;
 };
-
+export const PurchaseOrderOptions=[
+  {
+    value:"1",
+    label:"PO 4004"
+  },
+  {
+    value:"3",
+    label:"PO 5004"
+  },
+  {
+    value:"1",
+    label:"PO 2004"
+  },
+]
 export const PurchaseOrderData:PurchaseOrderInterface[]=[
   {
     "sequential_id": 1000,
