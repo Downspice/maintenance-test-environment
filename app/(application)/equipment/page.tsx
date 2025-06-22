@@ -9,13 +9,7 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { EquipmentPageDataTable } from "./components/equipment.page.dataTable";
-import WorkOrderForm from "@/components/forms/actualForms/work-order-form";
 import { useSheet } from "@/lib/sheet-providers";
-import NewEquipmentSheet from "@/components/forms/sheets/newEquipmentForm";
-import FormSheet from "@/components/form-sheet";
 import EquipmentForm from "./components/new-equipment-form";
 import NotCompleteMessage from "../workInprogress/working";import NewEquipmentDataTable from "./components/table/equipmentDatatable";
 import UpdateMeters from "./components/update-meters-form";
@@ -34,15 +28,7 @@ const equipmentActiveDropdown = [
   { value: "Transferred", label: "Transferred" },
   { value: "deleted", label: "Deleted" },
   { value: "all", label: "All" },
-];
-
-const locations = [
-  { value: "delete_filter", label: "All Locations" },
-  { value: "56533", label: "Location #1" },
-  { value: "56534", label: "Location #2" },
-  { value: "56532", label: "Main Location" },
-];
-
+]; 
 export default function EquipmentPage() {
   const [filters, setFilters] = useState({
     equipment: "",
@@ -102,16 +88,7 @@ export default function EquipmentPage() {
   useEffect(() => {
     buildURL({ ...filters, search: debouncedSearch });
   }, [debouncedSearch]);
-
-  const createEquipment = () => {
-    console.log("ïn the function");
-    openSheet({
-      title: "Create New Equipment",
-      description: "Fill out the form below to create a new equipment.",
-      content: <NotCompleteMessage />,
-    });
-  };
-
+ 
   return (
     <div className="flex flex-col container mx-auto py-10 space-y-4">
       <div className="flex flex-row items-center space-x-2">
@@ -150,14 +127,7 @@ export default function EquipmentPage() {
           </Select>
         </div>
         <div className="flex flex-row space-x-2">
-          {/* Search Input
-          <Input
-            type="text"
-            placeholder="Search Equipment..."
-            className="w-[240px]"
-            value={filters.search}
-            onChange={handleSearchChange}
-          /> */}
+           
           <EquipmentForm />
            <UpdateMeters/>
         </div>

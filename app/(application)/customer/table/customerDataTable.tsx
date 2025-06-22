@@ -3,80 +3,27 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { AdvancedDataTable } from "@/components/customUI/advanced-data-table";
 import { SortableHeader } from "@/components/customUI/sortable-header";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   MoreHorizontal,
   Trash2,
   Printer,
-  User,
-  Mail,
-  Phone,
-  MapPin,
-  Calendar,
-  Users,
   CheckCircle,
   Clock,
   AlertTriangle,
+  FilePenIcon,
 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 import React from "react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Progress } from "@/components/ui/progress";
 import { CustomerData, CustomerInterface } from "@/lib/customer-data";
-
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case "open":
-      return "bg-orange-100 text-orange-800 border-orange-200";
-    case "closed":
-      return "bg-green-100 text-green-800 border-green-200";
-    default:
-      return "bg-gray-100 text-gray-800 border-gray-200";
-  }
-};
-
-const getTaskStatusIcon = (status: string) => {
-  switch (status) {
-    case "completed":
-      return <CheckCircle className="h-3 w-3 text-green-600" />;
-    case "in-progress":
-      return <Clock className="h-3 w-3 text-blue-600" />;
-    case "pending":
-      return <AlertTriangle className="h-3 w-3 text-orange-600" />;
-    default:
-      return <Clock className="h-3 w-3 text-gray-600" />;
-  }
-};
-const TaskTooltipContent = ({ tasks }: { tasks: WorkOrderTask[] }) => (
-  <div className="space-y-2 max-w-xs">
-    <div className="font-semibold text-sm">Tasks ({tasks.length})</div>
-    {tasks.map((task) => (
-      <div key={task.id} className="flex items-center gap-2 text-xs">
-        {getTaskStatusIcon(task.status)}
-        <div className="flex-1">
-          <div className="font-medium">{task.name}</div>
-          <div className="text-muted-foreground">
-            Assigned to: {task.assignee}
-            {task.dueDate && ` • Due: ${task.dueDate}`}
-          </div>
-        </div>
-      </div>
-    ))}
-  </div>
-);
 
 const getAllEmployees = (
   employees: CustomerInterface[]
@@ -97,11 +44,13 @@ const getAllEmployees = (
 };
 
 const flatEmployees = getAllEmployees(CustomerData);
-// const workOrder = [...new Set(flatEmployees.map((emp) => emp.number))];
-// const unit = [...new Set(flatEmployees.map((emp) => emp.equipment.id))];
-// const location = [...new Set(flatEmployees.map((emp) => emp.status))];
-const type = [...new Set(flatEmployees.map((emp) => emp.id))];
-const meter = [...new Set(flatEmployees.map((emp) => emp.name))];
+const name = [...new Set(flatEmployees.map((emp) => emp.name))];
+const type = [...new Set(flatEmployees.map((emp) => emp.type))];
+const address1 = [...new Set(flatEmployees.map((emp) => emp.address1))];
+const city = [...new Set(flatEmployees.map((emp) => emp.city))];
+const state_prov = [...new Set(flatEmployees.map((emp) => emp.state_prov))];
+const postal_code = [...new Set(flatEmployees.map((emp) => emp.postal_code))];
+const email = [...new Set(flatEmployees.map((emp) => emp.email))];
 
 export default function CustomerDataTable() {
   const [isServerMode, setIsServerMode] = useState(false);
@@ -241,13 +190,9 @@ export default function CustomerDataTable() {
         if (searchValue.trim()) {
           filteredData = CustomerData.filter(
             (emp) =>
-              emp.id
-                .toLowerCase()
-                .includes(searchValue.toLowerCase()) ||
+              emp.id.toLowerCase().includes(searchValue.toLowerCase()) ||
               emp.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-              emp.type
-                .toLowerCase()
-                .includes(searchValue.toLowerCase()) ||
+              emp.type.toLowerCase().includes(searchValue.toLowerCase()) ||
               emp.contact
                 .toString()
                 .toLowerCase()
@@ -256,16 +201,19 @@ export default function CustomerDataTable() {
                 .toString()
                 .toLowerCase()
                 .includes(searchValue.toLowerCase()) ||
-              emp.address2?.toString()
+              emp.address2
+                ?.toString()
                 .toLowerCase()
                 .includes(searchValue.toLowerCase()) ||
-              emp.city
+              emp.city.toLowerCase().includes(searchValue.toLowerCase()) ||
+              emp.state_prov
                 .toLowerCase()
                 .includes(searchValue.toLowerCase()) ||
-              emp.state_prov.toLowerCase().includes(searchValue.toLowerCase()) ||
-              emp.state_prov.toLowerCase().includes(searchValue.toLowerCase()) ||
+              emp.state_prov
+                .toLowerCase()
+                .includes(searchValue.toLowerCase()) ||
               emp.email.toLowerCase().includes(searchValue.toLowerCase())
-               );
+          );
         }
 
         // Reset to first page and update data
@@ -302,7 +250,12 @@ export default function CustomerDataTable() {
     {
       accessorKey: "name",
       header: ({ column }) => (
-        <SortableHeader column={column} title="Name" sortable={true} />
+        <SortableHeader
+          column={column}
+          title="Name"
+          sortable={true}
+          filterOptions={name}
+        />
       ),
       cell: ({ row }) => (
         <div className="font-medium text-primary flex flex-col">
@@ -314,8 +267,13 @@ export default function CustomerDataTable() {
     {
       accessorKey: "type",
       header: ({ column }) => (
-        <SortableHeader column={column} title="Type" sortable={true} />
-      ), 
+        <SortableHeader
+          column={column}
+          title="Type"
+          sortable={true}
+          filterOptions={type}
+        />
+      ),
     },
     {
       accessorKey: "address1",
@@ -324,7 +282,7 @@ export default function CustomerDataTable() {
           column={column}
           title="Address #1"
           sortable={true}
-          filterOptions={type}
+          filterOptions={address1}
         />
       ),
       cell: ({ row }) => <>{row.original.address1}</>,
@@ -339,7 +297,7 @@ export default function CustomerDataTable() {
           column={column}
           title="City"
           sortable={true}
-          filterOptions={meter}
+          filterOptions={city}
         />
       ),
       cell: ({ row }) => <>{row.original.city}</>,
@@ -351,8 +309,13 @@ export default function CustomerDataTable() {
     {
       accessorKey: "state_prov",
       header: ({ column }) => (
-        <SortableHeader column={column} title="State/Prov" sortable={true} />
-      ), 
+        <SortableHeader
+          column={column}
+          title="State/Prov"
+          sortable={true}
+          filterOptions={state_prov}
+        />
+      ),
       filterFn: (row, id, value) => {
         return value.length === 0 || value.includes(row.getValue(id));
       },
@@ -360,8 +323,13 @@ export default function CustomerDataTable() {
     {
       accessorKey: "postal_code",
       header: ({ column }) => (
-        <SortableHeader column={column} title="Postal Code" sortable={true} />
-      ), 
+        <SortableHeader
+          column={column}
+          title="Postal Code"
+          sortable={true}
+          filterOptions={postal_code}
+        />
+      ),
     },
     {
       accessorKey: "email",
@@ -370,7 +338,7 @@ export default function CustomerDataTable() {
           column={column}
           title="Email"
           sortable={true}
-          filterOptions={meter}
+          filterOptions={email}
         />
       ),
       filterFn: (row, id, value) => {
@@ -392,42 +360,75 @@ export default function CustomerDataTable() {
         };
 
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  alert(`Edit ${row.getValue("name")}`);
-                }}
-              >
-                Edit
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handlePrintRow(row);
-                }}
-              >
-                <Printer className="mr-2 h-4 w-4" />
-                Print
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDeleteRow(row);
-                }}
-                className="text-destructive focus:text-destructive"
-              >
-                <Trash2 className="mr-2 h-4 w-4" />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex flex-row gap-1 justify-between ">
+            {/* <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    alert(`Edit ${row.getValue("name")}`);
+                  }}
+                >
+                  Edit
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handlePrintRow(row);
+                  }}
+                >
+                  <Printer className="mr-2 h-4 w-4" />
+                  Print
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu> */}
+            <Button variant={"secondary"} size={"icon"}>
+              <FilePenIcon />
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant={"secondary"} size={"icon"}>
+                  <MoreHorizontal />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-68 " align="start">
+                {/* <DropdownMenuLabel>My Account</DropdownMenuLabel> */}
+                <DropdownMenuGroup>
+                  <DropdownMenuItem>
+                    Receive
+                    {/* <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut> */}
+                  </DropdownMenuItem>
+                <DropdownMenuSeparator /> 
+                  <DropdownMenuItem>
+                    Email
+                    {/* <DropdownMenuShortcut>⌘B</DropdownMenuShortcut> */}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    Print
+                    {/* <DropdownMenuShortcut>⌘S</DropdownMenuShortcut> */}
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Change Status (Closed)</DropdownMenuItem>
+                <DropdownMenuSeparator /> 
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteRow(row);
+                  }}
+                  className="text-destructive focus:text-destructive"
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         );
       },
       enableSorting: false,

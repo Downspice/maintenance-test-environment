@@ -11,7 +11,8 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { useSheet } from "@/lib/sheet-providers";
-import NotCompleteMessage from "../workInprogress/working";import CustomerDataTable from "./table/customerDataTable";
+import NotCompleteMessage from "../workInprogress/working";
+import CustomerDataTable from "./table/customerDataTable";
 import { locationOptionsList } from "@/lib/option-list";
 
 const ActiveDropdown = [
@@ -95,7 +96,7 @@ export default function EmployeesPage() {
   };
 
   return (
-    <div className="flex flex-col container mx-auto py-10 space-y-4">
+    <div className="flex flex-col m-4 space-y-4">
       <div className="flex flex-row items-center space-x-2">
         <h1 className="text-xl font-semibold">Customers</h1>
         <Badge>5</Badge>
@@ -105,7 +106,6 @@ export default function EmployeesPage() {
         {/* Equipment Filter */}
 
         <div className="flex flex-row space-x-0.5">
-           
           <Select onValueChange={(val) => handleSelectChange("location", val)}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="All Warehouses" />

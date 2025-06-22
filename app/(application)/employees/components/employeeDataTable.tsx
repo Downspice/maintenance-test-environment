@@ -3,22 +3,15 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { AdvancedDataTable } from "@/components/customUI/advanced-data-table";
 import { SortableHeader } from "@/components/customUI/sortable-header";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  MoreHorizontal,
-  Trash2,
-  Printer,
-  User,
-  Mail,
-  Phone,
-  MapPin,
-} from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { MoreHorizontal, Trash2, Printer, FilePenIcon } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
@@ -49,11 +42,16 @@ const getAllEmployees = (
 };
 
 const flatEmployees = getAllEmployees(EmployeeData);
-const model = [...new Set(flatEmployees.map((emp) => emp.carModel))];
+const employeeId = [
+  ...new Set(flatEmployees.map((emp) => emp.employeeId.toString())),
+];
 const name = [...new Set(flatEmployees.map((emp) => emp.name))];
 const location = [...new Set(flatEmployees.map((emp) => emp.location))];
-const type = [...new Set(flatEmployees.map((emp) => emp.carType))];
-const meter = [...new Set(flatEmployees.map((emp) => emp.meter))];
+const type = [...new Set(flatEmployees.map((emp) => emp.type))];
+const drivers_license_number = [
+  ...new Set(flatEmployees.map((emp) => emp.drivers_license_number)),
+];
+const contact = [...new Set(flatEmployees.map((emp) => emp.contact))];
 
 export default function EmployeeDataTable() {
   const [isServerMode, setIsServerMode] = useState(false);
@@ -119,7 +117,7 @@ export default function EmployeeDataTable() {
       printWindow.document.write(`
         <html>
           <head>
-            <title>EmployeeInterface Details - ${employee.name}</title>
+            <title>Still In Progress</title>
             <style>
               body { font-family: Arial, sans-serif; margin: 20px; }
               .header { border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px; }
@@ -133,32 +131,9 @@ export default function EmployeeDataTable() {
           </head>
           <body>
             <div class="header">
-              <h1>EmployeeInterface Details</h1>
+              <h1>Still In Progress</h1>
             </div>
-            <div class="field">
-              <span class="label">Name:</span>
-              <span>${employee.name}</span>
-            </div>
-            <div class="field">
-              <span class="label">Email:</span>
-              <span>${employee.email}</span>
-            </div>
-            <div class="field">
-              <span class="label">Role:</span>
-              <span>${employee.role}</span>
-            </div>
-            <div class="field">
-              <span class="label">Department:</span>
-              <span>${employee.department}</span>
-            </div>
-            <div class="field">
-              <span class="label">Status:</span>
-              <span class="status ${employee.status}">${employee.status}</span>
-            </div>
-            <div class="field">
-              <span class="label">Salary:</span>
-              <span>${formattedSalary}</span>
-            </div>
+            
             <script>window.print(); window.close();</script>
           </body>
         </html>
@@ -257,14 +232,15 @@ export default function EmployeeDataTable() {
             <CardContent className=" p-2 grid grid-cols-2 w-full items-center">
               {" "}
               <div className="col-span-1 flex items-center">
-                <span className="text-destructive">{subRowData.name  }</span>
+                <span className="text-destructive">{subRowData.name}</span>
                 &nbsp;&nbsp;expires on&nbsp;&nbsp;{"     "}
                 <span className="text-destructive">
-                  { subRowData.expired_date}{" "}
+                  {subRowData.expired_date}{" "}
                 </span>
               </div>
               <div className="col-span-1">
-              <Button variant={'ghost'}>Update</Button></div>
+                <Button variant={"ghost"}>Update</Button>
+              </div>
             </CardContent>{" "}
           </Card>
         </div>
@@ -277,7 +253,12 @@ export default function EmployeeDataTable() {
     {
       accessorKey: "employeeId",
       header: ({ column }) => (
-        <SortableHeader column={column} title="Employee#" sortable={true} />
+        <SortableHeader
+          column={column}
+          title="Employee#"
+          sortable={true}
+          filterOptions={employeeId}
+        />
       ),
       cell: ({ row }) => (
         <div className="font-medium flex flex-col text-primary">
@@ -289,9 +270,13 @@ export default function EmployeeDataTable() {
     {
       accessorKey: "name",
       header: ({ column }) => (
-        <SortableHeader column={column} title="Name" sortable={true} />
-      ),
-      cell: ({ getValue }) => <span>{getValue()}</span>,
+        <SortableHeader
+          column={column}
+          title="Name"
+          sortable={true}
+          filterOptions={name}
+        />
+      )
     },
     {
       accessorKey: "type",
@@ -314,7 +299,7 @@ export default function EmployeeDataTable() {
           column={column}
           title="Driver's License#"
           sortable={true}
-          filterOptions={meter}
+          filterOptions={drivers_license_number}
         />
       ),
       filterFn: (row, id, value) => {
@@ -324,7 +309,12 @@ export default function EmployeeDataTable() {
     {
       accessorKey: "contact",
       header: ({ column }) => (
-        <SortableHeader column={column} title="Contact" sortable={true} />
+        <SortableHeader
+          column={column}
+          title="Contact"
+          sortable={true}
+          filterOptions={contact}
+        />
       ),
       filterFn: (row, id, value) => {
         return value.length === 0 || value.includes(row.getValue(id));
@@ -345,42 +335,68 @@ export default function EmployeeDataTable() {
         };
 
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  alert(`Edit ${row.getValue("name")}`);
-                }}
-              >
-                Edit
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handlePrintRow(row);
-                }}
-              >
-                <Printer className="mr-2 h-4 w-4" />
-                Print
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDeleteRow(row);
-                }}
-                className="text-destructive focus:text-destructive"
-              >
-                <Trash2 className="mr-2 h-4 w-4" />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex flex-row justify-between ">
+            {/* <DropdownMenu>
+                         <DropdownMenuTrigger asChild>
+                           <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                             <MoreHorizontal className="h-4 w-4" />
+                           </Button>
+                         </DropdownMenuTrigger>
+                         <DropdownMenuContent align="end">
+                           <DropdownMenuItem
+                             onClick={(e) => {
+                               e.stopPropagation();
+                               alert(`Edit ${row.getValue("name")}`);
+                             }}
+                           >
+                             Edit
+                           </DropdownMenuItem>
+                           <DropdownMenuItem
+                             onClick={(e) => {
+                               e.stopPropagation();
+                               handlePrintRow(row);
+                             }}
+                           >
+                             <Printer className="mr-2 h-4 w-4" />
+                             Print
+                           </DropdownMenuItem>
+                         </DropdownMenuContent>
+                       </DropdownMenu> */}
+            <Button variant={"secondary"} size={"icon"}>
+              <FilePenIcon />
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant={"secondary"} size={"icon"}>
+                  <MoreHorizontal />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-62 " align="start">
+                {/* <DropdownMenuLabel>My Account</DropdownMenuLabel> */}
+                <DropdownMenuGroup>
+                  <DropdownMenuItem>
+                    Email
+                    {/* <DropdownMenuShortcut>⌘B</DropdownMenuShortcut> */}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    Print
+                    {/* <DropdownMenuShortcut>⌘S</DropdownMenuShortcut> */}
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteRow(row);
+                  }}
+                  className="text-destructive focus:text-destructive"
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         );
       },
       enableSorting: false,

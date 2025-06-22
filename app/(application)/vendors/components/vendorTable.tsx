@@ -3,39 +3,28 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { AdvancedDataTable } from "@/components/customUI/advanced-data-table";
 import { SortableHeader } from "@/components/customUI/sortable-header";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   MoreHorizontal,
   Trash2,
   Printer,
-  User,
-  Mail,
-  Phone,
-  MapPin,
-  Calendar,
-  Users,
   CheckCircle,
   Clock,
   AlertTriangle,
+  FilePenIcon,
 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 import React from "react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Progress } from "@/components/ui/progress";
 import { VendorData, VendorInterface } from "@/lib/vendor-data";
+import { WorkOrderTask } from "@/lib/work-orders-data";
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -78,9 +67,7 @@ const TaskTooltipContent = ({ tasks }: { tasks: WorkOrderTask[] }) => (
   </div>
 );
 
-const getAllEmployees = (
-  employees: VendorInterface[]
-): VendorInterface[] => {
+const getAllEmployees = (employees: VendorInterface[]): VendorInterface[] => {
   const result: VendorInterface[] = [];
   const traverse = (emps: VendorInterface[]) => {
     emps.forEach((emp) => {
@@ -97,11 +84,14 @@ const getAllEmployees = (
 };
 
 const flatEmployees = getAllEmployees(VendorData);
-// const workOrder = [...new Set(flatEmployees.map((emp) => emp.number))];
-// const unit = [...new Set(flatEmployees.map((emp) => emp.equipment.id))];
-// const location = [...new Set(flatEmployees.map((emp) => emp.status))];
-const type = [...new Set(flatEmployees.map((emp) => emp.id))];
-const meter = [...new Set(flatEmployees.map((emp) => emp.name))];
+const name = [...new Set(flatEmployees.map((emp) => emp.name))];
+const type = [...new Set(flatEmployees.map((emp) => emp.type))];
+const contact = [...new Set(flatEmployees.map((emp) => emp.contact))];
+const address1 = [...new Set(flatEmployees.map((emp) => emp.address1))];
+const city = [...new Set(flatEmployees.map((emp) => emp.city))];
+const state_prov = [...new Set(flatEmployees.map((emp) => emp.state_prov))];
+const postal_code = [...new Set(flatEmployees.map((emp) => emp.postal_code))];
+const email = [...new Set(flatEmployees.map((emp) => emp.email))];
 
 export default function VendorDataTable() {
   const [isServerMode, setIsServerMode] = useState(false);
@@ -245,9 +235,7 @@ export default function VendorDataTable() {
                 .toLowerCase()
                 .includes(searchValue.toLowerCase()) ||
               emp.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-              emp.type
-                .toLowerCase()
-                .includes(searchValue.toLowerCase()) ||
+              emp.type.toLowerCase().includes(searchValue.toLowerCase()) ||
               emp.contact
                 .toString()
                 .toLowerCase()
@@ -256,16 +244,19 @@ export default function VendorDataTable() {
                 .toString()
                 .toLowerCase()
                 .includes(searchValue.toLowerCase()) ||
-              emp.address2?.toString()
+              emp.address2
+                ?.toString()
                 .toLowerCase()
                 .includes(searchValue.toLowerCase()) ||
-              emp.city
+              emp.city.toLowerCase().includes(searchValue.toLowerCase()) ||
+              emp.state_prov
                 .toLowerCase()
                 .includes(searchValue.toLowerCase()) ||
-              emp.state_prov.toLowerCase().includes(searchValue.toLowerCase()) ||
-              emp.state_prov.toLowerCase().includes(searchValue.toLowerCase()) ||
+              emp.state_prov
+                .toLowerCase()
+                .includes(searchValue.toLowerCase()) ||
               emp.email.toLowerCase().includes(searchValue.toLowerCase())
-               );
+          );
         }
 
         // Reset to first page and update data
@@ -302,7 +293,12 @@ export default function VendorDataTable() {
     {
       accessorKey: "name",
       header: ({ column }) => (
-        <SortableHeader column={column} title="Name" sortable={true} />
+        <SortableHeader
+          column={column}
+          title="Name"
+          sortable={true}
+          filterOptions={name}
+        />
       ),
       cell: ({ row }) => (
         <div className="font-medium text-primary flex flex-col">
@@ -314,8 +310,13 @@ export default function VendorDataTable() {
     {
       accessorKey: "type",
       header: ({ column }) => (
-        <SortableHeader column={column} title="Type" sortable={true} />
-      ), 
+        <SortableHeader
+          column={column}
+          title="Type"
+          sortable={true}
+          filterOptions={type}
+        />
+      ),
     },
     {
       accessorKey: "contact",
@@ -324,9 +325,9 @@ export default function VendorDataTable() {
           column={column}
           title="Contact"
           sortable={true}
-          filterOptions={type}
+          filterOptions={contact}
         />
-      ), 
+      ),
       filterFn: (row, id, value) => {
         return value.length === 0 || value.includes(row.getValue(id));
       },
@@ -338,7 +339,7 @@ export default function VendorDataTable() {
           column={column}
           title="Address #1"
           sortable={true}
-          filterOptions={type}
+          filterOptions={address1}
         />
       ),
       cell: ({ row }) => <>{row.original.address1}</>,
@@ -353,7 +354,7 @@ export default function VendorDataTable() {
           column={column}
           title="City"
           sortable={true}
-          filterOptions={meter}
+          filterOptions={city}
         />
       ),
       cell: ({ row }) => <>{row.original.city}</>,
@@ -365,8 +366,13 @@ export default function VendorDataTable() {
     {
       accessorKey: "state_prov",
       header: ({ column }) => (
-        <SortableHeader column={column} title="State/Prov" sortable={true} />
-      ), 
+        <SortableHeader
+          column={column}
+          title="State"
+          sortable={true}
+          filterOptions={state_prov}
+        />
+      ),
       filterFn: (row, id, value) => {
         return value.length === 0 || value.includes(row.getValue(id));
       },
@@ -374,8 +380,13 @@ export default function VendorDataTable() {
     {
       accessorKey: "postal_code",
       header: ({ column }) => (
-        <SortableHeader column={column} title="Postal Code" sortable={true} />
-      ), 
+        <SortableHeader
+          column={column}
+          title="Postal Code"
+          sortable={true}
+          filterOptions={postal_code}
+        />
+      ),
     },
     {
       accessorKey: "email",
@@ -384,7 +395,7 @@ export default function VendorDataTable() {
           column={column}
           title="Email"
           sortable={true}
-          filterOptions={meter}
+          filterOptions={email}
         />
       ),
       filterFn: (row, id, value) => {
@@ -406,42 +417,68 @@ export default function VendorDataTable() {
         };
 
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  alert(`Edit ${row.getValue("name")}`);
-                }}
-              >
-                Edit
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handlePrintRow(row);
-                }}
-              >
-                <Printer className="mr-2 h-4 w-4" />
-                Print
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDeleteRow(row);
-                }}
-                className="text-destructive focus:text-destructive"
-              >
-                <Trash2 className="mr-2 h-4 w-4" />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex flex-row justify-between ">
+            {/* <DropdownMenu>
+                         <DropdownMenuTrigger asChild>
+                           <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                             <MoreHorizontal className="h-4 w-4" />
+                           </Button>
+                         </DropdownMenuTrigger>
+                         <DropdownMenuContent align="end">
+                           <DropdownMenuItem
+                             onClick={(e) => {
+                               e.stopPropagation();
+                               alert(`Edit ${row.getValue("name")}`);
+                             }}
+                           >
+                             Edit
+                           </DropdownMenuItem>
+                           <DropdownMenuItem
+                             onClick={(e) => {
+                               e.stopPropagation();
+                               handlePrintRow(row);
+                             }}
+                           >
+                             <Printer className="mr-2 h-4 w-4" />
+                             Print
+                           </DropdownMenuItem>
+                         </DropdownMenuContent>
+                       </DropdownMenu> */}
+            <Button variant={"secondary"} size={"icon"}>
+              <FilePenIcon />
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant={"secondary"} size={"icon"}>
+                  <MoreHorizontal />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-62 " align="start">
+                {/* <DropdownMenuLabel>My Account</DropdownMenuLabel> */}
+                <DropdownMenuGroup>
+                  <DropdownMenuItem>
+                    Email
+                    {/* <DropdownMenuShortcut>⌘B</DropdownMenuShortcut> */}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    Print
+                    {/* <DropdownMenuShortcut>⌘S</DropdownMenuShortcut> */}
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteRow(row);
+                  }}
+                  className="text-destructive focus:text-destructive"
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         );
       },
       enableSorting: false,

@@ -3,80 +3,32 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { AdvancedDataTable } from "@/components/customUI/advanced-data-table";
 import { SortableHeader } from "@/components/customUI/sortable-header";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   MoreHorizontal,
   Trash2,
   Printer,
-  User,
-  Mail,
-  Phone,
-  MapPin,
-  Calendar,
-  Users,
   CheckCircle,
   Clock,
   AlertTriangle,
+  FileTextIcon,
+  FilePenIcon,
 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 import React from "react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Progress } from "@/components/ui/progress";
 import { InvoiceData, InvoiceInterface } from "@/lib/invoice-data";
-
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case "open":
-      return "bg-orange-100 text-orange-800 border-orange-200";
-    case "closed":
-      return "bg-green-100 text-green-800 border-green-200";
-    default:
-      return "bg-gray-100 text-gray-800 border-gray-200";
-  }
-};
-
-const getTaskStatusIcon = (status: string) => {
-  switch (status) {
-    case "completed":
-      return <CheckCircle className="h-3 w-3 text-green-600" />;
-    case "in-progress":
-      return <Clock className="h-3 w-3 text-blue-600" />;
-    case "pending":
-      return <AlertTriangle className="h-3 w-3 text-orange-600" />;
-    default:
-      return <Clock className="h-3 w-3 text-gray-600" />;
-  }
-};
-const TaskTooltipContent = ({ tasks }: { tasks: WorkOrderTask[] }) => (
-  <div className="space-y-2 max-w-xs">
-    <div className="font-semibold text-sm">Tasks ({tasks.length})</div>
-    {tasks.map((task) => (
-      <div key={task.id} className="flex items-center gap-2 text-xs">
-        {getTaskStatusIcon(task.status)}
-        <div className="flex-1">
-          <div className="font-medium">{task.name}</div>
-          <div className="text-muted-foreground">
-            Assigned to: {task.assignee}
-            {task.dueDate && ` • Due: ${task.dueDate}`}
-          </div>
-        </div>
-      </div>
-    ))}
-  </div>
-);
 
 const getAllEmployees = (employees: InvoiceInterface[]): InvoiceInterface[] => {
   const result: InvoiceInterface[] = [];
@@ -95,11 +47,19 @@ const getAllEmployees = (employees: InvoiceInterface[]): InvoiceInterface[] => {
 };
 
 const flatEmployees = getAllEmployees(InvoiceData);
-// const workOrder = [...new Set(flatEmployees.map((emp) => emp.number))];
-// const unit = [...new Set(flatEmployees.map((emp) => emp.equipment.id))];
-// const location = [...new Set(flatEmployees.map((emp) => emp.status))];
-const type = [...new Set(flatEmployees.map((emp) => emp.id))];
-const meter = [...new Set(flatEmployees.map((emp) => emp.name))];
+const invoice_number = [
+  ...new Set(flatEmployees.map((emp) => emp.invoice_number)),
+];
+const status = [...new Set(flatEmployees.map((emp) => emp.status))];
+const issued_date = [...new Set(flatEmployees.map((emp) => emp.issued_date))];
+const due_date = [...new Set(flatEmployees.map((emp) => emp.due_date))];
+const customer_name = [
+  ...new Set(flatEmployees.map((emp) => emp.customer_name)),
+];
+const total = [...new Set(flatEmployees.map((emp) => emp.total.toString()))];
+const payment = [
+  ...new Set(flatEmployees.map((emp) => emp.payment.toString())),
+];
 
 export default function InvoicesDataTable() {
   const [isServerMode, setIsServerMode] = useState(false);
@@ -311,7 +271,12 @@ export default function InvoicesDataTable() {
     {
       accessorKey: "invoice_number",
       header: ({ column }) => (
-        <SortableHeader column={column} title="Invoice#" sortable={true} />
+        <SortableHeader
+          column={column}
+          title="Invoice#"
+          sortable={true}
+          filterOptions={invoice_number}
+        />
       ),
       cell: ({ row }) => (
         <div className="font-medium text-primary flex flex-col">
@@ -323,7 +288,12 @@ export default function InvoicesDataTable() {
     {
       accessorKey: "status",
       header: ({ column }) => (
-        <SortableHeader column={column} title="Status" sortable={true} />
+        <SortableHeader
+          column={column}
+          title="Status"
+          sortable={true}
+          filterOptions={status}
+        />
       ),
       cell: ({ row }) => (
         <div className="font-medium text-primary">{row.original.status}</div>
@@ -336,7 +306,7 @@ export default function InvoicesDataTable() {
           column={column}
           title="Issued"
           sortable={true}
-          filterOptions={type}
+          filterOptions={issued_date}
         />
       ),
       cell: ({ row }) => <>{row.original.issued_date}</>,
@@ -351,7 +321,7 @@ export default function InvoicesDataTable() {
           column={column}
           title="Due"
           sortable={true}
-          filterOptions={meter}
+          filterOptions={due_date}
         />
       ),
       cell: ({ row }) => <>{row.original.due_date}</>,
@@ -363,7 +333,12 @@ export default function InvoicesDataTable() {
     {
       accessorKey: "customer_name",
       header: ({ column }) => (
-        <SortableHeader column={column} title="Customer" sortable={true} />
+        <SortableHeader
+          column={column}
+          title="Customer"
+          sortable={true}
+          filterOptions={customer_name}
+        />
       ),
       cell: ({ row }) => {
         return (
@@ -380,7 +355,12 @@ export default function InvoicesDataTable() {
     {
       accessorKey: "total",
       header: ({ column }) => (
-        <SortableHeader column={column} title="Total" sortable={true} />
+        <SortableHeader
+          column={column}
+          title="Total"
+          sortable={true}
+          filterOptions={total}
+        />
       ),
       cell: ({ row }) => {
         return <> ${row.original.total}</>;
@@ -393,7 +373,7 @@ export default function InvoicesDataTable() {
           column={column}
           title="Payment"
           sortable={true}
-          filterOptions={meter}
+          filterOptions={payment}
         />
       ),
       cell: ({ row }) => {
@@ -418,42 +398,74 @@ export default function InvoicesDataTable() {
         };
 
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  alert(`Edit ${row.getValue("name")}`);
-                }}
-              >
-                Edit
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handlePrintRow(row);
-                }}
-              >
-                <Printer className="mr-2 h-4 w-4" />
-                Print
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDeleteRow(row);
-                }}
-                className="text-destructive focus:text-destructive"
-              >
-                <Trash2 className="mr-2 h-4 w-4" />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex flex-row justify-between ">
+            {/* <DropdownMenu>
+                         <DropdownMenuTrigger asChild>
+                           <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                             <MoreHorizontal className="h-4 w-4" />
+                           </Button>
+                         </DropdownMenuTrigger>
+                         <DropdownMenuContent align="end">
+                           <DropdownMenuItem
+                             onClick={(e) => {
+                               e.stopPropagation();
+                               alert(`Edit ${row.getValue("name")}`);
+                             }}
+                           >
+                             Edit
+                           </DropdownMenuItem>
+                           <DropdownMenuItem
+                             onClick={(e) => {
+                               e.stopPropagation();
+                               handlePrintRow(row);
+                             }}
+                           >
+                             <Printer className="mr-2 h-4 w-4" />
+                             Print
+                           </DropdownMenuItem>
+                         </DropdownMenuContent>
+                       </DropdownMenu> */}
+            <Button variant={"secondary"} size={"icon"}>
+              <FilePenIcon />
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant={"secondary"} size={"icon"}>
+                  <MoreHorizontal />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-62 " align="start">
+                {/* <DropdownMenuLabel>My Account</DropdownMenuLabel> */}
+                <DropdownMenuGroup>
+                  <DropdownMenuItem>
+                    Record Payment
+                    {/* <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut> */}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+
+                  <DropdownMenuItem>
+                    Email
+                    {/* <DropdownMenuShortcut>⌘B</DropdownMenuShortcut> */}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    Print
+                    {/* <DropdownMenuShortcut>⌘S</DropdownMenuShortcut> */}
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteRow(row);
+                  }}
+                  className="text-destructive focus:text-destructive"
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         );
       },
       enableSorting: false,

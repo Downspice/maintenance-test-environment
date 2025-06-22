@@ -3,22 +3,19 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { AdvancedDataTable } from "@/components/customUI/advanced-data-table";
 import { SortableHeader } from "@/components/customUI/sortable-header";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  MoreHorizontal,
-  Trash2,
-  Printer,
-  User,
-  Mail,
-  Phone,
-  MapPin,
-} from "lucide-react";
+import { MoreHorizontal, Trash2, Printer, FilePenIcon } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
@@ -48,11 +45,12 @@ const getAllEmployees = (
 };
 
 const flatEmployees = getAllEmployees(PurchaseOrderData);
-const model = [...new Set(flatEmployees.map((emp) => emp.carModel))];
-const serial = [...new Set(flatEmployees.map((emp) => emp.serialNumber))];
-const location = [...new Set(flatEmployees.map((emp) => emp.location))];
-const type = [...new Set(flatEmployees.map((emp) => emp.carType))];
+const sequential_id = [...new Set(flatEmployees.map((emp) => emp.sequential_id.toString()))];
+const status = [...new Set(flatEmployees.map((emp) => emp.status))];
+const created_on = [...new Set(flatEmployees.map((emp) => emp.created_on))];
+const vendor_name = [...new Set(flatEmployees.map((emp) => emp.vendor_name?.toString()))];
 const required_on = [...new Set(flatEmployees.map((emp) => emp.required_on))];
+const buyer_name = [...new Set(flatEmployees.map((emp) => emp.buyer_name))];
 
 export default function PurchaseOrderDataTable() {
   const [isServerMode, setIsServerMode] = useState(false);
@@ -118,7 +116,7 @@ export default function PurchaseOrderDataTable() {
       printWindow.document.write(`
         <html>
           <head>
-            <title>PurchaseOrderInterface Details - ${employee.name}</title>
+            <title>Still in progress</title>
             <style>
               body { font-family: Arial, sans-serif; margin: 20px; }
               .header { border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px; }
@@ -132,32 +130,9 @@ export default function PurchaseOrderDataTable() {
           </head>
           <body>
             <div class="header">
-              <h1>PurchaseOrderInterface Details</h1>
+              <h1>Still in progress/h1>
             </div>
-            <div class="field">
-              <span class="label">Name:</span>
-              <span>${employee.name}</span>
-            </div>
-            <div class="field">
-              <span class="label">Email:</span>
-              <span>${employee.email}</span>
-            </div>
-            <div class="field">
-              <span class="label">Role:</span>
-              <span>${employee.role}</span>
-            </div>
-            <div class="field">
-              <span class="label">Department:</span>
-              <span>${employee.department}</span>
-            </div>
-            <div class="field">
-              <span class="label">Status:</span>
-              <span class="status ${employee.status}">${employee.status}</span>
-            </div>
-            <div class="field">
-              <span class="label">Salary:</span>
-              <span>${formattedSalary}</span>
-            </div>
+             
             <script>window.print(); window.close();</script>
           </body>
         </html>
@@ -281,7 +256,12 @@ export default function PurchaseOrderDataTable() {
     {
       accessorKey: "sequential_id",
       header: ({ column }) => (
-        <SortableHeader column={column} title="PO#" sortable={true} />
+        <SortableHeader
+          column={column}
+          title="PO#"
+          sortable={true}
+          filterOptions={sequential_id}
+        />
       ),
       cell: ({ row }) => (
         <div
@@ -295,7 +275,12 @@ export default function PurchaseOrderDataTable() {
     {
       accessorKey: "status",
       header: ({ column }) => (
-        <SortableHeader column={column} title="Status" sortable={true} />
+        <SortableHeader
+          column={column}
+          title="Status"
+          sortable={true}
+          filterOptions={status}
+        />
       ),
     },
     {
@@ -305,7 +290,7 @@ export default function PurchaseOrderDataTable() {
           column={column}
           title="Issued On"
           sortable={true}
-          filterOptions={type}
+          filterOptions={created_on}
         />
       ),
       cell: ({ row }) => <>{row.original.created_on}</>,
@@ -330,7 +315,12 @@ export default function PurchaseOrderDataTable() {
     {
       accessorKey: "vendor_name",
       header: ({ column }) => (
-        <SortableHeader column={column} title="Vendor" sortable={true} />
+        <SortableHeader
+          column={column}
+          title="Vendor"
+          sortable={true}
+          filterOptions={vendor_name as string[]}
+        />
       ),
 
       filterFn: (row, id, value) => {
@@ -340,7 +330,12 @@ export default function PurchaseOrderDataTable() {
     {
       accessorKey: "buyer_name",
       header: ({ column }) => (
-        <SortableHeader column={column} title="Buyer" sortable={true} />
+        <SortableHeader
+          column={column}
+          title="Buyer"
+          sortable={true}
+          filterOptions={buyer_name}
+        />
       ),
     },
     {
@@ -358,42 +353,75 @@ export default function PurchaseOrderDataTable() {
         };
 
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  alert(`Edit ${row.getValue("name")}`);
-                }}
-              >
-                Edit
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handlePrintRow(row);
-                }}
-              >
-                <Printer className="mr-2 h-4 w-4" />
-                Print
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDeleteRow(row);
-                }}
-                className="text-destructive focus:text-destructive"
-              >
-                <Trash2 className="mr-2 h-4 w-4" />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex flex-row gap-2 justify-between ">
+            {/* <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    alert(`Edit ${row.getValue("name")}`);
+                  }}
+                >
+                  Edit
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handlePrintRow(row);
+                  }}
+                >
+                  <Printer className="mr-2 h-4 w-4" />
+                  Print
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu> */}
+            <Button variant={"secondary"} size={"icon"}>
+              <FilePenIcon />
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant={"secondary"} size={"icon"}>
+                  <MoreHorizontal />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-68 " align="start">
+                {/* <DropdownMenuLabel>My Account</DropdownMenuLabel> */}
+                <DropdownMenuGroup>
+                  <DropdownMenuItem>
+                    Receive
+                    {/* <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut> */}
+                  </DropdownMenuItem>
+                <DropdownMenuSeparator /> 
+                  <DropdownMenuItem>
+                    Email
+                    {/* <DropdownMenuShortcut>⌘B</DropdownMenuShortcut> */}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    Print
+                    {/* <DropdownMenuShortcut>⌘S</DropdownMenuShortcut> */}
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Change Status (Closed)</DropdownMenuItem>
+                <DropdownMenuSeparator /> 
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteRow(row);
+                  }}
+                  className="text-destructive focus:text-destructive"
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         );
       },
       enableSorting: false,
