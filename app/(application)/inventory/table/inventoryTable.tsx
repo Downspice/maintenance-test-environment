@@ -392,7 +392,7 @@ export default function InventoryDataTable() {
         };
 
         return (
-          <div className="flex flex-row justify-between ">
+          <div className="flex flex-row gap-2 justify-between ">
             {/* <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="h-8 w-8 p-0">

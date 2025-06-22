@@ -490,7 +490,7 @@ export default function WorkOrderDataTable() {
         };
 
         return (
-          <div className="flex flex-row space-x-2 justify-between ">
+          <div className="flex flex-row gap-2 justify-between ">
             {/* <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="h-8 w-8 p-0">

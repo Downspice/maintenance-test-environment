@@ -614,7 +614,7 @@ export function AdvancedDataTable<TData, TValue>({
                         }}
                       >
                         <div
-                          className="cursor-pointer hover:bg-accent/50 rounded px-1 py-0.5 -mx-1 -my-0.5"
+                          className="cursor-pointer  rounded px-1 py-0.5 -mx-1 -my-0.5"
                           onClick={(e) => {
                             e.stopPropagation()
                             onCellClick?.(cell, row)
