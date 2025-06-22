@@ -81,7 +81,10 @@ import {
 import { Input } from "@/components/ui/input";
 import CheckboxWrapper from "@/components/forms/wrappers/CheckboxWrapper";
 
-export default function EquipmentForm() {
+interface triggerVariant {
+  variant?: "icon" | "default";
+}
+export default function EquipmentForm({ variant }: triggerVariant) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [openSections, setOpenSections] = useState({
@@ -143,15 +146,17 @@ export default function EquipmentForm() {
     form.reset();
   }
 
-    function onError(errors: any) {
+  function onError(errors: any) {
     // Get all error messages
-    const errorMessages = Object.entries(errors).map(([field, error]: [string, any]) => {
-      const fieldLabels: Record<string, string> = {
-        unit: "Project Name", 
-      }
+    const errorMessages = Object.entries(errors).map(
+      ([field, error]: [string, any]) => {
+        const fieldLabels: Record<string, string> = {
+          unit: "Project Name",
+        };
 
-      return `${fieldLabels[field] || field}: ${error.message}`
-    })
+        return `${fieldLabels[field] || field}: ${error.message}`;
+      }
+    );
 
     toast.error("Please fix the following errors:", {
       description: (
@@ -164,15 +169,21 @@ export default function EquipmentForm() {
         </div>
       ),
       duration: 8000,
-    })
+    });
   }
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button>
-          <Plus />
-          Create New Equipment
+        <Button variant={variant}>
+          {variant === "icon" ? (
+            <Plus />
+          ) : (
+            <>
+              <Plus />
+              Create New Equipment
+            </>
+          )}
         </Button>
       </SheetTrigger>
       <SheetContent className="w-3/4 ">
@@ -185,7 +196,10 @@ export default function EquipmentForm() {
 
         <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit,onError)} className="space-y-6">
+            <form
+              onSubmit={form.handleSubmit(onSubmit, onError)}
+              className="space-y-6"
+            >
               <div className="flex">
                 <Tabs
                   defaultValue="main"

@@ -11,66 +11,33 @@ import {
   CheckCircle,
   Clock,
   AlertTriangle,
+  FilePenIcon,
 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 import React from "react";
 import { InventoryData, InventoryDataInterface } from "@/lib/inventory-data";
 
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case "open":
-      return "bg-orange-100 text-orange-800 border-orange-200";
-    case "closed":
-      return "bg-green-100 text-green-800 border-green-200";
-    default:
-      return "bg-gray-100 text-gray-800 border-gray-200";
-  }
-};
-
-const getTaskStatusIcon = (status: string) => {
-  switch (status) {
-    case "completed":
-      return <CheckCircle className="h-3 w-3 text-green-600" />;
-    case "in-progress":
-      return <Clock className="h-3 w-3 text-blue-600" />;
-    case "pending":
-      return <AlertTriangle className="h-3 w-3 text-orange-600" />;
-    default:
-      return <Clock className="h-3 w-3 text-gray-600" />;
-  }
-};
-const TaskTooltipContent = ({ tasks }: { tasks: WorkOrderTask[] }) => (
-  <div className="space-y-2 max-w-xs">
-    <div className="font-semibold text-sm">Tasks ({tasks.length})</div>
-    {tasks.map((task) => (
-      <div key={task.id} className="flex items-center gap-2 text-xs">
-        {getTaskStatusIcon(task.status)}
-        <div className="flex-1">
-          <div className="font-medium">{task.name}</div>
-          <div className="text-muted-foreground">
-            Assigned to: {task.assignee}
-            {task.dueDate && ` • Due: ${task.dueDate}`}
-          </div>
-        </div>
-      </div>
-    ))}
-  </div>
-);
-
-const getAllEmployees = (employees: InventoryDataInterface[]): InventoryDataInterface[] => {
+const getAllEmployees = (
+  employees: InventoryDataInterface[]
+): InventoryDataInterface[] => {
   const result: InventoryDataInterface[] = [];
   const traverse = (emps: InventoryDataInterface[]) => {
     emps.forEach((emp) => {
       result.push(emp);
       //   if (emp.tasks) {
       //     console.log(emp.tasks);
-
       //     // traverse(emp.tasks);
       //   }
     });
@@ -80,11 +47,23 @@ const getAllEmployees = (employees: InventoryDataInterface[]): InventoryDataInte
 };
 
 const flatEmployees = getAllEmployees(InventoryData);
-// const workOrder = [...new Set(flatEmployees.map((emp) => emp.number))];
-// const unit = [...new Set(flatEmployees.map((emp) => emp.equipment.id))];
-// const location = [...new Set(flatEmployees.map((emp) => emp.status))];
-const type = [...new Set(flatEmployees.map((emp) => emp.id))];
-const meter = [...new Set(flatEmployees.map((emp) => emp.name))];
+const purchase_order = [
+  ...new Set(flatEmployees.map((emp) => emp.purchase_order?.toString())),
+];
+const unit_cost = [
+  ...new Set(flatEmployees.map((emp) => emp.unit_cost.toString())),
+];
+const part_number = [...new Set(flatEmployees.map((emp) => emp.part_number))];
+const name = [...new Set(flatEmployees.map((emp) => emp.name))];
+const category = [
+  ...new Set(flatEmployees.map((emp) => emp.category?.toString())),
+];
+const vendor_names = [
+  ...new Set(flatEmployees.map((emp) => emp.vendor_names.toString())),
+];
+const quantity = [
+  ...new Set(flatEmployees.map((emp) => emp.quantity.toString())),
+];
 
 export default function InventoryDataTable() {
   const [isServerMode, setIsServerMode] = useState(false);
@@ -99,12 +78,12 @@ export default function InventoryDataTable() {
 
   const handleRowClick = (row: any) => {
     console.log("Row clicked:", row.original);
-    alert(`Row clicked: ${row.original.name} (Depth: ${row.depth})`);
+    // alert(`Row clicked: ${row.original.name} (Depth: ${row.depth})`);
   };
 
   const handleCellClick = (cell: any, row: any) => {
     console.log("Cell clicked:", cell.column.id, cell.getValue());
-    alert(`Cell clicked: ${cell.column.id} = ${cell.getValue()}`);
+    // alert(`Cell clicked: ${cell.column.id} = ${cell.getValue()}`);
   };
 
   const handlePrintSelected = (selectedRows: any[]) => {
@@ -150,7 +129,7 @@ export default function InventoryDataTable() {
       printWindow.document.write(`
         <html>
           <head>
-            <title>Employee Details - ${employee.name}</title>
+            <title>Work In Progress</title>
             <style>
               body { font-family: Arial, sans-serif; margin: 20px; }
               .header { border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px; }
@@ -164,32 +143,8 @@ export default function InventoryDataTable() {
           </head>
           <body>
             <div class="header">
-              <h1>Employee Details</h1>
-            </div>
-            <div class="field">
-              <span class="label">Name:</span>
-              <span>${employee.name}</span>
-            </div>
-            <div class="field">
-              <span class="label">Email:</span>
-              <span>${employee.email}</span>
-            </div>
-            <div class="field">
-              <span class="label">Role:</span>
-              <span>${employee.role}</span>
-            </div>
-            <div class="field">
-              <span class="label">Department:</span>
-              <span>${employee.department}</span>
-            </div>
-            <div class="field">
-              <span class="label">Status:</span>
-              <span class="status ${employee.status}">${employee.status}</span>
-            </div>
-            <div class="field">
-              <span class="label">Salary:</span>
-              <span>${formattedSalary}</span>
-            </div>
+              <h1>Working On This Feature</h1>
+            </div> 
             <script>window.print(); window.close();</script>
           </body>
         </html>
@@ -248,12 +203,12 @@ export default function InventoryDataTable() {
         if (searchValue.trim()) {
           filteredData = InventoryData.filter(
             (emp) =>
-              emp.part_number.toLowerCase().includes(searchValue.toLowerCase()) ||
-              emp.name
+              emp.part_number
                 .toLowerCase()
                 .includes(searchValue.toLowerCase()) ||
-              emp?.category?
-                .toLowerCase()?
+              emp.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+              emp?.category
+                ?.toLowerCase()
                 .includes(searchValue.toLowerCase()) ||
               emp.manufacturers
                 .toLowerCase()
@@ -287,9 +242,7 @@ export default function InventoryDataTable() {
     parentRow: any,
     depth: number
   ) => {
-    return (
-      <div className="space-y-4"></div>
-    );
+    return <div className="space-y-4"></div>;
   };
 
   // Column definitions
@@ -297,7 +250,12 @@ export default function InventoryDataTable() {
     {
       accessorKey: "part_number",
       header: ({ column }) => (
-        <SortableHeader column={column} title="Part#" sortable={true} />
+        <SortableHeader
+          column={column}
+          title="Part#"
+          sortable={true}
+          filterOptions={part_number}
+        />
       ),
       cell: ({ row }) => (
         <div className="font-medium text-primary flex flex-col">
@@ -309,14 +267,19 @@ export default function InventoryDataTable() {
     {
       accessorKey: "name",
       header: ({ column }) => (
-        <SortableHeader column={column} title="Name" sortable={true} />
+        <SortableHeader
+          column={column}
+          title="Name"
+          sortable={true}
+          filterOptions={name}
+        />
       ),
       cell: ({ row }) => (
         <div className="flex flex-col">
-          <div className="font-medium text-primary">
-            {row.original.name}
+          <div className="font-medium text-primary">{row.original.name}</div>
+          <div className="font-light text-primary">
+            {row.original.description}
           </div>
-          <div className="font-light text-primary">{row.original.description}</div>
         </div>
       ),
     },
@@ -327,13 +290,10 @@ export default function InventoryDataTable() {
           column={column}
           title="Category"
           sortable={true}
-          filterOptions={type}
+          filterOptions={category as string[]}
         />
       ),
-      cell: ({ row }) => (
-        <>{row.original.category}
-        </>
-      ),
+      cell: ({ row }) => <>{row.original.category}</>,
       filterFn: (row, id, value) => {
         return value.length === 0 || value.includes(row.getValue(id));
       },
@@ -345,14 +305,10 @@ export default function InventoryDataTable() {
           column={column}
           title="Vendor"
           sortable={true}
-          filterOptions={meter}
+          filterOptions={vendor_names}
         />
       ),
-      cell: ({ row }) => (
-        <>
-            {row.original.vendor_names.toLocaleString()} 
-        </>
-      ),
+      cell: ({ row }) => <>{row.original.vendor_names.toLocaleString()}</>,
 
       filterFn: (row, id, value) => {
         return value.length === 0 || value.includes(row.getValue(id));
@@ -361,21 +317,24 @@ export default function InventoryDataTable() {
     {
       accessorKey: "quantity",
       header: ({ column }) => (
-        <SortableHeader column={column} title="Quantity" sortable={true} />
+        <SortableHeader
+          column={column}
+          title="Quantity"
+          sortable={true}
+          filterOptions={quantity}
+        />
       ),
-      cell: ({ row }) => { 
+      cell: ({ row }) => {
         return (
-            <div 
-                className="flex items-center gap-1 text-sm"
-              >
-                { (row.original.low_stock_level >= row.original.quantity )  ? (
-                  <span className=" font-bold text-red-600">
-                    {row.original.quantity }
-                  </span>
-                ) : (
-                  <div className=" " >{row.original.quantity} </div>
-                )} 
-              </div> 
+          <div className="flex items-center gap-1 text-sm">
+            {row.original.low_stock_level >= row.original.quantity ? (
+              <span className=" font-bold text-red-600">
+                {row.original.quantity}
+              </span>
+            ) : (
+              <div className=" ">{row.original.quantity} </div>
+            )}
+          </div>
         );
       },
       filterFn: (row, id, value) => {
@@ -385,13 +344,15 @@ export default function InventoryDataTable() {
     {
       accessorKey: "unit_cost",
       header: ({ column }) => (
-        <SortableHeader column={column} title="Unit Cost" sortable={true} />
+        <SortableHeader
+          column={column}
+          title="Unit Cost"
+          sortable={true}
+          filterOptions={unit_cost}
+        />
       ),
-      cell: ({ row }) => { 
-        return (
-           <> ${row.original.unit_cost} 
-           </> 
-        );
+      cell: ({ row }) => {
+        return <> ${row.original.unit_cost}</>;
       },
     },
     {
@@ -401,13 +362,13 @@ export default function InventoryDataTable() {
           column={column}
           title="PO #"
           sortable={true}
-          filterOptions={meter}
+          filterOptions={purchase_order as string[]}
         />
       ),
       cell: ({ row }) => (
         <>
           <div className="flex  items-end gap-1 text-primary cursor-pointer">
-          {row.original.purchase_order}
+            {row.original.purchase_order}
           </div>
         </>
       ),
@@ -431,42 +392,95 @@ export default function InventoryDataTable() {
         };
 
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  alert(`Edit ${row.getValue("name")}`);
-                }}
-              >
-                Edit
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handlePrintRow(row);
-                }}
-              >
-                <Printer className="mr-2 h-4 w-4" />
-                Print
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDeleteRow(row);
-                }}
-                className="text-destructive focus:text-destructive"
-              >
-                <Trash2 className="mr-2 h-4 w-4" />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex flex-row justify-between ">
+            {/* <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    alert(`Edit ${row.getValue("name")}`);
+                  }}
+                >
+                  Edit
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handlePrintRow(row);
+                  }}
+                >
+                  <Printer className="mr-2 h-4 w-4" />
+                  Print
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu> */}
+            <Button variant={"secondary"} size={"icon"}>
+              <FilePenIcon />
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant={"secondary"} size={"icon"}>
+                  <MoreHorizontal />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-72" align="start">
+                {/* <DropdownMenuLabel>My Account</DropdownMenuLabel> */}
+                <DropdownMenuGroup>
+                  <DropdownMenuItem>
+                    Adjust
+                    {/* <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut> */}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    Transfer
+                    {/* <DropdownMenuShortcut>⌘B</DropdownMenuShortcut> */}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    History
+                    {/* <DropdownMenuShortcut>⌘S</DropdownMenuShortcut> */}
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>Create PO</DropdownMenuSubTrigger>
+                    <DropdownMenuPortal>
+                      <DropdownMenuSubContent>
+                        <DropdownMenuItem>Create new PO</DropdownMenuItem>
+                        <DropdownMenuItem>Add to existing PO</DropdownMenuItem>
+                      </DropdownMenuSubContent>
+                    </DropdownMenuPortal>
+                  </DropdownMenuSub>
+                  <DropdownMenuItem disabled={typeof(row.original.purchase_order)!=="string" }>
+                    Receive Purchase Order
+                    {/* <DropdownMenuShortcut>⌘+T</DropdownMenuShortcut> */}
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Change Category</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Enable Inventory Tracking</DropdownMenuItem>
+                <DropdownMenuItem>Change Markup</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Email Notification</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteRow(row);
+                  }}
+                  className="text-destructive focus:text-destructive"
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         );
       },
       enableSorting: false,

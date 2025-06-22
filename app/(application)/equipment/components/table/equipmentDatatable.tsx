@@ -3,22 +3,21 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { AdvancedDataTable } from "@/components/customUI/advanced-data-table";
 import { SortableHeader } from "@/components/customUI/sortable-header";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  MoreHorizontal,
-  Trash2,
-  Printer,
-  User,
-  Mail,
-  Phone,
-  MapPin,
-} from "lucide-react";
+import { MoreHorizontal, Trash2, Printer, FileTextIcon } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
@@ -376,11 +375,12 @@ const getAllEmployees = (employees: Employee[]): Employee[] => {
 };
 
 const flatEmployees = getAllEmployees(allEmployees);
-const model = [...new Set(flatEmployees.map((emp) => emp.carModel))];
-const serial = [...new Set(flatEmployees.map((emp) => emp.serialNumber))];
-const location = [...new Set(flatEmployees.map((emp) => emp.location))];
-const type = [...new Set(flatEmployees.map((emp) => emp.carType))];
+const carNumber = [...new Set(flatEmployees.map((emp) => emp.carNumber))];
+const carModel = [...new Set(flatEmployees.map((emp) => emp.carModel))];
+const serialNumber = [...new Set(flatEmployees.map((emp) => emp.serialNumber))];
+const carType = [...new Set(flatEmployees.map((emp) => emp.carType))];
 const meter = [...new Set(flatEmployees.map((emp) => emp.meter))];
+const taskStatus = [...new Set(flatEmployees.map((emp) => emp.taskStatus))];
 
 export default function DataTableDemo() {
   const [isServerMode, setIsServerMode] = useState(false);
@@ -395,12 +395,12 @@ export default function DataTableDemo() {
 
   const handleRowClick = (row: any) => {
     console.log("Row clicked:", row.original);
-    alert(`Row clicked: ${row.original.name} (Depth: ${row.depth})`);
+    // alert(`Row clicked: ${row.original.name} (Depth: ${row.depth})`);
   };
 
   const handleCellClick = (cell: any, row: any) => {
     console.log("Cell clicked:", cell.column.id, cell.getValue());
-    alert(`Cell clicked: ${cell.column.id} = ${cell.getValue()}`);
+    // alert(`Cell clicked: ${cell.column.id} = ${cell.getValue()}`);
   };
 
   const handlePrintSelected = (selectedRows: any[]) => {
@@ -408,7 +408,8 @@ export default function DataTableDemo() {
       "Print selected rows:",
       selectedRows.map((row) => row.original)
     );
-    alert(`Printing ${selectedRows.length} selected rows`);
+    // alert(`Printing ${selectedRows.length} selected rows`);
+    alert(`Currently Unavailable`);
   };
 
   const handleEmailSelected = (selectedRows: any[]) => {
@@ -416,7 +417,8 @@ export default function DataTableDemo() {
       "Email selected rows:",
       selectedRows.map((row) => row.original)
     );
-    alert(`Emailing ${selectedRows.length} selected rows`);
+    alert(`Currently Unavailable`);
+    // alert(`Emailing ${selectedRows.length} selected rows`);
   };
 
   const handleDeleteSelected = (selectedRows: any[]) => {
@@ -446,7 +448,7 @@ export default function DataTableDemo() {
       printWindow.document.write(`
         <html>
           <head>
-            <title>Employee Details - ${employee.name}</title>
+            <title>Work In Progress</title>
             <style>
               body { font-family: Arial, sans-serif; margin: 20px; }
               .header { border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px; }
@@ -460,32 +462,8 @@ export default function DataTableDemo() {
           </head>
           <body>
             <div class="header">
-              <h1>Employee Details</h1>
-            </div>
-            <div class="field">
-              <span class="label">Name:</span>
-              <span>${employee.name}</span>
-            </div>
-            <div class="field">
-              <span class="label">Email:</span>
-              <span>${employee.email}</span>
-            </div>
-            <div class="field">
-              <span class="label">Role:</span>
-              <span>${employee.role}</span>
-            </div>
-            <div class="field">
-              <span class="label">Department:</span>
-              <span>${employee.department}</span>
-            </div>
-            <div class="field">
-              <span class="label">Status:</span>
-              <span class="status ${employee.status}">${employee.status}</span>
-            </div>
-            <div class="field">
-              <span class="label">Salary:</span>
-              <span>${formattedSalary}</span>
-            </div>
+              <h1>Working On This Feature</h1>
+            </div> 
             <script>window.print(); window.close();</script>
           </body>
         </html>
@@ -609,7 +587,12 @@ export default function DataTableDemo() {
     {
       accessorKey: "carNumber",
       header: ({ column }) => (
-        <SortableHeader column={column} title="Unit" sortable={true} />
+        <SortableHeader
+          column={column}
+          title="Unit"
+          sortable={true}
+          filterOptions={carNumber}
+        />
       ),
       cell: ({ row }) => (
         <div
@@ -624,7 +607,12 @@ export default function DataTableDemo() {
     {
       accessorKey: "carModel",
       header: ({ column }) => (
-        <SortableHeader column={column} title="Year" sortable={true} />
+        <SortableHeader
+          filterOptions={carModel}
+          column={column}
+          title="Year"
+          sortable={true}
+        />
       ),
     },
     {
@@ -634,7 +622,7 @@ export default function DataTableDemo() {
           column={column}
           title="Type"
           sortable={true}
-          filterOptions={type}
+          filterOptions={carType}
         />
       ),
       cell: ({ row }) => <>{row.original.carType}</>,
@@ -659,24 +647,13 @@ export default function DataTableDemo() {
     {
       accessorKey: "serialNumber",
       header: ({ column }) => (
-        <SortableHeader column={column} title="Status" sortable={true} />
+        <SortableHeader
+          filterOptions={serialNumber}
+          column={column}
+          title="Status"
+          sortable={true}
+        />
       ),
-      //   cell: ({ row }) => {
-      //     const status = row.getValue("status") as string;
-      //     return (
-      //       <Badge
-      //         variant={
-      //           status === "active"
-      //             ? "default"
-      //             : status === "inactive"
-      //             ? "destructive"
-      //             : "secondary"
-      //         }
-      //       >
-      //         {status}
-      //       </Badge>
-      //     );
-      //   },
       filterFn: (row, id, value) => {
         return value.length === 0 || value.includes(row.getValue(id));
       },
@@ -684,7 +661,12 @@ export default function DataTableDemo() {
     {
       accessorKey: "taskStatus",
       header: ({ column }) => (
-        <SortableHeader column={column} title="Due status" sortable={true} />
+        <SortableHeader
+          filterOptions={taskStatus}
+          column={column}
+          title="Due status"
+          sortable={true}
+        />
       ),
     },
     {
@@ -702,42 +684,104 @@ export default function DataTableDemo() {
         };
 
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  alert(`Edit ${row.getValue("name")}`);
-                }}
-              >
-                Edit
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handlePrintRow(row);
-                }}
-              >
-                <Printer className="mr-2 h-4 w-4" />
-                Print
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDeleteRow(row);
-                }}
-                className="text-destructive focus:text-destructive"
-              >
-                <Trash2 className="mr-2 h-4 w-4" />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex flex-row justify-between ">
+            {/* <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    alert(`Edit ${row.getValue("name")}`);
+                  }}
+                >
+                  Edit
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handlePrintRow(row);
+                  }}
+                >
+                  <Printer className="mr-2 h-4 w-4" />
+                  Print
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu> */}
+            <Button variant={"secondary"} size={"icon"}>
+              <FileTextIcon />
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant={"secondary"} size={"icon"}>
+                  <MoreHorizontal   />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-72" align="start">
+                {/* <DropdownMenuLabel>My Account</DropdownMenuLabel> */}
+                <DropdownMenuGroup>
+                  <DropdownMenuItem>
+                    Issue WO
+                    {/* <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut> */}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    Repair Request
+                    {/* <DropdownMenuShortcut>⌘B</DropdownMenuShortcut> */}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    Inspection
+                    {/* <DropdownMenuShortcut>⌘S</DropdownMenuShortcut> */}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    Record Expense
+                    {/* <DropdownMenuShortcut>⌘K</DropdownMenuShortcut> */}
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DropdownMenuItem>Sign Out</DropdownMenuItem>
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>More</DropdownMenuSubTrigger>
+                    <DropdownMenuPortal>
+                      <DropdownMenuSubContent>
+                        <DropdownMenuItem>Record Accident</DropdownMenuItem>
+                        <DropdownMenuItem>record Fluid Usage</DropdownMenuItem>
+                        <DropdownMenuItem>
+                          Record Meter Replacement
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          View equipment parts
+                        </DropdownMenuItem>
+                      </DropdownMenuSubContent>
+                    </DropdownMenuPortal>
+                  </DropdownMenuSub>
+                  <DropdownMenuItem>
+                    History
+                    {/* <DropdownMenuShortcut>⌘+T</DropdownMenuShortcut> */}
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Task Setup</DropdownMenuItem>
+                <DropdownMenuSeparator />
+
+                <DropdownMenuItem>New (Duplicate)</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteRow(row);
+                  }}
+                  className="text-destructive focus:text-destructive"
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         );
       },
       enableSorting: false,

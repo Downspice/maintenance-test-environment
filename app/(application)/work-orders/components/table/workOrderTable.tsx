@@ -9,21 +9,24 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   MoreHorizontal,
   Trash2,
-  Printer,
-  User,
-  Mail,
-  Phone,
-  MapPin,
   Calendar,
   Users,
   CheckCircle,
   Clock,
   AlertTriangle,
+  FileTextIcon,
+  FilePenIcon,
 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
@@ -99,11 +102,17 @@ const getAllEmployees = (employees: WorkOrder[]): WorkOrder[] => {
 };
 
 const flatEmployees = getAllEmployees(mockWorkOrders);
-const workOrder = [...new Set(flatEmployees.map((emp) => emp.number))];
-const unit = [...new Set(flatEmployees.map((emp) => emp.equipment.id))];
-const location = [...new Set(flatEmployees.map((emp) => emp.status))];
-const type = [...new Set(flatEmployees.map((emp) => emp.dueDate))];
-const meter = [...new Set(flatEmployees.map((emp) => emp.meter))];
+const number = [...new Set(flatEmployees.map((emp) => emp.number))];
+const equipment = [...new Set(flatEmployees.map((emp) => emp.equipment.id))];
+const status = [...new Set(flatEmployees.map((emp) => emp.status))];
+const dueDate = [...new Set(flatEmployees.map((emp) => emp.dueDate))];
+const assignees = [
+  ...new Set(flatEmployees.map((emp) => emp.assignees.toString())),
+];
+const progress = [
+  ...new Set(flatEmployees.map((emp) => emp.progress.completed.toString())),
+];
+const total = [...new Set(flatEmployees.map((emp) => emp.total))];
 
 export default function WorkOrderDataTable() {
   const [isServerMode, setIsServerMode] = useState(false);
@@ -118,12 +127,12 @@ export default function WorkOrderDataTable() {
 
   const handleRowClick = (row: any) => {
     console.log("Row clicked:", row.original);
-    alert(`Row clicked: ${row.original.name} (Depth: ${row.depth})`);
+    // alert(`Row clicked: ${row.original.name} (Depth: ${row.depth})`);
   };
 
   const handleCellClick = (cell: any, row: any) => {
     console.log("Cell clicked:", cell.column.id, cell.getValue());
-    alert(`Cell clicked: ${cell.column.id} = ${cell.getValue()}`);
+    // alert(`Cell clicked: ${cell.column.id} = ${cell.getValue()}`);
   };
 
   const handlePrintSelected = (selectedRows: any[]) => {
@@ -169,7 +178,7 @@ export default function WorkOrderDataTable() {
       printWindow.document.write(`
         <html>
           <head>
-            <title>Employee Details - ${employee.name}</title>
+            <title>Work In Progress</title>
             <style>
               body { font-family: Arial, sans-serif; margin: 20px; }
               .header { border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px; }
@@ -183,32 +192,8 @@ export default function WorkOrderDataTable() {
           </head>
           <body>
             <div class="header">
-              <h1>Employee Details</h1>
-            </div>
-            <div class="field">
-              <span class="label">Name:</span>
-              <span>${employee.name}</span>
-            </div>
-            <div class="field">
-              <span class="label">Email:</span>
-              <span>${employee.email}</span>
-            </div>
-            <div class="field">
-              <span class="label">Role:</span>
-              <span>${employee.role}</span>
-            </div>
-            <div class="field">
-              <span class="label">Department:</span>
-              <span>${employee.department}</span>
-            </div>
-            <div class="field">
-              <span class="label">Status:</span>
-              <span class="status ${employee.status}">${employee.status}</span>
-            </div>
-            <div class="field">
-              <span class="label">Salary:</span>
-              <span>${formattedSalary}</span>
-            </div>
+              <h1>Working On This Feature</h1>
+            </div> 
             <script>window.print(); window.close();</script>
           </body>
         </html>
@@ -306,36 +291,7 @@ export default function WorkOrderDataTable() {
     parentRow: any,
     depth: number
   ) => {
-    return (
-      <div className="space-y-4">
-        {/* <div className="grid grid-cols-1  gap-4">
-          {" "}
-          <Card>
-            {" "}
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm">Work Information</CardTitle>{" "}
-            </CardHeader>{" "}
-            <CardContent className=" grid grid-cols-3 space-y-2 text-sm">
-              {" "}
-              <div className="col-span-1 ">
-                <span className="ml-2">{subRowData.instructions}</span>{" "}
-              </div>{" "}
-              <div className="col-span-1 ">
-                {" "}
-                <span className="ml-2 text-destructive">
-                  {subRowData.dueDate}{" "}
-                </span>{" "}
-              </div>{" "}
-              <div className="col-span-1 ">
-                <div className="ml-2 font-bold text-primary underline cursor-pointer">
-                  #{subRowData.woNumber}
-                </div>{" "}
-              </div>{" "}
-            </CardContent>{" "}
-          </Card>
-        </div> */}
-      </div>
-    );
+    return <div className="space-y-4"></div>;
   };
 
   // Column definitions
@@ -343,7 +299,12 @@ export default function WorkOrderDataTable() {
     {
       accessorKey: "number",
       header: ({ column }) => (
-        <SortableHeader column={column} title="WO#" sortable={true} />
+        <SortableHeader
+          column={column}
+          title="WO#"
+          sortable={true}
+          filterOptions={number}
+        />
       ),
       cell: ({ row }) => (
         <div className="font-medium text-primary flex flex-col">
@@ -355,7 +316,12 @@ export default function WorkOrderDataTable() {
     {
       accessorKey: "equipment",
       header: ({ column }) => (
-        <SortableHeader column={column} title="Unit#" sortable={true} />
+        <SortableHeader
+          column={column}
+          title="Unit#"
+          sortable={true}
+          filterOptions={equipment}
+        />
       ),
       cell: ({ row }) => (
         <div className="flex flex-col">
@@ -373,7 +339,7 @@ export default function WorkOrderDataTable() {
           column={column}
           title="Status"
           sortable={true}
-          filterOptions={type}
+          filterOptions={status}
         />
       ),
       cell: ({ row }) => (
@@ -394,7 +360,7 @@ export default function WorkOrderDataTable() {
           column={column}
           title="Due Date"
           sortable={true}
-          filterOptions={meter}
+          filterOptions={dueDate}
         />
       ),
       cell: ({ row }) => (
@@ -413,7 +379,12 @@ export default function WorkOrderDataTable() {
     {
       accessorKey: "assignees",
       header: ({ column }) => (
-        <SortableHeader column={column} title="Assigned to" sortable={true} />
+        <SortableHeader
+          column={column}
+          title="Assigned to"
+          sortable={true}
+          filterOptions={assignees}
+        />
       ),
       cell: ({ row }) => {
         return (
@@ -449,7 +420,12 @@ export default function WorkOrderDataTable() {
     {
       accessorKey: "progress",
       header: ({ column }) => (
-        <SortableHeader column={column} title="Due status" sortable={true} />
+        <SortableHeader
+          column={column}
+          title="Due status"
+          sortable={true}
+          filterOptions={progress}
+        />
       ),
       cell: ({ row }) => {
         const progressPercentage =
@@ -484,7 +460,7 @@ export default function WorkOrderDataTable() {
           column={column}
           title="Total"
           sortable={true}
-          filterOptions={meter}
+          filterOptions={total}
         />
       ),
       cell: ({ row }) => (
@@ -514,42 +490,86 @@ export default function WorkOrderDataTable() {
         };
 
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  alert(`Edit ${row.getValue("name")}`);
-                }}
-              >
-                Edit
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handlePrintRow(row);
-                }}
-              >
-                <Printer className="mr-2 h-4 w-4" />
-                Print
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDeleteRow(row);
-                }}
-                className="text-destructive focus:text-destructive"
-              >
-                <Trash2 className="mr-2 h-4 w-4" />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex flex-row space-x-2 justify-between ">
+            {/* <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    alert(`Edit ${row.getValue("name")}`);
+                  }}
+                >
+                  Edit
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handlePrintRow(row);
+                  }}
+                >
+                  <Printer className="mr-2 h-4 w-4" />
+                  Print
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu> */}
+            <Button variant={"secondary"} size={"icon"}>
+              <FilePenIcon />
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant={"secondary"} size={"icon"}>
+                  <MoreHorizontal />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-72" align="start">
+                {/* <DropdownMenuLabel>My Account</DropdownMenuLabel> */}
+                <DropdownMenuGroup>
+                  <DropdownMenuItem>
+                    Email
+                    {/* <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut> */}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    Print
+                    {/* <DropdownMenuShortcut>⌘B</DropdownMenuShortcut> */}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    Change Assignee
+                    {/* <DropdownMenuShortcut>⌘S</DropdownMenuShortcut> */}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    Change Priority
+                    {/* <DropdownMenuShortcut>⌘K</DropdownMenuShortcut> */}
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Change Cost Center</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem disabled={row.original.status === "open"}>
+                  Change Status (Open)
+                </DropdownMenuItem>
+                <DropdownMenuItem disabled={row.original.status === "closed"}>
+                  Change Status (Close)
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteRow(row);
+                  }}
+                  className="text-destructive focus:text-destructive"
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         );
       },
       enableSorting: false,

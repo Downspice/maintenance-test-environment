@@ -99,19 +99,8 @@ export function Menu({ isOpen }: MenuProps) {
                                 {/* Plus button */}
                                 {isOpen && button && (
                                   <div className="w-full flex justify-end  ">
-                                    
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="size-7"
-                                    onClick={(e) => {
-                                      e.preventDefault();
-                                      e.stopPropagation();
-                                      button.onClick();
-                                    }}
-                                  >
-                                    <Plus />
-                                  </Button></div>
+                                    {button} 
+                                  </div>
                                 )}
                               </Link>
                             </Button>

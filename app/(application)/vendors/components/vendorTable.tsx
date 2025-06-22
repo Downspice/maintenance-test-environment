@@ -116,12 +116,12 @@ export default function VendorDataTable() {
 
   const handleRowClick = (row: any) => {
     console.log("Row clicked:", row.original);
-    alert(`Row clicked: ${row.original.name} (Depth: ${row.depth})`);
+    // alert(`Row clicked: ${row.original.name} (Depth: ${row.depth})`);
   };
 
   const handleCellClick = (cell: any, row: any) => {
     console.log("Cell clicked:", cell.column.id, cell.getValue());
-    alert(`Cell clicked: ${cell.column.id} = ${cell.getValue()}`);
+    // alert(`Cell clicked: ${cell.column.id} = ${cell.getValue()}`);
   };
 
   const handlePrintSelected = (selectedRows: any[]) => {
@@ -167,7 +167,7 @@ export default function VendorDataTable() {
       printWindow.document.write(`
         <html>
           <head>
-            <title>Employee Details - ${employee.name}</title>
+            <title>Work In Progress</title>
             <style>
               body { font-family: Arial, sans-serif; margin: 20px; }
               .header { border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px; }
@@ -181,32 +181,8 @@ export default function VendorDataTable() {
           </head>
           <body>
             <div class="header">
-              <h1>Employee Details</h1>
-            </div>
-            <div class="field">
-              <span class="label">Name:</span>
-              <span>${employee.name}</span>
-            </div>
-            <div class="field">
-              <span class="label">Email:</span>
-              <span>${employee.email}</span>
-            </div>
-            <div class="field">
-              <span class="label">Role:</span>
-              <span>${employee.role}</span>
-            </div>
-            <div class="field">
-              <span class="label">Department:</span>
-              <span>${employee.department}</span>
-            </div>
-            <div class="field">
-              <span class="label">Status:</span>
-              <span class="status ${employee.status}">${employee.status}</span>
-            </div>
-            <div class="field">
-              <span class="label">Salary:</span>
-              <span>${formattedSalary}</span>
-            </div>
+              <h1>Working On This Feature</h1>
+            </div> 
             <script>window.print(); window.close();</script>
           </body>
         </html>

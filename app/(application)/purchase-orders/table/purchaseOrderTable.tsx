@@ -67,12 +67,12 @@ export default function PurchaseOrderDataTable() {
 
   const handleRowClick = (row: any) => {
     console.log("Row clicked:", row.original);
-    alert(`Row clicked: ${row.original.name} (Depth: ${row.depth})`);
+    // alert(`Row clicked: ${row.original.name} (Depth: ${row.depth})`);
   };
 
   const handleCellClick = (cell: any, row: any) => {
     console.log("Cell clicked:", cell.column.id, cell.getValue());
-    alert(`Cell clicked: ${cell.column.id} = ${cell.getValue()}`);
+    // alert(`Cell clicked: ${cell.column.id} = ${cell.getValue()}`);
   };
 
   const handlePrintSelected = (selectedRows: any[]) => {

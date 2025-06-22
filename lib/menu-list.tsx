@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import React from "react";
 import AddEquipmentsButton from "@/components/sideBarButtons/add-equipments-buttons";
+import EquipmentForm from "@/app/(application)/equipment/components/new-equipment-form";
 type Submenu = {
   href: string;
   label: string;
@@ -25,10 +26,8 @@ type Menu = {
   active?: boolean;
   icon: LucideIcon;
   submenus?: Submenu[];
-  button?: {
-    element: React.ReactNode;
-    onClick: () => void;
-  };
+  button?:React.JSX.Element; 
+   
 };
 
 type Group = {
@@ -55,10 +54,7 @@ export function getMenuList(pathname: string): Group[] {
           label: "Equipment",
           icon: Cog,
           submenus: [],
-          button: {
-            element: <AddEquipmentsButton />,
-            onClick: yourImportedFunction,
-          },
+          button: <EquipmentForm variant="icon"/> 
         },
         {
           href: "/work-orders",
