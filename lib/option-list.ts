@@ -16,6 +16,23 @@ export const locationOptionsList = [
   { value: "4", label: "Production Equipments" }, 
 ]
 
+export const dateFilterOptionsList=[
+  { "value": "today", "label": "Today" },
+  { "value": "yesterday", "label": "Yesterday" },
+  { "value": "last_7_days", "label": "Last 7 Days" },
+  { "value": "last_30_days", "label": "Last 30 Days" },
+  { "value": "this_week", "label": "This Week" },
+  { "value": "last_week", "label": "Last Week" },
+  { "value": "this_month", "label": "This Month" },
+  { "value": "last_month", "label": "Last Month" },
+  { "value": "this_quarter", "label": "This Quarter" },
+  { "value": "last_quarter", "label": "Last Quarter" },
+  { "value": "this_year", "label": "This Year" },
+  { "value": "last_year", "label": "Last Year" },
+  { "value": "custom", "label": "Custom Range" },
+  { "value": "all_dates", "label": "All Dates" }
+]
+
 export const termsOptionsList = [
   { value: "1", label: "COD" }, 
   { value: "2", label: "Cash" }, 

@@ -19,25 +19,17 @@ import NewVendor from "@/components/forms/actualForms/new-vendor-form";
 import { PurchaseOrderPageDataTable } from "./component/purchase.order.page.dataTable";
 import NewPurchaseOrderForm from "@/components/forms/actualForms/new-purchase-order-form";
 import NotCompleteMessage from "../messages/page";
- 
-const ActiveDropdown = [
-  { "label": "My Incomplete", "value": "my_open" },
-  { "label": "My Requisition", "value": "my_requisition" },
-  { "label": "Incomplete", "value": "open" },
-  { "label": "Approval", "value": "approval" },
-  { "label": "Requisition", "value": "requisition" },
-  { "label": "Ordered", "value": "ordered" },
-  { "label": "Received", "value": "received" },
-  { "label": "Closed", "value": "closed" },
-  { "label": "All", "value": "all" }
-]
+import PurchaseOrderDataTable from "./table/purchaseOrderTable";
+import { dateFilterOptionsList, locationOptionsList } from "@/lib/option-list";
 
-const locations = [
-  { "label": "All Warehouses", "value": "all" },
-  { "label": "Warehouse #1", "value": "40307" },
-  { "label": "Warehouse #2", "value": "40308" }
-]
-;
+const ActiveDropdown = [
+  { label: "Open", value: "my_open" },
+  { label: "Requisition", value: "my_requisition" },
+  { label: "Ordered", value: "open" },
+  { label: "Received Partial", value: "approval" },
+  { label: "Closed", value: "closed" },
+  { label: "All", value: "all" },
+];
 
 export default function EmployeesPage() {
   const [filters, setFilters] = useState({
@@ -138,7 +130,7 @@ export default function EmployeesPage() {
               <SelectValue placeholder="All Warehouses" />
             </SelectTrigger>
             <SelectContent>
-              {locations.map((item) => (
+              {locationOptionsList.map((item) => (
                 <SelectItem value={item.value} key={item.value}>
                   {item.label}
                 </SelectItem>
@@ -149,12 +141,14 @@ export default function EmployeesPage() {
           {/* New Location Trigger */}
           <Select onValueChange={(val) => handleSelectChange("custom", val)}>
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Filter" />
+              <SelectValue placeholder="All Dates" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="new" className="text-blue-500 font-medium">
-                + New Filter
-              </SelectItem>
+              {dateFilterOptionsList.map((option) => (
+                <SelectItem value={option.value} key={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -171,7 +165,8 @@ export default function EmployeesPage() {
         </div>
       </div>
       <div>
-        <PurchaseOrderPageDataTable />
+        {/* <PurchaseOrderPageDataTable /> */}
+        <PurchaseOrderDataTable />
       </div>
     </div>
   );
