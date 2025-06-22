@@ -15,7 +15,7 @@ import { useSheet } from "@/lib/sheet-providers";
 import { VendorPageDataTable } from "./components/vendors.page.datatable";
 import NewVendor from "@/components/forms/actualForms/new-vendor-form";
 import { locationOptionsList, vendorTypeOptions } from "@/lib/option-list";
-import NotCompleteMessage from "../messages/page";
+import NotCompleteMessage from "../workInProgress/page";
 
 export default function VendorsPage() {
   const [filters, setFilters] = useState({

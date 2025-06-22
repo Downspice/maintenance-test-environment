@@ -18,7 +18,7 @@ import { VendorPageDataTable } from "./components/vendors.page.datatable";
 import NewVendor from "@/components/forms/actualForms/new-vendor-form";
 import { InventoryPageDataTable } from "./component/inventory.datatable";
 import NewInventory from "@/components/forms/actualForms/new-inventory-form";
-import NotCompleteMessage from "../messages/page";
+import NotCompleteMessage from "../workInProgress/page";
 import InventoryDataTable from "./table/inventoryTable";
 
 const ActiveDropdown = [
@@ -111,7 +111,7 @@ export default function EmployeesPage() {
   };
 
   return (
-    <div className="pt-4 px-4 flex flex-col space-y-4">
+    <div className="flex flex-col container mx-auto py-10 space-y-4">
       <div className="flex flex-row items-center space-x-2">
         <h1 className="text-xl font-semibold">Inventories</h1>
         <Badge>9</Badge>

@@ -18,7 +18,7 @@ import { VendorPageDataTable } from "./components/vendors.page.datatable";
 import NewVendor from "@/components/forms/actualForms/new-vendor-form";
 import { PurchaseOrderPageDataTable } from "./component/purchase.order.page.dataTable";
 import NewPurchaseOrderForm from "@/components/forms/actualForms/new-purchase-order-form";
-import NotCompleteMessage from "../messages/page";
+import NotCompleteMessage from "../workInProgress/page";
 import PurchaseOrderDataTable from "./table/purchaseOrderTable";
 import { dateFilterOptionsList, locationOptionsList } from "@/lib/option-list";
 
@@ -101,7 +101,7 @@ export default function EmployeesPage() {
   };
 
   return (
-    <div className="pt-4 px-4 flex flex-col space-y-4">
+    <div className="flex flex-col container mx-auto py-10 space-y-4">
       <div className="flex flex-row items-center space-x-2">
         <h1 className="text-xl font-semibold">Purchase Orders</h1>
         <Badge>8</Badge>

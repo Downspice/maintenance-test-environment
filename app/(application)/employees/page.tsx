@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { useSheet } from "@/lib/sheet-providers"; 
 import { EmployeePageDataTable } from "./components/employees.page.datatable";
 import NewEmployeeForm from "@/components/forms/actualForms/new-employee-form";
-import NotCompleteMessage from "../messages/page";
+import NotCompleteMessage from "../workInProgress/page";
 
 const ActiveDropdown = [
   { label: "All", value: "all" },

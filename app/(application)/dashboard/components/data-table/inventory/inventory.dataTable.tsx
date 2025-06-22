@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge"
 import { useSheet } from "@/lib/sheet-providers"
 import WorkOrderForm from "@/components/forms/actualForms/work-order-form"
 import ReceiptForm from "@/components/forms/actualForms/receipt-form"
-import NotCompleteMessage from "@/app/(application)/messages/page"
+import NotCompleteMessage from "@/app/(application)/invoices/page"
 
 // Define the data structure
 interface InventoryItem {

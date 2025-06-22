@@ -18,7 +18,7 @@ import EquipmentForm from "@/app/(application)/equipment/components/new-equipmen
 import WorkOrdersTable from "./components/work-orders-table";
 import { InspectionPageDataTable } from "./components/inspections.page.dataTable";
 import NewInspection from "@/components/forms/actualForms/new-inspection-form";
-import NotCompleteMessage from "../messages/page";
+import NotCompleteMessage from "../workInProgress/page";
 
 const equipmentActiveDropdown = [
   { value: "Failed", label: "Failed" },
@@ -107,7 +107,7 @@ export default function InspectionsPage() {
   };
 
   return (
-    <div className="p-4 flex flex-col space-y-4">
+    <div className="flex flex-col container mx-auto py-10 space-y-4">
       <div className="flex flex-row items-center space-x-2">
         <h1 className="text-xl font-semibold">Inspections</h1>
         <Badge>10</Badge>

@@ -17,7 +17,7 @@ import { useSheet } from "@/lib/sheet-providers";
 import NewEquipmentSheet from "@/components/forms/sheets/newEquipmentForm";
 import FormSheet from "@/components/form-sheet";
 import EquipmentForm from "./components/new-equipment-form";
-import NotCompleteMessage from "../messages/page";
+import NotCompleteMessage from "../workInProgress/page";
 import NewEquipmentDataTable from "./components/table/equipmentDatatable";
 import UpdateMeters from "./components/update-meters-form";
 

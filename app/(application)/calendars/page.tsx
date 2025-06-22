@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/select";
 import { useSheet } from "@/lib/sheet-providers";
 import NewInspection from "@/components/forms/actualForms/new-inspection-form";
-import NotCompleteMessage from "../messages/page";
+import NotCompleteMessage from "../workInProgress/page";
 
 const locations = [
   { value: "delete_filter", label: "All Locations" },

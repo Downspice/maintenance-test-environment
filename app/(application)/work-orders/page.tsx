@@ -16,7 +16,7 @@ import WorkOrderForm from "@/components/forms/actualForms/work-order-form";
 import { useSheet } from "@/lib/sheet-providers";
 import EquipmentForm from "@/app/(application)/equipment/components/new-equipment-form";
 import WorkOrdersTable from "./components/work-orders-table";
-import NotCompleteMessage from "../messages/page";
+import NotCompleteMessage from "../workInProgress/page";
 import WorkOrderDataTable from "./components/table/workOrderTable";
 import NewWorkOrderForm from "@/components/forms/actualForms/work-order-form";
 
@@ -108,7 +108,7 @@ export default function EquipmentPage() {
   };
 
   return (
-    <div className="p-4 flex flex-col space-y-4">
+    <div className="flex flex-col container mx-auto py-10 space-y-4">
       <div className="flex flex-row items-center space-x-2">
         <h1 className="text-xl font-semibold">Work Orders</h1>
         <Badge>5</Badge>
