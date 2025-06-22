@@ -3,19 +3,11 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { AdvancedDataTable } from "@/components/customUI/advanced-data-table";
 import { SortableHeader } from "@/components/customUI/sortable-header";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   MoreHorizontal,
   Trash2,
   Printer,
-  User,
-  Mail,
-  Phone,
-  MapPin,
-  Calendar,
-  Users,
   CheckCircle,
   Clock,
   AlertTriangle,
@@ -28,13 +20,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 import React from "react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Progress } from "@/components/ui/progress";
 import { InventoryData, InventoryDataInterface } from "@/lib/inventory-data";
 
 const getStatusColor = (status: string) => {
@@ -365,7 +350,7 @@ export default function InventoryDataTable() {
       ),
       cell: ({ row }) => (
         <>
-            {row.original.vendor_names.toLocaleString} 
+            {row.original.vendor_names.toLocaleString()} 
         </>
       ),
 

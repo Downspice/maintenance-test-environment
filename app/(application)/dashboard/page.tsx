@@ -82,7 +82,7 @@ export default function Page() {
   return (
     <>
       <div className="flex flex-row  p-4 justify-between">
-        <span className="text-2xl">welcome, Yaw Sarfo</span>
+        <span className="text-2xl font-bold">Welcome, Yaw Sarfo</span>
         <div>
           You are currently viewing your dashboard for{" "}
           <div
