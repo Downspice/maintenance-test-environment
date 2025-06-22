@@ -153,14 +153,14 @@ export default function EmployeesPage() {
           </Select>
         </div>
         <div className="flex flex-row space-x-0.5">
-          {/* Search Input */}
+          {/* Search Input
           <Input
             type="text"
             placeholder="Search ..."
             className="w-[240px]"
             value={filters.search}
             onChange={handleSearchChange}
-          />
+          /> */}
           <Button onClick={createEquipment}>New</Button>
         </div>
       </div>
