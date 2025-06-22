@@ -1,4 +1,12 @@
+export interface RenewalInterface{
+  name: string;
+  date_issued: string;   // ISO date string
+  expired_date: string;  // ISO date string
+  notes?: string;
+}
+
 export interface EmployeeInterface {
+  employeeId: number; // ✅ New field
   last_name: string;
   first_name: string;
   middle_name?: string;
@@ -8,8 +16,8 @@ export interface EmployeeInterface {
   state_prov: string;
   postal_code: string;
   location: string;
-  image: string; // URL or path to image
-  name: string;  // Format: "Last, First Middle"
+  image: string;
+  name: string;
   type: "Manager" | "Technician" | "Supervisor" | "Driver";
   drivers_license_number: string;
   contact: string;
@@ -18,18 +26,20 @@ export interface EmployeeInterface {
   dl_state: string;
   dl_class: string;
   drivers_license_notes?: string;
-  hire_date: string;     // ISO date string
-  leave_date?: string;   // ISO date string
-  dob: string;           // ISO date string
+  hire_date: string;
+  leave_date?: string;
+  dob: string;
   category: string;
   rate: number;
   custom_value?: string;
   status: "Active" | "Inactive" | "Retired" | "Terminated" | "Vacation";
   billing_rate: number;
+  renewals: RenewalInterface[];
 }
 
 export const EmployeeData:EmployeeInterface[]=[
   {
+    "employeeId": 1,
     "last_name": "Doe",
     "first_name": "John",
     "middle_name": "A",
@@ -53,12 +63,21 @@ export const EmployeeData:EmployeeInterface[]=[
     "leave_date": null,
     "dob": "1985-03-22",
     "category": "Full-time",
-    "rate": 45.50,
+    "rate": 45.5,
     "custom_value": "N/A",
     "status": "Active",
-    "billing_rate": 60.00
+    "billing_rate": 60.0,
+    "renewals": [
+      {
+        "name": "Driver’s License",
+        "date_issued": "2023-06-01",
+        "expired_date": "2027-06-01",
+        "notes": "Renewed early"
+      }
+    ]
   },
   {
+    "employeeId": 2,
     "last_name": "Smith",
     "first_name": "Jane",
     "middle_name": "",
@@ -82,12 +101,21 @@ export const EmployeeData:EmployeeInterface[]=[
     "leave_date": null,
     "dob": "1990-07-10",
     "category": "Part-time",
-    "rate": 30.00,
+    "rate": 30.0,
     "custom_value": "",
     "status": "Active",
-    "billing_rate": 40.00
+    "billing_rate": 40.0,
+    "renewals": [
+      {
+        "name": "Work Permit",
+        "date_issued": "2021-09-15",
+        "expired_date": "2024-09-15",
+        "notes": ""
+      }
+    ]
   },
   {
+    "employeeId": 3,
     "last_name": "Osei",
     "first_name": "Kwame",
     "middle_name": "N",
@@ -111,12 +139,21 @@ export const EmployeeData:EmployeeInterface[]=[
     "leave_date": null,
     "dob": "1988-11-05",
     "category": "Contract",
-    "rate": 20.00,
+    "rate": 20.0,
     "custom_value": "On-call",
     "status": "Vacation",
-    "billing_rate": 30.00
+    "billing_rate": 30.0,
+    "renewals": [
+      {
+        "name": "Vehicle Insurance",
+        "date_issued": "2024-01-01",
+        "expired_date": "2025-01-01",
+        "notes": "Updated annually"
+      }
+    ]
   },
   {
+    "employeeId": 4,
     "last_name": "Nguyen",
     "first_name": "Linh",
     "middle_name": "T",
@@ -140,12 +177,21 @@ export const EmployeeData:EmployeeInterface[]=[
     "leave_date": null,
     "dob": "1992-12-04",
     "category": "Full-time",
-    "rate": 38.50,
+    "rate": 38.5,
     "custom_value": "",
     "status": "Active",
-    "billing_rate": 50.00
+    "billing_rate": 50.0,
+    "renewals": [
+      {
+        "name": "Safety Training",
+        "date_issued": "2023-02-10",
+        "expired_date": "2026-02-10",
+        "notes": "Online certification"
+      }
+    ]
   },
   {
+    "employeeId": 5,
     "last_name": "Garcia",
     "first_name": "Carlos",
     "middle_name": "E",
@@ -169,12 +215,14 @@ export const EmployeeData:EmployeeInterface[]=[
     "leave_date": null,
     "dob": "1994-03-18",
     "category": "Intern",
-    "rate": 18.00,
+    "rate": 18.0,
     "custom_value": "",
     "status": "Active",
-    "billing_rate": 25.00
+    "billing_rate": 25.0,
+    "renewals": []
   },
   {
+    "employeeId": 6,
     "last_name": "Adams",
     "first_name": "Rebecca",
     "middle_name": "L",
@@ -198,12 +246,21 @@ export const EmployeeData:EmployeeInterface[]=[
     "leave_date": null,
     "dob": "1980-08-01",
     "category": "Full-time",
-    "rate": 55.00,
+    "rate": 55.0,
     "custom_value": "Top performer",
     "status": "Active",
-    "billing_rate": 70.00
+    "billing_rate": 70.0,
+    "renewals": [
+      {
+        "name": "Management License",
+        "date_issued": "2022-05-10",
+        "expired_date": "2025-05-10",
+        "notes": "Includes HR certification"
+      }
+    ]
   },
   {
+    "employeeId": 7,
     "last_name": "Kim",
     "first_name": "Daniel",
     "middle_name": "",
@@ -227,12 +284,21 @@ export const EmployeeData:EmployeeInterface[]=[
     "leave_date": null,
     "dob": "1991-06-11",
     "category": "Contract",
-    "rate": 25.00,
+    "rate": 25.0,
     "custom_value": "Temp",
     "status": "Active",
-    "billing_rate": 33.00
+    "billing_rate": 33.0,
+    "renewals": [
+      {
+        "name": "Defensive Driving",
+        "date_issued": "2024-03-15",
+        "expired_date": "2025-03-15",
+        "notes": ""
+      }
+    ]
   },
   {
+    "employeeId": 8,
     "last_name": "Mensah",
     "first_name": "Ama",
     "middle_name": "",
@@ -256,12 +322,21 @@ export const EmployeeData:EmployeeInterface[]=[
     "leave_date": null,
     "dob": "1987-02-14",
     "category": "Full-time",
-    "rate": 35.00,
+    "rate": 35.0,
     "custom_value": "Leadership program",
     "status": "Active",
-    "billing_rate": 47.00
+    "billing_rate": 47.0,
+    "renewals": [
+      {
+        "name": "CPR Training",
+        "date_issued": "2023-05-01",
+        "expired_date": "2025-05-01",
+        "notes": ""
+      }
+    ]
   },
   {
+    "employeeId": 9,
     "last_name": "Brown",
     "first_name": "Laura",
     "middle_name": "J",
@@ -285,12 +360,14 @@ export const EmployeeData:EmployeeInterface[]=[
     "leave_date": "2024-12-31",
     "dob": "1965-01-05",
     "category": "Retired",
-    "rate": 40.00,
+    "rate": 40.0,
     "custom_value": "",
     "status": "Retired",
-    "billing_rate": 0.00
+    "billing_rate": 0.0,
+    "renewals": []
   },
   {
+    "employeeId": 10,
     "last_name": "Okoro",
     "first_name": "Chinedu",
     "middle_name": "",
@@ -314,9 +391,17 @@ export const EmployeeData:EmployeeInterface[]=[
     "leave_date": "2024-05-15",
     "dob": "1989-09-09",
     "category": "Full-time",
-    "rate": 22.00,
+    "rate": 22.0,
     "custom_value": "Probation history",
     "status": "Terminated",
-    "billing_rate": 0.00
+    "billing_rate": 0.0,
+    "renewals": [
+      {
+        "name": "Driving Exam",
+        "date_issued": "2022-03-01",
+        "expired_date": "2023-03-01",
+        "notes": "Failed renewal"
+      }
+    ]
   }
 ]

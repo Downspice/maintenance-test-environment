@@ -15,25 +15,19 @@ import { useSheet } from "@/lib/sheet-providers";
 import { EmployeePageDataTable } from "./components/employees.page.datatable";
 import NewEmployeeForm from "@/components/forms/actualForms/new-employee-form";
 import NotCompleteMessage from "../workInprogress/working";import EmployeeDataTable from "./components/employeeDataTable";
+import { locationOptionsList } from "@/lib/option-list";
 
 const ActiveDropdown = [
-  { label: "All", value: "all" },
+  { label: "All Employees", value: "all" },
   { label: "Active", value: "active" },
   { label: "Inactive", value: "inactive" },
-  { label: "Requestors", value: "requestors" },
-  { label: "Users", value: "users" },
-  { label: "Full Users", value: "full_users" },
-  { label: "Operator Users", value: "operator_users" },
-  { label: "Deleted", value: "deleted" },
+  { label: "Renewals Due", value: "requestors" },
+  { label: "Renewals Soon Due", value: "users" },
+  { label: "Driver", value: "full_users" },
+  { label: "Manager", value: "operator_users" },
+  { label: "Technician", value: "deleted" },
 ];
-
-const locations = [
-  { value: "delete_filter", label: "All Locations" },
-  { value: "56533", label: "Location #1" },
-  { value: "56534", label: "Location #2" },
-  { value: "56532", label: "Main Location" },
-];
-
+ 
 export default function EmployeesPage() {
   const [filters, setFilters] = useState({
     equipment: "",
@@ -107,7 +101,7 @@ export default function EmployeesPage() {
     <div className="pt-4 px-4 flex flex-col space-y-4">
       <div className="flex flex-row items-center space-x-2">
         <h1 className="text-xl font-semibold">Employees</h1>
-        <Badge>8</Badge>
+        <Badge>10</Badge>
       </div>
 
       <div className="flex justify-between items-center space-x-4">
@@ -129,44 +123,26 @@ export default function EmployeesPage() {
           </Select>
 
           <Select onValueChange={(val) => handleSelectChange("location", val)}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="All Locations" />
-            </SelectTrigger>
-            <SelectContent>
-              {locations.map((item) => (
-                <SelectItem value={item.value} key={item.value}>
-                  {item.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          {/* New Location Trigger */}
-          <Select onValueChange={(val) => handleSelectChange("custom", val)}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Filter" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="new" className="text-blue-500 font-medium">
-                + New Filter
-              </SelectItem>
-            </SelectContent>
-          </Select>
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="All Locations" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {locationOptionsList.map((item) => (
+                          <SelectItem value={item.value} key={item.value}>
+                            {item.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+ 
         </div>
         <div className="flex flex-row space-x-0.5">
-          {/* Search Input */}
-          <Input
-            type="text"
-            placeholder="Search ..."
-            className="w-[240px]"
-            value={filters.search}
-            onChange={handleSearchChange}
-          />
+           
           <Button onClick={createEquipment}>New</Button>
         </div>
       </div>
       <div>
-        <EmployeePageDataTable />
+        {/* <EmployeePageDataTable /> */}
         <EmployeeDataTable/>
       </div>
     </div>

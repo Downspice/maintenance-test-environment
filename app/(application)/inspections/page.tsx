@@ -19,6 +19,7 @@ import WorkOrdersTable from "./components/work-orders-table";
 import { InspectionPageDataTable } from "./components/inspections.page.dataTable";
 import NewInspection from "@/components/forms/actualForms/new-inspection-form";
 import NotCompleteMessage from "../workInprogress/working";
+import { locationOptionsList } from "@/lib/option-list";
 const equipmentActiveDropdown = [
   { value: "Failed", label: "Failed" },
   { value: "Pending", label: "Active" },
@@ -134,7 +135,7 @@ export default function InspectionsPage() {
               <SelectValue placeholder="All Locations" />
             </SelectTrigger>
             <SelectContent>
-              {locations.map((item) => (
+              {locationOptionsList.map((item) => (
                 <SelectItem value={item.value} key={item.value}>
                   {item.label}
                 </SelectItem>
