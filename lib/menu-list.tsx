@@ -84,12 +84,12 @@ export function getMenuList(pathname: string): Group[] {
           icon: Users,
           submenus: [],
         },
-        {
-          href: "/inspections",
-          label: "Inspections",
-          icon: ListTodo,
-          submenus: [],
-        },
+        // {
+        //   href: "/inspections",
+        //   label: "Inspections",
+        //   icon: ListTodo,
+        //   submenus: [],
+        // },
         {
           href: "/invoices",
           label: "Invoices",

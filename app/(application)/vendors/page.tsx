@@ -16,6 +16,7 @@ import { VendorPageDataTable } from "./components/vendors.page.datatable";
 import NewVendor from "@/components/forms/actualForms/new-vendor-form";
 import { locationOptionsList, vendorTypeOptions } from "@/lib/option-list";
 import NotCompleteMessage from "../workInprogress/working";
+import VendorDataTable from "./components/vendorTable";
 export default function VendorsPage() {
   const [filters, setFilters] = useState({
     equipment: "",
@@ -125,19 +126,11 @@ export default function VendorsPage() {
           </Select>
         </div>
         <div className="flex flex-row space-x-0.5">
-          {/* Search Input */}
-          <Input
-            type="text"
-            placeholder="Search ..."
-            className="w-[240px]"
-            value={filters.search}
-            onChange={handleSearchChange}
-          />
           <Button onClick={createEquipment}>New</Button>
         </div>
       </div>
       <div>
-        <VendorPageDataTable/>
+        <VendorDataTable/>
       </div>
     </div>
   );
