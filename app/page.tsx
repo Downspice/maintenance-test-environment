@@ -11,7 +11,7 @@ export default function Home() {
          {/* <FormSheet/> */}
         <div className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
           <div className="mb-2 tracking-[-.01em]">
-            Welcome to the MAINTENANCE CLONE  
+            Welcome
           </div> 
         </div>
 
@@ -32,7 +32,7 @@ export default function Home() {
             width={16}
             height={16}
           />
-          Enjoy →
+          This way to view our Progress →
         </a>
       </footer>
       </main>
