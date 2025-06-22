@@ -79,6 +79,12 @@ export function getMenuList(pathname: string): Group[] {
           submenus: [],
         },
         {
+          href: "/customer",
+          label: "Customer",
+          icon: Users,
+          submenus: [],
+        },
+        {
           href: "/inspections",
           label: "Inspections",
           icon: ListTodo,

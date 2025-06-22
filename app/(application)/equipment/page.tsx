@@ -20,6 +20,7 @@ import EquipmentForm from "./components/new-equipment-form";
 import NotCompleteMessage from "../workInProgress/page";
 import NewEquipmentDataTable from "./components/table/equipmentDatatable";
 import UpdateMeters from "./components/update-meters-form";
+import { locationOptionsList } from "@/lib/option-list";
 
 const equipmentActiveDropdown = [
   { value: "my", label: "My" },
@@ -141,7 +142,7 @@ export default function EquipmentPage() {
               <SelectValue placeholder="All Locations" />
             </SelectTrigger>
             <SelectContent>
-              {locations.map((item) => (
+              {locationOptionsList.map((item) => (
                 <SelectItem value={item.value} key={item.value}>
                   {item.label}
                 </SelectItem>
