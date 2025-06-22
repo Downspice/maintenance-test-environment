@@ -15,8 +15,7 @@ import { useSheet } from "@/lib/sheet-providers";
 import { VendorPageDataTable } from "./components/vendors.page.datatable";
 import NewVendor from "@/components/forms/actualForms/new-vendor-form";
 import { locationOptionsList, vendorTypeOptions } from "@/lib/option-list";
-import NotCompleteMessage from "../workInProgress/page";
-
+import NotCompleteMessage from "../workInprogress/working";
 export default function VendorsPage() {
   const [filters, setFilters] = useState({
     equipment: "",

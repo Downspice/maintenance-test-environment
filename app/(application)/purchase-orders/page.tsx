@@ -18,8 +18,7 @@ import { VendorPageDataTable } from "./components/vendors.page.datatable";
 import NewVendor from "@/components/forms/actualForms/new-vendor-form";
 import { PurchaseOrderPageDataTable } from "./component/purchase.order.page.dataTable";
 import NewPurchaseOrderForm from "@/components/forms/actualForms/new-purchase-order-form";
-import NotCompleteMessage from "../workInProgress/page";
-import PurchaseOrderDataTable from "./table/purchaseOrderTable";
+import NotCompleteMessage from "../workInprogress/working";import PurchaseOrderDataTable from "./table/purchaseOrderTable";
 import { dateFilterOptionsList, locationOptionsList } from "@/lib/option-list";
 
 const ActiveDropdown = [

@@ -18,8 +18,7 @@ import { VendorPageDataTable } from "./components/vendors.page.datatable";
 import NewVendor from "@/components/forms/actualForms/new-vendor-form";
 import { InventoryPageDataTable } from "./component/inventory.datatable";
 import NewInventory from "@/components/forms/actualForms/new-inventory-form";
-import NotCompleteMessage from "../workInProgress/page";
-import InventoryDataTable from "./table/inventoryTable";
+import NotCompleteMessage from "../workInprogress/working";import InventoryDataTable from "./table/inventoryTable";
 
 const ActiveDropdown = [
   {

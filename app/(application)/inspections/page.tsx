@@ -18,8 +18,7 @@ import EquipmentForm from "@/app/(application)/equipment/components/new-equipmen
 import WorkOrdersTable from "./components/work-orders-table";
 import { InspectionPageDataTable } from "./components/inspections.page.dataTable";
 import NewInspection from "@/components/forms/actualForms/new-inspection-form";
-import NotCompleteMessage from "../workInProgress/page";
-
+import NotCompleteMessage from "../workInprogress/working";
 const equipmentActiveDropdown = [
   { value: "Failed", label: "Failed" },
   { value: "Pending", label: "Active" },

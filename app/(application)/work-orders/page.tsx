@@ -16,8 +16,7 @@ import WorkOrderForm from "@/components/forms/actualForms/work-order-form";
 import { useSheet } from "@/lib/sheet-providers";
 import EquipmentForm from "@/app/(application)/equipment/components/new-equipment-form";
 import WorkOrdersTable from "./components/work-orders-table";
-import NotCompleteMessage from "../workInProgress/page";
-import WorkOrderDataTable from "./components/table/workOrderTable";
+import NotCompleteMessage from "../workInprogress/working";import WorkOrderDataTable from "./components/table/workOrderTable";
 import NewWorkOrderForm from "@/components/forms/actualForms/work-order-form";
 
 const equipmentActiveDropdown = [

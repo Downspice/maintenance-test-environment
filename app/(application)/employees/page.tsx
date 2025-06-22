@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { useSheet } from "@/lib/sheet-providers"; 
 import { EmployeePageDataTable } from "./components/employees.page.datatable";
 import NewEmployeeForm from "@/components/forms/actualForms/new-employee-form";
-import NotCompleteMessage from "../workInProgress/page";
+import NotCompleteMessage from "../workInprogress/working";import EmployeeDataTable from "./components/employeeDataTable";
 
 const ActiveDropdown = [
   { label: "All", value: "all" },
@@ -167,6 +167,7 @@ export default function EmployeesPage() {
       </div>
       <div>
         <EmployeePageDataTable />
+        <EmployeeDataTable/>
       </div>
     </div>
   );
