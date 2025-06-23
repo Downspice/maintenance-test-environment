@@ -4,7 +4,7 @@ import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/comp
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import type { Control } from "react-hook-form"
 
-interface RadioOption {
+export interface RadioOption {
   value: string
   label: string
   description?: string

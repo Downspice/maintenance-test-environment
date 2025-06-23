@@ -9,13 +9,13 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { SidebarMenuAction, useSidebar } from "../ui/sidebar";
+import EquipmentForm from "@/app/(application)/equipment/components/new-equipment-form";
+import RepairRequestForm from "../forms/actualForms/repair-request-form";
 const genericDropdown = () => {
   console.log("did something");
 };
 
-const dropdownItems = [
-  { label: "Equipment", onSelect: genericDropdown },
-  { label: "Repair Request", onSelect: genericDropdown },
+const dropdownItems = [ 
   { label: "Daily Inspection", onSelect: genericDropdown },
   { label: "Work Order", onSelect: genericDropdown },
   { label: "Expense", onSelect: genericDropdown },
@@ -47,6 +47,13 @@ export default function CreateAllButton() {
           <div className="text-md font-semibold">Create New</div>
           {/* <Button variant="ghost">clear All</Button> */}
         </div>
+
+          <DropdownMenuItem>
+Equipment        </DropdownMenuItem>
+        <DropdownMenuItem>
+          <RepairRequestForm />
+        </DropdownMenuItem>
+
         {dropdownItems.map((item) => (
           <DropdownMenuItem key={item.label} onSelect={item.onSelect}>
             <span>{item.label}</span>

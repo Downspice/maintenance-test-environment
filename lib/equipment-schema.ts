@@ -136,6 +136,18 @@ export const assigneeOptions = [
   { value: "vendor-1", label: "ABC Company", group: "Vendors" },
 ]
 
+export const accidentOptions = [
+  { value: "user-1", label: "Car crash" },
+  { value: "user-2", label: "Over Heating" },
+  { value: "vendor-1", label: "Stolen" },
+]
+export const expenseOptions = [
+  { value: "130878", label: "Expense" },
+  { value: "130879", label: "Insurance Payment" },
+  { value: "130879", label: "Lease Payment" },
+  { value: "130879", label: "Loan Payment" },
+]
+
 export const categoryOptions = [
   { value: "130878", label: "Location #1 | Fleet Equipment" },
   { value: "130879", label: "Location #2 | Construction Equipment" },

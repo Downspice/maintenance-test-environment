@@ -102,14 +102,14 @@ const priorityOptions = [
 ];
 
 // Work order type options
-const workOrderTypeOptions = [
+export const workOrderTypeOptions = [
   { value: "preventive", label: "Preventive Maintenance" },
   { value: "corrective", label: "Corrective Maintenance" },
   { value: "inspection", label: "Inspection" },
   { value: "other", label: "Other" },
 ];
 
-const costCenterOptions = [
+export const costCenterOptions = [
   { value: "preventive", label: "Preventive Cost Center" },
   { value: "corrective", label: "Corrective Cost Center" },
   { value: "inspection", label: "Inspection Cost Center" },

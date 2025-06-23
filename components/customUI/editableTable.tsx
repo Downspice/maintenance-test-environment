@@ -39,6 +39,7 @@ type EditableDataTableProps<TData> = {
   onDataChange?: (updatedData: TData[]) => void
   searchable?: boolean
   columnToggle?: boolean
+  defaultRow?: TData // 👈 used to insert a new row
 }
 
 export function EditableDataTable<TData>({
@@ -47,6 +48,7 @@ export function EditableDataTable<TData>({
   onDataChange,
   searchable = true,
   columnToggle = true,
+  defaultRow,
 }: EditableDataTableProps<TData>) {
   const [data, setData] = React.useState<TData[]>(initialData)
   const [globalFilter, setGlobalFilter] = React.useState("")
@@ -80,40 +82,52 @@ export function EditableDataTable<TData>({
     onDataChange?.(updated)
   }
 
+  const addNewRow = () => {
+    if (!defaultRow) return
+    const updated = [...data, defaultRow]
+    setData(updated)
+    onDataChange?.(updated)
+  }
+
   return (
     <div className="space-y-4">
       {/* Top Controls */}
       <div className="flex items-center justify-between flex-wrap gap-2">
-        {searchable && (
-          <Input
-            placeholder="Search all columns..."
-            value={globalFilter}
-            onChange={(e) => setGlobalFilter(e.target.value)}
-            className="max-w-sm"
-          />
-        )}
-        {columnToggle && (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline">
-                Columns <ChevronDown className="ml-2 h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {table.getAllLeafColumns().map((column) =>
-                column.getCanHide() ? (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                  >
-                    {String(column.columnDef.header ?? column.id)}
-                  </DropdownMenuCheckboxItem>
-                ) : null
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
+        <div className="flex gap-2 items-center flex-wrap">
+          {searchable && (
+            <Input
+              placeholder="Search all columns..."
+              value={globalFilter}
+              onChange={(e) => setGlobalFilter(e.target.value)}
+              className="max-w-sm"
+            />
+          )}
+          {columnToggle && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline">
+                  Columns <ChevronDown className="ml-2 h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {table.getAllLeafColumns().map((column) =>
+                  column.getCanHide() ? (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                    >
+                      {String(column.columnDef.header ?? column.id)}
+                    </DropdownMenuCheckboxItem>
+                  ) : null
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+        </div>
+        <Button type='button' onClick={addNewRow} variant="default">
+          Add Row
+        </Button>
       </div>
 
       {/* Table */}

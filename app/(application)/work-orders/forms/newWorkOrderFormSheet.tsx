@@ -7,15 +7,16 @@ import { useState } from "react";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { GitPullRequestArrow, Plus, Building, User } from "lucide-react";
-import MultiSelectWrapper from "../wrappers/MultiSelectWrapper";
-import DatePickerWrapper from "../wrappers/DatePickerWrapper";
-import SelectWrapper from "../wrappers/SelectWrapper";
-import TextareaWrapper from "../wrappers/TextareaWrapper";
-import InputWrapper from "../wrappers/InputWrapper";
-import CheckboxWrapper from "../wrappers/CheckboxWrapper";
 import { toast } from "sonner";
-import { ComboboxFieldWrapper } from "../wrappers/ComboboxWrapper";
- // Define the form schema with Zod
+import CheckboxWrapper from "@/components/forms/wrappers/CheckboxWrapper";
+import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
+import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";
+import MultiSelectWrapper from "@/components/forms/wrappers/MultiSelectWrapper";
+import SelectWrapper from "@/components/forms/wrappers/SelectWrapper";
+import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
+import InputWrapper from "@/components/input-wrapper";
+
+// Define the form schema with Zod
 export const workOrderSchema = z.object({
   equipmentId: z.string({
     required_error: "Equipment is required",
@@ -59,7 +60,7 @@ const assigneeOptions = [
 ];
 
 // Priority options
-const priorityOptions = [
+export const priorityOptions = [
   { value: "LOW", label: "LOW" },
   { value: "NORMAL", label: "NORMAL" },
   { value: "HIGH", label: "HIGH" },
@@ -101,7 +102,7 @@ export default function WorkOrderForm() {
   async function handleSubmit(data: z.infer<typeof workOrderSchema>) {
     console.log(data);
     // Here you would typically send the data to your API
-     
+
     toast.success("Work Order submitted successfully!");
   }
 
@@ -110,8 +111,7 @@ export default function WorkOrderForm() {
   };
 
   return (
-    <div> 
-
+    <div>
       <Form {...workOrderForm}>
         <form
           onSubmit={workOrderForm.handleSubmit((data) => handleSubmit(data))}
