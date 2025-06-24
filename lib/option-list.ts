@@ -9,6 +9,11 @@ export const vendorTypeOptions = [
   { value: "1", label: "Wholesale" },
 ];
 
+export const iconsOptionList=[
+    { value: "8", label: "Globe" },
+  { value: "7", label: "Wrench" },
+  { value: "6", label: "Screw" },
+]
 export const rateDurationOptions = [
   { value: "8", label: "day" },
   { value: "7", label: "hour" },
@@ -152,4 +157,19 @@ export const equipmentCheckboxOptions: CheckboxOption[] = [
     label: "Warranty",
     description: "Warranty terms and conditions",
   },
+];
+
+export const monthOptionList = [
+  { value: "01", label: "January" },
+  { value: "02", label: "February" },
+  { value: "03", label: "March" },
+  { value: "04", label: "April" },
+  { value: "05", label: "May" },
+  { value: "06", label: "June" },
+  { value: "07", label: "July" },
+  { value: "08", label: "August" },
+  { value: "09", label: "September" },
+  { value: "10", label: "October" },
+  { value: "11", label: "November" },
+  { value: "12", label: "December" }
 ];

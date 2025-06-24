@@ -19,6 +19,7 @@ import SelectWrapper from "../wrappers/SelectWrapper";
 import SwitchWrapper from "../wrappers/SwitchWrapper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { vendorTypeOptions } from "@/lib/option-list";
+import CustomFieldsWrapper from "../wrappers/CustomFieldsWrapper";
 
 // Define the form schema with Zod
 export const vendorSchema = z.object({
@@ -165,7 +166,7 @@ export default function NewVendor() {
                   required
                   options={vendorTypeOptions}
                 />
-<SelectWrapper
+                <SelectWrapper
                   control={vendorForm.control}
                   name="term"
                   label="Term "
@@ -178,10 +179,8 @@ export default function NewVendor() {
                   label="Billing Rate"
                   type="number"
                   value={undefined}
-                />     
+                />
                 <div className="flex flex-col gap-4">
-                   
-
                   <TextareaWrapper
                     control={vendorForm.control}
                     name="notes"
@@ -190,13 +189,11 @@ export default function NewVendor() {
                     value={undefined}
                   />
                 </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={addCustomField}
-                >
-                  <Plus className="mr-2 h-4 w-4" /> New Custom Field
-                </Button>
+                <CustomFieldsWrapper
+                  control={vendorForm.control}
+                  name="Custom"
+                  label="Custom Fields"
+                />
               </div>
             </TabsContent>
             <TabsContent value="contact">
