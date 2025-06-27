@@ -10,6 +10,9 @@ import {
 } from "../ui/dropdown-menu";
 import { Separator } from "../ui/separator";
 import { toast } from "sonner";
+import NotCompleteMessage from "@/app/(application)/workInprogress/working";
+import { useSheet } from "@/lib/sheet-providers";
+
 const genericDropdown = () => {
   toast("did something");
 };
@@ -26,15 +29,24 @@ const dropdownItemsSection2 = [
   { label: "PM Forecaster", onSelect: genericDropdown },
 ];
 
-const dropdownItemsSection3 = [
-  { label: "Repair Request (Outstanding)", onSelect: genericDropdown },
-  { label: "Meter Updates", onSelect: genericDropdown },
-  { label: "Jobsite Assignments", onSelect: genericDropdown },
-  { label: "Meter Replacements", onSelect: genericDropdown },
-  { label: "Email history", onSelect: genericDropdown },
-];
-
 export default function HeaderUploadButton() {
+  const { openSheet } = useSheet();
+  const repairRequest = () => {
+    console.log("ïn the function");
+    document.body.style.pointerEvents = "auto";
+    openSheet({
+      title: "Create Inspection",
+      description: "Fill out the form below to create a Inspection order.",
+      content: <NotCompleteMessage />,
+    });
+  };
+  const dropdownItemsSection3 = [
+    { label: "Repair Request (Outstanding)", onSelect: repairRequest },
+    { label: "Meter Updates", onSelect: genericDropdown },
+    { label: "Job site Assignments", onSelect: genericDropdown },
+    { label: "Meter Replacements", onSelect: genericDropdown },
+    { label: "Email history", onSelect: genericDropdown },
+  ];
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -47,7 +59,7 @@ export default function HeaderUploadButton() {
         // side={isMobile ? "bottom" : "right"}
         // align={isMobile ? "end" : "start"}
       >
-        <div className="w-full  *:p-3 items-end flex justify-between"> 
+        <div className="w-full  *:p-3 items-end flex justify-between">
           {/* <Button variant="ghost">clear All</Button> */}
         </div>
         <div className="text-md font-semibold">Updates</div>

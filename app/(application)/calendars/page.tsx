@@ -55,7 +55,7 @@ export default function CalendarPage() {
   };
 
   const handleSelectChange = (
-    key: "equipment" | "location" | "custom",
+    key: "equipment" | "location" | "custom" | "search",
     value: string
   ) => {
     if (value === "new") {
@@ -81,7 +81,7 @@ export default function CalendarPage() {
   }, [debouncedSearch]);
 
   const createEquipment = () => {
-    console.log("ïn the function");
+    console.log("In the function");
     openSheet({
       title: "Create Inspection",
       description: "Fill out the form below to create a Inspection order.",

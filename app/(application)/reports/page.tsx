@@ -1,5 +1,5 @@
-import NewCategory from "@/components/forms/actualForms/new-category";
+import NewWarehouse from "@/components/forms/actualForms/new-warehouse";
 
-export default function page(){
-    return <NewCategory/>
+export default function page() {
+  return <NewWarehouse />;
 }

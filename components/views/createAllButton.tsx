@@ -1,65 +1,234 @@
 "use client";
-import { Plus } from "lucide-react";
 import { Button } from "../ui/button";
-import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { SidebarMenuAction, useSidebar } from "../ui/sidebar";
-import EquipmentForm from "@/app/(application)/equipment/components/new-equipment-form";
 import RepairRequestForm from "../forms/actualForms/repair-request-form";
-const genericDropdown = () => {
-  console.log("did something");
-};
-
-const dropdownItems = [ 
-  { label: "Daily Inspection", onSelect: genericDropdown },
-  { label: "Work Order", onSelect: genericDropdown },
-  { label: "Expense", onSelect: genericDropdown },
-  { label: "Assignment", onSelect: genericDropdown },
-  { label: "Accident", onSelect: genericDropdown },
-  { label: "Part", onSelect: genericDropdown },
-  { label: "Purchase Order", onSelect: genericDropdown },
-  { label: "Employee", onSelect: genericDropdown },
-  { label: "Vendor", onSelect: genericDropdown },
-  { label: "Receive| Adjust Inventory", onSelect: genericDropdown },
-  { label: "Receive Purchase Order", onSelect: genericDropdown },
-];
+import {
+  Plus,
+  ChevronDown,
+  Code,
+  Smartphone,
+  Globe,
+  Database,
+  Palette,
+  Bot,
+} from "lucide-react";
+import { toast } from "sonner";
+import { useState } from "react";
+import { ScrollArea } from "@radix-ui/react-scroll-area";
+import { Form } from "react-hook-form";
+import InputWrapper from "../input-wrapper";
+import {
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+  Sheet,
+} from "../ui/sheet";
+import NewWarehouse from "../forms/actualForms/new-warehouse";
 
 export default function CreateAllButton() {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button>
-          <Plus /> Quick Actions
-          <span className="sr-only">Create Something</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent
-        className="w-48 rounded-lg"
-        // side={isMobile ? "bottom" : "right"}
-        // align={isMobile ? "end" : "start"}
-      >
-        <div className="w-full  *:p-3 items-end flex justify-between">
-          <div className="text-md font-semibold">Create New</div>
-          {/* <Button variant="ghost">clear All</Button> */}
+  const [open, setOpen] = useState(false);
+  const [selectedProjectType, setSelectedProjectType] = useState<string | null>(
+    null
+  );
+
+  const handleProjectTypeSelect = (x: string) => {
+    setSelectedProjectType(x);
+    setOpen(true);
+  };
+
+  const genericDropdown = (x: string) => {
+    console.log("did something", x);
+    handleProjectTypeSelect(x);
+  };
+
+  const dropdownItems = [
+    { label: "Daily Inspection", onSelect: genericDropdown },
+    { label: "Work Order", onSelect: genericDropdown },
+    { label: "Expense", onSelect: genericDropdown },
+    { label: "Assignment", onSelect: genericDropdown },
+    { label: "Accident", onSelect: genericDropdown },
+    { label: "Part", onSelect: genericDropdown },
+    { label: "Purchase Order", onSelect: genericDropdown },
+    { label: "Employee", onSelect: genericDropdown },
+    { label: "Vendor", onSelect: genericDropdown },
+    { label: "Receive | Adjust Inventory", onSelect: genericDropdown },
+    { label: "Receive Purchase Order", onSelect: genericDropdown },
+  ];
+
+  const handleCloseSheet = () => {
+    setOpen(false);
+    setSelectedProjectType(null);
+    // Reset all forms
+    // webForm.reset()
+    // mobileForm.reset()
+    // apiForm.reset()
+    // desktopForm.reset()
+    // designForm.reset()
+    // aiForm.reset()
+  };
+
+  const getCurrentForm = () => {
+    switch (selectedProjectType) {
+      case "Expense":
+        return <NewWarehouse />;
+    }
+  };
+
+  const projectTypes = [
+    {
+      id: "web-app",
+      label: "Web Application",
+      description: "Create a modern web application",
+      icon: Globe,
+    },
+    {
+      id: "mobile-app",
+      label: "Mobile App",
+      description: "Build a mobile application",
+      icon: Smartphone,
+    },
+    {
+      id: "api",
+      label: "API/Backend",
+      description: "Develop a backend API service",
+      icon: Database,
+    },
+    {
+      id: "desktop",
+      label: "Desktop App",
+      description: "Create a desktop application",
+      icon: Code,
+    },
+    {
+      id: "design",
+      label: "Design Project",
+      description: "UI/UX design project",
+      icon: Palette,
+    },
+    {
+      id: "ai-ml",
+      label: "AI/ML Project",
+      description: "Artificial Intelligence or Machine Learning project",
+      icon: Bot,
+    },
+  ];
+
+  function onSubmit(data: any) {
+    const selectedType = projectTypes.find(
+      (type) => type.id === selectedProjectType
+    );
+
+    toast("Project created successfully!", {
+      description: (
+        <div className="mt-2 space-y-2">
+          <div>
+            <p className="font-medium">{data.name}</p>
+            <p className="text-xs text-blue-600 font-medium">
+              Type: {selectedType?.label}
+            </p>
+          </div>
+          <p className="text-xs text-muted-foreground">{data.description}</p>
+          <p className="text-xs">
+            Deadline: {data.deadline.toLocaleDateString()}
+          </p>
         </div>
+      ),
+      duration: 8000,
+    });
 
+    handleCloseSheet();
+  }
+
+  function onError(errors: any) {
+    const errorMessages = Object.entries(errors).map(
+      ([field, error]: [string, any]) => {
+        return `${field}: ${error.message}`;
+      }
+    );
+
+    toast.error("Please fix the following errors:", {
+      description: (
+        <div className="mt-2">
+          <ul className="list-disc list-inside space-y-1 text-sm">
+            {errorMessages.map((message, index) => (
+              <li key={index}>{message}</li>
+            ))}
+          </ul>
+        </div>
+      ),
+      duration: 8000,
+    });
+  }
+
+  const renderFormContent = () => {
+    switch (selectedProjectType) {
+      case "Expense":
+        return <NewWarehouse />;
+    }
+  };
+
+  const selectedType = projectTypes.find(
+    (type) => type.id === selectedProjectType
+  );
+  const currentForm = getCurrentForm();
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button>
+            <Plus /> Quick Actions
+            <span className="sr-only">Create Something</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          className="w-48 rounded-lg"
+          // side={isMobile ? "bottom" : "right"}
+          // align={isMobile ? "end" : "start"}
+        >
+          <div className="w-full  *:p-3 items-end flex justify-between">
+            <div className="text-md font-semibold">Create New</div>
+            {/* <Button variant="ghost">clear All</Button> */}
+          </div>
+
+          <DropdownMenuItem>Equipment </DropdownMenuItem>
           <DropdownMenuItem>
-Equipment        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <RepairRequestForm />
-        </DropdownMenuItem>
-
-        {dropdownItems.map((item) => (
-          <DropdownMenuItem key={item.label} onSelect={item.onSelect}>
-            <span>{item.label}</span>
+            <RepairRequestForm />
           </DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+
+          {dropdownItems.map((item) => (
+            <DropdownMenuItem
+              key={item.label}
+              onClick={() => item.onSelect(item.label)}
+            >
+              <span>{item.label}</span>
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetContent className="w-[400px] sm:w-[540px]">
+          <SheetHeader>
+            <SheetTitle className="flex items-center gap-2">
+              {selectedType && <selectedType.icon className="h-5 w-5" />}
+              Create New {selectedType?.label || "Project"}
+            </SheetTitle>
+            <SheetDescription>
+              {selectedType?.description ||
+                "Fill out the form below to set up your new development project."}
+            </SheetDescription>
+          </SheetHeader>
+
+          <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
+            {renderFormContent()}
+          </ScrollArea>
+        </SheetContent>
+      </Sheet>
+    </>
   );
 }
