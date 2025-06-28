@@ -5,7 +5,7 @@ import NotificationsDropdown from "../views/headerMeterButton";
 
 import HeaderUploadButton from "../views/headerUploadButton";
 import HeaderProfileButton from "../views/profileHeaderButton";
-import HeaderSettingsButton from "../views/headerSettingsButton";
+import HeaderSettingsButton from "../views/setupButton";
 import { Input } from "../ui/input";
 import OrganizationHeaderButton from "../views/organizationHeaderButton";
 import DBToolsButton from "../views/dbToolsButton";

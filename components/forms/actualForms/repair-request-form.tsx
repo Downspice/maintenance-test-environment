@@ -56,7 +56,7 @@ import CheckboxWrapper from "@/components/forms/wrappers/CheckboxWrapper";
 interface triggerVariant {
   variant?: "icon" | "default";
 }
-export default function RepairRequestForm({ variant }: triggerVariant) {
+export default function RepairRequestFormButton({ variant }: triggerVariant) {
   document.body.style.pointerEvents = 'auto';
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);

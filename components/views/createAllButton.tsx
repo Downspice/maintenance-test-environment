@@ -8,20 +8,11 @@ import {
 } from "../ui/dropdown-menu";
 import RepairRequestForm from "../forms/actualForms/repair-request-form";
 import {
-  Plus,
-  ChevronDown,
-  Code,
-  Smartphone,
-  Globe,
-  Database,
-  Palette,
-  Bot,
+  Plus, 
 } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
-import { ScrollArea } from "@radix-ui/react-scroll-area";
-import { Form } from "react-hook-form";
-import InputWrapper from "../input-wrapper";
+import { ScrollArea } from "@radix-ui/react-scroll-area"; 
 import {
   SheetContent,
   SheetHeader,
@@ -46,7 +37,7 @@ export default function CreateAllButton() {
   );
 
   const handleDropdownOptionSelect = (x: string) => {
-    console.log("handleDropdownOptionSelect", x);
+    console.log("f", x);
     setSelectedProjectType(x);
     setOpen(true);
   };
@@ -57,6 +48,7 @@ export default function CreateAllButton() {
   };
 
   const dropdownItems = [
+    { label: "Repair Request", onSelect: genericDropdown },
     { label: "Daily Inspection", onSelect: genericDropdown },
     { label: "Work Order", onSelect: genericDropdown },
     { label: "Expense", onSelect: genericDropdown },
@@ -83,22 +75,23 @@ export default function CreateAllButton() {
   };
 
   const formComponents = {
-    "Daily Inspection": <InspectionForm/>,
-    "Work Order": <NewWorkOrderForm/>,
-    Expense: <GeneralExpense/>,
-    Assignment: <EquipmentAssignment/>,
-    Accident: <NewEmployeeForm/>,
-    Part: <NewEmployeeForm/>,
-    "Purchase Order": <NewPurchaseOrderForm/>,
-    Employee: <NewEmployeeForm/>,
-    Vendor: <NewVendor/>,
-    "Receive | Adjust Inventory": <NewEmployeeForm/>,
-    "Receive Purchase Order": <NewEmployeeForm/>,
+    "Repair Request": <RepairRequestForm />,
+    "Daily Inspection": <InspectionForm />,
+    "Work Order": <NewWorkOrderForm />,
+    Expense: <GeneralExpense />,
+    Assignment: <EquipmentAssignment />,
+    Accident: <NotCompleteMessage />,
+    Part: <NotCompleteMessage />,
+    "Purchase Order": <NewPurchaseOrderForm />,
+    Employee: <NotCompleteMessage />,
+    Vendor: <NewVendor />,
+    "Receive | Adjust Inventory": <NotCompleteMessage />,
+    "Receive Purchase Order": <NewPurchaseOrderForm />,
   };
   const renderFormContent = () => {
     const SelectedComponent = formComponents[selectedProjectType || ""];
     console.log("new selected", SelectedComponent);
-    return SelectedComponent ? SelectedComponent: null;
+    return SelectedComponent ? SelectedComponent : null;
   };
 
   function onSubmit(data: any) {
@@ -178,9 +171,6 @@ export default function CreateAllButton() {
             {/* <Button variant="ghost">clear All</Button> */}
           </div>
           <DropdownMenuItem>Equipment </DropdownMenuItem>
-          <DropdownMenuItem>
-            <RepairRequestForm />
-          </DropdownMenuItem>
 
           {dropdownItems.map((item) => (
             <DropdownMenuItem
@@ -206,7 +196,7 @@ export default function CreateAllButton() {
           </SheetHeader>
 
           <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
-            {renderFormContent()||"nothing else"}
+            {renderFormContent() || "nothing else"}
           </ScrollArea>
         </SheetContent>
       </Sheet>

@@ -11,7 +11,7 @@ import { BellDotIcon, Cog, Plus } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Input } from "../ui/input";
 import CreateAllButton from "./createAllButton";
-import HeaderSettingsButton from "./headerSettingsButton";
+import HeaderSettingsButton from "./setupButton";
 import NotificationsDropdown from "./headerNotificationsButton";
 import HeaderMeterButton from "./headerMeterButton";
 import HeaderProfileButton from "./profileHeaderButton";
