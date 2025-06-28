@@ -29,6 +29,8 @@ import NewPurchaseOrderForm from "../forms/actualForms/new-purchase-order-form";
 import GeneralExpense from "../forms/actualForms/new-general-expense";
 import NewWorkOrderForm from "../forms/actualForms/work-order-form";
 import EquipmentAssignment from "../forms/actualForms/assign-equipment";
+import NewAccident from "../forms/actualForms/new-accident";
+import AdjustInventoryForm from "../forms/actualForms/adjust-inventory-form";
 
 export default function CreateAllButton() {
   const [open, setOpen] = useState(false);
@@ -80,12 +82,12 @@ export default function CreateAllButton() {
     "Work Order": <NewWorkOrderForm />,
     Expense: <GeneralExpense />,
     Assignment: <EquipmentAssignment />,
-    Accident: <NotCompleteMessage />,
+    Accident: <NewAccident />,
     Part: <NotCompleteMessage />,
     "Purchase Order": <NewPurchaseOrderForm />,
-    Employee: <NotCompleteMessage />,
+    Employee: <NewEmployeeForm />,
     Vendor: <NewVendor />,
-    "Receive | Adjust Inventory": <NotCompleteMessage />,
+    "Receive | Adjust Inventory": <AdjustInventoryForm />,
     "Receive Purchase Order": <NewPurchaseOrderForm />,
   };
   const renderFormContent = () => {

@@ -9,11 +9,16 @@ export const vendorTypeOptions = [
   { value: "1", label: "Wholesale" },
 ];
 
-export const iconsOptionList=[
-    { value: "8", label: "Globe" },
+export const iconsOptionList = [
+  { value: "8", label: "Globe" },
   { value: "7", label: "Wrench" },
   { value: "6", label: "Screw" },
-]
+];
+
+export const inventoryAdjustmentType = [
+  { value: "Receipt", label: "Receipt" },
+  { value: "Issued", label: "Issued" },
+];
 export const rateDurationOptions = [
   { value: "8", label: "day" },
   { value: "7", label: "hour" },
@@ -25,7 +30,7 @@ export const stateProvinceOptions = [
   { value: "7", label: "Texan" },
   { value: "6", label: "Albany" },
   { value: "5", label: "New york" },
-  { value: "4", label: "Virginia" }
+  { value: "4", label: "Virginia" },
 ];
 export const equipmentOptionsList = [
   { value: "8", label: "Fire Extinguisher" },
@@ -108,7 +113,7 @@ export const carTypeOptionsList = [
 
 export const jobSiteOptionsList = [
   { value: "1", label: "Head Office" },
-  { value: "2", label: "New Branch" }
+  { value: "2", label: "New Branch" },
 ];
 
 export const equipmentCheckboxOptions: CheckboxOption[] = [
@@ -171,5 +176,5 @@ export const monthOptionList = [
   { value: "09", label: "September" },
   { value: "10", label: "October" },
   { value: "11", label: "November" },
-  { value: "12", label: "December" }
+  { value: "12", label: "December" },
 ];

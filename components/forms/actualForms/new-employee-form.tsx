@@ -366,7 +366,7 @@ export default function NewEmployeeForm() {
 
           <div className="flex justify-between gap-x-4 my-8 w-full">
             <Button className=" w-full">
-              <GitPullRequestArrow className="mr-2" /> Create Vendor
+              <GitPullRequestArrow className="mr-2" /> Save
             </Button>
           </div>
         </form>
