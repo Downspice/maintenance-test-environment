@@ -11,8 +11,7 @@ import {
   Plus, 
 } from "lucide-react";
 import { toast } from "sonner";
-import { useState } from "react";
-import { ScrollArea } from "@radix-ui/react-scroll-area"; 
+import { useState } from "react"; 
 import {
   SheetContent,
   SheetHeader,
@@ -31,6 +30,7 @@ import NewWorkOrderForm from "../forms/actualForms/work-order-form";
 import EquipmentAssignment from "../forms/actualForms/assign-equipment";
 import NewAccident from "../forms/actualForms/new-accident";
 import AdjustInventoryForm from "../forms/actualForms/adjust-inventory-form";
+import { ScrollArea } from "../ui/scroll-area";
 
 export default function CreateAllButton() {
   const [open, setOpen] = useState(false);
@@ -185,7 +185,7 @@ export default function CreateAllButton() {
         </DropdownMenuContent>
       </DropdownMenu>
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent className="w-[400px] sm:w-[540px]">
+        <SheetContent className="w-[400px] sm:w-2/3">
           <SheetHeader>
             <SheetTitle className="flex items-center gap-2">
               {/* {selectedType && <selectedType.icon className="h-5 w-5" />} */}
