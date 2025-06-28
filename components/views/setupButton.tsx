@@ -19,6 +19,8 @@ import {
 } from "../ui/sheet";
 import NewEmployeeForm from "../forms/actualForms/new-employee-form";
 import NotCompleteMessage from "@/app/(application)/workInprogress/working";
+import CompanySettings from "../forms/actualForms/company-setting-form";
+
 export default function HeaderSettingsButton() {
   const [open, setOpen] = useState(false);
   const [selectedProjectType, setSelectedProjectType] = useState<string | null>(
@@ -85,7 +87,7 @@ export default function HeaderSettingsButton() {
   };
 
   const formComponents = {
-    Settings: <NotCompleteMessage />,
+    Settings: <CompanySettings />,
     Locations: <NotCompleteMessage />,
     Warehouses: <NotCompleteMessage />,
     "Manage Users": <NotCompleteMessage />,

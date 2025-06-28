@@ -380,7 +380,7 @@ export default function CompanySettings() {
               </div>
             </TabsContent>
             <TabsContent value="Backups">
-              Change your password here.
+              BAck ups
             </TabsContent>
           </Tabs>
 
