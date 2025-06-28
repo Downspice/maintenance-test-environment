@@ -6,8 +6,7 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { GitPullRequestArrow } from "lucide-react";
-import ComboboxWrapper from "../wrappers/ComboboxWrapper";
+import { GitPullRequestArrow } from "lucide-react"; 
 import DatePickerWrapper from "../wrappers/DatePickerWrapper";
 import TextareaWrapper from "../wrappers/TextareaWrapper";
 import { toast } from "sonner";
@@ -68,15 +67,7 @@ export default function NewPurchaseOrderForm() {
     // Here you would typically send the data to your API
 
     toast.success("Work Order submitted successfully!");
-  }
-
-  const handleRowClick = (workOrderId: string, event: React.MouseEvent) => {
-    // Don't navigate if clicking on checkbox or other interactive elements
-    if ((event.target as HTMLElement).closest('input[type="checkbox"]')) {
-      return;
-    }
-    router.push(`/work-order/${workOrderId}`);
-  };
+  } 
 
   return (
     <div>

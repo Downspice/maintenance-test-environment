@@ -17,13 +17,11 @@ import {
   assigneeOptions,
 } from "@/lib/equipment-schema";
 import Fieldset from "@/components/customUI/fieldset";
-import {
-  conditionOptionsList,
-  equipmentOptionsList,
-  locationOptionsList,
-} from "@/lib/option-list";
+import { equipmentOptionsList, locationOptionsList } from "@/lib/option-list";
 import { toast } from "sonner";
-import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
+import {
+  ComboboxFieldWrapper, 
+} from "@/components/forms/wrappers/ComboboxWrapper";
 import { EditableDataTable } from "@/components/customUI/editableTable";
 import { Input } from "@/components/ui/input";
 import {
@@ -33,8 +31,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { priorityOptions } from "../work-orders/forms/newWorkOrderFormSheet";
-import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
+import { priorityOptions } from "../../../app/(application)/work-orders/forms/newWorkOrderFormSheet";
 
 interface triggerVariant {
   variant?: "icon" | "default";
@@ -106,56 +103,42 @@ export default function RepairRequestForm({ variant }: triggerVariant) {
         className="space-y-6"
       >
         <div className="flex flex-col">
-          <div className="grid grid-cols-2 space-x-3">
-            <div className="col-span-1 flex flex-col">
-              <ComboboxFieldWrapper
-                control={form.control}
-                name="equipment"
-                label="Equipment"
-                options={equipmentOptionsList}
-              />
-              <ComboboxFieldWrapper
-                control={form.control}
-                name="inspectedBy"
-                label="Inspected By"
-                options={assigneeOptions}
-              />
-              <DatePickerWrapper
-                control={form.control}
-                name="dueDate"
-                label="Date"
-              />
-              <InputWrapper
-                control={form.control}
-                name={"units"}
-                label={"Units"}
-                value={""}
-                type="number"
-              />
-              <ComboboxFieldWrapper
-                control={form.control}
-                name="condition"
-                label="Condition"
-                options={conditionOptionsList}
-              />
-            </div>
-            <div className="col-span-1 flex flex-col">
-              <TextareaWrapper
-                control={form.control}
-                name="condition"
-                label="Condition"
-                value={""}
-              />
-            </div>
-          </div>
+          <ComboboxFieldWrapper
+            control={form.control}
+            name="equipment"
+            label="Equipment"
+            options={equipmentOptionsList}
+          />
 
+          <ComboboxFieldWrapper
+            control={form.control}
+            name="requestedBy"
+            label="Requested By"
+            options={assigneeOptions}
+          />
+
+          <DatePickerWrapper
+            control={form.control}
+            name="dueDate"
+            label="Due Date"
+          />
+
+          <InputWrapper
+            control={form.control}
+            name={"repairBy"}
+            label={"Repair By"}
+            value={""}
+            type="number"
+            warning="(meter)"
+          />
+          
           <Fieldset
-            legend="Inspection Items"
+            legend="Repairs Needed"
             content={
               <EditableDataTable
                 data={people}
                 columns={columns}
-                defaultRow={{ id: Date.now(), ok: "", email: "" }}
+                defaultRow={{ id: Date.now(), repair: "", email: "" }}
                 onDataChange={(newData) => {
                   console.log("Updated Data:", newData);
                 }}
@@ -188,21 +171,21 @@ const people = [{}];
 
 type RepairRequestInterface = {
   id: number;
-  ok: string;
-  fault: string;
-  inspection: string;
+  repair: string;
+  type: string;
+  priority: string;
   laborTime: number;
   notes: string;
 };
 
 export const columns: ColumnDef<RepairRequestInterface>[] = [
   {
-    accessorKey: "ok",
-    header: "OK",
+    accessorKey: "repair",
+    header: "Repair",
     cell: ({ row, updateRow, rowIndex }: any) => (
       <Select
         value={row.original.name}
-        onValueChange={(e) => updateRow(rowIndex, "ok", e)}
+        onValueChange={(e) => updateRow(rowIndex, "repair", e)}
       >
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="All Locations" />
@@ -220,12 +203,12 @@ export const columns: ColumnDef<RepairRequestInterface>[] = [
     enableHiding: true,
   },
   {
-    accessorKey: "fault",
-    header: "Fault",
+    accessorKey: "type",
+    header: "Type",
     cell: ({ row, updateRow, rowIndex }: any) => (
       <Select
         value={row.original.name}
-        onValueChange={(e) => updateRow(rowIndex, "fault", e)}
+        onValueChange={(e) => updateRow(rowIndex, "type", e)}
       >
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="All Locations" />
@@ -243,12 +226,12 @@ export const columns: ColumnDef<RepairRequestInterface>[] = [
     enableHiding: true,
   },
   {
-    accessorKey: "inspection",
-    header: "Inspection",
+    accessorKey: "priority",
+    header: "Priority",
     cell: ({ row, updateRow, rowIndex }: any) => (
       <Select
         value={row.original.name}
-        onValueChange={(e) => updateRow(rowIndex, "inspection", e)}
+        onValueChange={(e) => updateRow(rowIndex, "priority", e)}
       >
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="All Locations" />
@@ -261,6 +244,18 @@ export const columns: ColumnDef<RepairRequestInterface>[] = [
           ))}
         </SelectContent>
       </Select>
+    ),
+    enableSorting: true,
+    enableHiding: true,
+  },
+  {
+    accessorKey: "laborTime",
+    header: "Labor Time",
+    cell: ({ row, updateRow, rowIndex }: any) => (
+      <Input
+        value={row.original.name}
+        onChange={(e) => updateRow(rowIndex, "laborTime", e)}
+      />
     ),
     enableSorting: true,
     enableHiding: true,
@@ -287,7 +282,7 @@ export const columns: ColumnDef<RepairRequestInterface>[] = [
           <Button
             variant="outline"
             size="icon"
-            onClick={() => alert(`Edit ${person.ok}`)}
+            onClick={() => alert(`Edit ${person.repair}`)}
           >
             <Camera />
           </Button>

@@ -5,8 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Camera, LucideTrash2, Save } from "lucide-react";
-import { ColumnDef } from "@tanstack/react-table";
+import { Save } from "lucide-react";
 // Form wrappers
 import InputWrapper from "@/components/forms/wrappers/InputWrapper";
 import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";
@@ -17,31 +16,18 @@ import {
   assigneeOptions,
   expenseOptions,
 } from "@/lib/equipment-schema";
-import Fieldset from "@/components/customUI/fieldset";
 import {
-  conditionOptionsList,
   equipmentOptionsList,
-  locationOptionsList,
 } from "@/lib/option-list";
 import { toast } from "sonner";
 import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
-import { EditableDataTable } from "@/components/customUI/editableTable";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { priorityOptions } from "../work-orders/forms/newWorkOrderFormSheet";
 import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
 import { costCenterOptions } from "@/components/forms/actualForms/work-order-form";
 
 interface triggerVariant {
   variant?: "icon" | "default";
 }
-export default function RepairRequestForm({ variant }: triggerVariant) {
+export default function GeneralExpense({ variant }: triggerVariant) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 

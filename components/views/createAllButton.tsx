@@ -30,6 +30,14 @@ import {
   Sheet,
 } from "../ui/sheet";
 import NewWarehouse from "../forms/actualForms/new-warehouse";
+import NotCompleteMessage from "@/app/(application)/workInprogress/working";
+import NewEmployeeForm from "../forms/actualForms/new-employee-form";
+import InspectionForm from "../forms/actualForms/new-inspection";
+import NewVendor from "../forms/actualForms/new-vendor-form";
+import NewPurchaseOrderForm from "../forms/actualForms/new-purchase-order-form";
+import GeneralExpense from "../forms/actualForms/new-general-expense";
+import NewWorkOrderForm from "../forms/actualForms/work-order-form";
+import EquipmentAssignment from "../forms/actualForms/assign-equipment";
 
 export default function CreateAllButton() {
   const [open, setOpen] = useState(false);
@@ -37,14 +45,15 @@ export default function CreateAllButton() {
     null
   );
 
-  const handleProjectTypeSelect = (x: string) => {
+  const handleDropdownOptionSelect = (x: string) => {
+    console.log("handleDropdownOptionSelect", x);
     setSelectedProjectType(x);
     setOpen(true);
   };
 
   const genericDropdown = (x: string) => {
     console.log("did something", x);
-    handleProjectTypeSelect(x);
+    handleDropdownOptionSelect(x);
   };
 
   const dropdownItems = [
@@ -73,55 +82,28 @@ export default function CreateAllButton() {
     // aiForm.reset()
   };
 
-  const getCurrentForm = () => {
-    switch (selectedProjectType) {
-      case "Expense":
-        return <NewWarehouse />;
-    }
+  const formComponents = {
+    "Daily Inspection": <InspectionForm/>,
+    "Work Order": <NewWorkOrderForm/>,
+    Expense: <GeneralExpense/>,
+    Assignment: <EquipmentAssignment/>,
+    Accident: <NewEmployeeForm/>,
+    Part: <NewEmployeeForm/>,
+    "Purchase Order": <NewPurchaseOrderForm/>,
+    Employee: <NewEmployeeForm/>,
+    Vendor: <NewVendor/>,
+    "Receive | Adjust Inventory": <NewEmployeeForm/>,
+    "Receive Purchase Order": <NewEmployeeForm/>,
+  };
+  const renderFormContent = () => {
+    const SelectedComponent = formComponents[selectedProjectType || ""];
+    console.log("new selected", SelectedComponent);
+    return SelectedComponent ? SelectedComponent: null;
   };
 
-  const projectTypes = [
-    {
-      id: "web-app",
-      label: "Web Application",
-      description: "Create a modern web application",
-      icon: Globe,
-    },
-    {
-      id: "mobile-app",
-      label: "Mobile App",
-      description: "Build a mobile application",
-      icon: Smartphone,
-    },
-    {
-      id: "api",
-      label: "API/Backend",
-      description: "Develop a backend API service",
-      icon: Database,
-    },
-    {
-      id: "desktop",
-      label: "Desktop App",
-      description: "Create a desktop application",
-      icon: Code,
-    },
-    {
-      id: "design",
-      label: "Design Project",
-      description: "UI/UX design project",
-      icon: Palette,
-    },
-    {
-      id: "ai-ml",
-      label: "AI/ML Project",
-      description: "Artificial Intelligence or Machine Learning project",
-      icon: Bot,
-    },
-  ];
-
   function onSubmit(data: any) {
-    const selectedType = projectTypes.find(
-      (type) => type.id === selectedProjectType
+    const selectedType = dropdownItems.find(
+      (type) => type.label === selectedProjectType
     );
 
     toast("Project created successfully!", {
@@ -166,17 +148,17 @@ export default function CreateAllButton() {
     });
   }
 
-  const renderFormContent = () => {
-    switch (selectedProjectType) {
-      case "Expense":
-        return <NewWarehouse />;
-    }
-  };
+  // const renderFormContent = () => {
+  //   switch (selectedProjectType) {
+  //     case "Expense":
+  //       return <NewWarehouse />;
+  //   }
+  // };
 
-  const selectedType = projectTypes.find(
-    (type) => type.id === selectedProjectType
+  const selectedType = dropdownItems.find(
+    (type) => type.label === selectedProjectType
   );
-  const currentForm = getCurrentForm();
+  // const currentForm = getCurrentForm();
   return (
     <>
       <DropdownMenu>
@@ -195,7 +177,6 @@ export default function CreateAllButton() {
             <div className="text-md font-semibold">Create New</div>
             {/* <Button variant="ghost">clear All</Button> */}
           </div>
-
           <DropdownMenuItem>Equipment </DropdownMenuItem>
           <DropdownMenuItem>
             <RepairRequestForm />
@@ -215,17 +196,17 @@ export default function CreateAllButton() {
         <SheetContent className="w-[400px] sm:w-[540px]">
           <SheetHeader>
             <SheetTitle className="flex items-center gap-2">
-              {selectedType && <selectedType.icon className="h-5 w-5" />}
+              {/* {selectedType && <selectedType.icon className="h-5 w-5" />} */}
               Create New {selectedType?.label || "Project"}
             </SheetTitle>
             <SheetDescription>
-              {selectedType?.description ||
-                "Fill out the form below to set up your new development project."}
+              {/* {selectedType?.label ||
+                "Fill out the form below to set up your new development project."} */}
             </SheetDescription>
           </SheetHeader>
 
           <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
-            {renderFormContent()}
+            {renderFormContent()||"nothing else"}
           </ScrollArea>
         </SheetContent>
       </Sheet>

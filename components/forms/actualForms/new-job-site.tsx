@@ -31,7 +31,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { priorityOptions } from "../work-orders/forms/newWorkOrderFormSheet";
+import { priorityOptions } from "../../../app/(application)/work-orders/forms/newWorkOrderFormSheet";
 import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
 
 interface triggerVariant {
