@@ -22,6 +22,7 @@ import CompanySettings from "../forms/actualForms/company-setting-form";
 import { ScrollArea } from "../ui/scroll-area";
 import LocationView from "./locationView";
 import WarehouseSetup from "./warehouseView";
+import ShippingView from "./shipping/shippingVieew";
 
 export default function HeaderSettingsButton() {
   const [open, setOpen] = useState(false);
@@ -94,7 +95,7 @@ export default function HeaderSettingsButton() {
     Warehouses: <WarehouseSetup />,
     "Manage Users": <NotCompleteMessage />,
     "User Preferences": <NotCompleteMessage />,
-    "PO Shipping Address": <NotCompleteMessage />,
+    "PO Shipping Address": <ShippingView />,
     "PM Schedule Templates": <NotCompleteMessage />,
     Associations: <NotCompleteMessage />,
     "Part Kits": <NotCompleteMessage />,

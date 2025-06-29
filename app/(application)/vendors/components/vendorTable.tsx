@@ -487,7 +487,7 @@ export default function VendorDataTable() {
   ];
 
   return (
-    <div className="">
+    <div className="max-w-full">
       {/* <div className="mb-8">
          
 
