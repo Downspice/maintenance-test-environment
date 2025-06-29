@@ -9,7 +9,6 @@ import {
 } from "../ui/dropdown-menu";
 import { Separator } from "../ui/separator";
 import { useState } from "react";
-import { ScrollArea } from "@radix-ui/react-scroll-area";
 import {
   SheetContent,
   SheetHeader,
@@ -20,6 +19,8 @@ import {
 import NewEmployeeForm from "../forms/actualForms/new-employee-form";
 import NotCompleteMessage from "@/app/(application)/workInprogress/working";
 import CompanySettings from "../forms/actualForms/company-setting-form";
+import { ScrollArea } from "../ui/scroll-area";
+import LocationView from "./locationView";
 
 export default function HeaderSettingsButton() {
   const [open, setOpen] = useState(false);
@@ -88,7 +89,7 @@ export default function HeaderSettingsButton() {
 
   const formComponents = {
     Settings: <CompanySettings />,
-    Locations: <NotCompleteMessage />,
+    Locations: <LocationView />,
     Warehouses: <NotCompleteMessage />,
     "Manage Users": <NotCompleteMessage />,
     "User Preferences": <NotCompleteMessage />,
@@ -149,7 +150,7 @@ export default function HeaderSettingsButton() {
       </DropdownMenu>
 
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent className="w-[400px] sm:w-[540px]">
+        <SheetContent className="w-[400px] sm:w-3/4">
           <SheetHeader>
             <SheetTitle className="flex items-center gap-2">
               {/* {selectedType && <selectedType.icon className="h-5 w-5" />} */}

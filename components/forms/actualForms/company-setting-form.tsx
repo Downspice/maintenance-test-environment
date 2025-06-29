@@ -59,7 +59,7 @@ export default function CompanySettings() {
     <div>
       <Form {...vendorForm}>
         <form onSubmit={vendorForm.handleSubmit((data) => handleSubmit(data))}>
-          <Tabs defaultValue="Program Setting" className="w-full">
+          <Tabs defaultValue="Company Info" className="w-full">
             <TabsList>
               <TabsTrigger value="Company Info">Company Info</TabsTrigger>
               <TabsTrigger value="Program Setting">Program Setting</TabsTrigger>
@@ -380,7 +380,7 @@ export default function CompanySettings() {
               </div>
             </TabsContent>
             <TabsContent value="Backups">
-              BAck ups
+              Not Applicable as it is a web application
             </TabsContent>
           </Tabs>
 
