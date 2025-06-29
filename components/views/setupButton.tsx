@@ -21,6 +21,7 @@ import NotCompleteMessage from "@/app/(application)/workInprogress/working";
 import CompanySettings from "../forms/actualForms/company-setting-form";
 import { ScrollArea } from "../ui/scroll-area";
 import LocationView from "./locationView";
+import WarehouseSetup from "./warehouseView";
 
 export default function HeaderSettingsButton() {
   const [open, setOpen] = useState(false);
@@ -90,7 +91,7 @@ export default function HeaderSettingsButton() {
   const formComponents = {
     Settings: <CompanySettings />,
     Locations: <LocationView />,
-    Warehouses: <NotCompleteMessage />,
+    Warehouses: <WarehouseSetup />,
     "Manage Users": <NotCompleteMessage />,
     "User Preferences": <NotCompleteMessage />,
     "PO Shipping Address": <NotCompleteMessage />,
