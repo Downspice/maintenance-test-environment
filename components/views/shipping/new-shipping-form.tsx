@@ -62,7 +62,8 @@ export default function NewShipToForm() {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <div className="flex w-full items-end">
+        <div className="flex justify-between w-full">
+            <div></div>
           <Button>
             <Plus />
             New
