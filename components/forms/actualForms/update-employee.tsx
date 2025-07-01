@@ -9,6 +9,8 @@ import { GitPullRequestArrow, UserRoundCheck } from "lucide-react";
 import DatePickerWrapper from "../wrappers/DatePickerWrapper";
 import { toast } from "sonner";
 import InputWrapper from "../wrappers/InputWrapper";
+import { ComboboxFieldWrapper } from "../wrappers/ComboboxWrapper";
+import { renewalOptionsList } from "@/lib/option-list";
 // Define the form schema with Zod
 export const updateEmployeeSchema = z.object({
   // employeeId: z.string({
@@ -23,7 +25,7 @@ export const updateEmployeeSchema = z.object({
   empNotes: z.string({}).optional(),
 });
 
-export default function UpdateEmployeeForm() {
+export default function UpdateEmployeeRenewalForm() {
   const updateEmployee = useForm<z.infer<typeof updateEmployeeSchema>>({
     resolver: zodResolver(updateEmployeeSchema),
     // defaultValues: {
@@ -50,6 +52,12 @@ export default function UpdateEmployeeForm() {
           <div id="fields">
             <div className="pt-4">
               <div className="grid grid-cols-1 gap-4 ">
+                <ComboboxFieldWrapper
+                  control={updateEmployee.control}
+                  name="name"
+                  label="Name"
+                  options={renewalOptionsList}
+                />
                 <DatePickerWrapper
                   control={updateEmployee.control}
                   name="issued_on"
@@ -66,6 +74,8 @@ export default function UpdateEmployeeForm() {
                   control={updateEmployee.control}
                   name="empNotes"
                   label="NOTES"
+                  type={""}
+                  value={""}
                 />
               </div>
             </div>

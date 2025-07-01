@@ -24,7 +24,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useDialog } from "@/lib/dialog-provider";
-import UpdateEmployeeForm from "@/components/forms/actualForms/update-employee";
+import UpdateEmployeeRenewalForm from "@/components/forms/actualForms/update-employee";
 import {
   Popover,
   PopoverContent,
@@ -278,7 +278,7 @@ export function EmployeesDataTable({ realServer }: EmployeesDueDataTableProps) {
     openDialog({
       title: `Update User (${item.name}'s)`,
       description: `Fill out the form to update an ${item.name}'s due date`,
-      content: <UpdateEmployeeForm />,
+      content: <UpdateEmployeeRenewalForm />,
       size: dialogSize,
     });
   };

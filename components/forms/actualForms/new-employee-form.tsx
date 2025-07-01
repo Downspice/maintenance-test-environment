@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { GitPullRequestArrow } from "lucide-react";
+import { GitPullRequestArrow, Pen, Plus, Trash2 } from "lucide-react";
 import TextareaWrapper from "../wrappers/TextareaWrapper";
 import { toast } from "sonner";
 import InputWrapper from "../wrappers/InputWrapper";
@@ -36,6 +36,25 @@ import {
 } from "@/components/ui/select";
 import FileUploadWrapper from "../wrappers/FileUploadWrapper";
 import CheckboxWrapper from "../wrappers/CheckboxWrapper";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import UpdateEmployeeRenewalForm from "./update-employee";
+import { useSheet } from "@/lib/sheet-providers";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 // Define the form schema with Zod
 export const vendorSchema = z.object({
@@ -50,6 +69,8 @@ export default function NewEmployeeForm() {
   const [customFields, setCustomFields] = useState<
     { name: string; value: string }[]
   >([]);
+
+  const [open, setOpen] = useState(false);
 
   const vendorForm = useForm<z.infer<typeof vendorSchema>>({
     resolver: zodResolver(vendorSchema),
@@ -341,7 +362,68 @@ export default function NewEmployeeForm() {
               </div>
             </TabsContent>
             <TabsContent value="renewals">
-              Change your password here.
+              <div className="flex items-end space-y-2 flex-col">
+                <Sheet open={open} onOpenChange={setOpen}>
+                  <SheetTrigger asChild>
+                    <Button className="w-fit">
+                      <Plus />
+                      Create New
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent className="w-3/4">
+                    <SheetHeader>
+                      <SheetTitle>Create Renewal</SheetTitle>
+                      <SheetDescription>
+                        Fill out the form below to create a new Renewal.
+                      </SheetDescription>
+                    </SheetHeader>
+                    <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
+                      <UpdateEmployeeRenewalForm />
+                    </ScrollArea>
+                  </SheetContent>
+                </Sheet>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Renewal</TableHead>
+                      <TableHead>Issued</TableHead>
+                      <TableHead>Expired</TableHead>
+                      <TableHead>Notes</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {renewalData.map((data) => (
+                      <TableRow key={data.id}>
+                        <TableCell>{data.renewalName}</TableCell>
+                        <TableCell>{data.dateIssued}</TableCell>
+                        <TableCell>{data.dateExpired}</TableCell>
+                        <TableCell>{data.notes}</TableCell>
+                        <TableCell>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() =>
+                              handleDeleteContact(data.renewalName)
+                            }
+                          >
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() =>
+                              handleDeleteContact(data.renewalName)
+                            }
+                          >
+                            <Pen className="h-4 w-4 text-blue-400" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </TabsContent>
             <TabsContent value="notifications">
               <div className="grid grid-cols-2">
@@ -368,11 +450,13 @@ export default function NewEmployeeForm() {
                 <div className="col-span-2">
                   <div className="grid grid-cols-4">
                     <div className="col-span-1">Equipment Name</div>
-                    <div className="col-span-3">Options</div>{" "}
+                    <div className="col-span-3">Options</div>
                   </div>
                   {equipmentOptionsList.map((equipment) => (
                     <div className="grid grid-cols-4" key={equipment.value}>
-                      <div className="col-span-1 flex item-baseline ">{equipment.label}</div>
+                      <div className="col-span-1 flex item-baseline ">
+                        {equipment.label}
+                      </div>
                       <div className="col-span-3">
                         <CheckboxWrapper
                           control={vendorForm.control}
@@ -412,3 +496,51 @@ export default function NewEmployeeForm() {
     </div>
   );
 }
+
+const renewalData = [
+  {
+    id: 1,
+    renewalName: "Pesticide Applicator",
+    dateIssued: "2023-05-12",
+    dateExpired: "2026-05-11",
+    notes: "Renew before expiry for seamless operations",
+  },
+  {
+    id: 2,
+    renewalName: "Hazardous Materials",
+    dateIssued: "2022-08-20",
+    dateExpired: "2025-08-20",
+  },
+  {
+    id: 3,
+    renewalName: "Safety Materials",
+    dateIssued: "2024-01-15",
+    dateExpired: "2027-01-14",
+    notes: "Requires annual safety audit",
+  },
+  {
+    id: 4,
+    renewalName: "Pesticide Applicator",
+    dateIssued: "2021-11-30",
+    dateExpired: "2024-11-29",
+  },
+  {
+    id: 5,
+    renewalName: "Hazardous Materials",
+    dateIssued: "2023-03-10",
+    dateExpired: "2026-03-10",
+    notes: "Handled by environmental compliance team",
+  },
+];
+
+interface RenewalItem {
+  id: number;
+  renewalName: string;
+  dateIssued: string; // Format: YYYY-MM-DD
+  dateExpired: string; // Format: YYYY-MM-DD
+  notes?: string;
+}
+
+const handleDeleteContact = (contactId: string) => {
+  console.log("Delete contact:", contactId);
+};

@@ -119,6 +119,12 @@ export const termsOptionsList = [
   { value: "4", label: "Prepaid" },
 ];
 
+export const renewalOptionsList = [
+  { value: "1", label: " Hazardous Materials" },
+  { value: "2", label: "Pesticide Applicator" },
+  { value: "3", label: "Safety Materials" },
+];
+
 export const makeOptionsList = [
   { value: "1", label: "Azure" },
   { value: "2", label: "Test 2" },
