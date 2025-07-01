@@ -29,6 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import FileUploadWrapper from "../wrappers/FileUploadWrapper";
 
 // Define the form schema with Zod
 export const vendorSchema = z.object({
@@ -198,11 +199,12 @@ export default function NewEmployeeForm() {
                     value={undefined}
                   />
                 </div>
+                <FormSubheader header={"Miscellaneous"} />
                 <CustomFieldsWrapper
                   control={vendorForm.control}
                   name="customFields"
                   label="Custom Fields"
-                  maxFields={10}
+                  maxFields={4}
                 />
               </div>
             </TabsContent>
@@ -358,9 +360,19 @@ export default function NewEmployeeForm() {
                 </div>
               </div>
             </TabsContent>
-            <TabsContent value="photos">Change your password here.</TabsContent>
+            <TabsContent value="photos">
+              <FileUploadWrapper
+                control={vendorForm.control}
+                name="Photos"
+                label="Photos"
+              />
+            </TabsContent>
             <TabsContent value="attachments">
-              Change your password here.
+              <FileUploadWrapper
+                control={vendorForm.control}
+                name="Attachments"
+                label="Attachments"
+              />
             </TabsContent>
           </Tabs>
 

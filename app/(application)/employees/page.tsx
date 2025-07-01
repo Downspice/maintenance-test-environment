@@ -93,7 +93,7 @@ export default function EmployeesPage() {
     openSheet({
       title: "Create Employee",
       description: "Fill out the form below to create a new Employee.",
-      content: <NotCompleteMessage />,
+      content: <NewEmployeeForm />,
     });
   };
 

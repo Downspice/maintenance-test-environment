@@ -9,6 +9,44 @@ export const vendorTypeOptions = [
   { value: "1", label: "Wholesale" },
 ];
 
+export const reportTypeOptionsList = [
+  { value: "Accident History", label: "Accident History" },
+  { value: "Assignment History", label: "Assignment History" },
+  { value: "Assignment Ticket", label: "Assignment Ticket" },
+  { value: "Common Part", label: "Common Part" },
+];
+
+export const reportFrequencyTypeOptionsList = [
+  { value: "Daily", label: "Daily" },
+  { value: "Monthly", label: "Monthly" },
+  { value: "Quarterly", label: "Quarterly" },
+  { value: "Annually", label: "Annually" },
+];
+
+export const dateIntervalOptionsList = [
+  { value: "This Month", label: "This Month" },
+  { value: "Last Month", label: "Last Month" },
+  { value: "This Quarter", label: "This Quarter" },
+  { value: "Last Quarter", label: "Last Quarter" },
+  { value: "This year", label: "This year" },
+  { value: "Last year", label: "Last year" },
+  { value: "All", label: "All" },
+];
+export const dateFieldTypeOptionsList = [
+  { value: "Accident.Date", label: "Accident.Date" },
+  { value: "None", label: "None" },
+];
+
+export const reportCategoryTypeOptionsList = [
+  { value: "Presses (Drilling)", label: "Presses (Drilling)" },
+  {
+    value: "Presses (Production Equipment)",
+    label: "Presses (Production Equipment)",
+  },
+  { value: "Pumps", label: "Pumps (Production Equipment)" },
+  { value: "Presses (Drilling)", label: "Presses (Drilling)" },
+];
+
 export const iconsOptionList = [
   { value: "8", label: "Globe" },
   { value: "7", label: "Wrench" },

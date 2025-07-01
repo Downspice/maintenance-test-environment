@@ -9,14 +9,13 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useSheet } from "@/lib/sheet-providers";
-import { VendorPageDataTable } from "./components/vendors.page.datatable";
-import NewVendor from "@/components/forms/actualForms/new-vendor-form";
 import { locationOptionsList, vendorTypeOptions } from "@/lib/option-list";
 import NotCompleteMessage from "../workInprogress/working";
 import VendorDataTable from "./components/vendorTable";
+import NewVendor from "@/components/forms/actualForms/new-vendor-form";
+
 export default function VendorsPage() {
   const [filters, setFilters] = useState({
     equipment: "",
@@ -52,7 +51,7 @@ export default function VendorsPage() {
   };
 
   const handleSelectChange = (
-    key: "equipment" | "location" | "custom",
+    key: "equipment" | "location" | "custom"| "search",
     value: string
   ) => {
     if (value === "new") {
@@ -83,7 +82,7 @@ export default function VendorsPage() {
     openSheet({
       title: "Create Vendor",
       description: "Fill out the form below to create a new Vendor." ,
-      content: <NotCompleteMessage />,
+      content: <NewVendor />,
     });
   };
 

@@ -9,15 +9,8 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useSheet } from "@/lib/sheet-providers";
-import { InspectionPageDataTable } from "./components/inspections.page.dataTable";
-import NewInspection from "@/components/forms/actualForms/new-inspection-form";
-import { VendorPageDataTable } from "./components/vendors.page.datatable";
-import NewVendor from "@/components/forms/actualForms/new-vendor-form";
-import { PurchaseOrderPageDataTable } from "./component/purchase.order.page.dataTable";
-import NewPurchaseOrderForm from "@/components/forms/actualForms/new-purchase-order-form";
 import NotCompleteMessage from "../workInprogress/working";import PurchaseOrderDataTable from "./table/purchaseOrderTable";
 import { dateFilterOptionsList, locationOptionsList } from "@/lib/option-list";
 
@@ -65,7 +58,7 @@ export default function EmployeesPage() {
   };
 
   const handleSelectChange = (
-    key: "equipment" | "location" | "custom",
+    key: "equipment" | "location" | "custom"|"search",
     value: string
   ) => {
     if (value === "new") {
