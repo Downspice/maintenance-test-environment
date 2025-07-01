@@ -17,7 +17,12 @@ import {
 } from "@/lib/equipment-schema";
 import SelectWrapper from "../wrappers/SelectWrapper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { locationOptionsList } from "@/lib/option-list";
+import {
+  EmployeeCheckboxOptions,
+  equipmentCheckboxOptions,
+  equipmentOptionsList,
+  locationOptionsList,
+} from "@/lib/option-list";
 import FormSubheader from "../ui/formSubheader";
 import CustomFieldsWrapper from "../wrappers/CustomFieldsWrapper";
 import DatePickerWrapper from "../wrappers/DatePickerWrapper";
@@ -30,6 +35,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import FileUploadWrapper from "../wrappers/FileUploadWrapper";
+import CheckboxWrapper from "../wrappers/CheckboxWrapper";
 
 // Define the form schema with Zod
 export const vendorSchema = z.object({
@@ -342,7 +348,7 @@ export default function NewEmployeeForm() {
                 <div className="col-span-1">
                   <Select>
                     <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select a fruit" />
+                      <SelectValue placeholder="Select a Location" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
@@ -357,6 +363,26 @@ export default function NewEmployeeForm() {
                       </SelectGroup>
                     </SelectContent>
                   </Select>
+                </div>
+
+                <div className="col-span-2">
+                  <div className="grid grid-cols-4">
+                    <div className="col-span-1">Equipment Name</div>
+                    <div className="col-span-3">Options</div>{" "}
+                  </div>
+                  {equipmentOptionsList.map((equipment) => (
+                    <div className="grid grid-cols-4" key={equipment.value}>
+                      <div className="col-span-1 flex item-baseline ">{equipment.label}</div>
+                      <div className="col-span-3">
+                        <CheckboxWrapper
+                          control={vendorForm.control}
+                          name={"tracker"}
+                          label={""}
+                          options={EmployeeCheckboxOptions}
+                        />
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </TabsContent>

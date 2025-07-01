@@ -58,7 +58,7 @@ interface Task {
 }
 
 // Sample data with custom sub-row structure
-const allEmployees: Employee[] = [
+const allEquipments: Employee[] = [
   {
     id: 1,
     carName: "Toyota Camry",
@@ -374,7 +374,7 @@ const getAllEmployees = (employees: Employee[]): Employee[] => {
   return result;
 };
 
-const flatEmployees = getAllEmployees(allEmployees);
+const flatEmployees = getAllEmployees(allEquipments);
 const carNumber = [...new Set(flatEmployees.map((emp) => emp.carNumber))];
 const carModel = [...new Set(flatEmployees.map((emp) => emp.carModel))];
 const serialNumber = [...new Set(flatEmployees.map((emp) => emp.serialNumber))];
@@ -385,12 +385,12 @@ const taskStatus = [...new Set(flatEmployees.map((emp) => emp.taskStatus))];
 export default function DataTableDemo() {
   const [isServerMode, setIsServerMode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [currentData, setCurrentData] = useState(allEmployees.slice(0, 5)); // Show first 5 for demo
+  const [currentData, setCurrentData] = useState(allEquipments.slice(0, 5)); // Show first 5 for demo
   const [paginationInfo, setPaginationInfo] = useState({
     pageIndex: 0,
     pageSize: 5,
-    totalPages: Math.ceil(allEmployees.length / 5),
-    totalRows: allEmployees.length,
+    totalPages: Math.ceil(allEquipments.length / 5),
+    totalRows: allEquipments.length,
   });
 
   const handleRowClick = (row: any) => {
@@ -496,7 +496,7 @@ export default function DataTableDemo() {
       // Simulate fetching data for the new page
       const startIndex = newPageIndex * paginationInfo.pageSize;
       const endIndex = startIndex + paginationInfo.pageSize;
-      const newData = allEmployees.slice(startIndex, endIndex);
+      const newData = allEquipments.slice(startIndex, endIndex);
 
       setCurrentData(newData);
       setPaginationInfo((prev) => ({
@@ -517,10 +517,10 @@ export default function DataTableDemo() {
 
       // Simulate server delay
       setTimeout(() => {
-        let filteredData = allEmployees;
+        let filteredData = allEquipments;
 
         if (searchValue.trim()) {
-          filteredData = allEmployees.filter(
+          filteredData = allEquipments.filter(
             (emp) =>
               emp.carName.toLowerCase().includes(searchValue.toLowerCase()) ||
               emp.carNumber.toLowerCase().includes(searchValue.toLowerCase()) ||
@@ -811,7 +811,7 @@ export default function DataTableDemo() {
 
       <AdvancedDataTable
         columns={columns}
-        data={isServerMode ? currentData : allEmployees}
+        data={isServerMode ? currentData : allEquipments}
         defaultVisibleColumns={["name", "email", "department", "actions"]}
         onRowClick={handleRowClick}
         onCellClick={handleCellClick}
