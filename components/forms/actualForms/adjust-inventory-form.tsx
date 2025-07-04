@@ -11,30 +11,15 @@ import TextareaWrapper from "../wrappers/TextareaWrapper";
 import { toast } from "sonner";
 import InputWrapper from "../wrappers/InputWrapper";
 import {
-  categoryOptions,
-  employeeTypeOptions,
-  statusOptions,
   substituteOptions,
   vendorOptions,
   warehouseOptions,
 } from "@/lib/equipment-schema";
 import SelectWrapper from "../wrappers/SelectWrapper";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   inventoryAdjustmentType,
-  locationOptionsList,
 } from "@/lib/option-list";
-import FormSubheader from "../ui/formSubheader";
-import CustomFieldsWrapper from "../wrappers/CustomFieldsWrapper";
 import DatePickerWrapper from "../wrappers/DatePickerWrapper";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { ComboboxFieldWrapper } from "../wrappers/ComboboxWrapper";
 
 // Define the form schema with Zod

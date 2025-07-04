@@ -11,8 +11,10 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { useSheet } from "@/lib/sheet-providers";
-import NotCompleteMessage from "../workInprogress/working";import InvoicesDataTable from "./table/invoicesDataTable";
+import NotCompleteMessage from "../workInprogress/working";
+import InvoicesDataTable from "./table/invoicesDataTable";
 import { locationOptionsList } from "@/lib/option-list";
+import NewInvoiceForm from "@/components/forms/actualForms/new-invoice-form";
 
 const ActiveDropdown = [
   {
@@ -60,7 +62,7 @@ export default function EmployeesPage() {
   };
 
   const handleSelectChange = (
-    key: "equipment" | "location" | "custom",
+    key: "equipment" | "location" | "custom" | "search",
     value: string
   ) => {
     if (value === "new") {
@@ -88,9 +90,9 @@ export default function EmployeesPage() {
   const createEquipment = () => {
     console.log("ïn the function");
     openSheet({
-      title: "Create Inventory",
-      description: "Fill out the form below to create a new Inventory.",
-      content: <NotCompleteMessage />,
+      title: "Create Invoice",
+      description: "Fill out the form below to create a new Invoice.",
+      content: <NewInvoiceForm />,
     });
   };
 

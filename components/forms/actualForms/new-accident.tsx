@@ -2,27 +2,12 @@
 
 import { useState } from "react";
 import {
-  ErrorOption,
-  FieldArray,
-  FieldArrayPath,
-  FieldError,
-  FieldErrors,
-  FieldName,
-  FieldValues,
-  FormState,
-  InternalFieldName,
-  ReadFormState,
-  RegisterOptions,
-  SubmitErrorHandler,
-  SubmitHandler,
   useForm,
-  UseFormRegisterReturn,
 } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Camera, LucideTrash2, Save } from "lucide-react";
-import { ColumnDef } from "@tanstack/react-table";
+import { Save } from "lucide-react";
 // Form wrappers
 import InputWrapper from "@/components/forms/wrappers/InputWrapper";
 import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";
@@ -31,39 +16,16 @@ import {
   equipmentSchema,
   type EquipmentFormValues,
   assigneeOptions,
-  expenseOptions,
   accidentOptions,
 } from "@/lib/equipment-schema";
-import Fieldset from "@/components/customUI/fieldset";
 import {
-  conditionOptionsList,
-  destinationOptionsList,
   equipmentOptionsList,
-  jobSiteOptionsList,
-  locationOptionsList,
-  rateDurationOptions,
-  stateProvinceOptions,
-  vendorTypeOptions,
 } from "@/lib/option-list";
 import { toast } from "sonner";
 import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
-import { EditableDataTable } from "@/components/customUI/editableTable";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { priorityOptions } from "../../../app/(application)/work-orders/forms/newWorkOrderFormSheet";
 import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
 import { costCenterOptions } from "@/components/forms/actualForms/work-order-form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import RadioGroupWrapper, {
-  RadioOption,
-} from "@/components/forms/wrappers/RadioGroupWrapper";
-import SingleCheckboxWrapper from "@/components/forms/wrappers/SingleCheckboxWrapper";
 
 interface triggerVariant {
   variant?: "icon" | "default";

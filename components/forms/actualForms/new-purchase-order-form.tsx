@@ -41,7 +41,7 @@ const BuyerList = [
   { label: "Sarfo", value: "40308" },
 ];
 
-const termsList = [
+export const termsList = [
   { label: "Loan", value: "5604" },
   { label: "Full Payment", value: "40307" },
   { label: "Part Payment", value: "40308" },
