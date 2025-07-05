@@ -11,7 +11,8 @@ import {
 } from "@/components/ui/select";
 import { useSheet } from "@/lib/sheet-providers";
 import EquipmentForm from "./components/new-equipment-form";
-import NotCompleteMessage from "../workInprogress/working";import NewEquipmentDataTable from "./components/table/equipmentDatatable";
+import NotCompleteMessage from "../workInprogress/working";
+import NewEquipmentDataTable from "./components/table/equipmentDatatable";
 import UpdateMeters from "./components/update-meters-form";
 import { locationOptionsList } from "@/lib/option-list";
 
@@ -28,7 +29,7 @@ const equipmentActiveDropdown = [
   { value: "Transferred", label: "Transferred" },
   { value: "deleted", label: "Deleted" },
   { value: "all", label: "All" },
-]; 
+];
 export default function EquipmentPage() {
   const [filters, setFilters] = useState({
     equipment: "",
@@ -88,7 +89,7 @@ export default function EquipmentPage() {
   useEffect(() => {
     buildURL({ ...filters, search: debouncedSearch });
   }, [debouncedSearch]);
- 
+
   return (
     <div className="flex flex-col container mx-auto py-10 space-y-4">
       <div className="flex flex-row items-center space-x-2">
@@ -127,9 +128,8 @@ export default function EquipmentPage() {
           </Select>
         </div>
         <div className="flex flex-row space-x-2">
-           
           <EquipmentForm />
-           <UpdateMeters/>
+          <UpdateMeters />
         </div>
       </div>
       <div>
