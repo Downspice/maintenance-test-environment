@@ -9,16 +9,10 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useSheet } from "@/lib/sheet-providers";
-import { InspectionPageDataTable } from "./components/inspections.page.dataTable";
-import NewInspection from "@/components/forms/actualForms/new-inspection-form";
-import { VendorPageDataTable } from "./components/vendors.page.datatable";
-import NewVendor from "@/components/forms/actualForms/new-vendor-form";
-import { InventoryPageDataTable } from "./component/inventory.datatable";
+import InventoryDataTable from "./table/inventoryTable";
 import NewInventory from "@/components/forms/actualForms/new-inventory-form";
-import NotCompleteMessage from "../workInprogress/working";import InventoryDataTable from "./table/inventoryTable";
 
 const ActiveDropdown = [
   {
@@ -75,7 +69,7 @@ export default function EmployeesPage() {
   };
 
   const handleSelectChange = (
-    key: "equipment" | "location" | "custom",
+    key: "equipment" | "location" | "custom"| "search",
     value: string
   ) => {
     if (value === "new") {
@@ -105,7 +99,7 @@ export default function EmployeesPage() {
     openSheet({
       title: "Create Inventory",
       description: "Fill out the form below to create a new Inventory.",
-      content: <NotCompleteMessage />,
+      content: <NewInventory />,
     });
   };
 

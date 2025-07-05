@@ -30,7 +30,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { discountTypesOptions, maintenanceItems, payments } from "@/lib/invoices-page-data";
+import {
+  discountTypesOptions,
+  maintenanceItems,
+  payments,
+} from "@/lib/invoices-page-data";
 
 interface triggerVariant {
   variant?: "icon" | "default";
@@ -100,7 +104,6 @@ export default function NewInvoiceForm({ variant }: triggerVariant) {
     });
   }
 
-
   const watchDiscountType = form.watch("discountType");
 
   return (
@@ -109,6 +112,7 @@ export default function NewInvoiceForm({ variant }: triggerVariant) {
         onSubmit={form.handleSubmit(onSubmit, onError)}
         className="space-y-6"
       >
+        
         <div className="flex flex-col space-y-2">
           <div className="flex flex-row gap-x-3">
             <InputWrapper
@@ -138,8 +142,7 @@ export default function NewInvoiceForm({ variant }: triggerVariant) {
                 options={assigneeOptions}
               />
             </div>
-            <div className="col-span-1 flex flex-col">
-            </div> 
+            <div className="col-span-1 flex flex-col"></div>
           </div>
           <div className="grid grid-cols-8 gap-4">
             <div className="col-span-6 grid grid-cols-2 gap-2">
@@ -326,64 +329,68 @@ export default function NewInvoiceForm({ variant }: triggerVariant) {
                       label="Discount Type"
                       options={discountTypesOptions}
                     />
-                    
-                    {watchDiscountType === "percent" && (<InputWrapper
-                      control={form.control}
-                      name={"discountpercent"}
-                      label={"Discount"}
-                      value={""}
-                      type="text"
-                    />)}
-                    {watchDiscountType === "amount" && (<InputWrapper
-                      control={form.control}
-                      name={"discountAmount"}
-                      label={"Discount"}
-                      value={""}
-                      type="text"
-                    />)}
 
-                    <InputWrapper 
-                                              control={form.control}
-                                              name="tax1"
-                                              label="Tax 1"
-                                              type="text"
-                                              value={undefined}
-                                            />
-                                              <InputWrapper 
-                                              control={form.control}
-                                              name="tax2"
-                                              label="Tax 2"
-                                              type="text"
-                                              value={undefined}
-                                            />
-                                             <InputWrapper 
-                                              control={form.control}
-                                              name="shipping"
-                                              label="Shipping"
-                                              type="text"
-                                              value={undefined}
-                                            />
-                                            <InputWrapper 
-                                              control={form.control}
-                                              name="total"
-                                              label="Total"
-                                              type="text"
-                                              value={undefined}
-                                            />
-                                            <InputWrapper 
-                                              control={form.control}
-                                              name="payments"
-                                              label="Payments"
-                                              type="text"
-                                              value={undefined}
-                                            />
-                                            <InputWrapper 
-                                              control={form.control}
-                                              name="balanceDue"
-                                              label="BalanceDue"
-                                              type="text"
-                                              value={undefined}
-                                            />
+                    {watchDiscountType === "percent" && (
+                      <InputWrapper
+                        control={form.control}
+                        name={"discountpercent"}
+                        label={"Discount"}
+                        value={""}
+                        type="text"
+                      />
+                    )}
+                    {watchDiscountType === "amount" && (
+                      <InputWrapper
+                        control={form.control}
+                        name={"discountAmount"}
+                        label={"Discount"}
+                        value={""}
+                        type="text"
+                      />
+                    )}
+
+                    <InputWrapper
+                      control={form.control}
+                      name="tax1"
+                      label="Tax 1"
+                      type="text"
+                      value={undefined}
+                    />
+                    <InputWrapper
+                      control={form.control}
+                      name="tax2"
+                      label="Tax 2"
+                      type="text"
+                      value={undefined}
+                    />
+                    <InputWrapper
+                      control={form.control}
+                      name="shipping"
+                      label="Shipping"
+                      type="text"
+                      value={undefined}
+                    />
+                    <InputWrapper
+                      control={form.control}
+                      name="total"
+                      label="Total"
+                      type="text"
+                      value={undefined}
+                    />
+                    <InputWrapper
+                      control={form.control}
+                      name="payments"
+                      label="Payments"
+                      type="text"
+                      value={undefined}
+                    />
+                    <InputWrapper
+                      control={form.control}
+                      name="balanceDue"
+                      label="BalanceDue"
+                      type="text"
+                      value={undefined}
+                    />
                   </>
                 }
               />
