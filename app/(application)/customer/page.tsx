@@ -14,17 +14,7 @@ import { useSheet } from "@/lib/sheet-providers";
 import NotCompleteMessage from "../workInprogress/working";
 import CustomerDataTable from "./table/customerDataTable";
 import { locationOptionsList } from "@/lib/option-list";
-
-const ActiveDropdown = [
-  {
-    label: "Outstanding",
-    value: "Out of Stock",
-  },
-  {
-    label: "Paid in Full",
-    value: "PO Assigned",
-  },
-];
+import NewCustomer from "@/components/forms/actualForms/new-customer-form";
 
 export default function EmployeesPage() {
   const [filters, setFilters] = useState({
@@ -87,11 +77,10 @@ export default function EmployeesPage() {
   }, [debouncedSearch]);
 
   const createEquipment = () => {
-    console.log("ïn the function");
     openSheet({
-      title: "Create Inventory",
-      description: "Fill out the form below to create a new Inventory.",
-      content: <NotCompleteMessage />,
+      title: "Create Customer",
+      description: "Fill out the form below to create a new customer.",
+      content: <NewCustomer />,
     });
   };
 
