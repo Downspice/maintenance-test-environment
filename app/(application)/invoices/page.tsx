@@ -15,6 +15,8 @@ import NotCompleteMessage from "../workInprogress/working";
 import InvoicesDataTable from "./table/invoicesDataTable";
 import { locationOptionsList } from "@/lib/option-list";
 import NewInvoiceForm from "@/components/forms/actualForms/new-invoice-form";
+import PaymentReceivedTable from "./view/payments-received-dataTable";
+import RecordPaymentForm from "@/components/forms/actualForms/record-payment-form";
 
 const ActiveDropdown = [
   {
@@ -96,6 +98,19 @@ export default function EmployeesPage() {
     });
   };
 
+  const managePayments = () => {
+    console.log("ïn the function");
+    openSheet({
+      title: "Manage Payments",
+      description: "Fill out the form below to create a payment.",
+      content: (
+        <div className="flex flex-end">
+          <PaymentReceivedTable />
+        </div>
+      ),
+    });
+  };
+
   return (
     <div className="flex flex-col container mx-auto py-10 space-y-4">
       <div className="flex flex-row items-center space-x-2">
@@ -137,6 +152,7 @@ export default function EmployeesPage() {
           {/* Search Input */}
 
           <Button onClick={createEquipment}>New</Button>
+          <Button onClick={managePayments}>Manage Payments</Button>
         </div>
       </div>
       <div>

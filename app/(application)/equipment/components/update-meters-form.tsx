@@ -2,70 +2,19 @@
 
 import { useState } from "react";
 import {
-  ErrorOption,
-  FieldArray,
-  FieldArrayPath,
-  FieldError,
-  FieldErrors,
-  FieldName,
-  FieldValues,
-  FormState,
-  InternalFieldName,
-  ReadFormState,
-  RegisterOptions,
-  SubmitErrorHandler,
-  SubmitHandler,
   useForm,
-  UseFormRegisterReturn,
 } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import { ChevronDown, ChevronRight, Save } from "lucide-react";
 
 // Form wrappers
-import InputWrapper from "../../../../components/forms/wrappers/InputWrapper";
-import TextareaWrapper from "../../../../components/forms/wrappers/TextareaWrapper";
-import SelectWrapper from "../../../../components/forms/wrappers/SelectWrapper";
-import MultiSelectWrapper from "../../../../components/forms/wrappers/MultiSelectWrapper";
-import DatePickerWrapper from "../../../../components/forms/wrappers/DatePickerWrapper";
-import SingleCheckboxWrapper from "../../../../components/forms/wrappers/SingleCheckboxWrapper";
-import CustomFieldsWrapper from "../../../../components/forms/wrappers/CustomFieldsWrapper";
 
 // Schema and types
 import {
   equipmentSchema,
   type EquipmentFormValues,
-  makeOptions,
-  modelOptions,
-  equipmentTypeOptions,
-  colorOptions,
-  statusOptions,
-  meterUnitsOptions,
-  assigneeOptions,
-  categoryOptions,
-  vendorOptions,
-  ownershipOptions,
-  fuelUnitsOptions,
-  fuelTypeOptions,
 } from "@/lib/equipment-schema";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import Fieldset from "@/components/customUI/fieldset";
-import {
-  carModelOptionsList,
-  equipmentCheckboxOptions,
-  makeOptionsList,
-} from "@/lib/option-list";
 import { toast } from "sonner";
-import { z } from "zod";
-import { Plus } from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Sheet,
   SheetContent,
@@ -75,11 +24,9 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import {
-  ComboboxFieldWrapper,
   ComboboxOption,
 } from "@/components/forms/wrappers/ComboboxWrapper";
 import { Input } from "@/components/ui/input";
-import CheckboxWrapper from "@/components/forms/wrappers/CheckboxWrapper";
 import { EditableDataTable } from "@/components/customUI/editableTable";
 
 export default function UpdateMeters() {
