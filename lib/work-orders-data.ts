@@ -306,7 +306,7 @@ export const mockWorkOrders: WorkOrder[] = [
   },
 ];
 
-export const maintenanceTableItems:MaintenanceTask[] = [
+export const maintenanceTableItems: MaintenanceTask[] = [
   {
     id: 1,
     maintenanceName: "Check Oil Level",
@@ -342,59 +342,59 @@ export interface UsedPart {
   total: number; // used * cost
 }
 
-export const UsedPart: UsedPart[]=[
+export const UsedPart: UsedPart[] = [
   {
-    "id": 1,
-    "partNumber": "PRT-00123",
-    "name": "Compressor Valve Kit",
-    "used": 2,
-    "cost": 150.0,
-    "total": 300.0
+    id: 1,
+    partNumber: "PRT-00123",
+    name: "Compressor Valve Kit",
+    used: 2,
+    cost: 150.0,
+    total: 300.0,
   },
   {
-    "id": 2,
-    "partNumber": "PRT-00456",
-    "name": "Hydraulic Filter",
-    "used": 1,
-    "cost": 85.5,
-    "total": 85.5
+    id: 2,
+    partNumber: "PRT-00456",
+    name: "Hydraulic Filter",
+    used: 1,
+    cost: 85.5,
+    total: 85.5,
   },
   {
-    "id": 3,
-    "partNumber": "PRT-00789",
-    "name": "Circuit Breaker 3P",
-    "used": 3,
-    "cost": 120.0,
-    "total": 360.0
-  }
-]
+    id: 3,
+    partNumber: "PRT-00789",
+    name: "Circuit Breaker 3P",
+    used: 3,
+    cost: 120.0,
+    total: 360.0,
+  },
+];
 
-export const Labor: TechnicianWork[]=[
+export const Labor: TechnicianWork[] = [
   {
-    "id": 1,
-    "technicianName": "James Owusu",
-    "comments": "Replaced damaged valve and tested system.",
-    "rateAmount": 50,
-    "hours": 4,
-    "totalAmount": 200
+    id: 1,
+    technicianName: "James Owusu",
+    comments: "Replaced damaged valve and tested system.",
+    rateAmount: 50,
+    hours: 4,
+    totalAmount: 200,
   },
   {
-    "id": 2,
-    "technicianName": "Linda Mensah",
-    "comments": "Performed full generator maintenance.",
-    "rateAmount": 65,
-    "hours": 3,
-    "totalAmount": 195
+    id: 2,
+    technicianName: "Linda Mensah",
+    comments: "Performed full generator maintenance.",
+    rateAmount: 65,
+    hours: 3,
+    totalAmount: 195,
   },
   {
-    "id": 3,
-    "technicianName": "Kwame Boateng",
-    "comments": "Diagnosed electrical fault and rewired panel.",
-    "rateAmount": 55,
-    "hours": 5,
-    "totalAmount": 275
-  }
-]
+    id: 3,
+    technicianName: "Kwame Boateng",
+    comments: "Diagnosed electrical fault and rewired panel.",
+    rateAmount: 55,
+    hours: 5,
+    totalAmount: 275,
+  },
+];
 
 export interface TechnicianWork {
   id: number;
@@ -411,24 +411,59 @@ export interface NoteLogType {
   createdBy: string;
   note: string;
 }
-export  const NoteLog:NoteLogType[] =[
+export const NoteLog: NoteLogType[] = [
   {
-    "id": 1,
-    "date": "2025-07-01",
-    "createdBy": "James Owusu",
-    "note": "Initial inspection completed. Awaiting spare parts."
+    id: 1,
+    date: "2025-07-01",
+    createdBy: "James Owusu",
+    note: "Initial inspection completed. Awaiting spare parts.",
   },
   {
-    "id": 2,
-    "date": "2025-07-02",
-    "createdBy": "Linda Mensah",
-    "note": "Repaired leaking pipe. Recommended full system check."
+    id: 2,
+    date: "2025-07-02",
+    createdBy: "Linda Mensah",
+    note: "Repaired leaking pipe. Recommended full system check.",
   },
   {
-    "id": 3,
-    "date": "2025-07-03",
-    "createdBy": "Kwame Boateng",
-    "note": "Tested voltage levels – all readings normal."
-  }
-]
+    id: 3,
+    date: "2025-07-03",
+    createdBy: "Kwame Boateng",
+    note: "Tested voltage levels – all readings normal.",
+  },
+];
 
+export const MaintenanceTypesOptionList: RadioOption[] = [
+  {
+    label: "Preventive",
+    value: "Preventive",
+    description: " ",
+  },
+  {
+    label: "Repair",
+    value: "Repair",
+    description: " ",
+  },
+  {
+    label: "Other",
+    value: "Other",
+    description: " ",
+  },
+];
+
+export const maintenanceTaskOptionsList = [
+  { label: "Check Oil Level", value: "check-oil-level" },
+  { label: "Check Water Level", value: "check-water-level" },
+  { label: "Check Air Filter", value: "check-air-filter" },
+  { label: "Clean Spark Plugs", value: "clean-spark-plugs" },
+  { label: "Inspect Belts", value: "inspect-belts" },
+  { label: "Tighten Bolts", value: "tighten-bolts" },
+  { label: "Test Battery Voltage", value: "test-battery-voltage" },
+  { label: "Lubricate Moving Parts", value: "lubricate-moving-parts" },
+  { label: "Replace Fuel Filter", value: "replace-fuel-filter" },
+  { label: "Flush Coolant System", value: "flush-coolant-system" },
+];
+
+export const taskTypeOptionList = [
+  { label: "maintenance", value: "Maintenance" },
+  { label: "incident", value: "incident" },
+];

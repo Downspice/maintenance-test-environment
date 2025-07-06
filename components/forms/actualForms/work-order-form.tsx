@@ -47,9 +47,12 @@ import {
   maintenanceTableItems,
   MaintenanceTask,
   NoteLog,
-  UsedPart,
+  NoteLogType,
+  UsedPart,TechnicianWork
 } from "@/lib/work-orders-data";
 import FileUploadWrapper from "../wrappers/FileUploadWrapper";
+import UpdateMeters from "@/app/(application)/equipment/components/update-meters-form";
+import AddMaintenance from "@/app/(application)/work-orders/forms/add-maintenance-form";
 
 // Define the form schema with Zod
 export const workOrderSchema = z.object({
@@ -117,7 +120,7 @@ export const costCenterOptions = [
   { value: "other", label: "Other" },
 ];
 
-type SortField = keyof MaintenanceTask | UsedPart;
+type SortField = keyof MaintenanceTask | keyof UsedPart | keyof NoteLogType| keyof TechnicianWork| null;
 type SortDirection = "asc" | "desc";
 
 export default function NewWorkOrderForm() {
@@ -211,7 +214,7 @@ export default function NewWorkOrderForm() {
                   handleSubmit(data)
                 )}
               >
-                <div className="grid grid-cols-7">
+                <div className="grid grid-cols-7 space-x-2">
                   <div className="col-span-2">
                     <Fieldset
                       content={
@@ -320,7 +323,7 @@ export default function NewWorkOrderForm() {
                       }
                     />
                   </div>
-                  <div className="col-span-5">
+                  <div className="col-span-5 space-y-2">
                     <div className="flex justify-end space-x-1 border border-b-black/20">
                       <Button>Open</Button>
                       <Button>In Progress</Button>
@@ -366,6 +369,7 @@ export default function NewWorkOrderForm() {
                           <TabsTrigger value="Notes">Notes</TabsTrigger>
                         </TabsList>
                         <TabsContent value="Maintenance">
+                          <AddMaintenance/>
                           <div className="space-y-4 shadow-primary">
                             <div className="rounded-md border">
                               <Table>
@@ -476,6 +480,9 @@ export default function NewWorkOrderForm() {
                           </div>
                         </TabsContent>
                         <TabsContent value="Labor">
+                          <div className="flex item-end ">
+                            rre
+                          </div>
                           <div className="space-y-4 shadow-primary">
                             <div className="rounded-md border">
                               <Table>
@@ -557,7 +564,7 @@ export default function NewWorkOrderForm() {
                                       Note
                                     </SortableHeader>
                                     <TableHead className="text-right">
-                                      Action{" "}
+                                      Action
                                     </TableHead>
                                   </TableRow>
                                 </TableHeader>

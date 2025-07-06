@@ -34,7 +34,7 @@ export default function RadioGroupWrapper({
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem className="space-y-3">
+        <FormItem className="space-y-3 flex flex-row">
           <FormLabel>
             {required && <span className="text-red-500 mr-1">*</span>}
             {label}
@@ -42,18 +42,18 @@ export default function RadioGroupWrapper({
           <FormControl>
             <RadioGroup
               onValueChange={field.onChange}
-              defaultValue={field.value}
+              value={field.value}
               className={className}
               disabled={disabled}
             >
               {options.map((option) => (
-                <FormItem key={option.value} className="flex items-center space-x-3 space-y-0">
-                  <FormControl>
-                    <RadioGroupItem value={option.value} />
-                  </FormControl>
+                <FormItem key={option.value} className="flex flex-row items-center gap-3 space-y-0">
+                  <RadioGroupItem value={option.value} disabled={disabled} />
                   <div className="space-y-1 leading-none">
                     <FormLabel className="font-normal">{option.label}</FormLabel>
-                    {option.description && <p className="text-sm text-muted-foreground">{option.description}</p>}
+                    {option.description && (
+                      <p className="text-sm text-muted-foreground">{option.description}</p>
+                    )}
                   </div>
                 </FormItem>
               ))}
