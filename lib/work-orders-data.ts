@@ -1,40 +1,39 @@
 export interface WorkOrderTask {
-  id: string
-  name: string
-  assignee: string
-  status: "pending" | "in-progress" | "completed"
-  dueDate?: string
+  id: string;
+  name: string;
+  assignee: string;
+  status: "pending" | "in-progress" | "completed";
+  dueDate?: string;
 }
 
 export interface WorkOrder {
-  id: string
-  number: string
+  id: string;
+  number: string;
   equipment: {
-    id: string
-    name: string
-    model: string
-  }
+    id: string;
+    name: string;
+    model: string;
+  };
   assignees: Array<{
-    id: string
-    name: string
-    type: "employee" | "vendor"
-  }>
-  scheduledDate: string
-  status: "open" | "closed"
+    id: string;
+    name: string;
+    type: "employee" | "vendor";
+  }>;
+  scheduledDate: string;
+  status: "open" | "closed";
   progress: {
-    completed: number
-    total: number
-  }
-  tasks: WorkOrderTask[]
-  priority: "low" | "normal" | "high" | "urgent"
-  createdDate: string
-  dueDate?: string
-  description?: string
-  total:string
+    completed: number;
+    total: number;
+  };
+  tasks: WorkOrderTask[];
+  priority: "low" | "normal" | "high" | "urgent";
+  createdDate: string;
+  dueDate?: string;
+  description?: string;
+  total: string;
 }
 
-
-export interface Employee  {
+export interface Employee {
   id: number;
   name: string;
   first_name: string;
@@ -53,7 +52,7 @@ export interface Employee  {
     remote: boolean;
     url: string;
   };
-};
+}
 // Mock data for work orders
 export const mockWorkOrders: WorkOrder[] = [
   {
@@ -74,7 +73,7 @@ export const mockWorkOrders: WorkOrder[] = [
       completed: 2,
       total: 4,
     },
-    total:"400.40",
+    total: "400.40",
     tasks: [
       {
         id: "task-1",
@@ -111,7 +110,8 @@ export const mockWorkOrders: WorkOrder[] = [
     description: "Routine maintenance and inspection",
   },
   {
-    id: "WO-2024-002",total:"40.40",
+    id: "WO-2024-002",
+    total: "40.40",
     number: "WO-2024-002",
     equipment: {
       id: "1311828",
@@ -154,7 +154,8 @@ export const mockWorkOrders: WorkOrder[] = [
     description: "Weekly maintenance check",
   },
   {
-    id: "WO-2024-003",total:"0.40",
+    id: "WO-2024-003",
+    total: "0.40",
     number: "WO-2024-003",
     equipment: {
       id: "1311829",
@@ -215,7 +216,8 @@ export const mockWorkOrders: WorkOrder[] = [
   },
   {
     id: "WO-2024-004",
-    number: "WO-2024-004",total:"30.40",
+    number: "WO-2024-004",
+    total: "30.40",
     equipment: {
       id: "1311830",
       name: "TR-004-12 Trailer",
@@ -251,13 +253,16 @@ export const mockWorkOrders: WorkOrder[] = [
   },
   {
     id: "WO-2024-005",
-    number: "WO-2024-005",total:"1.40",
+    number: "WO-2024-005",
+    total: "1.40",
     equipment: {
       id: "1311831",
       name: "FL-005-08 Forklift",
       model: "Toyota 8FGU25",
     },
-    assignees: [{ id: "vendor-3", name: "Forklift Services LLC", type: "vendor" }],
+    assignees: [
+      { id: "vendor-3", name: "Forklift Services LLC", type: "vendor" },
+    ],
     scheduledDate: "2024-01-19",
     status: "closed",
     progress: {
@@ -299,4 +304,131 @@ export const mockWorkOrders: WorkOrder[] = [
     dueDate: "2024-01-21",
     description: "Annual safety inspection",
   },
+];
+
+export const maintenanceTableItems:MaintenanceTask[] = [
+  {
+    id: 1,
+    maintenanceName: "Check Oil Level",
+    total: 344.5,
+    complete: false,
+  },
+  {
+    id: 2,
+    maintenanceName: "Check Water Level",
+    total: 26.6,
+    complete: true,
+  },
+  {
+    id: 3,
+    maintenanceName: "Check Air Filter",
+    total: 1.64,
+    complete: false,
+  },
+];
+export interface MaintenanceTask {
+  id: number;
+  maintenanceName: string;
+  total: number;
+  complete: boolean;
+}
+
+export interface UsedPart {
+  id: number;
+  partNumber: string;
+  name: string;
+  used: number;
+  cost: number;
+  total: number; // used * cost
+}
+
+export const UsedPart: UsedPart[]=[
+  {
+    "id": 1,
+    "partNumber": "PRT-00123",
+    "name": "Compressor Valve Kit",
+    "used": 2,
+    "cost": 150.0,
+    "total": 300.0
+  },
+  {
+    "id": 2,
+    "partNumber": "PRT-00456",
+    "name": "Hydraulic Filter",
+    "used": 1,
+    "cost": 85.5,
+    "total": 85.5
+  },
+  {
+    "id": 3,
+    "partNumber": "PRT-00789",
+    "name": "Circuit Breaker 3P",
+    "used": 3,
+    "cost": 120.0,
+    "total": 360.0
+  }
 ]
+
+export const Labor: TechnicianWork[]=[
+  {
+    "id": 1,
+    "technicianName": "James Owusu",
+    "comments": "Replaced damaged valve and tested system.",
+    "rateAmount": 50,
+    "hours": 4,
+    "totalAmount": 200
+  },
+  {
+    "id": 2,
+    "technicianName": "Linda Mensah",
+    "comments": "Performed full generator maintenance.",
+    "rateAmount": 65,
+    "hours": 3,
+    "totalAmount": 195
+  },
+  {
+    "id": 3,
+    "technicianName": "Kwame Boateng",
+    "comments": "Diagnosed electrical fault and rewired panel.",
+    "rateAmount": 55,
+    "hours": 5,
+    "totalAmount": 275
+  }
+]
+
+export interface TechnicianWork {
+  id: number;
+  technicianName: string;
+  comments: string;
+  rateAmount: number;
+  hours: number;
+  totalAmount: number; // rateAmount * hours
+}
+
+export interface NoteLogType {
+  id: number;
+  date: string; // ISO format (e.g., "2025-07-01")
+  createdBy: string;
+  note: string;
+}
+export  const NoteLog:NoteLogType[] =[
+  {
+    "id": 1,
+    "date": "2025-07-01",
+    "createdBy": "James Owusu",
+    "note": "Initial inspection completed. Awaiting spare parts."
+  },
+  {
+    "id": 2,
+    "date": "2025-07-02",
+    "createdBy": "Linda Mensah",
+    "note": "Repaired leaking pipe. Recommended full system check."
+  },
+  {
+    "id": 3,
+    "date": "2025-07-03",
+    "createdBy": "Kwame Boateng",
+    "note": "Tested voltage levels – all readings normal."
+  }
+]
+

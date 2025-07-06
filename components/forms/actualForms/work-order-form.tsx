@@ -2,13 +2,18 @@
 
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  useForm,
-} from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { GitPullRequestArrow, Plus } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUp,
+  GitPullRequestArrow,
+  Pen,
+  Plus,
+  Trash2,
+} from "lucide-react";
 import DatePickerWrapper from "../wrappers/DatePickerWrapper";
 import InputWrapper from "../wrappers/InputWrapper";
 import { toast } from "sonner";
@@ -26,10 +31,25 @@ import {
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Fieldset from "@/components/customUI/fieldset";
-import {
-  PurchaseOrderOptions,
-} from "@/lib/purcahse-order-data";
+import { PurchaseOrderOptions } from "@/lib/purcahse-order-data";
 import CustomFieldsWrapper from "../wrappers/CustomFieldsWrapper";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Labor,
+  maintenanceTableItems,
+  MaintenanceTask,
+  NoteLog,
+  UsedPart,
+} from "@/lib/work-orders-data";
+import FileUploadWrapper from "../wrappers/FileUploadWrapper";
 
 // Define the form schema with Zod
 export const workOrderSchema = z.object({
@@ -96,14 +116,9 @@ export const costCenterOptions = [
   { value: "inspection", label: "Inspection Cost Center" },
   { value: "other", label: "Other" },
 ];
-// Task options
-const taskOptions = [
-  {
-    id: "25417067",
-    label: "Oil Leaking",
-    description: "Repair - due 6 Days ago",
-  },
-];
+
+type SortField = keyof MaintenanceTask | UsedPart;
+type SortDirection = "asc" | "desc";
 
 export default function NewWorkOrderForm() {
   const [customFields, setCustomFields] = useState<
@@ -111,6 +126,8 @@ export default function NewWorkOrderForm() {
   >([]);
 
   const [open, setOpen] = useState(false);
+  const [sortField, setSortField] = useState<SortField>(null);
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
 
   const workOrderForm = useForm<z.infer<typeof workOrderSchema>>({
     resolver: zodResolver(workOrderSchema),
@@ -121,6 +138,43 @@ export default function NewWorkOrderForm() {
       customFields: [],
     },
   });
+
+  const SortableHeader = ({
+    field,
+    children,
+  }: {
+    field: SortField;
+    children: React.ReactNode;
+  }) => (
+    <TableHead
+      className="cursor-pointer hover:bg-muted/50 transition-colors"
+      onClick={() => handleSort(field)}
+    >
+      <div className="flex items-center justify-between">
+        <span>{children}</span>
+        {sortField === field && (
+          <span className="ml-1">
+            {sortDirection === "asc" ? (
+              <ArrowUp className="h-4 w-4" />
+            ) : (
+              <ArrowDown className="h-4 w-4" />
+            )}
+          </span>
+        )}
+      </div>
+    </TableHead>
+  );
+
+  const handleSort = (field: SortField) => {
+    // If clicking the same field, toggle direction
+    if (field === sortField) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      // New field, set to ascending by default
+      setSortField(field);
+      setSortDirection("asc");
+    }
+  };
 
   async function handleSubmit(data: z.infer<typeof workOrderSchema>) {
     console.log(data);
@@ -297,6 +351,250 @@ export default function NewWorkOrderForm() {
                           />
                         </div>
                       </div>
+                    </div>
+                    <div>
+                      <Tabs defaultValue="Maintenance" className="w-full">
+                        <TabsList>
+                          <TabsTrigger value="Maintenance">
+                            Maintenance
+                          </TabsTrigger>
+                          <TabsTrigger value="Parts">Parts</TabsTrigger>
+                          <TabsTrigger value="Labor">Labor</TabsTrigger>
+                          <TabsTrigger value="Attachments">
+                            Attachments
+                          </TabsTrigger>
+                          <TabsTrigger value="Notes">Notes</TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="Maintenance">
+                          <div className="space-y-4 shadow-primary">
+                            <div className="rounded-md border">
+                              <Table>
+                                <TableHeader>
+                                  <TableRow>
+                                    <SortableHeader field="maintenanceName">
+                                      Maintenance
+                                    </SortableHeader>
+                                    <SortableHeader field="total">
+                                      Total
+                                    </SortableHeader>
+                                    <SortableHeader field="complete">
+                                      Complete
+                                    </SortableHeader>
+                                    <TableHead className="text-right">
+                                      Action{" "}
+                                    </TableHead>
+                                  </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                  {maintenanceTableItems.map((item) => (
+                                    <TableRow key={item.id}>
+                                      <TableCell>
+                                        {item.maintenanceName}
+                                      </TableCell>
+                                      <TableCell>{item.total}</TableCell>
+                                      <TableCell className="w-[150px]">
+                                        {item.complete.toString()}
+                                      </TableCell>
+                                      <TableCell className="w-[100px]">
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() => console.log(item)}
+                                        >
+                                          <Pen />
+                                        </Button>
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() => console.log(item)}
+                                        >
+                                          <Trash2 />
+                                        </Button>
+                                      </TableCell>
+                                    </TableRow>
+                                  ))}
+                                </TableBody>
+                              </Table>
+                            </div>
+                          </div>
+                        </TabsContent>
+                        <TabsContent value="Parts">
+                          <div className="space-y-4 shadow-primary">
+                            <div className="rounded-md border">
+                              <Table>
+                                <TableHeader>
+                                  <TableRow>
+                                    <SortableHeader field="partNumber">
+                                      Part#
+                                    </SortableHeader>
+                                    <SortableHeader field="name">
+                                      Name
+                                    </SortableHeader>
+                                    <SortableHeader field="used">
+                                      Used
+                                    </SortableHeader>
+                                    <SortableHeader field="cost">
+                                      Cost
+                                    </SortableHeader>
+                                    <SortableHeader field="total">
+                                      Total
+                                    </SortableHeader>
+                                    <TableHead className="text-right">
+                                      Action{" "}
+                                    </TableHead>
+                                  </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                  {UsedPart.map((item) => (
+                                    <TableRow key={item.id}>
+                                      <TableCell>{item.partNumber}</TableCell>
+                                      <TableCell>{item.name}</TableCell>
+                                      <TableCell>{item.used}</TableCell>
+                                      <TableCell>{item.cost}</TableCell>
+                                      <TableCell>{item.total}</TableCell>
+                                      <TableCell className="w-[100px]">
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() => console.log(item)}
+                                        >
+                                          <Pen />
+                                        </Button>
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() => console.log(item)}
+                                        >
+                                          <Trash2 />
+                                        </Button>
+                                      </TableCell>
+                                    </TableRow>
+                                  ))}
+                                </TableBody>
+                              </Table>
+                            </div>
+                          </div>
+                        </TabsContent>
+                        <TabsContent value="Labor">
+                          <div className="space-y-4 shadow-primary">
+                            <div className="rounded-md border">
+                              <Table>
+                                <TableHeader>
+                                  <TableRow>
+                                    <SortableHeader field="technicianName">
+                                      Part#
+                                    </SortableHeader>
+                                    <SortableHeader field="comments">
+                                      Comments
+                                    </SortableHeader>
+                                    <SortableHeader field="rateAmount">
+                                      Rate
+                                    </SortableHeader>
+                                    <SortableHeader field="hours">
+                                      Hours
+                                    </SortableHeader>
+                                    <SortableHeader field="totalAmount">
+                                      Total
+                                    </SortableHeader>
+                                    <TableHead className="text-right">
+                                      Action{" "}
+                                    </TableHead>
+                                  </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                  {Labor.map((item) => (
+                                    <TableRow key={item.id}>
+                                      <TableCell>
+                                        {item.technicianName}
+                                      </TableCell>
+                                      <TableCell>{item.comments}</TableCell>
+                                      <TableCell>{item.rateAmount}</TableCell>
+                                      <TableCell>{item.hours}</TableCell>
+                                      <TableCell>{item.totalAmount}</TableCell>
+                                      <TableCell className="w-[100px]">
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() => console.log(item)}
+                                        >
+                                          <Pen />
+                                        </Button>
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() => console.log(item)}
+                                        >
+                                          <Trash2 />
+                                        </Button>
+                                      </TableCell>
+                                    </TableRow>
+                                  ))}
+                                </TableBody>
+                              </Table>
+                            </div>
+                          </div>
+                        </TabsContent>
+                        <TabsContent value="Attachments">
+                          <FileUploadWrapper
+                            control={workOrderForm.control}
+                            name="Attachments"
+                            label="Attachments"
+                          />
+                        </TabsContent>
+                        <TabsContent value="Notes">
+                          <div className="space-y-4 shadow-primary">
+                            <div className="rounded-md border">
+                              <Table>
+                                <TableHeader>
+                                  <TableRow>
+                                    <SortableHeader field="date">
+                                      Date
+                                    </SortableHeader>
+                                    <SortableHeader field="createdBy">
+                                      Created By
+                                    </SortableHeader>
+                                    <SortableHeader field="note">
+                                      Note
+                                    </SortableHeader>
+                                    <TableHead className="text-right">
+                                      Action{" "}
+                                    </TableHead>
+                                  </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                  {NoteLog.map((item) => (
+                                    <TableRow key={item.id}>
+                                      <TableCell className="w-[100px]">
+                                        {item.date}
+                                      </TableCell>
+                                      <TableCell className="w-[100px]">
+                                        {item.createdBy}
+                                      </TableCell>
+                                      <TableCell>{item.note}</TableCell>
+                                      <TableCell className="w-[100px]">
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() => console.log(item)}
+                                        >
+                                          <Pen />
+                                        </Button>
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() => console.log(item)}
+                                        >
+                                          <Trash2 />
+                                        </Button>
+                                      </TableCell>
+                                    </TableRow>
+                                  ))}
+                                </TableBody>
+                              </Table>
+                            </div>
+                          </div>
+                        </TabsContent>
+                      </Tabs>
                     </div>
                   </div>
                 </div>

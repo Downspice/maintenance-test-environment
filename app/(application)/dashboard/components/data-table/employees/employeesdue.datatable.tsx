@@ -6,13 +6,9 @@ import { useState, useEffect } from "react";
 import {
   ArrowDown,
   ArrowUp,
-  ChevronDown,
   ChevronLeft,
   ChevronRight,
-  FileText,
-  ShoppingCart,
 } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
