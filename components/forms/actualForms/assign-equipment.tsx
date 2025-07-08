@@ -359,17 +359,17 @@ export const columns: ColumnDef<RepairRequestInterface>[] = [
 export const usageOptions: RadioOption[] = [
   {
     label: "Job site",
-    id: "Attachments",
+    value: "Attachments",
     description: " ",
   },
   {
     label: "Employee",
-    id: "Attachments",
+    value: "Attachments",
     description: " ",
   },
   {
     label: "Customer",
-    id: "Attachments",
+    value: "Attachments",
     description: " ",
   },
 ];

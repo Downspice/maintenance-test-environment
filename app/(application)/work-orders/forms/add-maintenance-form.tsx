@@ -51,9 +51,7 @@ export default function AddMaintenance() {
 
   const form = useForm<EquipmentFormValues>({
     resolver: zodResolver(equipmentSchema),
-    defaultValues: {
-      usage: "Active",
-    },
+    defaultValues: {},
   });
 
   const toggleSection = (section: keyof typeof openSections) => {
@@ -62,11 +60,6 @@ export default function AddMaintenance() {
       [section]: !prev[section],
     }));
   };
-
-  const watchHasMeter = form.watch("hasMeter");
-  const watchStatus = form.watch("status");
-  const watchPrimary = form.watch("primaryMeterUnit");
-  const watchSecondary = form.watch("secondaryMeterUnit");
 
   function onSubmit(data: EquipmentFormValues) {
     console.log("Form submitted with VALUES:", data);
@@ -133,7 +126,7 @@ export default function AddMaintenance() {
               onSubmit={form.handleSubmit(onSubmit, onError)}
               className="space-y-6"
             >
-              <div >
+              <div>
                 <div className="flex flex-col space-y-0.5">
                   <RadioGroupWrapper
                     control={form.control}

@@ -450,6 +450,18 @@ export const MaintenanceTypesOptionList: RadioOption[] = [
   },
 ];
 
+export const performedOptionList: RadioOption[] = [
+  {
+    label: "Vendor",
+    value: "Vendor",
+    description: " ",
+  },
+  {
+    label: "Technician",
+    value: "Technician",
+    description: " ",
+  }, 
+];
 export const maintenanceTaskOptionsList = [
   { label: "Check Oil Level", value: "check-oil-level" },
   { label: "Check Water Level", value: "check-water-level" },
