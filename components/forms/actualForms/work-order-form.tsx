@@ -224,7 +224,7 @@ export default function NewWorkOrderForm() {
                 )}
               >
                 <div className="grid grid-cols-7 space-x-2">
-                  <div className="col-span-2">
+                  <div className="col-span-2 space-y-1">
                     <Fieldset
                       content={
                         <>
@@ -349,9 +349,9 @@ export default function NewWorkOrderForm() {
                             options={equipmentOptions}
                             required={true}
                           />
-                          <Button variant="secondary" size={"icon"}>
+                          {/* <Button variant="secondary" size={"icon"}>
                             <Plus />
-                          </Button>
+                          </Button> */}
                         </div>
                         <div className="flex w-fit">
                           <InputWrapper

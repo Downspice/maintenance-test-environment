@@ -74,7 +74,7 @@ export default function NewShipToForm() {
         <SheetHeader>
           <SheetTitle>Create Shipping</SheetTitle>
           <SheetDescription>
-            Fill out the form below to set up your new Work Order.
+            Fill out the form below to set up your new Shipping.
           </SheetDescription>
         </SheetHeader>
 
