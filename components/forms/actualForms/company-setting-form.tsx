@@ -73,70 +73,70 @@ export default function CompanySettings() {
                   label="Company"
                   type="text"
                   required
-                  value={undefined}
+                  value={""}
                 />
                 <InputWrapper
                   control={vendorForm.control}
                   name="address1"
                   label="Address 1"
                   type="text"
-                  value={undefined}
+                  value={""}
                 />
                 <InputWrapper
                   control={vendorForm.control}
                   name="address2"
                   label="Address 2"
                   type="text"
-                  value={undefined}
+                  value={""}
                 />
                 <InputWrapper
                   control={vendorForm.control}
                   name="city"
                   label="City"
                   type="text"
-                  value={undefined}
+                  value={""}
                 />
                 <InputWrapper
                   control={vendorForm.control}
                   name="state"
                   label="State"
                   type="text"
-                  value={undefined}
+                  value={""}
                 />
                 <InputWrapper
                   control={vendorForm.control}
                   name="zip"
                   label="Zip"
                   type="text"
-                  value={undefined}
+                  value={""}
                 />
                 <InputWrapper
                   control={vendorForm.control}
                   name="phone"
                   label="Phone"
                   type="text"
-                  value={undefined}
+                  value={""}
                 />
                 <InputWrapper
                   control={vendorForm.control}
                   name="fax"
                   label="Fax"
                   type="text"
-                  value={undefined}
+                  value={""}
                 />
                 <InputWrapper
                   control={vendorForm.control}
                   name="website"
                   label="Website"
                   type="text"
-                  value={undefined}
+                  value={""}
                 />
                 <InputWrapper
                   control={vendorForm.control}
                   name="email"
                   label="Email"
                   type="email"
-                  value={undefined}
+                  value={""}
                 />
                 <ComboboxFieldWrapper
                   control={vendorForm.control}
@@ -149,7 +149,7 @@ export default function CompanySettings() {
                   name="notes"
                   label="Notes"
                   rows={4}
-                  value={undefined}
+                  value={""}
                 />
               </div>
             </TabsContent>
@@ -164,7 +164,7 @@ export default function CompanySettings() {
                         name="startingValue"
                         label="Starting Value"
                         type="number"
-                        value={undefined}
+                        value={""}
                       />
                     </>
                   }
@@ -179,7 +179,7 @@ export default function CompanySettings() {
                         name="startingValuePO"
                         label="Starting Value"
                         type="number"
-                        value={undefined}
+                        value={""}
                       />
                     </>
                   }
@@ -194,7 +194,7 @@ export default function CompanySettings() {
                         name="startingValueInvoice"
                         label="Starting Value"
                         type="number"
-                        value={undefined}
+                        value={""}
                       />
                     </>
                   }
@@ -208,7 +208,7 @@ export default function CompanySettings() {
                         name="repairsNotifydays"
                         label="Advance Notify Days"
                         type="number"
-                        value={undefined}
+                        value={""}
                       />
                     </>
                   }
@@ -257,7 +257,7 @@ export default function CompanySettings() {
                           name="poudf1"
                           label="PO UDF 1"
                           type="text"
-                          value={undefined}
+                          value={""}
                         />
                         <InputWrapper
                           className="col-span-1"
@@ -265,7 +265,7 @@ export default function CompanySettings() {
                           name="poudf2"
                           label="PO UDF 2"
                           type="text"
-                          value={undefined}
+                          value={""}
                         />
                         <InputWrapper
                           className="col-span-1"
@@ -273,7 +273,7 @@ export default function CompanySettings() {
                           name="invoices1"
                           label="Invoices UDF 1"
                           type="text"
-                          value={undefined}
+                          value={""}
                         />
                         <InputWrapper
                           className="col-span-1"
@@ -281,7 +281,7 @@ export default function CompanySettings() {
                           name="invoicesTAX1"
                           label=" Invoices UDF 2"
                           type="text"
-                          value={undefined}
+                          value={""}
                         />
                         <InputWrapper
                           className="col-span-1"
@@ -289,7 +289,7 @@ export default function CompanySettings() {
                           name="tax1"
                           label="WO UDF 1"
                           type="text"
-                          value={undefined}
+                          value={""}
                         />
                         <InputWrapper
                           className="col-span-1"
@@ -297,7 +297,7 @@ export default function CompanySettings() {
                           name="tax1"
                           label="WO UDF 2"
                           type="text"
-                          value={undefined}
+                          value={""}
                         />
                         <InputWrapper
                           className="col-span-1"
@@ -305,7 +305,7 @@ export default function CompanySettings() {
                           name="parts1"
                           label="PARTS UDF 1"
                           type="text"
-                          value={undefined}
+                          value={""}
                         />
                         <InputWrapper
                           className="col-span-1"
@@ -313,7 +313,7 @@ export default function CompanySettings() {
                           name="parts2"
                           label="PARTS UDF 2"
                           type="text"
-                          value={undefined}
+                          value={""}
                         />
                       </div>
                       <div className="col-span-1 flex flex-col">
@@ -323,7 +323,7 @@ export default function CompanySettings() {
                           name="tax1"
                           label="PO TAX 1 Name"
                           type="text"
-                          value={undefined}
+                          value={""}
                         />
                         <InputWrapper
                           className="col-span-1"
@@ -331,7 +331,7 @@ export default function CompanySettings() {
                           name="tax2"
                           label="PO TAX 2 Name"
                           type="text"
-                          value={undefined}
+                          value={""}
                         />
                         <InputWrapper
                           className="col-span-1"
@@ -339,7 +339,7 @@ export default function CompanySettings() {
                           name="invoicesTAX2"
                           label="Invoices Tax 1"
                           type="text"
-                          value={undefined}
+                          value={""}
                         />
                         <InputWrapper
                           className="col-span-1"
@@ -347,7 +347,7 @@ export default function CompanySettings() {
                           name="invoices2"
                           label="Invoices Tax 2"
                           type="text"
-                          value={undefined}
+                          value={""}
                         />
                         <InputWrapper
                           className="col-span-1"
@@ -355,7 +355,7 @@ export default function CompanySettings() {
                           name="woTaxName1"
                           label="WO TAX Name 1"
                           type="text"
-                          value={undefined}
+                          value={""}
                         />
                         <InputWrapper
                           className="col-span-1"
@@ -363,7 +363,7 @@ export default function CompanySettings() {
                           name="woTaxName1"
                           label="WO TAX Name 2"
                           type="text"
-                          value={undefined}
+                          value={""}
                         />
                         <InputWrapper
                           className="col-span-1"
@@ -371,7 +371,7 @@ export default function CompanySettings() {
                           name="woCost"
                           label="WO UDF Cost"
                           type="number"
-                          value={undefined}
+                          value={""}
                         />
                       </div>
                     </div>

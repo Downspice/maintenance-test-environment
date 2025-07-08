@@ -96,14 +96,14 @@ export default function NewShipToForm() {
                       label="Name"
                       type="text"
                       required
-                      value={undefined}
+                      value={""}
                     />
                     <InputWrapper
                       control={vendorForm.control}
                       name="number"
                       label="Vendor #"
                       type="text"
-                      value={undefined}
+                      value={""}
                     />
 
                     <InputWrapper
@@ -111,7 +111,7 @@ export default function NewShipToForm() {
                       name="contactNumber"
                       label="Contact"
                       type="text"
-                      value={undefined}
+                      value={""}
                     />
 
                     <InputWrapper
@@ -119,7 +119,7 @@ export default function NewShipToForm() {
                       name="street1"
                       label="Address"
                       type="text"
-                      value={undefined}
+                      value={""}
                     />
 
                     <InputWrapper
@@ -129,7 +129,7 @@ export default function NewShipToForm() {
                       placeholder=" "
                       label=""
                       type="text"
-                      value={undefined}
+                      value={""}
                     />
                     <div className="grid grid-cols-2 gap-4">
                       <div className="col-span-1">
@@ -138,7 +138,7 @@ export default function NewShipToForm() {
                           name="city"
                           label="City"
                           type="text"
-                          value={undefined}
+                          value={""}
                         />
                       </div>
                       <div className="col-span-1">
@@ -147,7 +147,7 @@ export default function NewShipToForm() {
                           name="state"
                           label="State /Province"
                           type="text"
-                          value={undefined}
+                          value={""}
                         />
                       </div>
                       <div className="col-span-1">
@@ -156,7 +156,7 @@ export default function NewShipToForm() {
                           name="postalCode"
                           label="Postal Code"
                           type="text"
-                          value={undefined}
+                          value={""}
                         />
                       </div>
                       <div className="col-span-1">
@@ -165,7 +165,7 @@ export default function NewShipToForm() {
                           name="country"
                           label="Country"
                           type="text"
-                          value={undefined}
+                          value={""}
                         />
                       </div>
                       <div className="col-span-1"></div>
@@ -205,7 +205,7 @@ export default function NewShipToForm() {
                       name="billingRate"
                       label="Billing Rate"
                       type="number"
-                      value={undefined}
+                      value={""}
                     />
                     <div className="flex flex-col gap-4">
                       <TextareaWrapper
@@ -213,7 +213,7 @@ export default function NewShipToForm() {
                         name="notes"
                         label="Notes"
                         rows={4}
-                        value={undefined}
+                        value={""}
                       />
                     </div>
                     <CustomFieldsWrapper
@@ -231,35 +231,35 @@ export default function NewShipToForm() {
                       label="Phone 1:"
                       type="text"
                       required
-                      value={undefined}
+                      value={""}
                     />
                     <InputWrapper
                       control={vendorForm.control}
                       name="phone2"
                       label="Phone 2:"
                       type="text"
-                      value={undefined}
+                      value={""}
                     />
                     <InputWrapper
                       control={vendorForm.control}
                       name="fax"
                       label="Fax:"
                       type="text"
-                      value={undefined}
+                      value={""}
                     />
                     <InputWrapper
                       control={vendorForm.control}
                       name="email"
                       label="Email:"
                       type="text"
-                      value={undefined}
+                      value={""}
                     />
                     <InputWrapper
                       control={vendorForm.control}
                       name="website"
                       label="Website:"
                       type="text"
-                      value={undefined}
+                      value={""}
                     />
                   </div>
                 </TabsContent>

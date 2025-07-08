@@ -215,7 +215,7 @@ export default function FormSheet() {
                     label="Project Name"
                     type="text"
                     required={true}
-                    warning="This will be the name of your project." value={undefined}                  />
+                    warning="This will be the name of your project." value={""}                  />
 
                   <InputWrapper
                     control={form.control}
@@ -223,7 +223,7 @@ export default function FormSheet() {
                     label="Email"
                     type="email"
                     required={true}
-                    warning="We'll use this to send you project updates." value={undefined}                  />
+                    warning="We'll use this to send you project updates." value={""}                  />
 
                   <ComboboxFieldWrapper
                     control={form.control}

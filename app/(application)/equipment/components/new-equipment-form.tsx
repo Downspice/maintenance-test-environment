@@ -1,14 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import {
-  useForm,
-} from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { CardContent } from "@/components/ui/card";
-import { Save } from "lucide-react";
+import { LucideTrash2, Save } from "lucide-react";
 
 // Form wrappers
 import InputWrapper from "../../../../components/forms/wrappers/InputWrapper";
@@ -30,6 +28,8 @@ import {
   categoryOptions,
   vendorOptions,
   ownershipOptions,
+  expenseOptions,
+  periodOptionList,
 } from "@/lib/equipment-schema";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Fieldset from "@/components/customUI/fieldset";
@@ -55,6 +55,17 @@ import {
 } from "@/components/forms/wrappers/ComboboxWrapper";
 import { Input } from "@/components/ui/input";
 import CheckboxWrapper from "@/components/forms/wrappers/CheckboxWrapper";
+import FileUploadWrapper from "@/components/forms/wrappers/FileUploadWrapper";
+import { EditableDataTable } from "@/components/customUI/editableTable";
+import {
+  Select,
+  SelectItem,
+  SelectContent,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { ColumnDef } from "@tanstack/react-table";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface triggerVariant {
   variant?: "icon" | "default";
@@ -199,6 +210,49 @@ export default function EquipmentForm({ variant }: triggerVariant) {
                   </TabsList>
 
                   <div className="flex-1">
+                    <TabsContent value="attachments">
+                      <FileUploadWrapper
+                        multiple={true}
+                        control={form.control}
+                        name={"Attachments"}
+                        label={"Attachments"}
+                      />
+                    </TabsContent>
+
+                    <TabsContent value="expenses">
+                      <div className="flex ">
+                        <div>Automatic Expense Logging</div>
+                      </div>
+                      <EditableDataTable
+                        data={people}
+                        columns={columns}
+                        defaultRow={{ id: Date.now()}}
+                        onDataChange={(newData) => {
+                          console.log("Updated Data:", newData);
+                        }}
+                      />
+                    </TabsContent>
+                    <TabsContent value="notifications">
+                      <div className="flex ">
+                        <div>Email Notifications</div>
+                      </div>
+                      <EditableDataTable
+                        data={emailPeople}
+                        columns={emailColumns}
+                        defaultRow={{ id: Date.now(), }}
+                        onDataChange={(newData) => {
+                          console.log("Updated Data:", newData);
+                        }}
+                      />
+                    </TabsContent>
+                    <TabsContent value="images">
+                      <FileUploadWrapper
+                        multiple={true}
+                        control={form.control}
+                        name={"Attachments"}
+                        label={"Attachments"}
+                      />
+                    </TabsContent>
                     <TabsContent value="settings" className="space-y-2">
                       <Fieldset
                         legend="Track the following details of this equipment"
@@ -250,7 +304,7 @@ export default function EquipmentForm({ variant }: triggerVariant) {
                                     label="Unit #"
                                     type="text"
                                     required
-                                    value={undefined}
+                                    value={""}
                                   />
                                   <ComboboxFieldWrapper
                                     control={form.control}
@@ -269,14 +323,14 @@ export default function EquipmentForm({ variant }: triggerVariant) {
                                     name="serialNumber"
                                     label="Serial #"
                                     type="text"
-                                    value={undefined}
+                                    value={""}
                                   />
                                   <InputWrapper
                                     control={form.control}
                                     name="year"
                                     label="Year"
                                     type="number"
-                                    value={undefined}
+                                    value={""}
                                   />
                                   <ComboboxFieldWrapper
                                     control={form.control}
@@ -306,7 +360,7 @@ export default function EquipmentForm({ variant }: triggerVariant) {
                                         name="primaryMeter"
                                         label="Current Reading"
                                         type="number"
-                                        value={undefined}
+                                        value={""}
                                       />
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -321,7 +375,7 @@ export default function EquipmentForm({ variant }: triggerVariant) {
                                         name="secondaryMeter"
                                         label="Current Reading"
                                         type="number"
-                                        value={undefined}
+                                        value={""}
                                       />
                                     </div>
                                   </div>
@@ -355,7 +409,7 @@ export default function EquipmentForm({ variant }: triggerVariant) {
                                         name="soldTo"
                                         label="Buyer"
                                         type="text"
-                                        value={undefined}
+                                        value={""}
                                       />
                                     </div>
                                     <div className="space-y-2">
@@ -369,7 +423,7 @@ export default function EquipmentForm({ variant }: triggerVariant) {
                                           name="soldPrice"
                                           label=""
                                           type="number"
-                                          value={undefined}
+                                          value={""}
                                           className="flex-1"
                                         />
                                       </div>
@@ -397,7 +451,7 @@ export default function EquipmentForm({ variant }: triggerVariant) {
                                   label="Parent Equipment"
                                   type="text"
                                   placeholder="Enter Equipment Parent"
-                                  value={undefined}
+                                  value={""}
                                 />
                               </CardContent>
                             }
@@ -440,7 +494,7 @@ export default function EquipmentForm({ variant }: triggerVariant) {
                                       label=""
                                       type="number"
                                       placeholder="0"
-                                      value={undefined}
+                                      value={""}
                                     />
                                   )}
                                 </div>
@@ -460,7 +514,7 @@ export default function EquipmentForm({ variant }: triggerVariant) {
                                       label=""
                                       type="number"
                                       placeholder="0"
-                                      value={undefined}
+                                      value={""}
                                     />
                                   )}
                                 </div>
@@ -476,7 +530,7 @@ export default function EquipmentForm({ variant }: triggerVariant) {
                                   name="btu"
                                   label="BTU"
                                   type="text"
-                                  value={undefined}
+                                  value={""}
                                   className="flex-1"
                                 />
                                 <InputWrapper
@@ -484,7 +538,7 @@ export default function EquipmentForm({ variant }: triggerVariant) {
                                   name="inputVolts"
                                   label="Input Volts"
                                   type="text"
-                                  value={undefined}
+                                  value={""}
                                   className="flex-1"
                                 />
                                 <DatePickerWrapper
@@ -590,7 +644,7 @@ export default function EquipmentForm({ variant }: triggerVariant) {
                                 name="warrantyDescription"
                                 label="Primary Warranty"
                                 type="text"
-                                value={undefined}
+                                value={""}
                               />
                               <DatePickerWrapper
                                 control={form.control}
@@ -602,7 +656,7 @@ export default function EquipmentForm({ variant }: triggerVariant) {
                                 name="primaryWarrantyMeter"
                                 label="Meter"
                                 type="number"
-                                value={undefined}
+                                value={""}
                               />
                             </div>
                           }
@@ -619,7 +673,7 @@ export default function EquipmentForm({ variant }: triggerVariant) {
                                 name="secondaryWarrantyDescription"
                                 label="Secondary Warranty"
                                 type="text"
-                                value={undefined}
+                                value={""}
                               />
                               <DatePickerWrapper
                                 control={form.control}
@@ -631,7 +685,7 @@ export default function EquipmentForm({ variant }: triggerVariant) {
                                 name="secondaryWarrantyMeter"
                                 label="Meter"
                                 type="number"
-                                value={undefined}
+                                value={""}
                               />
                             </div>
                           }
@@ -680,7 +734,7 @@ export default function EquipmentForm({ variant }: triggerVariant) {
                               name="meter"
                               label={"Meter"}
                               type="number"
-                              value={undefined}
+                              value={""}
                               className=""
                             />
                             <InputWrapper
@@ -688,7 +742,7 @@ export default function EquipmentForm({ variant }: triggerVariant) {
                               name="price"
                               label={"Price"}
                               type="number"
-                              value={undefined}
+                              value={""}
                               className=""
                             />
                             <CustomFieldsWrapper
@@ -702,7 +756,7 @@ export default function EquipmentForm({ variant }: triggerVariant) {
                               name="note"
                               label={"Notes"}
                               type="text"
-                              value={undefined}
+                              value={""}
                               className=""
                             />
                           </>
@@ -718,7 +772,7 @@ export default function EquipmentForm({ variant }: triggerVariant) {
                               name="depreciationLifeMonths"
                               label="Term (Months)"
                               type="number"
-                              value={undefined}
+                              value={""}
                               className="flex-1"
                             />
                             <div className="flex items-center gap-2">
@@ -728,7 +782,7 @@ export default function EquipmentForm({ variant }: triggerVariant) {
                                 name="startingPrice"
                                 label="Starting Value"
                                 type="number"
-                                value={undefined}
+                                value={""}
                                 className="flex-1"
                               />
                             </div>
@@ -739,7 +793,7 @@ export default function EquipmentForm({ variant }: triggerVariant) {
                                 name="salvagePrice"
                                 label="Salvage Value"
                                 type="number"
-                                value={undefined}
+                                value={""}
                                 className="flex-1"
                               />
                             </div>
@@ -752,7 +806,7 @@ export default function EquipmentForm({ variant }: triggerVariant) {
                                   <span className="text-sm">$</span>
                                   <Input
                                     type="number"
-                                    value={undefined}
+                                    value={""}
                                     className="flex-1"
                                   />
                                 </div>
@@ -765,7 +819,7 @@ export default function EquipmentForm({ variant }: triggerVariant) {
                                   <span className="text-sm">$</span>
                                   <Input
                                     type="number"
-                                    value={undefined}
+                                    value={""}
                                     className="flex-1"
                                   />
                                 </div>
@@ -814,7 +868,7 @@ export default function EquipmentForm({ variant }: triggerVariant) {
                                   name="soldTo"
                                   label="Sold To"
                                   type="text"
-                                  value={undefined}
+                                  value={""}
                                   className="flex-1"
                                 />
                                 <InputWrapper
@@ -822,7 +876,7 @@ export default function EquipmentForm({ variant }: triggerVariant) {
                                   name="notes"
                                   label="Notes"
                                   type="text"
-                                  value={undefined}
+                                  value={""}
                                   className="flex-1"
                                 />
                               </div>
@@ -857,3 +911,250 @@ export default function EquipmentForm({ variant }: triggerVariant) {
     </Sheet>
   );
 }
+
+const people = [{}];
+const emailPeople = [{}];
+
+type emailTableType = {
+  id: string;
+  name: string;
+  email: string;
+  maintenance: boolean;
+  renewals: boolean;
+  workOrders: boolean;
+};
+
+export const emailColumns: ColumnDef<emailTableType>[] = [
+  {
+    accessorKey: "name",
+    header: "Name",
+    cell: ({ row, updateRow, rowIndex }: any) => (
+      <Select
+        value={row.original.name}
+        onValueChange={(e) => updateRow(rowIndex, "name", e)}
+      >
+        <SelectTrigger className="">
+          <SelectValue placeholder="" />
+        </SelectTrigger>
+        <SelectContent>
+          {vendorOptions.map((item) => (
+            <SelectItem value={item.value} key={item.value}>
+              {item.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    ),
+    enableSorting: true,
+    enableHiding: true,
+  },
+  {
+    accessorKey: "email",
+    header: "Email",
+    cell: ({ row, updateRow, rowIndex }: any) => (
+      <Input
+        value={row.original.email}
+        onChange={(e) => updateRow(rowIndex, "email", e.target.name)}
+      />
+    ),
+    enableSorting: true,
+    enableHiding: true,
+  },
+  {
+    accessorKey: "maintenance",
+    header: "Maintenance",
+    cell: ({ row, updateRow, rowIndex }: any) => (
+      <Checkbox
+        value={row.original.maintenance}
+        onChange={(e) => updateRow(rowIndex, "maintenance", e.target.value)}
+      />
+    ),
+    enableSorting: true,
+    enableHiding: true,
+  },
+  {
+    accessorKey: "renewals",
+    header: "Renewals",
+    cell: ({ row, updateRow, rowIndex }: any) => (
+      <Checkbox
+        value={row.original.renewals}
+        onChange={(e) => updateRow(rowIndex, "renewals", e.target.value)}
+      />
+    ),
+    enableSorting: true,
+    enableHiding: true,
+  },
+  {
+    accessorKey: "workOrders",
+    header: "WorkOrders",
+    cell: ({ row, updateRow, rowIndex }: any) => (
+      <Checkbox
+        value={row.original.workOrders}
+        onChange={(e) => updateRow(rowIndex, "renewals", e.target.value)}
+      />
+    ),
+    enableSorting: true,
+    enableHiding: true,
+  },
+  {
+    id: "actions",
+    header: "Actions",
+    cell: ({ row }) => {
+      const person = row.original;
+      return (
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => alert(`Delete ${person.notes}`)}
+          >
+            <LucideTrash2 className="text-destructive" />
+          </Button>
+        </div>
+      );
+    },
+    enableSorting: false,
+    enableHiding: false,
+  },
+];
+
+type expenseTableType = {
+  id: string;
+  name: number;
+  lastDate: string;
+  nextDate: string;
+  period: string;
+  interval: number;
+  cost: number;
+  quantity: number;
+  notes: string;
+};
+
+export const columns: ColumnDef<expenseTableType>[] = [
+  {
+    accessorKey: "name",
+    header: "Expense",
+    cell: ({ row, updateRow, rowIndex }: any) => (
+      <Select
+        value={row.original.name}
+        onValueChange={(e) => updateRow(rowIndex, "name", e)}
+      >
+        <SelectTrigger className="">
+          <SelectValue placeholder="" />
+        </SelectTrigger>
+        <SelectContent>
+          {expenseOptions.map((item) => (
+            <SelectItem value={item.value} key={item.value}>
+              {item.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    ),
+    enableSorting: true,
+    enableHiding: true,
+  },
+  {
+    accessorKey: "lastDate",
+    header: "Last Date",
+    cell: ({ row, updateRow, rowIndex }: any) => (
+      <Input
+        value={row.original.name}
+        onChange={(e) => updateRow(rowIndex, "lastDate", e.target.value)}
+      />
+    ),
+    enableSorting: true,
+    enableHiding: true,
+  },
+  {
+    accessorKey: "nextDate",
+    header: "Next Date",
+    cell: ({ row, updateRow, rowIndex }: any) => (
+      <Input
+        value={row.original.name}
+        onChange={(e) => updateRow(rowIndex, "nextDate", e.target.value)}
+      />
+    ),
+    enableSorting: true,
+    enableHiding: true,
+  },
+  {
+    accessorKey: "period",
+    header: "Period",
+    cell: ({ row, updateRow, rowIndex }: any) => (
+      <Select
+        value={row.original.name}
+        onValueChange={(e) => updateRow(rowIndex, "period", e)}
+      >
+        <SelectTrigger className="">
+          <SelectValue placeholder="" />
+        </SelectTrigger>
+        <SelectContent>
+          {periodOptionList.map((item) => (
+            <SelectItem value={item.value} key={item.value}>
+              {item.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    ),
+    enableSorting: true,
+    enableHiding: true,
+  },
+  {
+    accessorKey: "quantity",
+    header: "Quantity",
+    cell: ({ row, updateRow, rowIndex }: any) => (
+      <Input
+        value={row.original.name}
+        onChange={(e) => updateRow(rowIndex, "quantity", e)}
+      />
+    ),
+    enableSorting: true,
+    enableHiding: true,
+  },
+  {
+    accessorKey: "cost",
+    header: "Cost",
+    cell: ({ row, updateRow, rowIndex }: any) => (
+      <Input
+        value={row.original.cost}
+        onChange={(e) => updateRow(rowIndex, "cost", e)}
+      />
+    ),
+    enableSorting: true,
+    enableHiding: true,
+  },
+  {
+    accessorKey: "notes",
+    header: "Note",
+    cell: ({ row, updateRow, rowIndex }: any) => (
+      <Input
+        value={row.original.notes}
+        onChange={(e) => updateRow(rowIndex, "note", e.target.value)}
+      />
+    ),
+    enableSorting: true,
+    enableHiding: true,
+  },
+  {
+    id: "actions",
+    header: "Actions",
+    cell: ({ row }) => {
+      const person = row.original;
+      return (
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => alert(`Delete ${person.notes}`)}
+          >
+            <LucideTrash2 className="text-destructive" />
+          </Button>
+        </div>
+      );
+    },
+    enableSorting: false,
+    enableHiding: false,
+  },
+];

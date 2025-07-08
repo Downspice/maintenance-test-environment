@@ -152,20 +152,20 @@ export default function AddMaintenance() {
                     name="partsCost"
                     label="Parts Cost"
                     type="number"
-                    value={undefined}
+                    value={""}
                   />
                   <InputWrapper
                     control={form.control}
                     name="laborCost"
                     label="Labor Cost"
                     type="number"
-                    value={undefined}
+                    value={""}
                   />
                   <TextareaWrapper
                     control={form.control}
                     name="total"
                     label="Total"
-                    value={undefined}
+                    value={""}
                   />
                 </div>
               </div>

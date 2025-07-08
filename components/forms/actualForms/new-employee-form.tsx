@@ -109,21 +109,21 @@ export default function NewEmployeeForm() {
                     name="last"
                     label="Last Name"
                     type="text"
-                    value={undefined}
+                    value={""}
                   />
                   <InputWrapper
                     control={vendorForm.control}
                     name="first"
                     label="First Name"
                     type="text"
-                    value={undefined}
+                    value={""}
                   />
                   <InputWrapper
                     control={vendorForm.control}
                     name="middle"
                     label="Middle name"
                     type="text"
-                    value={undefined}
+                    value={""}
                   />
                 </div>
 
@@ -132,7 +132,7 @@ export default function NewEmployeeForm() {
                   name="street1"
                   label="Address 1"
                   type="text"
-                  value={undefined}
+                  value={""}
                 />
 
                 <InputWrapper
@@ -142,7 +142,7 @@ export default function NewEmployeeForm() {
                   placeholder="Address 2 "
                   label=""
                   type="text"
-                  value={undefined}
+                  value={""}
                 />
                 <div className="grid grid-cols-2 gap-4">
                   <div className="col-span-1">
@@ -151,7 +151,7 @@ export default function NewEmployeeForm() {
                       name="city"
                       label="City"
                       type="text"
-                      value={undefined}
+                      value={""}
                     />
                   </div>
                   <div className="col-span-1">
@@ -160,7 +160,7 @@ export default function NewEmployeeForm() {
                       name="state"
                       label="State /Province"
                       type="text"
-                      value={undefined}
+                      value={""}
                     />
                   </div>
                   <div className="col-span-1">
@@ -169,7 +169,7 @@ export default function NewEmployeeForm() {
                       name="postalCode"
                       label="Postal Code"
                       type="text"
-                      value={undefined}
+                      value={""}
                     />
                   </div>
                   <div className="col-span-1"></div>
@@ -223,7 +223,7 @@ export default function NewEmployeeForm() {
                     name="notes"
                     label="Notes"
                     rows={4}
-                    value={undefined}
+                    value={""}
                   />
                 </div>
                 <FormSubheader header={"Miscellaneous"} />
@@ -276,7 +276,7 @@ export default function NewEmployeeForm() {
                       name="ssn"
                       label="SSN"
                       type="text"
-                      value={undefined}
+                      value={""}
                     />
                   </div>
                   <div className="col-span-1">
@@ -296,7 +296,7 @@ export default function NewEmployeeForm() {
                       name="laborRate"
                       label="Last Rate"
                       type="number"
-                      value={undefined}
+                      value={""}
                     />
                   </div>
                   <div className="col-span-1">
@@ -306,7 +306,7 @@ export default function NewEmployeeForm() {
                       name="billingRate"
                       label="Billing Rate"
                       type="number"
-                      value={undefined}
+                      value={""}
                     />
                   </div>
                   <div className="col-span-1">
@@ -336,28 +336,28 @@ export default function NewEmployeeForm() {
                   name="driverNumber"
                   label="Number"
                   type="text"
-                  value={undefined}
+                  value={""}
                 />
                 <InputWrapper
                   control={vendorForm.control}
                   name="driverClass"
                   label="Class"
                   type="text"
-                  value={undefined}
+                  value={""}
                 />
                 <InputWrapper
                   control={vendorForm.control}
                   name="state"
                   label="State/Province"
                   type="text"
-                  value={undefined}
+                  value={""}
                 />
                 <TextareaWrapper
                   control={vendorForm.control}
                   name="notes"
                   label="Notes"
                   rows={4}
-                  value={undefined}
+                  value={""}
                 />
               </div>
             </TabsContent>

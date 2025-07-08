@@ -176,7 +176,7 @@ export default function EquipmentAssignment({ variant }: triggerVariant) {
                           label="Hours"
                           placeholder="Enter Hours"
                           type={""}
-                          value={undefined}
+                          value={""}
                         />
                       </div>
                       <div className="flex ">
@@ -197,7 +197,7 @@ export default function EquipmentAssignment({ variant }: triggerVariant) {
                           label=" "
                           placeholder="Enter Hours"
                           type={""}
-                          value={undefined}
+                          value={""}
                         />
                       </div>
                       <div className="flex justify-between ">

@@ -155,9 +155,9 @@ export default function RepairRequestFormButton({ variant }: triggerVariant) {
       </>
       <SheetContent className="w-3/4 ">
         <SheetHeader>
-          <SheetTitle>Create New Equipment</SheetTitle>
+          <SheetTitle>Create New Repair Request</SheetTitle>
           <SheetDescription>
-            Fill out the form below to set up your new Equipment project.
+            Fill out the form below to set up your new Repair Request.
           </SheetDescription>
         </SheetHeader>
 
@@ -225,7 +225,7 @@ export default function RepairRequestFormButton({ variant }: triggerVariant) {
                                     label="Unit #"
                                     type="text"
                                     required
-                                    value={undefined}
+                                    value={""}
                                   />
                                   <ComboboxFieldWrapper
                                     control={form.control}
@@ -244,14 +244,14 @@ export default function RepairRequestFormButton({ variant }: triggerVariant) {
                                     name="serialNumber"
                                     label="Serial #"
                                     type="text"
-                                    value={undefined}
+                                    value={""}
                                   />
                                   <InputWrapper
                                     control={form.control}
                                     name="year"
                                     label="Year"
                                     type="number"
-                                    value={undefined}
+                                    value={""}
                                   />
                                   <ComboboxFieldWrapper
                                     control={form.control}
@@ -281,7 +281,7 @@ export default function RepairRequestFormButton({ variant }: triggerVariant) {
                                         name="primaryMeter"
                                         label="Current Reading"
                                         type="number"
-                                        value={undefined}
+                                        value={""}
                                       />
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -296,7 +296,7 @@ export default function RepairRequestFormButton({ variant }: triggerVariant) {
                                         name="secondaryMeter"
                                         label="Current Reading"
                                         type="number"
-                                        value={undefined}
+                                        value={""}
                                       />
                                     </div>
                                   </div>
@@ -330,7 +330,7 @@ export default function RepairRequestFormButton({ variant }: triggerVariant) {
                                         name="soldTo"
                                         label="Buyer"
                                         type="text"
-                                        value={undefined}
+                                        value={""}
                                       />
                                     </div>
                                     <div className="space-y-2">
@@ -344,7 +344,7 @@ export default function RepairRequestFormButton({ variant }: triggerVariant) {
                                           name="soldPrice"
                                           label=""
                                           type="number"
-                                          value={undefined}
+                                          value={""}
                                           className="flex-1"
                                         />
                                       </div>
@@ -372,7 +372,7 @@ export default function RepairRequestFormButton({ variant }: triggerVariant) {
                                   label="Parent Equipment"
                                   type="text"
                                   placeholder="Enter Equipment Parent"
-                                  value={undefined}
+                                  value={""}
                                 />
                               </CardContent>
                             }
@@ -415,7 +415,7 @@ export default function RepairRequestFormButton({ variant }: triggerVariant) {
                                       label=""
                                       type="number"
                                       placeholder="0"
-                                      value={undefined}
+                                      value={""}
                                     />
                                   )}
                                 </div>
@@ -435,7 +435,7 @@ export default function RepairRequestFormButton({ variant }: triggerVariant) {
                                       label=""
                                       type="number"
                                       placeholder="0"
-                                      value={undefined}
+                                      value={""}
                                     />
                                   )}
                                 </div>
@@ -451,7 +451,7 @@ export default function RepairRequestFormButton({ variant }: triggerVariant) {
                                   name="btu"
                                   label="BTU"
                                   type="text"
-                                  value={undefined}
+                                  value={""}
                                   className="flex-1"
                                 />
                                 <InputWrapper
@@ -459,7 +459,7 @@ export default function RepairRequestFormButton({ variant }: triggerVariant) {
                                   name="inputVolts"
                                   label="Input Volts"
                                   type="text"
-                                  value={undefined}
+                                  value={""}
                                   className="flex-1"
                                 />
                                 <DatePickerWrapper
@@ -565,7 +565,7 @@ export default function RepairRequestFormButton({ variant }: triggerVariant) {
                                 name="warrantyDescription"
                                 label="Primary Warranty"
                                 type="text"
-                                value={undefined}
+                                value={""}
                               />
                               <DatePickerWrapper
                                 control={form.control}
@@ -577,7 +577,7 @@ export default function RepairRequestFormButton({ variant }: triggerVariant) {
                                 name="primaryWarrantyMeter"
                                 label="Meter"
                                 type="number"
-                                value={undefined}
+                                value={""}
                               />
                             </div>
                           }
@@ -594,7 +594,7 @@ export default function RepairRequestFormButton({ variant }: triggerVariant) {
                                 name="secondaryWarrantyDescription"
                                 label="Secondary Warranty"
                                 type="text"
-                                value={undefined}
+                                value={""}
                               />
                               <DatePickerWrapper
                                 control={form.control}
@@ -606,7 +606,7 @@ export default function RepairRequestFormButton({ variant }: triggerVariant) {
                                 name="secondaryWarrantyMeter"
                                 label="Meter"
                                 type="number"
-                                value={undefined}
+                                value={""}
                               />
                             </div>
                           }
@@ -655,7 +655,7 @@ export default function RepairRequestFormButton({ variant }: triggerVariant) {
                               name="meter"
                               label={"Meter"}
                               type="number"
-                              value={undefined}
+                              value={""}
                               className=""
                             />
                             <InputWrapper
@@ -663,7 +663,7 @@ export default function RepairRequestFormButton({ variant }: triggerVariant) {
                               name="price"
                               label={"Price"}
                               type="number"
-                              value={undefined}
+                              value={""}
                               className=""
                             />
                             <CustomFieldsWrapper
@@ -677,7 +677,7 @@ export default function RepairRequestFormButton({ variant }: triggerVariant) {
                               name="note"
                               label={"Notes"}
                               type="text"
-                              value={undefined}
+                              value={""}
                               className=""
                             />
                           </>
@@ -693,7 +693,7 @@ export default function RepairRequestFormButton({ variant }: triggerVariant) {
                               name="depreciationLifeMonths"
                               label="Term (Months)"
                               type="number"
-                              value={undefined}
+                              value={""}
                               className="flex-1"
                             />
                             <div className="flex items-center gap-2">
@@ -703,7 +703,7 @@ export default function RepairRequestFormButton({ variant }: triggerVariant) {
                                 name="startingPrice"
                                 label="Starting Value"
                                 type="number"
-                                value={undefined}
+                                value={""}
                                 className="flex-1"
                               />
                             </div>
@@ -714,7 +714,7 @@ export default function RepairRequestFormButton({ variant }: triggerVariant) {
                                 name="salvagePrice"
                                 label="Salvage Value"
                                 type="number"
-                                value={undefined}
+                                value={""}
                                 className="flex-1"
                               />
                             </div>
@@ -727,7 +727,7 @@ export default function RepairRequestFormButton({ variant }: triggerVariant) {
                                   <span className="text-sm">$</span>
                                   <Input
                                     type="number"
-                                    value={undefined}
+                                    value={""}
                                     className="flex-1"
                                   />
                                 </div>
@@ -740,7 +740,7 @@ export default function RepairRequestFormButton({ variant }: triggerVariant) {
                                   <span className="text-sm">$</span>
                                   <Input
                                     type="number"
-                                    value={undefined}
+                                    value={""}
                                     className="flex-1"
                                   />
                                 </div>
@@ -789,7 +789,7 @@ export default function RepairRequestFormButton({ variant }: triggerVariant) {
                                   name="soldTo"
                                   label="Sold To"
                                   type="text"
-                                  value={undefined}
+                                  value={""}
                                   className="flex-1"
                                 />
                                 <InputWrapper
@@ -797,7 +797,7 @@ export default function RepairRequestFormButton({ variant }: triggerVariant) {
                                   name="notes"
                                   label="Notes"
                                   type="text"
-                                  value={undefined}
+                                  value={""}
                                   className="flex-1"
                                 />
                               </div>

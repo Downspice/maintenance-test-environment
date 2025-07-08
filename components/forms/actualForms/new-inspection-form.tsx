@@ -80,7 +80,7 @@ export default function NewInspection() {
                     control={workOrderForm.control}
                     name="notes"
                     label="Notes"
-                    value={undefined}
+                    value={""}
                     rows={4}
                   />
                 </div>

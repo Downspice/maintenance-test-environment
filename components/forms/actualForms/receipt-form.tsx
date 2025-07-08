@@ -190,7 +190,7 @@ export default function  ReceiptForm() {
                     control={ receiptForm.control}
                     name="initialNotes"
                     label="Initial Notes"
-                    value={undefined}
+                    value={""}
                     rows={4}
                   />
                 </div>

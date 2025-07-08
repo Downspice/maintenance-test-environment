@@ -97,7 +97,7 @@ export default function AdjustInventoryForm() {
               name="tax1"
               label="Tax 1"
               type="number"
-              value={undefined}
+              value={""}
             />
             <InputWrapper
               className="col-span-1"
@@ -105,7 +105,7 @@ export default function AdjustInventoryForm() {
               name="tax2"
               label="Tax 2"
               type="number"
-              value={undefined}
+              value={""}
             />
             <InputWrapper
               className="col-span-1"
@@ -113,7 +113,7 @@ export default function AdjustInventoryForm() {
               name="unitCost"
               label="Unit Cost"
               type="number"
-              value={undefined}
+              value={""}
             />
             <InputWrapper
               className="col-span-1"
@@ -121,7 +121,7 @@ export default function AdjustInventoryForm() {
               name="extendedCost"
               label="Extended Cost"
               type="number"
-              value={undefined}
+              value={""}
             />
             <SelectWrapper
               control={vendorForm.control}
@@ -135,7 +135,7 @@ export default function AdjustInventoryForm() {
               name="invoiceNUmber"
               label="Invoice #"
               type="number"
-              value={undefined}
+              value={""}
             />
             <ComboboxFieldWrapper
               className="col-span-1"

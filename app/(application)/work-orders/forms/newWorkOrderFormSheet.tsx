@@ -197,7 +197,7 @@ export default function WorkOrderForm() {
                     control={workOrderForm.control}
                     name="initialNotes"
                     label="Initial Notes"
-                    value={undefined}
+                    value={""}
                     rows={4}
                   />
                 </div>

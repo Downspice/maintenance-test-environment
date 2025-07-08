@@ -354,42 +354,42 @@ export default function NewInvoiceForm({ variant }: triggerVariant) {
                       name="tax1"
                       label="Tax 1"
                       type="text"
-                      value={undefined}
+                      value={""}
                     />
                     <InputWrapper
                       control={form.control}
                       name="tax2"
                       label="Tax 2"
                       type="text"
-                      value={undefined}
+                      value={""}
                     />
                     <InputWrapper
                       control={form.control}
                       name="shipping"
                       label="Shipping"
                       type="text"
-                      value={undefined}
+                      value={""}
                     />
                     <InputWrapper
                       control={form.control}
                       name="total"
                       label="Total"
                       type="text"
-                      value={undefined}
+                      value={""}
                     />
                     <InputWrapper
                       control={form.control}
                       name="payments"
                       label="Payments"
                       type="text"
-                      value={undefined}
+                      value={""}
                     />
                     <InputWrapper
                       control={form.control}
                       name="balanceDue"
                       label="BalanceDue"
                       type="text"
-                      value={undefined}
+                      value={""}
                     />
                   </>
                 }

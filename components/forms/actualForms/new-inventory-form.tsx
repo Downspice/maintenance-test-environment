@@ -340,7 +340,7 @@ export default function NewInventory() {
                   label="Part Number"
                   type="text"
                   required
-                  value={undefined}
+                  value={""}
                 />
                 <InputWrapper
                   control={inventoryForm.control}
@@ -348,7 +348,7 @@ export default function NewInventory() {
                   label="Name"
                   type="text"
                   required
-                  value={undefined}
+                  value={""}
                 />
                 <InputWrapper
                   control={inventoryForm.control}
@@ -356,7 +356,7 @@ export default function NewInventory() {
                   label="Description"
                   type="text"
                   required
-                  value={undefined}
+                  value={""}
                 />
                 <ComboboxFieldWrapper
                   control={inventoryForm.control}
@@ -379,7 +379,7 @@ export default function NewInventory() {
                       label="Unit Cost (Base)"
                       type="text"
                       required
-                      value={undefined}
+                      value={""}
                     />
                   </div>
                   <div className="col-span-1">
@@ -397,7 +397,7 @@ export default function NewInventory() {
                   label="UPC"
                   type="text"
                   required
-                  value={undefined}
+                  value={""}
                 />
                 <CustomFieldsWrapper
                   control={inventoryForm.control}
@@ -425,7 +425,7 @@ export default function NewInventory() {
                       label="Aisle"
                       type="text"
                       required
-                      value={undefined}
+                      value={""}
                     />
                     <InputWrapper
                       control={inventoryForm.control}
@@ -433,7 +433,7 @@ export default function NewInventory() {
                       label="Row"
                       type="text"
                       required
-                      value={undefined}
+                      value={""}
                     />
                     <InputWrapper
                       control={inventoryForm.control}
@@ -441,7 +441,7 @@ export default function NewInventory() {
                       label="Bin"
                       type="text"
                       required
-                      value={undefined}
+                      value={""}
                     />
                   </div>
                   <ComboboxFieldWrapper
@@ -480,7 +480,7 @@ export default function NewInventory() {
                           label="Reorder Point"
                           type="number"
                           required
-                          value={undefined}
+                          value={""}
                         />
                       </div>
                       <div className="col-span-1">
@@ -490,7 +490,7 @@ export default function NewInventory() {
                           label="Reorder Qty"
                           type="number"
                           required
-                          value={undefined}
+                          value={""}
                         />
                       </div>
                       <div className="col-span-1">
@@ -500,7 +500,7 @@ export default function NewInventory() {
                           label="Max Qty"
                           type="number"
                           required
-                          value={undefined}
+                          value={""}
                         />
                       </div>
                       <div className="col-span-1">
@@ -510,7 +510,7 @@ export default function NewInventory() {
                           label="Lead Time "
                           type="number"
                           required
-                          value={undefined}
+                          value={""}
                         />
                       </div>
                       <div className="col-span-1">
@@ -553,7 +553,7 @@ export default function NewInventory() {
                         name={`days`}
                         label="Days"
                         type="number"
-                        value={undefined}
+                        value={""}
                         required
                       />
                       <InputWrapper
@@ -561,7 +561,7 @@ export default function NewInventory() {
                         name={`primary`}
                         label="Primary"
                         type="number"
-                        value={undefined}
+                        value={""}
                         required
                       />
                       <InputWrapper
@@ -569,7 +569,7 @@ export default function NewInventory() {
                         name={`secondary`}
                         label="Secondary"
                         type="number"
-                        value={undefined}
+                        value={""}
                         required
                       />
                       <InputWrapper
@@ -578,7 +578,7 @@ export default function NewInventory() {
                         label="Notes"
                         type="text"
                         required
-                        value={undefined}
+                        value={""}
                       />
                     </>
                   }
@@ -657,35 +657,35 @@ export default function NewInventory() {
                   name={`warehouses.${index}.bin`}
                   label="Bin"
                   type="text"
-                  value={undefined}
+                  value={""}
                 />
                 <InputWrapper
                   control={control}
                   name={`warehouses.${index}.quantity`}
                   label="Quantity"
                   type="number"
-                  value={undefined}
+                  value={""}
                 />
                 <InputWrapper
                   control={control}
                   name={`warehouses.${index}.lowStockLevel`}
                   label="Low Stock Level"
                   type="number"
-                  value={undefined}
+                  value={""}
                 />
                 <InputWrapper
                   control={control}
                   name={`warehouses.${index}.reorderQuantity`}
                   label="Reorder Quantity"
                   type="number"
-                  value={undefined}
+                  value={""}
                 />
                 <InputWrapper
                   control={control}
                   name={`warehouses.${index}.maximumQuantity`}
                   label="Maximum Quantity"
                   type="number"
-                  value={undefined}
+                  value={""}
                 />
                 <Button
                   type="button"
@@ -718,21 +718,21 @@ export default function NewInventory() {
                   name={`vendors.${index}.manufacturer`}
                   label="Manufacturer"
                   type="text"
-                  value={undefined}
+                  value={""}
                 />
                 <InputWrapper
                   control={control}
                   name={`vendors.${index}.vendorNumber`}
                   label="Vendor#"
                   type="text"
-                  value={undefined}
+                  value={""}
                 />
                 <InputWrapper
                   control={control}
                   name={`vendors.${index}.barcode`}
                   label="Barcode"
                   type="text"
-                  value={undefined}
+                  value={""}
                 />
                 <MultiSelectWrapper
                   control={control}

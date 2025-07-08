@@ -134,7 +134,7 @@ export default function NewPurchaseOrderForm() {
                 label="Invoice"
                 type="text"
                 placeholder="Invoice number goes here"
-                value={undefined}
+                value={""}
               />
 
               <InputWrapper
@@ -143,7 +143,7 @@ export default function NewPurchaseOrderForm() {
                 label="Work Order Number"
                 type="number"
                 placeholder=" Work Order Number goes here"
-                value={undefined}
+                value={""}
                 warning="Enter work order numbers only. Do not enter any prefix characters."
               />
 
@@ -151,7 +151,7 @@ export default function NewPurchaseOrderForm() {
                 control={purchaseOrderForm.control}
                 name="notes"
                 label="Notes"
-                value={undefined}
+                value={""}
                 rows={4}
               />
 

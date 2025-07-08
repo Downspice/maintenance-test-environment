@@ -162,14 +162,14 @@ export default function AddLabor() {
                     name="laborRate"
                     label="Last Rate"
                     type="number"
-                    value={undefined}
+                    value={""}
                   />
                   <InputWrapper
                     control={form.control}
                     name="hours"
                     label="Hours"
                     type="text"
-                    value={undefined}
+                    value={""}
                   />
                   <InputWrapper
                     className="col-span-1"
@@ -177,7 +177,7 @@ export default function AddLabor() {
                     name="totalCost"
                     label="Total Cost"
                     type="number"
-                    value={undefined}
+                    value={""}
                   />
                 </div>
               </div>

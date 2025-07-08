@@ -61,7 +61,7 @@ export default function ManagePMScheduleTemplateView() {
                   name="meter"
                   label={"Meter"}
                   type="number"
-                  value={undefined}
+                  value={""}
                   className=""
                 />
                 <InputWrapper
@@ -69,7 +69,7 @@ export default function ManagePMScheduleTemplateView() {
                   name="price"
                   label={"Price"}
                   type="number"
-                  value={undefined}
+                  value={""}
                   className=""
                 />
                 <CustomFieldsWrapper
@@ -83,7 +83,7 @@ export default function ManagePMScheduleTemplateView() {
                   name="note"
                   label={"Notes"}
                   type="text"
-                  value={undefined}
+                  value={""}
                   className=""
                 />
               </>
@@ -99,7 +99,7 @@ export default function ManagePMScheduleTemplateView() {
                   name="depreciationLifeMonths"
                   label="Term (Months)"
                   type="number"
-                  value={undefined}
+                  value={""}
                   className="flex-1"
                 />
                 <div className="flex items-center gap-2">
@@ -109,7 +109,7 @@ export default function ManagePMScheduleTemplateView() {
                     name="startingPrice"
                     label="Starting Value"
                     type="number"
-                    value={undefined}
+                    value={""}
                     className="flex-1"
                   />
                 </div>
@@ -120,7 +120,7 @@ export default function ManagePMScheduleTemplateView() {
                     name="salvagePrice"
                     label="Salvage Value"
                     type="number"
-                    value={undefined}
+                    value={""}
                     className="flex-1"
                   />
                 </div>
@@ -133,7 +133,7 @@ export default function ManagePMScheduleTemplateView() {
                       <span className="text-sm">$</span>
                       <Input
                         type="number"
-                        value={undefined}
+                        value={""}
                         className="flex-1"
                       />
                     </div>
@@ -144,7 +144,7 @@ export default function ManagePMScheduleTemplateView() {
                       <span className="text-sm">$</span>
                       <Input
                         type="number"
-                        value={undefined}
+                        value={""}
                         className="flex-1"
                       />
                     </div>
@@ -193,7 +193,7 @@ export default function ManagePMScheduleTemplateView() {
                       name="soldTo"
                       label="Sold To"
                       type="text"
-                      value={undefined}
+                      value={""}
                       className="flex-1"
                     />
                     <InputWrapper
@@ -201,7 +201,7 @@ export default function ManagePMScheduleTemplateView() {
                       name="notes"
                       label="Notes"
                       type="text"
-                      value={undefined}
+                      value={""}
                       className="flex-1"
                     />
                   </div>

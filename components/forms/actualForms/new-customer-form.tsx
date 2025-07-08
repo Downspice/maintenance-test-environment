@@ -71,14 +71,14 @@ export default function NewCustomer() {
                   label="Name"
                   type="text"
                   required
-                  value={undefined}
+                  value={""}
                 />
                 <InputWrapper
                   control={vendorForm.control}
                   name="number"
                   label="Vendor #"
                   type="text"
-                  value={undefined}
+                  value={""}
                 />
 
                 <InputWrapper
@@ -86,7 +86,7 @@ export default function NewCustomer() {
                   name="ShippingNumber"
                   label="Shipping"
                   type="text"
-                  value={undefined}
+                  value={""}
                 />
 
                 <InputWrapper
@@ -94,7 +94,7 @@ export default function NewCustomer() {
                   name="street1"
                   label="Address"
                   type="text"
-                  value={undefined}
+                  value={""}
                 />
 
                 <InputWrapper
@@ -104,7 +104,7 @@ export default function NewCustomer() {
                   placeholder=" "
                   label=""
                   type="text"
-                  value={undefined}
+                  value={""}
                 />
                 <div className="grid grid-cols-2 gap-4">
                   <div className="col-span-1">
@@ -113,7 +113,7 @@ export default function NewCustomer() {
                       name="city"
                       label="City"
                       type="text"
-                      value={undefined}
+                      value={""}
                     />
                   </div>
                   <div className="col-span-1">
@@ -122,7 +122,7 @@ export default function NewCustomer() {
                       name="state"
                       label="State /Province"
                       type="text"
-                      value={undefined}
+                      value={""}
                     />
                   </div>
                   <div className="col-span-1">
@@ -131,7 +131,7 @@ export default function NewCustomer() {
                       name="postalCode"
                       label="Postal Code"
                       type="text"
-                      value={undefined}
+                      value={""}
                     />
                   </div>
                   <div className="col-span-1">
@@ -140,7 +140,7 @@ export default function NewCustomer() {
                       name="country"
                       label="Country"
                       type="text"
-                      value={undefined}
+                      value={""}
                     />
                   </div>
                   <div className="col-span-1"></div>
@@ -177,7 +177,7 @@ export default function NewCustomer() {
                       label="Phone 1:"
                       type="text"
                       required
-                      value={undefined}
+                      value={""}
                     />
                   </div>
                   <div className="col-span-1">
@@ -186,7 +186,7 @@ export default function NewCustomer() {
                       name="phone2"
                       label="Phone 2:"
                       type="text"
-                      value={undefined}
+                      value={""}
                     />
                   </div>
                   <div className="col-span-1">
@@ -195,7 +195,7 @@ export default function NewCustomer() {
                       name="fax"
                       label="Fax:"
                       type="text"
-                      value={undefined}
+                      value={""}
                     />
                   </div>
                   <div className="col-span-1">
@@ -213,7 +213,7 @@ export default function NewCustomer() {
                       name="email"
                       label="Email:"
                       type="text"
-                      value={undefined}
+                      value={""}
                     />{" "}
                   </div>
                 </div>
@@ -235,7 +235,7 @@ export default function NewCustomer() {
                       name="termDays"
                       label="Term Days"
                       type="number"
-                      value={undefined}
+                      value={""}
                     />
                   </div>
                   <div className="col-span-1">
@@ -270,7 +270,7 @@ export default function NewCustomer() {
                       name="billingRate"
                       label="Billing Rate"
                       type="number"
-                      value={undefined}
+                      value={""}
                     />
                   </div>
                   <div className="col-span-1">
@@ -304,7 +304,7 @@ export default function NewCustomer() {
                   label="Name"
                   type="text"
                   required
-                  value={undefined}
+                  value={""}
                 />
 
                 <InputWrapper
@@ -313,7 +313,7 @@ export default function NewCustomer() {
                   label="Contact"
                   type="text"
                   required
-                  value={undefined}
+                  value={""}
                 />
 
                 <InputWrapper
@@ -321,7 +321,7 @@ export default function NewCustomer() {
                   name="street1"
                   label="Address"
                   type="text"
-                  value={undefined}
+                  value={""}
                 />
 
                 <InputWrapper
@@ -331,7 +331,7 @@ export default function NewCustomer() {
                   placeholder=" "
                   label=""
                   type="text"
-                  value={undefined}
+                  value={""}
                 />
                 <div className="grid grid-cols-2 gap-1">
                   <div className="col-span-1">
@@ -341,7 +341,7 @@ export default function NewCustomer() {
                       label="Phone"
                       type="text"
                       required
-                      value={undefined}
+                      value={""}
                     />
                   </div>
                   <div className="col-span-1">
@@ -350,7 +350,7 @@ export default function NewCustomer() {
                       name="fax"
                       label="Fax:"
                       type="text"
-                      value={undefined}
+                      value={""}
                     />
                   </div>
                   <div className="col-span-1">
@@ -359,7 +359,7 @@ export default function NewCustomer() {
                       name="email"
                       label="Email:"
                       type="text"
-                      value={undefined}
+                      value={""}
                     />{" "}
                   </div>
                   <div className="col-span-1"></div>
@@ -372,7 +372,7 @@ export default function NewCustomer() {
                       name="city"
                       label="City"
                       type="text"
-                      value={undefined}
+                      value={""}
                     />
                   </div>
                   <div className="col-span-1">
@@ -381,7 +381,7 @@ export default function NewCustomer() {
                       name="state"
                       label="State /Province"
                       type="text"
-                      value={undefined}
+                      value={""}
                     />
                   </div>
                   <div className="col-span-1">
@@ -390,7 +390,7 @@ export default function NewCustomer() {
                       name="postalCode"
                       label="Postal Code"
                       type="text"
-                      value={undefined}
+                      value={""}
                     />
                   </div>
                   <div className="col-span-1">
@@ -399,7 +399,7 @@ export default function NewCustomer() {
                       name="country"
                       label="Country"
                       type="text"
-                      value={undefined}
+                      value={""}
                     />
                   </div>
                   <div className="col-span-1"></div>
@@ -412,7 +412,7 @@ export default function NewCustomer() {
                 name="notes"
                 label="Notes"
                 rows={4}
-                value={undefined}
+                value={""}
               />
             </TabsContent>
 
@@ -420,8 +420,8 @@ export default function NewCustomer() {
               <FileUploadWrapper
                 multiple={true}
                 control={vendorForm.control}
-                name={"Attachmentss"}
-                label={"Attachmentss"}
+                name={"Attachments"}
+                label={"Attachments"}
               />
             </TabsContent>
           </Tabs>

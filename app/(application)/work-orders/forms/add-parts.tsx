@@ -142,14 +142,14 @@ export default function AddParts() {
                     name="name"
                     label="Name"
                     type="text"
-                    value={undefined}
+                    value={""}
                   />
                   <InputWrapper
                     control={form.control}
                     name="description"
                     label="Description"
                     type="text"
-                    value={undefined}
+                    value={""}
                   />
                   <ComboboxFieldWrapper
                     control={form.control}
@@ -162,7 +162,7 @@ export default function AddParts() {
                     name="quantityUsed"
                     label="Quantity Used"
                     type="text"
-                    value={undefined}
+                    value={""}
                   />
                   <InputWrapper
                     className="col-span-1"
@@ -170,7 +170,7 @@ export default function AddParts() {
                     name="unitCost"
                     label="Unit Cost"
                     type="number"
-                    value={undefined}
+                    value={""}
                   />
                   <div className="grid grid-cols-2">
                     <div className="col-span-1">
@@ -180,7 +180,7 @@ export default function AddParts() {
                         name="extendCost"
                         label="Extend Cost"
                         type="number"
-                        value={undefined}
+                        value={""}
                       />
                     </div>
                     <div className="col-span-1 flex items-align-baseline">
@@ -215,7 +215,7 @@ export default function AddParts() {
                             name={`days`}
                             label="Days"
                             type="number"
-                            value={undefined}
+                            value={""}
                             disabled={!watchPartUnderWarranty}
                             required
                           />
@@ -224,7 +224,7 @@ export default function AddParts() {
                             name={`hours`}
                             label="Hours"
                             type="number"
-                            value={undefined}
+                            value={""}
                             disabled={!watchPartUnderWarranty}
                             required
                           />

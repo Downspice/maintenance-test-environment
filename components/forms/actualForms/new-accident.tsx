@@ -150,7 +150,7 @@ export default function NewAccident({ variant }: triggerVariant) {
                   label="Hours"
                   placeholder="Enter Hours"
                   type={""}
-                  value={undefined}
+                  value={""}
                 />
 
                 <InputWrapper
@@ -159,7 +159,7 @@ export default function NewAccident({ variant }: triggerVariant) {
                   label="Claim#"
                   placeholder=" "
                   type={""}
-                  value={undefined}
+                  value={""}
                 />
 
                 <InputWrapper
@@ -168,7 +168,7 @@ export default function NewAccident({ variant }: triggerVariant) {
                   label="Units Involved"
                   placeholder=" "
                   type={"number"}
-                  value={undefined}
+                  value={""}
                 />
                 <InputWrapper
                   control={form.control}
@@ -176,7 +176,7 @@ export default function NewAccident({ variant }: triggerVariant) {
                   label="Injuries "
                   placeholder=" "
                   type={"number"}
-                  value={undefined}
+                  value={""}
                 />
                 <InputWrapper
                   control={form.control}
@@ -184,7 +184,7 @@ export default function NewAccident({ variant }: triggerVariant) {
                   label="Other Cost"
                   placeholder=" "
                   type={"number"}
-                  value={undefined}
+                  value={""}
                 />
 
                 <ComboboxFieldWrapper
@@ -200,7 +200,7 @@ export default function NewAccident({ variant }: triggerVariant) {
                   label="Damage Cost"
                   placeholder=" "
                   type={"number"}
-                  value={undefined}
+                  value={""}
                 />
               </TabsContent>
               <TabsContent value="Location" className="space-y-2">

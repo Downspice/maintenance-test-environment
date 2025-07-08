@@ -73,7 +73,7 @@ export default function NewLocation() {
                 name="tax1"
                 label="Tax 1"
                 type="text"
-                value={undefined}
+                value={""}
               />
             </div>
             <div className="col-span-1 flex flex-col">
@@ -83,7 +83,7 @@ export default function NewLocation() {
                 name="tax2"
                 label="Tax 2"
                 type="text"
-                value={undefined}
+                value={""}
               />
             </div>
           </div>

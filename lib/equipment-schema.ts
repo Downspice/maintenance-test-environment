@@ -144,10 +144,15 @@ export const accidentOptions = [
 export const expenseOptions = [
   { value: "130878", label: "Expense" },
   { value: "130879", label: "Insurance Payment" },
-  { value: "130879", label: "Lease Payment" },
-  { value: "130879", label: "Loan Payment" },
+  { value: "130870", label: "Lease Payment" },
+  { value: "130873", label: "Loan Payment" },
 ]
 
+export const periodOptionList = [
+  { value: "week", label: "week" },
+  { value: "month", label: "month" },
+  { value: "year", label: "year" },
+]
 export const categoryOptions = [
   { value: "130878", label: "Location #1 | Fleet Equipment" },
   { value: "130879", label: "Location #2 | Construction Equipment" },

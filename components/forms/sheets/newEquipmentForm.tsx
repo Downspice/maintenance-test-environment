@@ -217,14 +217,14 @@ export default function NewEquipmentSheet() {
                                       label="Project Name"
                                       type="text"
                                       required={true}
-                                      warning="This will be the name of your project." value={undefined}                  />
+                                      warning="This will be the name of your project." value={""}                  />
 
                   <InputWrapper
                     control={form.control}
                     name="email"
                     label="Email"
                     type="email"
-                    required={true} value={undefined} 
+                    required={true} value={""} 
                     warning="We'll use this to send you project updates."
                   />
 
