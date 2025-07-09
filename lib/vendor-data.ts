@@ -1,33 +1,40 @@
-export interface VendorInterface {
-  vendorNumber: string;
-  name: string;
-  type:
-    | "All Vendors"
-    | "Dealer"
-    | "Fuel"
-    | "Insurance"
-    | "Loan/Lease"
-    | "Maintenance"
-    | "Rentals"
-    | "Wholesale";
-  contact: string;
-  address1: string;
-  address2?: string;
-  city: string;
-  state_prov: string; // e.g., CA, NY
-  province?: string; // e.g., Greater Accra, Ashanti, HCMC
-  postal_code: string; // e.g., 90001, GA-107
-  country: string;
-  phone1: string;
-  phone2?: string;
-  fax?: string;
-  email: string;
-  website?: string;
-  term: string; // e.g., Net 30, Prepaid
-  billing_rate: number;
-  location: string;
-  notes?: string;
-}
+import z from "zod";
+
+export const VendorSchema = z.object({
+  vendorNumber: z.string(),
+  name: z.string(),
+  type: z.enum([
+    "All Vendors",
+    "Dealer",
+    "Fuel",
+    "Insurance",
+    "Loan/Lease",
+    "Maintenance",
+    "Rentals",
+    "Wholesale",
+  ]),
+  contact: z.string(),
+  address1: z.string(),
+  address2: z.string().optional(),
+  city: z.string(),
+  state_prov: z.string(),
+  province: z.string().optional(),
+  postal_code: z.string(),
+  country: z.string(),
+  phone1: z.string(),
+  phone2: z.string().optional(),
+  fax: z.string().optional(),
+  email: z.string().email(),
+  website: z.string().url().optional(),
+  term: z.string(),
+  billing_rate: z.number(),
+  location: z.string(),
+  notes: z.string().optional(),
+})
+
+// Type inference (optional)
+export type VendorInterface = z.infer<typeof VendorSchema>
+
 
 export const VendorData: VendorInterface[] = [
   {

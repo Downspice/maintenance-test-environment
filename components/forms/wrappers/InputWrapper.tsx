@@ -16,7 +16,7 @@ interface InputWrapperProps {
   label: string;
   type: string;
   className?: string;
-  value: any;
+  value?: any;
   placeholder?: string;
   disabled?: boolean;
   required?: boolean;

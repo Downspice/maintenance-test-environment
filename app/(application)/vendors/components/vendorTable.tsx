@@ -17,6 +17,7 @@ import { useState } from "react";
 import React from "react";
 import { VendorData, VendorInterface } from "@/lib/vendor-data";
 import ViewVendor from "../view/viewDetailsSheet";
+import EditVendor from "../view/editVendorSheet";
 
 const getAllEmployees = (employees: VendorInterface[]): VendorInterface[] => {
   const result: VendorInterface[] = [];
@@ -211,8 +212,6 @@ export default function VendorDataTable() {
     [paginationInfo.pageSize]
   ); // Add dependencies that actually matter
 
- 
-
   // Column definitions
   const columns: ColumnDef<VendorInterface>[] = [
     {
@@ -347,35 +346,15 @@ export default function VendorDataTable() {
 
         return (
           <div className="flex flex-row justify-between ">
-            {/* <DropdownMenu>
-                         <DropdownMenuTrigger asChild>
-                           <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                             <MoreHorizontal className="h-4 w-4" />
-                           </Button>
-                         </DropdownMenuTrigger>
-                         <DropdownMenuContent align="end">
-                           <DropdownMenuItem
-                             onClick={(e) => {
-                               e.stopPropagation();
-                               alert(`Edit ${row.getValue("name")}`);
-                             }}
-                           >
-                             Edit
-                           </DropdownMenuItem>
-                           <DropdownMenuItem
-                             onClick={(e) => {
-                               e.stopPropagation();
-                               handlePrintRow(row);
-                             }}
-                           >
-                             <Printer className="mr-2 h-4 w-4" />
-                             Print
-                           </DropdownMenuItem>
-                         </DropdownMenuContent>
-                       </DropdownMenu> */}
-            <Button variant={"secondary"} size={"icon"}>
-              <FilePenIcon />
-            </Button>
+            <EditVendor
+              children={
+                <Button variant={"secondary"} size={"icon"}>
+                  <FilePenIcon />{" "}
+                </Button>
+              }
+              data={row.original}
+            />
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant={"secondary"} size={"icon"}>

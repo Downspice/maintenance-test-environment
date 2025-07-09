@@ -9,7 +9,7 @@ interface TextareaWrapperProps {
   name: string
   label?: string
   className?: string
-  value: any
+  value?: any
   placeholder?: string
   rows?: number
   disabled?: boolean
