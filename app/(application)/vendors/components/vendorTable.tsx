@@ -4,15 +4,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { AdvancedDataTable } from "@/components/customUI/advanced-data-table";
 import { SortableHeader } from "@/components/customUI/sortable-header";
 import { Button } from "@/components/ui/button";
-import {
-  MoreHorizontal,
-  Trash2,
-  Printer,
-  CheckCircle,
-  Clock,
-  AlertTriangle,
-  FilePenIcon,
-} from "lucide-react";
+import { MoreHorizontal, Trash2, FilePenIcon } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,48 +16,7 @@ import {
 import { useState } from "react";
 import React from "react";
 import { VendorData, VendorInterface } from "@/lib/vendor-data";
-import { WorkOrderTask } from "@/lib/work-orders-data";
-
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case "open":
-      return "bg-orange-100 text-orange-800 border-orange-200";
-    case "closed":
-      return "bg-green-100 text-green-800 border-green-200";
-    default:
-      return "bg-gray-100 text-gray-800 border-gray-200";
-  }
-};
-
-const getTaskStatusIcon = (status: string) => {
-  switch (status) {
-    case "completed":
-      return <CheckCircle className="h-3 w-3 text-green-600" />;
-    case "in-progress":
-      return <Clock className="h-3 w-3 text-blue-600" />;
-    case "pending":
-      return <AlertTriangle className="h-3 w-3 text-orange-600" />;
-    default:
-      return <Clock className="h-3 w-3 text-gray-600" />;
-  }
-};
-const TaskTooltipContent = ({ tasks }: { tasks: WorkOrderTask[] }) => (
-  <div className="space-y-2 max-w-xs">
-    <div className="font-semibold text-sm">Tasks ({tasks.length})</div>
-    {tasks.map((task) => (
-      <div key={task.id} className="flex items-center gap-2 text-xs">
-        {getTaskStatusIcon(task.status)}
-        <div className="flex-1">
-          <div className="font-medium">{task.name}</div>
-          <div className="text-muted-foreground">
-            Assigned to: {task.assignee}
-            {task.dueDate && ` • Due: ${task.dueDate}`}
-          </div>
-        </div>
-      </div>
-    ))}
-  </div>
-);
+import ViewVendor from "../view/viewDetailsSheet";
 
 const getAllEmployees = (employees: VendorInterface[]): VendorInterface[] => {
   const result: VendorInterface[] = [];
@@ -149,25 +100,10 @@ export default function VendorDataTable() {
     const employee = row.original;
     const printWindow = window.open("", "_blank");
     if (printWindow) {
-      const formattedSalary = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(employee.salary);
-
       printWindow.document.write(`
         <html>
           <head>
-            <title>Work In Progress</title>
-            <style>
-              body { font-family: Arial, sans-serif; margin: 20px; }
-              .header { border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px; }
-              .field { margin-bottom: 10px; }
-              .label { font-weight: bold; display: inline-block; width: 120px; }
-              .status { padding: 4px 8px; border-radius: 4px; font-size: 12px; }
-              .status.active { background-color: #d4edda; color: #155724; }
-              .status.inactive { background-color: #f8d7da; color: #721c24; }
-              .status.pending { background-color: #fff3cd; color: #856404; }
-            </style>
+            <title>Work In Progress</title> 
           </head>
           <body>
             <div class="header">
@@ -275,18 +211,7 @@ export default function VendorDataTable() {
     [paginationInfo.pageSize]
   ); // Add dependencies that actually matter
 
-  const getSubRows = (originalRow: VendorInterface) => {
-    return originalRow.vendor_links;
-  };
-
-  // Custom sub-row renderer
-  const renderSubRow = (
-    subRowData: description,
-    parentRow: any,
-    depth: number
-  ) => {
-    return <div className="space-y-4"></div>;
-  };
+ 
 
   // Column definitions
   const columns: ColumnDef<VendorInterface>[] = [
@@ -301,10 +226,14 @@ export default function VendorDataTable() {
         />
       ),
       cell: ({ row }) => (
-        <div className="font-medium text-primary flex flex-col">
-          {" "}
-          {row.getValue("name")}
-        </div>
+        <ViewVendor
+          children={
+            <div className="font-medium text-primary flex flex-col">
+              {row.getValue("name")}
+            </div>
+          }
+          data={row.original}
+        />
       ),
     },
     {
@@ -517,12 +446,8 @@ export default function VendorDataTable() {
         onDeleteSelected={handleDeleteSelected}
         onPrintRow={handlePrintRow}
         storageKey="employee-table-visibility"
-        getSubRows={getSubRows}
         enableExpanding={false}
-        // Custom sub-row rendering
-        renderSubRow={renderSubRow}
         subRowKey="tasks"
-        // Server-side props
         realServerPagination={isServerMode}
         paginationInfo={isServerMode ? paginationInfo : undefined}
         onPaginationChange={isServerMode ? handlePaginationChange : undefined}
