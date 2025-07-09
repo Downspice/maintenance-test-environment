@@ -66,6 +66,7 @@ import {
 } from "@/components/ui/select";
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
+import SingleCheckboxWrapper from "@/components/forms/wrappers/SingleCheckboxWrapper";
 
 interface triggerVariant {
   variant?: "icon" | "default";
@@ -221,12 +222,14 @@ export default function EquipmentForm({ variant }: triggerVariant) {
 
                     <TabsContent value="expenses">
                       <div className="flex ">
-                        <div className="text-lg font-semibold text-gray-700">Automatic Expense Logging</div>
+                        <div className="text-lg font-semibold text-gray-700">
+                          Automatic Expense Logging
+                        </div>
                       </div>
                       <EditableDataTable
                         data={people}
                         columns={columns}
-                        defaultRow={{ id: Date.now()}}
+                        defaultRow={{ id: Date.now() }}
                         onDataChange={(newData) => {
                           console.log("Updated Data:", newData);
                         }}
@@ -234,12 +237,14 @@ export default function EquipmentForm({ variant }: triggerVariant) {
                     </TabsContent>
                     <TabsContent value="notifications">
                       <div className="flex ">
-                        <div className="text-lg font-semibold text-gray-700">Email Notifications</div>
+                        <div className="text-lg font-semibold text-gray-700">
+                          Email Notifications
+                        </div>
                       </div>
                       <EditableDataTable
                         data={emailPeople}
                         columns={emailColumns}
-                        defaultRow={{ id: Date.now(), }}
+                        defaultRow={{ id: Date.now() }}
                         onDataChange={(newData) => {
                           console.log("Updated Data:", newData);
                         }}
@@ -277,6 +282,46 @@ export default function EquipmentForm({ variant }: triggerVariant) {
                                 value={""}
                                 type="number"
                               />
+                            </div>
+                          </div>
+                        }
+                      />
+                      <Fieldset
+                        legend="Virtual Mileage/Km/Hours Configurations for meter"
+                        content={
+                          <div className="grid grid-cols-2 space-x-2">
+                            <div className="col-span-1 space-y-2">
+                              <SingleCheckboxWrapper
+                                control={form.control}
+                                name="enableMeter1"
+                                label="Enable virtual Mi/Km/Hr calcs for Meter1"
+                              />
+                              <InputWrapper
+                                control={form.control}
+                                name="average1"
+                                label="Average daily Mi/Km/Hrs"
+                                type="number"
+                                value={""}
+                              />
+                              <DatePickerWrapper
+                                  control={form.control}
+                                  name="lastMaintenanceCheck1"
+                                  label="Last Maintenance check"
+                                />
+                            </div>
+                            <div className="col-span-1 space-y-2">
+                              <SingleCheckboxWrapper
+                                control={form.control}
+                                name="enableMeter2"
+                                label="Enable virtual Mi/Km/Hr calcs for Meter 2"
+                              />
+                              <InputWrapper
+                                control={form.control}
+                                name="average2"
+                                label="Average daily Mi/Km/Hrs"
+                                type="number"
+                                value={""}
+                              /> 
                             </div>
                           </div>
                         }
