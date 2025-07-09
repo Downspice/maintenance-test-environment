@@ -221,7 +221,7 @@ export default function EquipmentForm({ variant }: triggerVariant) {
 
                     <TabsContent value="expenses">
                       <div className="flex ">
-                        <div>Automatic Expense Logging</div>
+                        <div className="text-lg font-semibold text-gray-700">Automatic Expense Logging</div>
                       </div>
                       <EditableDataTable
                         data={people}
@@ -234,7 +234,7 @@ export default function EquipmentForm({ variant }: triggerVariant) {
                     </TabsContent>
                     <TabsContent value="notifications">
                       <div className="flex ">
-                        <div>Email Notifications</div>
+                        <div className="text-lg font-semibold text-gray-700">Email Notifications</div>
                       </div>
                       <EditableDataTable
                         data={emailPeople}
