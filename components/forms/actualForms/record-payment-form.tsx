@@ -17,7 +17,7 @@ import {
 import {
   invoiceOptionsList,
   invoicePaymentMethodOptionsList,
-} from "@/lib/invoices-page-data";
+} from "@/lib/Invoice/invoices-page-data";
 import DatePickerWrapper from "../wrappers/DatePickerWrapper";
 import Fieldset from "@/components/customUI/fieldset";
 import SelectWrapper from "../wrappers/SelectWrapper";

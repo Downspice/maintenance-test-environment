@@ -24,6 +24,7 @@ import {
 import { useState } from "react";
 import React from "react";
 import { CustomerData, CustomerInterface } from "@/lib/customer-data";
+import { matchesSearchAllFields } from "@/lib/utils";
 
 const getAllEmployees = (
   employees: CustomerInterface[]
@@ -188,31 +189,8 @@ export default function CustomerDataTable() {
         let filteredData = CustomerData;
 
         if (searchValue.trim()) {
-          filteredData = CustomerData.filter(
-            (emp) =>
-              emp.id.toLowerCase().includes(searchValue.toLowerCase()) ||
-              emp.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-              emp.type.toLowerCase().includes(searchValue.toLowerCase()) ||
-              emp.contact
-                .toString()
-                .toLowerCase()
-                .includes(searchValue.toLowerCase()) ||
-              emp.address1
-                .toString()
-                .toLowerCase()
-                .includes(searchValue.toLowerCase()) ||
-              emp.address2
-                ?.toString()
-                .toLowerCase()
-                .includes(searchValue.toLowerCase()) ||
-              emp.city.toLowerCase().includes(searchValue.toLowerCase()) ||
-              emp.state_prov
-                .toLowerCase()
-                .includes(searchValue.toLowerCase()) ||
-              emp.state_prov
-                .toLowerCase()
-                .includes(searchValue.toLowerCase()) ||
-              emp.email.toLowerCase().includes(searchValue.toLowerCase())
+          filteredData = CustomerData.filter((emp) =>
+            matchesSearchAllFields(emp, searchValue.trim())
           );
         }
 
@@ -403,7 +381,7 @@ export default function CustomerDataTable() {
                     Receive
                     {/* <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut> */}
                   </DropdownMenuItem>
-                <DropdownMenuSeparator /> 
+                  <DropdownMenuSeparator />
                   <DropdownMenuItem>
                     Email
                     {/* <DropdownMenuShortcut>⌘B</DropdownMenuShortcut> */}
@@ -415,7 +393,7 @@ export default function CustomerDataTable() {
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>Change Status (Closed)</DropdownMenuItem>
-                <DropdownMenuSeparator /> 
+                <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={(e) => {
                     e.stopPropagation();

@@ -20,7 +20,9 @@ import {
   EmployeeInterface,
   EmployeeData,
   RenewalInterface,
-} from "@/lib/employee-data";
+} from "@/lib/Employee/employee-data";
+import EditEmployee from "../views/editEmployeeSheet";
+import { matchesSearchAllFields } from "@/lib/utils";
 
 // Get unique values for filter options (including sub-rows)
 const getAllEmployees = (
@@ -42,16 +44,16 @@ const getAllEmployees = (
 };
 
 const flatEmployees = getAllEmployees(EmployeeData);
-const employeeId = [
-  ...new Set(flatEmployees.map((emp) => emp.employeeId.toString())),
+const employeeId = [...new Set(flatEmployees.map((emp) => emp.id?.toString()))];
+const name = [
+  ...new Set(flatEmployees.map((emp) => emp.first + " " + emp.last)),
 ];
-const name = [...new Set(flatEmployees.map((emp) => emp.name))];
 const location = [...new Set(flatEmployees.map((emp) => emp.location))];
 const type = [...new Set(flatEmployees.map((emp) => emp.type))];
 const drivers_license_number = [
-  ...new Set(flatEmployees.map((emp) => emp.drivers_license_number)),
+  ...new Set(flatEmployees.map((emp) => emp.driverNumber)),
 ];
-const contact = [...new Set(flatEmployees.map((emp) => emp.contact))];
+const contact = [...new Set(flatEmployees.map((emp) => emp.altPhone))];
 
 export default function EmployeeDataTable() {
   const [isServerMode, setIsServerMode] = useState(false);
@@ -190,11 +192,8 @@ export default function EmployeeDataTable() {
         let filteredData = EmployeeData;
 
         if (searchValue.trim()) {
-          filteredData = EmployeeData.filter(
-            (emp) =>
-              emp.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-              emp.type.toLowerCase().includes(searchValue.toLowerCase()) ||
-              emp.location.toLowerCase().includes(searchValue.toLowerCase())
+          filteredData = EmployeeData.filter((emp) =>
+            matchesSearchAllFields(emp, searchValue.trim())
           );
         }
 
@@ -251,7 +250,7 @@ export default function EmployeeDataTable() {
   // Column definitions
   const columns: ColumnDef<EmployeeInterface>[] = [
     {
-      accessorKey: "employeeId",
+      accessorKey: "id",
       header: ({ column }) => (
         <SortableHeader
           column={column}
@@ -263,7 +262,7 @@ export default function EmployeeDataTable() {
       cell: ({ row }) => (
         <div className="font-medium flex flex-col text-primary">
           {" "}
-          {row.original.employeeId}
+          {row.original.id}
         </div>
       ),
     },
@@ -276,7 +275,16 @@ export default function EmployeeDataTable() {
           sortable={true}
           filterOptions={name}
         />
-      )
+      ),
+      cell: ({ row }) => (
+        <div className="font-medium flex flex-row">
+          {row.original.last +
+            " " +
+            row.original.first +
+            " " +
+            row.original.middle}
+        </div>
+      ),
     },
     {
       accessorKey: "type",
@@ -293,7 +301,7 @@ export default function EmployeeDataTable() {
       },
     },
     {
-      accessorKey: "drivers_license_number",
+      accessorKey: "driverNumber",
       header: ({ column }) => (
         <SortableHeader
           column={column}
@@ -336,35 +344,15 @@ export default function EmployeeDataTable() {
 
         return (
           <div className="flex flex-row justify-between ">
-            {/* <DropdownMenu>
-                         <DropdownMenuTrigger asChild>
-                           <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                             <MoreHorizontal className="h-4 w-4" />
-                           </Button>
-                         </DropdownMenuTrigger>
-                         <DropdownMenuContent align="end">
-                           <DropdownMenuItem
-                             onClick={(e) => {
-                               e.stopPropagation();
-                               alert(`Edit ${row.getValue("name")}`);
-                             }}
-                           >
-                             Edit
-                           </DropdownMenuItem>
-                           <DropdownMenuItem
-                             onClick={(e) => {
-                               e.stopPropagation();
-                               handlePrintRow(row);
-                             }}
-                           >
-                             <Printer className="mr-2 h-4 w-4" />
-                             Print
-                           </DropdownMenuItem>
-                         </DropdownMenuContent>
-                       </DropdownMenu> */}
-            <Button variant={"secondary"} size={"icon"}>
-              <FilePenIcon />
-            </Button>
+            <EditEmployee
+              children={
+                <Button variant={"secondary"} size={"icon"}>
+                  <FilePenIcon />
+                </Button>
+              }
+              data={row.original}
+            />
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant={"secondary"} size={"icon"}>

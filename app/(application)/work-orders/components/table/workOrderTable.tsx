@@ -43,6 +43,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Progress } from "@/components/ui/progress";
+import { matchesSearchAllFields } from "@/lib/utils";
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -250,18 +251,8 @@ export default function WorkOrderDataTable() {
         let filteredData = mockWorkOrders;
 
         if (searchValue.trim()) {
-          filteredData = mockWorkOrders.filter(
-            (emp) =>
-              emp.number.toLowerCase().includes(searchValue.toLowerCase()) ||
-              emp.equipment.id
-                .toLowerCase()
-                .includes(searchValue.toLowerCase()) ||
-              emp.equipment.name
-                .toLowerCase()
-                .includes(searchValue.toLowerCase()) ||
-              emp.equipment.model
-                .toLowerCase()
-                .includes(searchValue.toLowerCase())
+          filteredData = mockWorkOrders.filter((emp) =>
+            matchesSearchAllFields(emp, searchValue.trim())
           );
         }
 

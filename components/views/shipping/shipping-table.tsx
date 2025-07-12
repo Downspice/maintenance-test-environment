@@ -25,6 +25,7 @@ import { useState } from "react";
 import React from "react";
 import { VendorData, VendorInterface } from "@/lib/vendor-data";
 import { WorkOrderTask } from "@/lib/work-orders-data";
+import { matchesSearchAllFields } from "@/lib/utils";
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -228,36 +229,11 @@ export default function ShippingSheetTable() {
       setTimeout(() => {
         let filteredData = VendorData;
 
-        if (searchValue.trim()) {
-          filteredData = VendorData.filter(
-            (emp) =>
-              emp.vendorNumber
-                .toLowerCase()
-                .includes(searchValue.toLowerCase()) ||
-              emp.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-              emp.type.toLowerCase().includes(searchValue.toLowerCase()) ||
-              emp.contact
-                .toString()
-                .toLowerCase()
-                .includes(searchValue.toLowerCase()) ||
-              emp.address1
-                .toString()
-                .toLowerCase()
-                .includes(searchValue.toLowerCase()) ||
-              emp.address2
-                ?.toString()
-                .toLowerCase()
-                .includes(searchValue.toLowerCase()) ||
-              emp.city.toLowerCase().includes(searchValue.toLowerCase()) ||
-              emp.state_prov
-                .toLowerCase()
-                .includes(searchValue.toLowerCase()) ||
-              emp.state_prov
-                .toLowerCase()
-                .includes(searchValue.toLowerCase()) ||
-              emp.email.toLowerCase().includes(searchValue.toLowerCase())
-          );
-        }
+         if (searchValue.trim()) {
+                  filteredData = VendorData.filter((emp) =>
+                    matchesSearchAllFields(emp, searchValue.trim())
+                  );
+                }
 
         // Reset to first page and update data
         const newData = filteredData.slice(0, paginationInfo.pageSize);

@@ -15,8 +15,7 @@ import NotCompleteMessage from "../workInprogress/working";
 import InvoicesDataTable from "./table/invoicesDataTable";
 import { locationOptionsList } from "@/lib/option-list";
 import NewInvoiceForm from "@/components/forms/actualForms/new-invoice-form";
-import PaymentReceivedTable from "./view/payments-received-dataTable";
-import RecordPaymentForm from "@/components/forms/actualForms/record-payment-form";
+import PaymentReceivedTable from "./view/payments-received-dataTable"; 
 
 const ActiveDropdown = [
   {

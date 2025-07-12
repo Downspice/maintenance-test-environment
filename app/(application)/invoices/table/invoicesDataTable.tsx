@@ -28,7 +28,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 import React from "react";
-import { InvoiceData, InvoiceInterface } from "@/lib/invoice-data";
+import { InvoiceData, InvoiceInterface } from "@/lib/Invoice/invoice-data";
+import EditVendor from "../view/edit-invoice";
+import { matchesSearchAllFields } from "@/lib/utils";
+import EditInvoice from "../view/edit-invoice";
 
 const getAllEmployees = (employees: InvoiceInterface[]): InvoiceInterface[] => {
   const result: InvoiceInterface[] = [];
@@ -48,17 +51,15 @@ const getAllEmployees = (employees: InvoiceInterface[]): InvoiceInterface[] => {
 
 const flatEmployees = getAllEmployees(InvoiceData);
 const invoice_number = [
-  ...new Set(flatEmployees.map((emp) => emp.invoice_number)),
+  ...new Set(flatEmployees.map((emp) => emp.invoiceNumber)),
 ];
 const status = [...new Set(flatEmployees.map((emp) => emp.status))];
-const issued_date = [...new Set(flatEmployees.map((emp) => emp.issued_date))];
-const due_date = [...new Set(flatEmployees.map((emp) => emp.due_date))];
-const customer_name = [
-  ...new Set(flatEmployees.map((emp) => emp.customer_name)),
-];
-const total = [...new Set(flatEmployees.map((emp) => emp.total.toString()))];
+const issued_date = [...new Set(flatEmployees.map((emp) => emp.date))];
+const due_date = [...new Set(flatEmployees.map((emp) => emp.dueDate))];
+const customer_name = [...new Set(flatEmployees.map((emp) => emp.customer))];
+const total = [...new Set(flatEmployees.map((emp) => emp.total?.toString()))];
 const payment = [
-  ...new Set(flatEmployees.map((emp) => emp.payment.toString())),
+  ...new Set(flatEmployees.map((emp) => emp.payments?.toString())),
 ];
 
 export default function InvoicesDataTable() {
@@ -197,43 +198,8 @@ export default function InvoicesDataTable() {
         let filteredData = InvoiceData;
 
         if (searchValue.trim()) {
-          filteredData = InvoiceData.filter(
-            (emp) =>
-              emp.invoice_number
-                .toLowerCase()
-                .includes(searchValue.toLowerCase()) ||
-              emp.status.toLowerCase().includes(searchValue.toLowerCase()) ||
-              emp.issued_date
-                .toLowerCase()
-                .includes(searchValue.toLowerCase()) ||
-              emp.ship_cost
-                .toString()
-                .toLowerCase()
-                .includes(searchValue.toLowerCase()) ||
-              emp.tax1
-                .toString()
-                .toLowerCase()
-                .includes(searchValue.toLowerCase()) ||
-              emp.tax2
-                .toString()
-                .toLowerCase()
-                .includes(searchValue.toLowerCase()) ||
-              emp.customer_name
-                .toLowerCase()
-                .includes(searchValue.toLowerCase()) ||
-              emp.notes.toLowerCase().includes(searchValue.toLowerCase()) ||
-              emp.notes.toLowerCase().includes(searchValue.toLowerCase()) ||
-              emp.ponumber.toLowerCase().includes(searchValue.toLowerCase()) ||
-              emp.location.toLowerCase().includes(searchValue.toLowerCase()) ||
-              emp.total
-                .toString()
-                .toLowerCase()
-                .includes(searchValue.toLowerCase()) ||
-              emp.payment
-                .toString()
-                .toLowerCase()
-                .includes(searchValue.toLowerCase()) ||
-              emp.due_date.toLowerCase().includes(searchValue.toLowerCase())
+          filteredData = InvoiceData.filter((emp) =>
+            matchesSearchAllFields(emp, searchValue.trim())
           );
         }
 
@@ -253,23 +219,10 @@ export default function InvoicesDataTable() {
     [paginationInfo.pageSize]
   ); // Add dependencies that actually matter
 
-  const getSubRows = (originalRow: InvoiceInterface) => {
-    return originalRow.vendor_links;
-  };
-
-  // Custom sub-row renderer
-  const renderSubRow = (
-    subRowData: description,
-    parentRow: any,
-    depth: number
-  ) => {
-    return <div className="space-y-4"></div>;
-  };
-
   // Column definitions
   const columns: ColumnDef<InvoiceInterface>[] = [
     {
-      accessorKey: "invoice_number",
+      accessorKey: "invoiceNumber",
       header: ({ column }) => (
         <SortableHeader
           column={column}
@@ -281,7 +234,7 @@ export default function InvoicesDataTable() {
       cell: ({ row }) => (
         <div className="font-medium text-primary flex flex-col">
           {" "}
-          {row.getValue("invoice_number")}
+          {row.getValue("invoiceNumber")}
         </div>
       ),
     },
@@ -300,7 +253,7 @@ export default function InvoicesDataTable() {
       ),
     },
     {
-      accessorKey: "issued_date",
+      accessorKey: "date",
       header: ({ column }) => (
         <SortableHeader
           column={column}
@@ -309,13 +262,13 @@ export default function InvoicesDataTable() {
           filterOptions={issued_date}
         />
       ),
-      cell: ({ row }) => <>{row.original.issued_date}</>,
+      cell: ({ row }) => <>{row.original.date}</>,
       filterFn: (row, id, value) => {
         return value.length === 0 || value.includes(row.getValue(id));
       },
     },
     {
-      accessorKey: "due_date",
+      accessorKey: "dueDate",
       header: ({ column }) => (
         <SortableHeader
           column={column}
@@ -324,14 +277,14 @@ export default function InvoicesDataTable() {
           filterOptions={due_date}
         />
       ),
-      cell: ({ row }) => <>{row.original.due_date}</>,
+      cell: ({ row }) => <>{row.original.dueDate}</>,
 
       filterFn: (row, id, value) => {
         return value.length === 0 || value.includes(row.getValue(id));
       },
     },
     {
-      accessorKey: "customer_name",
+      accessorKey: "customer",
       header: ({ column }) => (
         <SortableHeader
           column={column}
@@ -344,7 +297,7 @@ export default function InvoicesDataTable() {
         return (
           <div className="flex items-center gap-1 text-primary">
             {" "}
-            {row.original.customer_name}
+            {row.original.customer}
           </div>
         );
       },
@@ -367,7 +320,7 @@ export default function InvoicesDataTable() {
       },
     },
     {
-      accessorKey: "payment",
+      accessorKey: "payments",
       header: ({ column }) => (
         <SortableHeader
           column={column}
@@ -377,7 +330,7 @@ export default function InvoicesDataTable() {
         />
       ),
       cell: ({ row }) => {
-        return <> ${row.original.payment}</>;
+        return <> ${row.original.payments}</>;
       },
       filterFn: (row, id, value) => {
         return value.length === 0 || value.includes(row.getValue(id));
@@ -399,35 +352,15 @@ export default function InvoicesDataTable() {
 
         return (
           <div className="flex flex-row justify-between ">
-            {/* <DropdownMenu>
-                         <DropdownMenuTrigger asChild>
-                           <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                             <MoreHorizontal className="h-4 w-4" />
-                           </Button>
-                         </DropdownMenuTrigger>
-                         <DropdownMenuContent align="end">
-                           <DropdownMenuItem
-                             onClick={(e) => {
-                               e.stopPropagation();
-                               alert(`Edit ${row.getValue("name")}`);
-                             }}
-                           >
-                             Edit
-                           </DropdownMenuItem>
-                           <DropdownMenuItem
-                             onClick={(e) => {
-                               e.stopPropagation();
-                               handlePrintRow(row);
-                             }}
-                           >
-                             <Printer className="mr-2 h-4 w-4" />
-                             Print
-                           </DropdownMenuItem>
-                         </DropdownMenuContent>
-                       </DropdownMenu> */}
-            <Button variant={"secondary"} size={"icon"}>
-              <FilePenIcon />
-            </Button>
+            <EditInvoice
+              children={
+                <Button variant={"secondary"} size={"icon"}>
+                  <FilePenIcon />
+                </Button>
+              }
+              data={row.original}
+            />
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant={"secondary"} size={"icon"}>
@@ -504,11 +437,6 @@ export default function InvoicesDataTable() {
         onDeleteSelected={handleDeleteSelected}
         onPrintRow={handlePrintRow}
         storageKey="employee-table-visibility"
-        getSubRows={getSubRows}
-        enableExpanding={false}
-        // Custom sub-row rendering
-        renderSubRow={renderSubRow}
-        subRowKey="tasks"
         // Server-side props
         realServerPagination={isServerMode}
         paginationInfo={isServerMode ? paginationInfo : undefined}

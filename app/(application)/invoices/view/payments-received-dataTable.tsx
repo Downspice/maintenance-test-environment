@@ -4,20 +4,14 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { AdvancedDataTable } from "@/components/customUI/advanced-data-table";
 import { SortableHeader } from "@/components/customUI/sortable-header";
 import { Button } from "@/components/ui/button";
-import { Trash2, FilePenIcon, Sheet } from "lucide-react";
+import { Trash2, FilePenIcon } from "lucide-react";
 import React, { useState } from "react";
 import {
   paymentReceived,
   PaymentReceivedInterface,
-} from "@/lib/invoices-page-data";
+} from "@/lib/Invoice/invoices-page-data";
 import RecordPaymentForm from "@/components/forms/actualForms/record-payment-form";
-import {
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import EditPaymentReceived from "./edit-payment-received";
 
 const getAllEmployees = (
   employees: PaymentReceivedInterface[]
@@ -245,7 +239,7 @@ export default function PaymentReceivedTable() {
       header: ({ column }) => (
         <SortableHeader
           column={column}
-          title="Date Received"
+          title="Date"
           sortable={true}
           filterOptions={dateReceived}
         />
@@ -348,7 +342,7 @@ export default function PaymentReceivedTable() {
       header: ({ column }) => (
         <SortableHeader
           column={column}
-          title="Amount"
+          title="Amnt"
           sortable={true}
           filterOptions={amount}
         />
@@ -373,9 +367,16 @@ export default function PaymentReceivedTable() {
 
         return (
           <div className="flex flex-row gap-1 justify-between ">
-            <Button variant={"secondary"} size={"icon"}>
+            <EditPaymentReceived
+                          children={
+                            <Button variant={"secondary"} size={"icon"}>
               <FilePenIcon />
             </Button>
+                          }
+                          data={row.original}
+                        />
+            
+            
             <Button
               variant={"secondary"}
               size={"icon"}
@@ -395,7 +396,7 @@ export default function PaymentReceivedTable() {
     },
   ];
 
-  return (
+  return ( 
     <div className="">
       {/* <div className="mb-8">
          

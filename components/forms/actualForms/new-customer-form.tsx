@@ -18,7 +18,7 @@ import CustomFieldsWrapper from "../wrappers/CustomFieldsWrapper";
 import FileUploadWrapper from "../wrappers/FileUploadWrapper";
 import FormSubheader from "../ui/formSubheader";
 import { ComboboxFieldWrapper } from "../wrappers/ComboboxWrapper";
-import { discountTypesOptions } from "@/lib/invoices-page-data";
+import { discountTypesOptions } from "@/lib/Invoice/invoices-page-data";
 
 // Define the form schema with Zod
 export const vendorSchema = z.object({

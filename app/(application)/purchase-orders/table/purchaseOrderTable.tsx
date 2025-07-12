@@ -24,6 +24,8 @@ import {
   PurchaseOrderData,
   PurchaseOrderInterface,
 } from "@/lib/purcahse-order-data";
+import { InvoiceData } from "@/lib/Invoice/invoice-data";
+import { matchesSearchAllFields } from "@/lib/utils";
 
 // Get unique values for filter options (including sub-rows)
 const getAllEmployees = (
@@ -189,13 +191,10 @@ export default function PurchaseOrderDataTable() {
         let filteredData = PurchaseOrderData;
 
         if (searchValue.trim()) {
-          filteredData = PurchaseOrderData.filter(
-            (emp) =>
-              emp.carName.toLowerCase().includes(searchValue.toLowerCase()) ||
-              emp.carNumber.toLowerCase().includes(searchValue.toLowerCase()) ||
-              emp.serialNumber.toLowerCase().includes(searchValue.toLowerCase())
-          );
-        }
+                  filteredData = PurchaseOrderData.filter((emp) =>
+                    matchesSearchAllFields(emp, searchValue.trim())
+                  );
+                }
 
         // Reset to first page and update data
         const newData = filteredData.slice(0, paginationInfo.pageSize);

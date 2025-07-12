@@ -5,7 +5,7 @@ import { RegisterOptions, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Pen, Save, Trash2 } from "lucide-react";
+import { LucideTrash2, Pen, Save, Trash2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 // Form wrappers
 import InputWrapper from "@/components/forms/wrappers/InputWrapper";
@@ -19,7 +19,10 @@ import {
 import Fieldset from "@/components/customUI/fieldset";
 import { locationOptionsList } from "@/lib/option-list";
 import { toast } from "sonner";
-import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
+import {
+  ComboboxFieldWrapper,
+  MultiComboboxWrapper,
+} from "@/components/forms/wrappers/ComboboxWrapper";
 import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
 import { termsList } from "./new-purchase-order-form";
 import {
@@ -32,9 +35,22 @@ import {
 } from "@/components/ui/table";
 import {
   discountTypesOptions,
+  invoiceOptionsList,
+  invoicePaymentMethodOptionsList,
   maintenanceItems,
+  maintenanceItemsInterface,
   payments,
-} from "@/lib/invoices-page-data";
+} from "@/lib/Invoice/invoices-page-data";
+import { InvoiceInterface, InvoiceSchema } from "@/lib/Invoice/invoice-data";
+import z from "zod";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import SelectWrapper from "../wrappers/SelectWrapper";
 
 interface triggerVariant {
   variant?: "icon" | "default";
@@ -44,31 +60,96 @@ const handleDeleteContact = (contactId: string) => {
   console.log("Delete contact:", contactId);
 };
 
+const itemSchema = z.object({
+  quantity: z.number(),
+  item_name: z.string(),
+  description: z.string().optional(),
+  unit_cost: z.number(),
+  amount: z.number(),
+});
+
+type ItemFormValues = z.infer<typeof itemSchema>;
+
+const paymentSchema = z.object({
+  invoiceNumber: z.string(),
+  amount: z.string(),
+  date: z.string(),
+  paymentMethod: z.string(),
+  chequeNumber: z.string().optional(),
+  creditNumber: z.string().optional(),
+  name: z.string().optional(),
+  expirationMonth: z.string().optional(),
+  expirationYear: z.string().optional(),
+  transaction: z.string().optional(),
+  other: z.string().optional(),
+});
+
+type PaymentFormValues = z.infer<typeof paymentSchema>;
+
 export default function NewInvoiceForm({ variant }: triggerVariant) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [editIndex, setEditIndex] = useState<number | null>(null);
 
-  const form = useForm<EquipmentFormValues>({
-    resolver: zodResolver(equipmentSchema),
-    defaultValues: {
-      status: "Active",
-      renewalInterval: 1,
-      primaryMeter: 0,
-      secondaryMeter: 0,
-      purchasePrice: 0,
-      salvagePrice: 0,
-      depreciationLifeMonths: 0,
-      warrantyDescription: "Primary",
-      secondaryWarrantyDescription: "Secondary",
-      mviInterval: 1,
-      ownership: "Owned",
-      fuelVolumeUnits: "Gallons",
-      annualOperatingBudget: 0,
-      hasMeter: false,
-    },
+  const [items, setItems] = useState<ItemFormValues[]>(maintenanceItems);
+  const [editItems, setEditItems] = useState<ItemFormValues | null>(null);
+  const [openItems, setOpenItems] = useState(false);
+
+  //payment states
+  const [paymentsList, setPaymentsList] = useState<
+    z.infer<typeof paymentSchema>[]
+  >([]);
+  const [editPaymentIndex, setEditPaymentIndex] = useState<number | null>(null);
+  const [editPayment, setEditPayment] = useState<z.infer<
+    typeof paymentSchema
+  > | null>(null);
+  const [openPayments, setOpenPayments] = useState(false);
+
+  const handleDeleteItem = (itemName: string) => {
+    const filtered = items.filter((item) => item.item_name !== itemName);
+    setItems(filtered);
+  };
+
+  const handleEditItem = (item: ItemFormValues, index: number) => {
+    setEditIndex(index);
+    setEditItems(item);
+    Itemsform.reset(item); // Pre-fill
+    setOpenItems(true); // Open the dialog after setting the form
+  };
+
+  const Itemsform = useForm<ItemFormValues>({
+    resolver: zodResolver(itemSchema),
+    defaultValues: {},
   });
 
-  function onSubmit(data: EquipmentFormValues) {
+  function onSubmitItems(data: ItemFormValues) {
+    if (editIndex !== null) {
+      const updated = [...items];
+      updated[editIndex] = data;
+      setItems(updated);
+    } else {
+      setItems((prev) => [...prev, data]);
+    }
+
+    Itemsform.reset({
+      quantity: 0,
+      item_name: "",
+      description: "",
+      unit_cost: 0,
+      amount: 0,
+    });
+
+    setEditItems(null);
+    setEditIndex(null);
+    setOpenItems(false);
+  }
+
+  const form = useForm<z.infer<typeof InvoiceSchema>>({
+    resolver: zodResolver(InvoiceSchema),
+    defaultValues: {},
+  });
+
+  function onSubmit(data: InvoiceInterface) {
     console.log("Form submitted with VALUES:", data);
     toast("Project created successfully!", {
       duration: 10000,
@@ -106,13 +187,35 @@ export default function NewInvoiceForm({ variant }: triggerVariant) {
 
   const watchDiscountType = form.watch("discountType");
 
+  //paYMENT STUFF
+  const PaymentsForm = useForm<PaymentFormValues>({
+    resolver: zodResolver(paymentSchema),
+    defaultValues: { ...editPayment },
+  });
+
+  const paymentMethodWatch = PaymentsForm.watch("paymentMethod");
+
+  function onSubmitPayment(data: z.infer<typeof paymentSchema>) {
+    if (editPaymentIndex !== null) {
+      const updated = [...paymentsList];
+      updated[editPaymentIndex] = data;
+      setPaymentsList(updated);
+    } else {
+      setPaymentsList((prev) => [...prev, data]);
+    }
+
+    setEditPaymentIndex(null);
+    setEditPayment(null);
+    PaymentsForm.reset();
+    setOpenPayments(false);
+  }
+
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit, onError)}
         className="space-y-6"
       >
-        
         <div className="flex flex-col space-y-2">
           <div className="flex flex-row gap-x-3">
             <InputWrapper
@@ -182,6 +285,87 @@ export default function NewInvoiceForm({ variant }: triggerVariant) {
                     <TabsTrigger value="Notes">Notes</TabsTrigger>
                   </TabsList>
                   <TabsContent value="Items">
+                    <div className="flex justify-end">
+                      <Dialog open={openItems} onOpenChange={setOpenItems}>
+                        <DialogTrigger
+                          asChild
+                          onClick={() => {
+                            setEditIndex(null);
+                            setEditItems(null);
+                            Itemsform.reset({
+                              quantity: 0,
+                              item_name: "",
+                              description: "",
+                              unit_cost: 0,
+                              amount: 0,
+                            }); // ensure blank form for create
+                            setOpenItems(true);
+                          }}
+                        >
+                          <Button variant="outline">Add Item</Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>
+                              {editIndex !== null
+                                ? "Edit Invoice Item"
+                                : "Add Invoice Item"}
+                            </DialogTitle>
+                          </DialogHeader>
+                          <form
+                            onSubmit={Itemsform.handleSubmit(onSubmitItems)}
+                            className="grid gap-4 mt-4"
+                          >
+                            <div className="grid grid-cols-2 gap-2">
+                              <InputWrapper
+                                control={Itemsform.control}
+                                name="quantity"
+                                label="Quantity"
+                                type="text"
+                                value=""
+                              />
+                              <InputWrapper
+                                control={Itemsform.control}
+                                name="item_name"
+                                label="Item Name"
+                                type="text"
+                                value=""
+                              />
+                            </div>
+                            <InputWrapper
+                              control={Itemsform.control}
+                              name="description"
+                              label="Description"
+                              type="text"
+                              value=""
+                            />
+                            <div className="grid grid-cols-2 gap-2">
+                              <InputWrapper
+                                control={Itemsform.control}
+                                name="unit_cost"
+                                label="Unit Cost"
+                                type="number"
+                                value=""
+                              />
+                              <InputWrapper
+                                control={Itemsform.control}
+                                name="amount"
+                                label="Amount"
+                                type="number"
+                                value={""}
+                              />
+                            </div>
+                            <Button
+                              type="button"
+                              onClick={Itemsform.handleSubmit(onSubmitItems)}
+                            >
+                              Save Item
+                            </Button>
+                          </form>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+
                     <Table>
                       <TableHeader>
                         <TableRow>
@@ -194,32 +378,37 @@ export default function NewInvoiceForm({ variant }: triggerVariant) {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {maintenanceItems.map((data) => (
-                          <TableRow key={data.item_name}>
-                            <TableCell>{data.quantity}</TableCell>
-                            <TableCell>{data.item_name}</TableCell>
-                            <TableCell>{data.description}</TableCell>
-                            <TableCell>{data.unit_cost}</TableCell>
-                            <TableCell>{data.amount}</TableCell>
+                        {items.map((item, idx) => (
+                          <TableRow key={idx}>
+                            <TableCell>{item.quantity}</TableCell>
+                            <TableCell>{item.item_name}</TableCell>
+                            <TableCell>{item.description}</TableCell>
+                            <TableCell>{item.unit_cost}</TableCell>
+                            <TableCell>{item.amount}</TableCell>
                             <TableCell>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() =>
-                                  handleDeleteContact(data.item_name)
-                                }
-                              >
-                                <Trash2 className="h-4 w-4 text-destructive" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() =>
-                                  handleDeleteContact(data.item_name)
-                                }
-                              >
-                                <Pen className="h-4 w-4 text-blue-400" />
-                              </Button>
+                              <div className="flex gap-2">
+                                <Button
+                                  type="button"
+                                  size="icon"
+                                  variant="ghost"
+                                  onClick={() => {
+                                    setEditItems(item);
+                                    handleEditItem(item, idx); // Pass index
+                                  }}
+                                >
+                                  <Pen className="w-4 h-4 text-blue-500" />
+                                </Button>
+                                <Button
+                                  type="button"
+                                  size="icon"
+                                  variant="ghost"
+                                  onClick={() =>
+                                    handleDeleteItem(item.item_name)
+                                  }
+                                >
+                                  <Trash2 className="w-4 h-4 text-red-500" />
+                                </Button>
+                              </div>
                             </TableCell>
                           </TableRow>
                         ))}
@@ -227,6 +416,155 @@ export default function NewInvoiceForm({ variant }: triggerVariant) {
                     </Table>
                   </TabsContent>
                   <TabsContent value="Payments">
+                    <Dialog open={openPayments} onOpenChange={setOpenPayments}>
+                      <DialogTrigger
+                        asChild
+                        onClick={() => {
+                          setEditPayment(null);
+                          setEditPaymentIndex(null);
+                          PaymentsForm.reset({
+                            invoiceNumber: "",
+                            amount: 0,
+                            date: "",
+                            paymentMethod: "",
+                            chequeNumber: "",
+                            creditNumber: "",
+                            name: "",
+                            expirationMonth: "",
+                            expirationYear: "",
+                            transaction: "",
+                            other: "",
+                          });
+                          setOpenPayments(true);
+                        }}
+                      >
+                        <Button variant="outline">Add Payment</Button>
+                      </DialogTrigger>
+
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>
+                            {editPaymentIndex !== null
+                              ? "Edit Payment"
+                              : "Add Payment"}
+                          </DialogTitle>
+                        </DialogHeader>
+
+                        <form
+                          onSubmit={PaymentsForm.handleSubmit(onSubmitPayment)}
+                          className="grid gap-4 mt-4"
+                        >
+                          <div className="grid grid-cols-2 space-y-2">
+                            <div className="col-span-2 flex space-y-2 flex-col">
+                              <ComboboxFieldWrapper
+                                className="col-span-1"
+                                control={PaymentsForm.control}
+                                name="invoiceNumber"
+                                label="Invoice Number"
+                                options={invoiceOptionsList}
+                              />
+                              <InputWrapper
+                                name="amount"
+                                type="number"
+                                label="Amount Received"
+                                control={PaymentsForm.control}
+                                value={""}
+                              />
+                              <DatePickerWrapper
+                                name="date"
+                                label="Date"
+                                control={PaymentsForm.control}
+                              />
+                              <Fieldset
+                                content={
+                                  <>
+                                    <SelectWrapper
+                                      control={PaymentsForm.control}
+                                      name="paymentMethod"
+                                      label="Payment Method"
+                                      options={invoicePaymentMethodOptionsList}
+                                    />
+                                    {paymentMethodWatch === "Cheque" && (
+                                      <InputWrapper
+                                        name="chequeNumber"
+                                        type="text"
+                                        label="Cheque #"
+                                        control={PaymentsForm.control}
+                                        value=""
+                                      />
+                                    )}
+                                    {paymentMethodWatch === "Credit Card" && (
+                                      <>
+                                        <InputWrapper
+                                          name="creditNumber"
+                                          type="text"
+                                          label="Credit #"
+                                          control={PaymentsForm.control}
+                                          value=""
+                                        />
+                                        <InputWrapper
+                                          name="name"
+                                          type="text"
+                                          label="Name on Card"
+                                          control={PaymentsForm.control}
+                                          value=""
+                                        />
+                                        <div className="grid grid-cols-2 gap-x-2">
+                                          <InputWrapper
+                                            name="expirationMonth"
+                                            type="text"
+                                            label="Expiration Month"
+                                            control={PaymentsForm.control}
+                                            value=""
+                                          />
+                                          <InputWrapper
+                                            name="expirationYear"
+                                            type="text"
+                                            label="Expiration Year"
+                                            control={PaymentsForm.control}
+                                            value=""
+                                          />
+                                        </div>
+                                        <InputWrapper
+                                          name="transaction"
+                                          type="text"
+                                          label="Transaction"
+                                          control={PaymentsForm.control}
+                                          value=""
+                                        />
+                                      </>
+                                    )}
+                                    {paymentMethodWatch === "Other" && (
+                                      <InputWrapper
+                                        name="other"
+                                        type="text"
+                                        label="Other"
+                                        control={PaymentsForm.control}
+                                        value=""
+                                      />
+                                    )}
+                                  </>
+                                }
+                              />
+                            </div>
+                          </div>
+                          <Button
+                            type="button"
+                            onClick={() => {
+                              PaymentsForm.handleSubmit(
+                                onSubmitPayment,
+                                (errors) => {
+                                  console.error("Payment form errors:", errors);
+                                }
+                              )();
+                            }}
+                          >
+                            Save Payment
+                          </Button>
+                        </form>
+                      </DialogContent>
+                    </Dialog>
+
                     <Table>
                       <TableHeader>
                         <TableRow>
@@ -240,28 +578,38 @@ export default function NewInvoiceForm({ variant }: triggerVariant) {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {payments.map((data) => (
-                          <TableRow key={data.id}>
-                            <TableCell>{data.date_received}</TableCell>
+                        {paymentsList.map((data, index) => (
+                          <TableRow key={index}>
+                            <TableCell>{data.date}</TableCell>
                             <TableCell>{data.amount}</TableCell>
-                            <TableCell>{data.payment_type}</TableCell>
-                            <TableCell>{data.check_number}</TableCell>
-                            <TableCell>{data.name_on_card}</TableCell>
-                            <TableCell>{data.transaction_notes}</TableCell>
+                            <TableCell>{data.paymentMethod}</TableCell>
+                            <TableCell>{data.chequeNumber}</TableCell>
+                            <TableCell>{data.name}</TableCell>
+                            <TableCell>{data.transaction}</TableCell>
                             <TableCell>
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => handleDeleteContact(data.id)}
+                                onClick={() => {
+                                  setEditPaymentIndex(index);
+                                  setEditPayment(data);
+                                  PaymentsForm.reset(data);
+                                  setOpenPayments(true);
+                                }}
                               >
-                                <Trash2 className="h-4 w-4 text-destructive" />
+                                <Pen className="h-4 w-4 text-blue-400" />
                               </Button>
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => handleDeleteContact(data.id)}
+                                onClick={() => {
+                                  const filtered = paymentsList.filter(
+                                    (_, i) => i !== index
+                                  );
+                                  setPaymentsList(filtered);
+                                }}
                               >
-                                <Pen className="h-4 w-4 text-blue-400" />
+                                <Trash2 className="h-4 w-4 text-destructive" />
                               </Button>
                             </TableCell>
                           </TableRow>

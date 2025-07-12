@@ -9,13 +9,11 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useSheet } from "@/lib/sheet-providers"; 
-import { EmployeePageDataTable } from "./components/employees.page.datatable";
+import { useSheet } from "@/lib/sheet-providers";
 import NewEmployeeForm from "@/components/forms/actualForms/new-employee-form";
-import NotCompleteMessage from "../workInprogress/working";import EmployeeDataTable from "./components/employeeDataTable";
 import { locationOptionsList } from "@/lib/option-list";
+import EmployeeDataTable from "./components/employeeDataTable";
 
 const ActiveDropdown = [
   { label: "All Employees", value: "all" },
@@ -27,7 +25,7 @@ const ActiveDropdown = [
   { label: "Manager", value: "operator_users" },
   { label: "Technician", value: "deleted" },
 ];
- 
+
 export default function EmployeesPage() {
   const [filters, setFilters] = useState({
     equipment: "",
@@ -63,7 +61,7 @@ export default function EmployeesPage() {
   };
 
   const handleSelectChange = (
-    key: "equipment" | "location" | "custom",
+    key: "equipment" | "location" | "custom" | "search",
     value: string
   ) => {
     if (value === "new") {
@@ -123,27 +121,25 @@ export default function EmployeesPage() {
           </Select>
 
           <Select onValueChange={(val) => handleSelectChange("location", val)}>
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="All Locations" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {locationOptionsList.map((item) => (
-                          <SelectItem value={item.value} key={item.value}>
-                            {item.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
- 
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="All Locations" />
+            </SelectTrigger>
+            <SelectContent>
+              {locationOptionsList.map((item) => (
+                <SelectItem value={item.value} key={item.value}>
+                  {item.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         <div className="flex flex-row space-x-0.5">
-           
           <Button onClick={createEquipment}>New</Button>
         </div>
       </div>
       <div>
         {/* <EmployeePageDataTable /> */}
-        <EmployeeDataTable/>
+        <EmployeeDataTable />
       </div>
     </div>
   );

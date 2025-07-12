@@ -18,6 +18,7 @@ import React from "react";
 import { VendorData, VendorInterface } from "@/lib/vendor-data";
 import ViewVendor from "../view/viewDetailsSheet";
 import EditVendor from "../view/editVendorSheet";
+import { matchesSearchAllFields } from "@/lib/utils";
 
 const getAllEmployees = (employees: VendorInterface[]): VendorInterface[] => {
   const result: VendorInterface[] = [];
@@ -166,33 +167,8 @@ export default function VendorDataTable() {
         let filteredData = VendorData;
 
         if (searchValue.trim()) {
-          filteredData = VendorData.filter(
-            (emp) =>
-              emp.vendorNumber
-                .toLowerCase()
-                .includes(searchValue.toLowerCase()) ||
-              emp.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-              emp.type.toLowerCase().includes(searchValue.toLowerCase()) ||
-              emp.contact
-                .toString()
-                .toLowerCase()
-                .includes(searchValue.toLowerCase()) ||
-              emp.address1
-                .toString()
-                .toLowerCase()
-                .includes(searchValue.toLowerCase()) ||
-              emp.address2
-                ?.toString()
-                .toLowerCase()
-                .includes(searchValue.toLowerCase()) ||
-              emp.city.toLowerCase().includes(searchValue.toLowerCase()) ||
-              emp.state_prov
-                .toLowerCase()
-                .includes(searchValue.toLowerCase()) ||
-              emp.state_prov
-                .toLowerCase()
-                .includes(searchValue.toLowerCase()) ||
-              emp.email.toLowerCase().includes(searchValue.toLowerCase())
+          filteredData = VendorData.filter((emp) =>
+            matchesSearchAllFields(emp, searchValue.trim())
           );
         }
 
