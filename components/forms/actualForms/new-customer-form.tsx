@@ -14,47 +14,34 @@ import { categoryOptions, statusOptions } from "@/lib/equipment-schema";
 import SelectWrapper from "../wrappers/SelectWrapper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { locationOptionsList, vendorTypeOptions } from "@/lib/option-list";
-import CustomFieldsWrapper from "../wrappers/CustomFieldsWrapper";
 import FileUploadWrapper from "../wrappers/FileUploadWrapper";
 import FormSubheader from "../ui/formSubheader";
 import { ComboboxFieldWrapper } from "../wrappers/ComboboxWrapper";
 import { discountTypesOptions } from "@/lib/Invoice/invoices-page-data";
+import { customerSchema,CustomerInterface} from "@/lib/Customer/customer-data";
 
-// Define the form schema with Zod
-export const vendorSchema = z.object({
-  equipmentId: z.string({
-    required_error: "Equipment is required",
-  }),
-  date: z.date().optional(),
-  notes: z.string().optional(),
-});
-
+ 
 export default function NewCustomer() {
-  const [customFields, setCustomFields] = useState<
-    { name: string; value: string }[]
-  >([]);
-
-  const vendorForm = useForm<z.infer<typeof vendorSchema>>({
-    resolver: zodResolver(vendorSchema),
+  const CustomerForm = useForm<z.infer<typeof customerSchema>>({
+    resolver: zodResolver(customerSchema),
     defaultValues: {},
   });
 
-  async function handleSubmit(data: z.infer<typeof vendorSchema>) {
+  async function handleSubmit(data: CustomerInterface) {
     console.log(data);
     // Here you would typically send the data to your API
 
     toast.success("Work Order submitted successfully!");
   }
 
-  const addCustomField = () => {
-    setCustomFields([...customFields, { name: "", value: "" }]);
-  };
-  const watchDiscountType = vendorForm.watch("discountType");
+  const watchDiscountType = CustomerForm.watch("discountType");
 
   return (
     <div>
-      <Form {...vendorForm}>
-        <form onSubmit={vendorForm.handleSubmit((data) => handleSubmit(data))}>
+      <Form {...CustomerForm}>
+        <form
+          onSubmit={CustomerForm.handleSubmit((data) => handleSubmit(data))}
+        >
           <Tabs defaultValue="Billing" className="w-full">
             <TabsList>
               <TabsTrigger value="Billing">Billing</TabsTrigger>
@@ -66,7 +53,7 @@ export default function NewCustomer() {
               <div className="flex flex-col gap-1">
                 <FormSubheader header="Name/Address" />
                 <InputWrapper
-                  control={vendorForm.control}
+                  control={CustomerForm.control}
                   name="name"
                   label="Name"
                   type="text"
@@ -74,7 +61,7 @@ export default function NewCustomer() {
                   value={""}
                 />
                 <InputWrapper
-                  control={vendorForm.control}
+                  control={CustomerForm.control}
                   name="number"
                   label="Vendor #"
                   type="text"
@@ -82,7 +69,7 @@ export default function NewCustomer() {
                 />
 
                 <InputWrapper
-                  control={vendorForm.control}
+                  control={CustomerForm.control}
                   name="ShippingNumber"
                   label="Shipping"
                   type="text"
@@ -90,7 +77,7 @@ export default function NewCustomer() {
                 />
 
                 <InputWrapper
-                  control={vendorForm.control}
+                  control={CustomerForm.control}
                   name="street1"
                   label="Address"
                   type="text"
@@ -99,7 +86,7 @@ export default function NewCustomer() {
 
                 <InputWrapper
                   className="pt-0"
-                  control={vendorForm.control}
+                  control={CustomerForm.control}
                   name="street2"
                   placeholder=" "
                   label=""
@@ -109,7 +96,7 @@ export default function NewCustomer() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="col-span-1">
                     <InputWrapper
-                      control={vendorForm.control}
+                      control={CustomerForm.control}
                       name="city"
                       label="City"
                       type="text"
@@ -118,7 +105,7 @@ export default function NewCustomer() {
                   </div>
                   <div className="col-span-1">
                     <InputWrapper
-                      control={vendorForm.control}
+                      control={CustomerForm.control}
                       name="state"
                       label="State /Province"
                       type="text"
@@ -127,7 +114,7 @@ export default function NewCustomer() {
                   </div>
                   <div className="col-span-1">
                     <InputWrapper
-                      control={vendorForm.control}
+                      control={CustomerForm.control}
                       name="postalCode"
                       label="Postal Code"
                       type="text"
@@ -136,7 +123,7 @@ export default function NewCustomer() {
                   </div>
                   <div className="col-span-1">
                     <InputWrapper
-                      control={vendorForm.control}
+                      control={CustomerForm.control}
                       name="country"
                       label="Country"
                       type="text"
@@ -146,7 +133,7 @@ export default function NewCustomer() {
                   <div className="col-span-1"></div>
                 </div>
                 <SelectWrapper
-                  control={vendorForm.control}
+                  control={CustomerForm.control}
                   name="location"
                   label="Location "
                   required
@@ -154,7 +141,7 @@ export default function NewCustomer() {
                 />
 
                 <SelectWrapper
-                  control={vendorForm.control}
+                  control={CustomerForm.control}
                   name="status"
                   label="Status "
                   required
@@ -162,7 +149,7 @@ export default function NewCustomer() {
                 />
 
                 <SelectWrapper
-                  control={vendorForm.control}
+                  control={CustomerForm.control}
                   name="type"
                   label="Type "
                   required
@@ -172,7 +159,7 @@ export default function NewCustomer() {
                 <div className="grid grid-cols-2 gap-1">
                   <div className="col-span-1">
                     <InputWrapper
-                      control={vendorForm.control}
+                      control={CustomerForm.control}
                       name="phone1"
                       label="Phone 1:"
                       type="text"
@@ -182,7 +169,7 @@ export default function NewCustomer() {
                   </div>
                   <div className="col-span-1">
                     <InputWrapper
-                      control={vendorForm.control}
+                      control={CustomerForm.control}
                       name="phone2"
                       label="Phone 2:"
                       type="text"
@@ -191,7 +178,7 @@ export default function NewCustomer() {
                   </div>
                   <div className="col-span-1">
                     <InputWrapper
-                      control={vendorForm.control}
+                      control={CustomerForm.control}
                       name="fax"
                       label="Fax:"
                       type="text"
@@ -200,7 +187,7 @@ export default function NewCustomer() {
                   </div>
                   <div className="col-span-1">
                     <InputWrapper
-                      control={vendorForm.control}
+                      control={CustomerForm.control}
                       name="website"
                       label="website"
                       type="text"
@@ -209,7 +196,7 @@ export default function NewCustomer() {
                   </div>
                   <div className="col-span-2">
                     <InputWrapper
-                      control={vendorForm.control}
+                      control={CustomerForm.control}
                       name="email"
                       label="Email:"
                       type="text"
@@ -222,7 +209,7 @@ export default function NewCustomer() {
                 <div className="grid grid-cols-2 gap-1">
                   <div className="col-span-1">
                     <SelectWrapper
-                      control={vendorForm.control}
+                      control={CustomerForm.control}
                       name="term"
                       label="Term "
                       required
@@ -231,7 +218,7 @@ export default function NewCustomer() {
                   </div>
                   <div className="col-span-1">
                     <InputWrapper
-                      control={vendorForm.control}
+                      control={CustomerForm.control}
                       name="termDays"
                       label="Term Days"
                       type="number"
@@ -240,14 +227,14 @@ export default function NewCustomer() {
                   </div>
                   <div className="col-span-1">
                     <ComboboxFieldWrapper
-                      control={vendorForm.control}
+                      control={CustomerForm.control}
                       name="discountType"
                       label="Discount Type"
                       options={discountTypesOptions}
                     />
                     {watchDiscountType === "percent" && (
                       <InputWrapper
-                        control={vendorForm.control}
+                        control={CustomerForm.control}
                         name={"discountpercent"}
                         label={"Discount"}
                         value={""}
@@ -256,7 +243,7 @@ export default function NewCustomer() {
                     )}
                     {watchDiscountType === "amount" && (
                       <InputWrapper
-                        control={vendorForm.control}
+                        control={CustomerForm.control}
                         name={"discountAmount"}
                         label={"Discount"}
                         value={""}
@@ -266,7 +253,7 @@ export default function NewCustomer() {
                   </div>
                   <div className="col-span-1">
                     <InputWrapper
-                      control={vendorForm.control}
+                      control={CustomerForm.control}
                       name="billingRate"
                       label="Billing Rate"
                       type="number"
@@ -275,7 +262,7 @@ export default function NewCustomer() {
                   </div>
                   <div className="col-span-1">
                     <SelectWrapper
-                      control={vendorForm.control}
+                      control={CustomerForm.control}
                       name="type"
                       label="Type "
                       required
@@ -284,7 +271,7 @@ export default function NewCustomer() {
                   </div>
                   <div className="col-span-1">
                     <SelectWrapper
-                      control={vendorForm.control}
+                      control={CustomerForm.control}
                       name="location"
                       label="Location "
                       required
@@ -299,7 +286,7 @@ export default function NewCustomer() {
                 <FormSubheader header="Name/Address" />
 
                 <InputWrapper
-                  control={vendorForm.control}
+                  control={CustomerForm.control}
                   name="name"
                   label="Name"
                   type="text"
@@ -308,7 +295,7 @@ export default function NewCustomer() {
                 />
 
                 <InputWrapper
-                  control={vendorForm.control}
+                  control={CustomerForm.control}
                   name="contact"
                   label="Contact"
                   type="text"
@@ -317,7 +304,7 @@ export default function NewCustomer() {
                 />
 
                 <InputWrapper
-                  control={vendorForm.control}
+                  control={CustomerForm.control}
                   name="street1"
                   label="Address"
                   type="text"
@@ -326,7 +313,7 @@ export default function NewCustomer() {
 
                 <InputWrapper
                   className="pt-0"
-                  control={vendorForm.control}
+                  control={CustomerForm.control}
                   name="street2"
                   placeholder=" "
                   label=""
@@ -336,7 +323,7 @@ export default function NewCustomer() {
                 <div className="grid grid-cols-2 gap-1">
                   <div className="col-span-1">
                     <InputWrapper
-                      control={vendorForm.control}
+                      control={CustomerForm.control}
                       name="phone1"
                       label="Phone"
                       type="text"
@@ -346,7 +333,7 @@ export default function NewCustomer() {
                   </div>
                   <div className="col-span-1">
                     <InputWrapper
-                      control={vendorForm.control}
+                      control={CustomerForm.control}
                       name="fax"
                       label="Fax:"
                       type="text"
@@ -355,7 +342,7 @@ export default function NewCustomer() {
                   </div>
                   <div className="col-span-1">
                     <InputWrapper
-                      control={vendorForm.control}
+                      control={CustomerForm.control}
                       name="email"
                       label="Email:"
                       type="text"
@@ -363,12 +350,11 @@ export default function NewCustomer() {
                     />{" "}
                   </div>
                   <div className="col-span-1"></div>
-                  
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="col-span-1">
                     <InputWrapper
-                      control={vendorForm.control}
+                      control={CustomerForm.control}
                       name="city"
                       label="City"
                       type="text"
@@ -377,7 +363,7 @@ export default function NewCustomer() {
                   </div>
                   <div className="col-span-1">
                     <InputWrapper
-                      control={vendorForm.control}
+                      control={CustomerForm.control}
                       name="state"
                       label="State /Province"
                       type="text"
@@ -386,7 +372,7 @@ export default function NewCustomer() {
                   </div>
                   <div className="col-span-1">
                     <InputWrapper
-                      control={vendorForm.control}
+                      control={CustomerForm.control}
                       name="postalCode"
                       label="Postal Code"
                       type="text"
@@ -395,7 +381,7 @@ export default function NewCustomer() {
                   </div>
                   <div className="col-span-1">
                     <InputWrapper
-                      control={vendorForm.control}
+                      control={CustomerForm.control}
                       name="country"
                       label="Country"
                       type="text"
@@ -408,7 +394,7 @@ export default function NewCustomer() {
             </TabsContent>
             <TabsContent value="Notes">
               <TextareaWrapper
-                control={vendorForm.control}
+                control={CustomerForm.control}
                 name="notes"
                 label="Notes"
                 rows={4}
@@ -419,7 +405,7 @@ export default function NewCustomer() {
             <TabsContent value="Attachments">
               <FileUploadWrapper
                 multiple={true}
-                control={vendorForm.control}
+                control={CustomerForm.control}
                 name={"Attachments"}
                 label={"Attachments"}
               />

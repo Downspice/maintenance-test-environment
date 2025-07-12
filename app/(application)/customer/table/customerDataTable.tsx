@@ -23,8 +23,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 import React from "react";
-import { CustomerData, CustomerInterface } from "@/lib/customer-data";
+import { CustomerData, CustomerInterface } from "@/lib/Customer/customer-data";
 import { matchesSearchAllFields } from "@/lib/utils";
+import EditCustomer from "../views/edit-customer";
 
 const getAllEmployees = (
   employees: CustomerInterface[]
@@ -33,11 +34,6 @@ const getAllEmployees = (
   const traverse = (emps: CustomerInterface[]) => {
     emps.forEach((emp) => {
       result.push(emp);
-      //   if (emp.tasks) {
-      //     console.log(emp.tasks);
-
-      //     // traverse(emp.tasks);
-      //   }
     });
   };
   traverse(employees);
@@ -47,10 +43,10 @@ const getAllEmployees = (
 const flatEmployees = getAllEmployees(CustomerData);
 const name = [...new Set(flatEmployees.map((emp) => emp.name))];
 const type = [...new Set(flatEmployees.map((emp) => emp.type))];
-const address1 = [...new Set(flatEmployees.map((emp) => emp.address1))];
+const address1 = [...new Set(flatEmployees.map((emp) => emp.street1))];
 const city = [...new Set(flatEmployees.map((emp) => emp.city))];
-const state_prov = [...new Set(flatEmployees.map((emp) => emp.state_prov))];
-const postal_code = [...new Set(flatEmployees.map((emp) => emp.postal_code))];
+const state_prov = [...new Set(flatEmployees.map((emp) => emp.state))];
+const postal_code = [...new Set(flatEmployees.map((emp) => emp.postalCode))];
 const email = [...new Set(flatEmployees.map((emp) => emp.email))];
 
 export default function CustomerDataTable() {
@@ -210,19 +206,6 @@ export default function CustomerDataTable() {
     [paginationInfo.pageSize]
   ); // Add dependencies that actually matter
 
-  const getSubRows = (originalRow: CustomerInterface) => {
-    return originalRow.vendor_links;
-  };
-
-  // Custom sub-row renderer
-  const renderSubRow = (
-    subRowData: description,
-    parentRow: any,
-    depth: number
-  ) => {
-    return <div className="space-y-4"></div>;
-  };
-
   // Column definitions
   const columns: ColumnDef<CustomerInterface>[] = [
     {
@@ -263,7 +246,7 @@ export default function CustomerDataTable() {
           filterOptions={address1}
         />
       ),
-      cell: ({ row }) => <>{row.original.address1}</>,
+      cell: ({ row }) => <>{row.original.street1}</>,
       filterFn: (row, id, value) => {
         return value.length === 0 || value.includes(row.getValue(id));
       },
@@ -285,7 +268,7 @@ export default function CustomerDataTable() {
       },
     },
     {
-      accessorKey: "state_prov",
+      accessorKey: "state",
       header: ({ column }) => (
         <SortableHeader
           column={column}
@@ -299,7 +282,7 @@ export default function CustomerDataTable() {
       },
     },
     {
-      accessorKey: "postal_code",
+      accessorKey: "postalCode",
       header: ({ column }) => (
         <SortableHeader
           column={column}
@@ -339,35 +322,15 @@ export default function CustomerDataTable() {
 
         return (
           <div className="flex flex-row gap-1 justify-between ">
-            {/* <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                  <MoreHorizontal className="h-4 w-4" />
+            <EditCustomer
+              children={
+                <Button variant={"secondary"} size={"icon"}>
+                  <FilePenIcon />
                 </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    alert(`Edit ${row.getValue("name")}`);
-                  }}
-                >
-                  Edit
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handlePrintRow(row);
-                  }}
-                >
-                  <Printer className="mr-2 h-4 w-4" />
-                  Print
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu> */}
-            <Button variant={"secondary"} size={"icon"}>
-              <FilePenIcon />
-            </Button>
+              }
+              data={row.original}
+            />
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant={"secondary"} size={"icon"}>
@@ -375,24 +338,12 @@ export default function CustomerDataTable() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-68 " align="start">
-                {/* <DropdownMenuLabel>My Account</DropdownMenuLabel> */}
                 <DropdownMenuGroup>
-                  <DropdownMenuItem>
-                    Receive
-                    {/* <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut> */}
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
                   <DropdownMenuItem>
                     Email
                     {/* <DropdownMenuShortcut>⌘B</DropdownMenuShortcut> */}
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    Print
-                    {/* <DropdownMenuShortcut>⌘S</DropdownMenuShortcut> */}
-                  </DropdownMenuItem>
                 </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>Change Status (Closed)</DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={(e) => {
@@ -445,11 +396,6 @@ export default function CustomerDataTable() {
         onDeleteSelected={handleDeleteSelected}
         onPrintRow={handlePrintRow}
         storageKey="employee-table-visibility"
-        getSubRows={getSubRows}
-        enableExpanding={false}
-        // Custom sub-row rendering
-        renderSubRow={renderSubRow}
-        subRowKey="tasks"
         // Server-side props
         realServerPagination={isServerMode}
         paginationInfo={isServerMode ? paginationInfo : undefined}

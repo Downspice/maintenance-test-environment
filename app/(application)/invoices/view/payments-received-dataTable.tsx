@@ -368,15 +368,14 @@ export default function PaymentReceivedTable() {
         return (
           <div className="flex flex-row gap-1 justify-between ">
             <EditPaymentReceived
-                          children={
-                            <Button variant={"secondary"} size={"icon"}>
-              <FilePenIcon />
-            </Button>
-                          }
-                          data={row.original}
-                        />
-            
-            
+              children={
+                <Button variant={"secondary"} size={"icon"}>
+                  <FilePenIcon />
+                </Button>
+              }
+              data={row.original}
+            />
+
             <Button
               variant={"secondary"}
               size={"icon"}
@@ -396,7 +395,7 @@ export default function PaymentReceivedTable() {
     },
   ];
 
-  return ( 
+  return (
     <div className="">
       {/* <div className="mb-8">
          
