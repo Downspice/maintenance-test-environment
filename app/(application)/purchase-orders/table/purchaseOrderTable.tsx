@@ -23,9 +23,20 @@ import React from "react";
 import {
   PurchaseOrderData,
   PurchaseOrderInterface,
-} from "@/lib/purcahse-order-data";
-import { InvoiceData } from "@/lib/Invoice/invoice-data";
+  PurchaseOrderItemInterface,
+} from "@/lib/PurchaseOrder/purchaseOrder-data";
+import {
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+  Sheet,
+} from "@/components/ui/sheet";
 import { matchesSearchAllFields } from "@/lib/utils";
+import EditPurchaseOrderForm from "../views/edit-purchaseOrder";
+import ReceivePurchaseOrder from "../views/receive-purchase";
+import RepairRequestForm from "@/components/forms/actualForms/repair-request-form";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 // Get unique values for filter options (including sub-rows)
 const getAllEmployees = (
@@ -35,11 +46,6 @@ const getAllEmployees = (
   const traverse = (emps: PurchaseOrderInterface[]) => {
     emps.forEach((emp) => {
       result.push(emp);
-      //   if (emp.tasks) {
-      //     console.log(emp.tasks);
-
-      //     // traverse(emp.tasks);
-      //   }
     });
   };
   traverse(employees);
@@ -47,12 +53,14 @@ const getAllEmployees = (
 };
 
 const flatEmployees = getAllEmployees(PurchaseOrderData);
-const sequential_id = [...new Set(flatEmployees.map((emp) => emp.sequential_id.toString()))];
+const sequential_id = [
+  ...new Set(flatEmployees.map((emp) => emp.purchaseorderNumber)),
+];
 const status = [...new Set(flatEmployees.map((emp) => emp.status))];
-const created_on = [...new Set(flatEmployees.map((emp) => emp.created_on))];
-const vendor_name = [...new Set(flatEmployees.map((emp) => emp.vendor_name?.toString()))];
-const required_on = [...new Set(flatEmployees.map((emp) => emp.required_on))];
-const buyer_name = [...new Set(flatEmployees.map((emp) => emp.buyer_name))];
+const created_on = [...new Set(flatEmployees.map((emp) => emp.date))];
+const vendor_name = [...new Set(flatEmployees.map((emp) => emp.vendor))];
+const required_on = [...new Set(flatEmployees.map((emp) => emp.dueDate))];
+const buyer_name = [...new Set(flatEmployees.map((emp) => emp.customer))];
 
 export default function PurchaseOrderDataTable() {
   const [isServerMode, setIsServerMode] = useState(false);
@@ -191,10 +199,10 @@ export default function PurchaseOrderDataTable() {
         let filteredData = PurchaseOrderData;
 
         if (searchValue.trim()) {
-                  filteredData = PurchaseOrderData.filter((emp) =>
-                    matchesSearchAllFields(emp, searchValue.trim())
-                  );
-                }
+          filteredData = PurchaseOrderData.filter((emp) =>
+            matchesSearchAllFields(emp, searchValue.trim())
+          );
+        }
 
         // Reset to first page and update data
         const newData = filteredData.slice(0, paginationInfo.pageSize);
@@ -213,11 +221,15 @@ export default function PurchaseOrderDataTable() {
   ); // Add dependencies that actually matter
 
   const getSubRows = (originalRow: PurchaseOrderInterface) => {
-    return originalRow.tasks;
+    return originalRow.items;
   };
 
   // Custom sub-row renderer
-  const renderSubRow = (subRowData: Task, parentRow: any, depth: number) => {
+  const renderSubRow = (
+    subRowData: PurchaseOrderItemInterface,
+    parentRow: any,
+    depth: number
+  ) => {
     return (
       <div className="space-y-4">
         <div className="grid grid-cols-1  gap-4">
@@ -225,22 +237,42 @@ export default function PurchaseOrderDataTable() {
           <Card>
             {" "}
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm">Work Information</CardTitle>{" "}
+              <CardTitle className="text-sm">Items Information</CardTitle>{" "}
             </CardHeader>{" "}
-            <CardContent className=" grid grid-cols-3 space-y-2 text-sm">
+            <CardContent className=" grid grid-cols-7 space-y-2 text-sm">
               {" "}
               <div className="col-span-1 ">
-                <span className="ml-2">{subRowData.instructions}</span>{" "}
+                <span className="ml-2">{subRowData.description}</span>{" "}
               </div>{" "}
               <div className="col-span-1 ">
                 {" "}
                 <span className="ml-2 text-destructive">
-                  {subRowData.dueDate}{" "}
+                  {subRowData.orderQuantity}{" "}
                 </span>{" "}
               </div>{" "}
               <div className="col-span-1 ">
                 <div className="ml-2 font-bold text-primary underline cursor-pointer">
-                  #{subRowData.woNumber}
+                  #{subRowData.receivedQuantity}
+                </div>{" "}
+              </div>{" "}
+              <div className="col-span-1 ">
+                <div className="ml-2 font-bold text-primary underline cursor-pointer">
+                  #{subRowData.unitCost}
+                </div>{" "}
+              </div>{" "}
+              <div className="col-span-1 ">
+                <div className="ml-2 font-bold text-primary underline cursor-pointer">
+                  #{subRowData.extendedCost}
+                </div>{" "}
+              </div>{" "}
+              <div className="col-span-1 ">
+                <div className="ml-2 font-bold text-primary underline cursor-pointer">
+                  #{subRowData.partNumber}
+                </div>{" "}
+              </div>{" "}
+              <div className="col-span-1 ">
+                <div className="ml-2 font-bold text-primary underline cursor-pointer">
+                  #{subRowData.notes}
                 </div>{" "}
               </div>{" "}
             </CardContent>{" "}
@@ -253,7 +285,7 @@ export default function PurchaseOrderDataTable() {
   // Column definitions
   const columns: ColumnDef<PurchaseOrderInterface>[] = [
     {
-      accessorKey: "sequential_id",
+      accessorKey: "id",
       header: ({ column }) => (
         <SortableHeader
           column={column}
@@ -267,7 +299,7 @@ export default function PurchaseOrderDataTable() {
           className="font-bold text-primary flex flex-col"
           style={{ paddingLeft: `${row.depth * 20}px` }}
         >
-          <div>{row.original.sequential_id}</div>
+          <div>{row.original.purchaseorderNumber}</div>
         </div>
       ),
     },
@@ -292,7 +324,7 @@ export default function PurchaseOrderDataTable() {
           filterOptions={created_on}
         />
       ),
-      cell: ({ row }) => <>{row.original.created_on}</>,
+      cell: ({ row }) => <>{row.original.date?.toDateString()}</>,
       filterFn: (row, id, value) => {
         return value.length === 0 || value.includes(row.getValue(id));
       },
@@ -310,6 +342,7 @@ export default function PurchaseOrderDataTable() {
       filterFn: (row, id, value) => {
         return value.length === 0 || value.includes(row.getValue(id));
       },
+      cell: ({ row }) => <>{row.original.dueDate?.toDateString()}</>,
     },
     {
       accessorKey: "vendor_name",
@@ -321,7 +354,7 @@ export default function PurchaseOrderDataTable() {
           filterOptions={vendor_name as string[]}
         />
       ),
-
+      cell: ({ row }) => <>{row.original.vendor}</>,
       filterFn: (row, id, value) => {
         return value.length === 0 || value.includes(row.getValue(id));
       },
@@ -336,6 +369,7 @@ export default function PurchaseOrderDataTable() {
           filterOptions={buyer_name}
         />
       ),
+      cell: ({ row }) => <>{row.original.customer}</>,
     },
     {
       id: "actions",
@@ -344,44 +378,60 @@ export default function PurchaseOrderDataTable() {
         const handleDeleteRow = (row: any) => {
           console.log("Delete row:", row.original);
           if (
-            confirm(`Are you sure you want to delete ${row.original.name}?`)
+            confirm(
+              `Are you sure you want to delete ${row.original.purchaseorderNumber}?`
+            )
           ) {
-            alert(`Deleted ${row.original.name}`);
+            alert(`Deleted ${row.original.purchaseorderNumber}`);
             // Here you would typically call your delete API
           }
         };
 
+        const handleCloseRow = (row: any) => {
+          console.log("Delete row:", row.original);
+          if (
+            confirm(
+              `Are you sure you want to close P0 #${row.original.purchaseorderNumber}?`
+            )
+          ) {
+            alert(`P0 #${row.original.purchaseorderNumber} is closed`);
+            // Here you would typically call your delete API
+          }
+        };
+        const [open, setOpen] = useState(false);
+        const [selectedProjectType, setSelectedProjectType] = useState<
+          string | null
+        >(null);
+
+        const genericDropdown = (x: string) => {
+          console.log("did something", x);
+          setSelectedProjectType(x);
+          setOpen(true);
+        };
+        const dropdownItems = [{ label: "Receive", onSelect: genericDropdown }];
+
+        const formComponents = {
+          Receive: <ReceivePurchaseOrder data={row.original} />,
+        };
+        const renderFormContent = () => {
+          const SelectedComponent = formComponents[selectedProjectType || ""];
+          console.log("new selected", SelectedComponent);
+          return SelectedComponent ? SelectedComponent : null;
+        };
+        const selectedType = dropdownItems.find(
+          (type) => type.label === selectedProjectType
+        );
         return (
           <div className="flex flex-row gap-2 justify-between ">
-            {/* <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                  <MoreHorizontal className="h-4 w-4" />
+            <EditPurchaseOrderForm
+              children={
+                <Button variant={"secondary"} size={"icon"}>
+                  <FilePenIcon />
                 </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    alert(`Edit ${row.getValue("name")}`);
-                  }}
-                >
-                  Edit
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handlePrintRow(row);
-                  }}
-                >
-                  <Printer className="mr-2 h-4 w-4" />
-                  Print
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu> */}
-            <Button variant={"secondary"} size={"icon"}>
-              <FilePenIcon />
-            </Button>
+              }
+              data={row.original}
+            />
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant={"secondary"} size={"icon"}>
@@ -391,11 +441,16 @@ export default function PurchaseOrderDataTable() {
               <DropdownMenuContent className="w-68 " align="start">
                 {/* <DropdownMenuLabel>My Account</DropdownMenuLabel> */}
                 <DropdownMenuGroup>
-                  <DropdownMenuItem>
-                    Receive
-                    {/* <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut> */}
-                  </DropdownMenuItem>
-                <DropdownMenuSeparator /> 
+                  {dropdownItems.map((item) => (
+                    <DropdownMenuItem
+                      key={item.label}
+                      onClick={() => item.onSelect(item.label)}
+                    >
+                      <span>{item.label}</span>
+                    </DropdownMenuItem>
+                  ))}
+
+                  <DropdownMenuSeparator />
                   <DropdownMenuItem>
                     Email
                     {/* <DropdownMenuShortcut>⌘B</DropdownMenuShortcut> */}
@@ -406,8 +461,16 @@ export default function PurchaseOrderDataTable() {
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Change Status (Closed)</DropdownMenuItem>
-                <DropdownMenuSeparator /> 
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleCloseRow(row);
+                  }}
+                >
+                  {" "}
+                  Change Status (Closed)
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={(e) => {
                     e.stopPropagation();
@@ -420,6 +483,24 @@ export default function PurchaseOrderDataTable() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            <Sheet open={open} onOpenChange={setOpen}>
+              <SheetContent className="w-[400px] sm:w-2/3">
+                <SheetHeader>
+                  <SheetTitle className="flex items-center gap-2">
+                    {/* {selectedType && <selectedType.icon className="h-5 w-5" />} */}
+                    Receive Purchase Order
+                  </SheetTitle>
+                  <SheetDescription>
+                    {/* {selectedType?.label ||
+                "Fill out the form below to set up your new development project."} */}
+                  </SheetDescription>
+                </SheetHeader>
+
+                <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
+                  {renderFormContent() || "nothing else"}
+                </ScrollArea>
+              </SheetContent>
+            </Sheet>
           </div>
         );
       },
@@ -463,7 +544,7 @@ export default function PurchaseOrderDataTable() {
         enableExpanding={true}
         // Custom sub-row rendering
         renderSubRow={renderSubRow}
-        subRowKey="tasks"
+        subRowKey="items"
         // Server-side props
         realServerPagination={isServerMode}
         paginationInfo={isServerMode ? paginationInfo : undefined}

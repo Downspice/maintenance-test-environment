@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { useSheet } from "@/lib/sheet-providers";
 import NotCompleteMessage from "../workInprogress/working";import PurchaseOrderDataTable from "./table/purchaseOrderTable";
 import { dateFilterOptionsList, locationOptionsList } from "@/lib/option-list";
+import NewPurchaseOrderForm from "@/components/forms/actualForms/new-purchase-order-form";
 
 const ActiveDropdown = [
   { label: "Open", value: "my_open" },
@@ -88,7 +89,7 @@ export default function EmployeesPage() {
     openSheet({
       title: "Create Purchase Order",
       description: "Fill out the form below to create a new Purchase Order.",
-      content: <NotCompleteMessage />,
+      content: <NewPurchaseOrderForm />,
     });
   };
 

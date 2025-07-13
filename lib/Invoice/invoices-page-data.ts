@@ -286,3 +286,13 @@ export const invoicePaymentMethodOptionsList = [
   { label: "Electronic Transfer", value: "Electronic Transfer" },
   { label: "Other", value: "Other" },
 ];
+
+export const itemTypeOptionsList = [
+  { label: "Work Order", value: "Work Order" },
+  { label: "Inventory (Parts)", value: "Inventory (Parts)" },
+  { label: "Fuel", value: "Fuel" },
+  { label: "Transport", value: "Transport" },
+  { label: "Rental", value: "Rental" },
+  { label: "Miscellaneous", value: "Miscellaneous" },
+  { label: "Credit", value: "Credit" },
+];

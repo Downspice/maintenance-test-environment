@@ -20,6 +20,7 @@ import SelectWrapper from "@/components/forms/wrappers/SelectWrapper";
 import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
 import {
   discountTypesOptions,
+  invoiceOptionsList,
   maintenanceItems,
   payments,
 } from "@/lib/Invoice/invoices-page-data";
@@ -42,8 +43,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
-import { termsList } from "@/components/forms/actualForms/new-purchase-order-form";
-import Fieldset from "@/components/customUI/fieldset";
+ import Fieldset from "@/components/customUI/fieldset";
 
 export default function EditInvoice({
   children,
@@ -308,7 +308,7 @@ export default function EditInvoice({
                             control={form.control}
                             name="terms"
                             label="Terms"
-                            options={termsList}
+                            options={invoiceOptionsList}
                           />
                           <InputWrapper
                             control={form.control}

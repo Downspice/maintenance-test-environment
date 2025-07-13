@@ -182,6 +182,13 @@ export const fuelTypeOptions = [
   { value: "hybrid", label: "Hybrid" },
 ]
 
+export const shipViaOptions = [
+  { value: "Ground", label: "Ground" },
+  { value: "Air", label: "Air" },
+  { value: "UPS", label: "UPS" },
+  { value: "UPSA", label: "UPSA" },
+]
+
 export const warehouseOptions = [
   { value: "house1", label: "Warehouse 1" },
   { value: "house2", label: "Warehouse Abeka" },
@@ -208,3 +215,4 @@ export const substituteOptions = [
   { "label": "PR19026445 Air Filter", "value": "3652884" },
   { "label": "SM-7109 Check Valve", "value": "3652885" }
 ]
+
