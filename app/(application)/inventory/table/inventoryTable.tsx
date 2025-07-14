@@ -27,13 +27,18 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 import React from "react";
-import { InventoryData, InventoryDataInterface } from "@/lib/inventory-data";
+import {
+  InventoryData,
+  InventoryInterface,
+} from "@/lib/Inventory/inventory-data";
+import { matchesSearchAllFields } from "@/lib/utils";
+import EditInventory from "../view/edit-inventory";
 
 const getAllEmployees = (
-  employees: InventoryDataInterface[]
-): InventoryDataInterface[] => {
-  const result: InventoryDataInterface[] = [];
-  const traverse = (emps: InventoryDataInterface[]) => {
+  employees: InventoryInterface[]
+): InventoryInterface[] => {
+  const result: InventoryInterface[] = [];
+  const traverse = (emps: InventoryInterface[]) => {
     emps.forEach((emp) => {
       result.push(emp);
       //   if (emp.tasks) {
@@ -47,22 +52,24 @@ const getAllEmployees = (
 };
 
 const flatEmployees = getAllEmployees(InventoryData);
-const purchase_order = [
-  ...new Set(flatEmployees.map((emp) => emp.purchase_order?.toString())),
-];
+
 const unit_cost = [
-  ...new Set(flatEmployees.map((emp) => emp.unit_cost.toString())),
+  ...new Set(flatEmployees.map((emp) => emp.unitCost.toString())),
 ];
-const part_number = [...new Set(flatEmployees.map((emp) => emp.part_number))];
+const number = [...new Set(flatEmployees.map((emp) => emp.number))];
 const name = [...new Set(flatEmployees.map((emp) => emp.name))];
 const category = [
   ...new Set(flatEmployees.map((emp) => emp.category?.toString())),
 ];
 const vendor_names = [
-  ...new Set(flatEmployees.map((emp) => emp.vendor_names.toString())),
+  ...new Set(
+    flatEmployees.map((emp) => emp?.warehouses?.[0]?.vendor ?? "")
+  ),
 ];
 const quantity = [
-  ...new Set(flatEmployees.map((emp) => emp.quantity.toString())),
+  ...new Set(
+    flatEmployees.map((emp) => emp?.warehouses?.[0]?.quantity ?? "")
+  ),
 ];
 
 export default function InventoryDataTable() {
@@ -201,18 +208,8 @@ export default function InventoryDataTable() {
         let filteredData = InventoryData;
 
         if (searchValue.trim()) {
-          filteredData = InventoryData.filter(
-            (emp) =>
-              emp.part_number
-                .toLowerCase()
-                .includes(searchValue.toLowerCase()) ||
-              emp.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-              emp?.category
-                ?.toLowerCase()
-                .includes(searchValue.toLowerCase()) ||
-              emp.manufacturers
-                .toLowerCase()
-                .includes(searchValue.toLowerCase())
+          filteredData = InventoryData.filter((emp) =>
+            matchesSearchAllFields(emp, searchValue.trim())
           );
         }
 
@@ -232,35 +229,23 @@ export default function InventoryDataTable() {
     [paginationInfo.pageSize]
   ); // Add dependencies that actually matter
 
-  const getSubRows = (originalRow: InventoryDataInterface) => {
-    return originalRow.vendor_links;
-  };
-
-  // Custom sub-row renderer
-  const renderSubRow = (
-    subRowData: description,
-    parentRow: any,
-    depth: number
-  ) => {
-    return <div className="space-y-4"></div>;
-  };
-
+  
   // Column definitions
-  const columns: ColumnDef<InventoryDataInterface>[] = [
+  const columns: ColumnDef<InventoryInterface>[] = [
     {
-      accessorKey: "part_number",
+      accessorKey: "number",
       header: ({ column }) => (
         <SortableHeader
           column={column}
           title="Part#"
           sortable={true}
-          filterOptions={part_number}
+          filterOptions={number}
         />
       ),
       cell: ({ row }) => (
         <div className="font-medium text-primary flex flex-col">
           {" "}
-          {row.getValue("part_number")}
+          {row.getValue("number")}
         </div>
       ),
     },
@@ -299,7 +284,7 @@ export default function InventoryDataTable() {
       },
     },
     {
-      accessorKey: "vendor_names",
+      accessorKey: "vendor",
       header: ({ column }) => (
         <SortableHeader
           column={column}
@@ -308,8 +293,7 @@ export default function InventoryDataTable() {
           filterOptions={vendor_names}
         />
       ),
-      cell: ({ row }) => <>{row.original.vendor_names.toLocaleString()}</>,
-
+      cell: ({ row }) => <>{ row.original.warehouses?.[0]?.vendor ?? "" }</>,
       filterFn: (row, id, value) => {
         return value.length === 0 || value.includes(row.getValue(id));
       },
@@ -327,13 +311,14 @@ export default function InventoryDataTable() {
       cell: ({ row }) => {
         return (
           <div className="flex items-center gap-1 text-sm">
-            {row.original.low_stock_level >= row.original.quantity ? (
+            
+            {(row.original.warehouses?.[0]?.reorderPoint ?? 0  >= row.original.warehouses?.[0]?.quantity  ?? 0 ) ? (
               <span className=" font-bold text-red-600">
-                {row.original.quantity}
+                {row.original.warehouses?.[0]?.quantity?? 0}
               </span>
             ) : (
-              <div className=" ">{row.original.quantity} </div>
-            )}
+              <div className=" ">{row.original.warehouses?.[0]?.quantity ?? ""} </div>
+            ) }
           </div>
         );
       },
@@ -352,23 +337,23 @@ export default function InventoryDataTable() {
         />
       ),
       cell: ({ row }) => {
-        return <> ${row.original.unit_cost}</>;
+        return <> ${row.original.unitCost}</>;
       },
     },
     {
-      accessorKey: "purchase_order",
+      accessorKey: "number",
       header: ({ column }) => (
         <SortableHeader
           column={column}
           title="PO #"
           sortable={true}
-          filterOptions={purchase_order as string[]}
+          filterOptions={number}
         />
       ),
       cell: ({ row }) => (
         <>
           <div className="flex  items-end gap-1 text-primary cursor-pointer">
-            {row.original.purchase_order}
+            {row.original.number}
           </div>
         </>
       ),
@@ -393,35 +378,16 @@ export default function InventoryDataTable() {
 
         return (
           <div className="flex flex-row gap-2 justify-between ">
-            {/* <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    alert(`Edit ${row.getValue("name")}`);
-                  }}
-                >
-                  Edit
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handlePrintRow(row);
-                  }}
-                >
-                  <Printer className="mr-2 h-4 w-4" />
-                  Print
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu> */}
-            <Button variant={"secondary"} size={"icon"}>
-              <FilePenIcon />
-            </Button>
+            <EditInventory
+                          children={
+                            <Button variant={"secondary"} size={"icon"}>
+                              <FilePenIcon />
+                            </Button>
+                          }
+                          data={row.original}
+                        />
+             
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant={"secondary"} size={"icon"}>
@@ -455,7 +421,9 @@ export default function InventoryDataTable() {
                       </DropdownMenuSubContent>
                     </DropdownMenuPortal>
                   </DropdownMenuSub>
-                  <DropdownMenuItem disabled={typeof(row.original.purchase_order)!=="string" }>
+                  <DropdownMenuItem
+                    disabled={typeof row.original.purchase_order !== "string"}
+                  >
                     Receive Purchase Order
                     {/* <DropdownMenuShortcut>⌘+T</DropdownMenuShortcut> */}
                   </DropdownMenuItem>
@@ -518,13 +486,7 @@ export default function InventoryDataTable() {
         onEmailSelected={handleEmailSelected}
         onDeleteSelected={handleDeleteSelected}
         onPrintRow={handlePrintRow}
-        storageKey="employee-table-visibility"
-        getSubRows={getSubRows}
-        enableExpanding={false}
-        // Custom sub-row rendering
-        renderSubRow={renderSubRow}
-        subRowKey="tasks"
-        // Server-side props
+        storageKey="employee-table-visibility" 
         realServerPagination={isServerMode}
         paginationInfo={isServerMode ? paginationInfo : undefined}
         onPaginationChange={isServerMode ? handlePaginationChange : undefined}

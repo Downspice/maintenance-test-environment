@@ -18,301 +18,29 @@ import {
   unitOptions,
   inventoryMovement,
   markupTypeOptions,
-  partOptions as data,
-  EquipmentPartInterface,
   partOptions,
 } from "@/lib/inventory-data";
 import SingleCheckboxWrapper from "../wrappers/SingleCheckboxWrapper";
 import { costCenterOptions } from "./work-order-form";
 import Fieldset from "@/components/customUI/fieldset";
-import { EditableDataTable } from "@/components/customUI/editableTable";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import FileUploadWrapper from "../wrappers/FileUploadWrapper";
-
-// Define the form schema with Zod
-export const inventorySchema = z.object({
-  equipmentId: z.string({
-    required_error: "Equipment is required",
-  }),
-  date: z.date().optional(),
-
-  Photos: z.string().optional(),
-  vendors: z
-    .array(
-      z.object({
-        vendor: z.string().optional(),
-        manufacturer: z.string().optional(),
-        vendorNumber: z.string().optional(),
-        barcode: z.string().optional(),
-        warehouses: z.array(z.string()).optional(),
-      })
-    )
-    .optional(),
-
-  warehouses: z
-    .array(
-      z.object({
-        warehouse: z.string().optional(),
-        bin: z.string().optional(),
-        quantity: z.coerce.number().optional(),
-        lowStockLevel: z.coerce.number().optional(),
-        reorderQuantity: z.coerce.number().optional(),
-        maximumQuantity: z.coerce.number().optional(),
-      })
-    )
-    .optional(),
-});
-
-// Equipment options
-const equipmentOptions = [{ value: "1311827", label: "AC-001-07 Class 8" }];
+import PartSubstitutionTable from "@/app/(application)/inventory/component/inventory.partSubstitutionTable";
+import AlternateUpcCodesTable from "@/app/(application)/inventory/component/inventory.alternateUpcCodesTable";
+import { InventorySchema } from "@/lib/Inventory/inventory-data";
+import { useState } from "react";
+import WarehouseTabs from "@/app/(application)/inventory/component/inventory.warehouse";
 
 export default function NewInventory() {
-  const inventoryForm = useForm<z.infer<typeof inventorySchema>>({
-    resolver: zodResolver(inventorySchema),
-    defaultValues: { vendors: [{}], warehouses: [{}] },
+  const inventoryForm = useForm<z.infer<typeof InventorySchema>>({
+    resolver: zodResolver(InventorySchema),
+    defaultValues: {},
   });
-  const { control } = inventoryForm;
+  const [warehouses, setWarehouses] = useState<string[]>([]);
   const enableTrackingWatch = inventoryForm.watch("enableTracking");
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "vendors",
-  });
+  const partSubs = inventoryForm.watch("partSubstitutions") || [];
 
-  const columns = [
-    {
-      accessorKey: "partNumber",
-      header: "Part #",
-      enableSorting: true,
-      cell: ({ row, updateRow, rowIndex }: any) => (
-        <Select
-          value={row.original.partNumber}
-          onValueChange={(e) => {
-            updateRow(rowIndex, "partNumber", e);
-          }}
-        >
-          <SelectTrigger className=" ">
-            <SelectValue placeholder=" " />
-          </SelectTrigger>
-          <SelectContent>
-            {partOptions.map((item) => (
-              <SelectItem value={item.partNumber} key={item.partNumber}>
-                {item.partNumber}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      ),
-    },
-    {
-      accessorKey: "name",
-      header: "Name",
-      enableSorting: true,
-      cell: ({ row, updateRow, rowIndex }: any) => {
-        const name = partOptions?.filter(
-          (item) => item.partNumber == row.original.partNumber
-        );
-        console.log("row.partNumber", row.original);
-        return (
-          <Input
-            disabled
-            value={name[0]?.name}
-            onChange={(e) => updateRow(rowIndex, "name", e.target.value)}
-          />
-        );
-      },
-    },
-    {
-      accessorKey: "manufacturer",
-      header: "Manufacturer",
-      enableSorting: true,
-      cell: ({ row, updateRow, rowIndex }: any) => {
-        const data = partOptions?.filter(
-          (item) => item.partNumber == row.original.partNumber
-        );
-        console.log("row.partNumber", row.original);
-        return (
-          <Input
-            disabled
-            value={data[0]?.manufacturer}
-            onChange={(e) =>
-              updateRow(rowIndex, "manufacturer", e.target.value)
-            }
-          />
-        );
-      },
-    },
-    {
-      accessorKey: "description",
-      header: "Description",
-
-      enableSorting: true,
-      cell: ({ row, updateRow, rowIndex }: any) => {
-        const data = partOptions?.filter(
-          (item) => item.partNumber == row.original.partNumber
-        );
-        console.log("row.partNumber", row.original);
-        return (
-          <Input
-            disabled
-            value={data[0]?.description}
-            onChange={(e) => updateRow(rowIndex, "description", e.target.value)}
-          />
-        );
-      },
-    },
-    {
-      accessorKey: "action",
-      header: "",
-      // enableSorting: true,
-      cell: ({ row, updateRow, rowIndex }: any) => {
-        console.log("row.partNumber", row.original);
-        const handleDelete = (row: any) => {
-          console.log("Delete row:", row.original);
-          if (
-            confirm(
-              `Are you sure you want to delete ${row.original.partNumber}?`
-            )
-          ) {
-            alert(`Deleted ${row.original.partNumber}`);
-            // Here you would typically call your delete API
-          }
-        };
-        return (
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleDelete(row);
-              }}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
-        );
-      },
-    },
-  ];
-
-  const AlternateUPCCodesColumns = [
-    {
-      accessorKey: "manufacturerAlt",
-      header: "Manufacturer",
-      enableSorting: true,
-      cell: ({ row, updateRow, rowIndex }: any) => (
-        <Select
-          value={row.original.manufacturer}
-          onValueChange={(e) => {
-            updateRow(rowIndex, "manufacturerAlt", e);
-          }}
-        >
-          <SelectTrigger className=" ">
-            <SelectValue placeholder=" " />
-          </SelectTrigger>
-          <SelectContent>
-            {equipmentManufacturerOptions.map((item) => (
-              <SelectItem value={item.value} key={item.value}>
-                {item.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      ),
-    },
-    {
-      accessorKey: "vendor",
-      header: "Vendor",
-      enableSorting: true,
-      cell: ({ row, updateRow, rowIndex }: any) => (
-        <Select
-          value={row.original.manufacturer}
-          onValueChange={(e) => {
-            updateRow(rowIndex, "vendor", e);
-          }}
-        >
-          <SelectTrigger className=" ">
-            <SelectValue placeholder=" " />
-          </SelectTrigger>
-          <SelectContent>
-            {vendorOptions.map((item) => (
-              <SelectItem value={item.value} key={item.value}>
-                {item.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      ),
-    },
-    {
-      accessorKey: "upc",
-      header: "UPC",
-      enableSorting: true,
-      cell: ({ row, updateRow, rowIndex }: any) => {
-        const data = partOptions?.filter(
-          (item) => item.partNumber == row.original.partNumber
-        );
-        console.log("row.partNumber", row.original);
-        return (
-          <Input
-            value={data[0]?.manufacturer}
-            onChange={(e) => updateRow(rowIndex, "upc", e.target.value)}
-          />
-        );
-      },
-    },
-    {
-      accessorKey: "action",
-      header: "",
-      // enableSorting: true,
-      cell: ({ row, updateRow, rowIndex }: any) => {
-        console.log("row.partNumber", row.original);
-        const handleDelete = (row: any) => {
-          console.log("Delete row:", row.original);
-          if (
-            confirm(
-              `Are you sure you want to delete ${row.original.manufacturer}?`
-            )
-          ) {
-            alert(`Deleted ${row.original.manufacturer}`);
-            // Here you would typically call your delete API
-          }
-        };
-        return (
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleDelete(row);
-              }}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
-        );
-      },
-    },
-  ];
-
-  const {
-    fields: warehouseFields,
-    append: appendWarehouse,
-    remove: removeWarehouse,
-  } = useFieldArray({
-    control,
-    name: "warehouses",
-  });
-
-  async function handleSubmit(data: z.infer<typeof inventorySchema>) {
+  async function handleSubmit(data: z.infer<typeof InventorySchema>) {
     console.log(data);
     // Here you would typically send the data to your API
 
@@ -411,121 +139,22 @@ export default function NewInventory() {
                 name="enableTracking"
                 label="Enable inventory tracking"
               />
-              <Tabs defaultValue="Identification">
-                <TabsList>
-                  <TabsTrigger value="Identification">
-                    Warehouse 
-                  </TabsTrigger>
-                </TabsList>
-                <TabsContent value="Identification">
-                  <div className="flex flex-row gap-x-3">
-                    <InputWrapper
-                      control={inventoryForm.control}
-                      name="aisle"
-                      label="Aisle"
-                      type="text"
-                      required
-                      value={""}
-                    />
-                    <InputWrapper
-                      control={inventoryForm.control}
-                      name="row"
-                      label="Row"
-                      type="text"
-                      required
-                      value={""}
-                    />
-                    <InputWrapper
-                      control={inventoryForm.control}
-                      name="bin"
-                      label="Bin"
-                      type="text"
-                      required
-                      value={""}
-                    />
-                  </div>
-                  <ComboboxFieldWrapper
-                    control={inventoryForm.control}
-                    name="vendor"
-                    label="Vendor"
-                    options={vendorOptions}
-                  />
-                  <ComboboxFieldWrapper
-                    control={inventoryForm.control}
-                    name="costCenter"
-                    label="Cost Center"
-                    options={costCenterOptions}
-                  />
-                  {enableTrackingWatch === true && (
-                    <div className="grid grid-cols-3">
-                      <div className="col-span-1">
-                        <InputWrapper
-                          control={inventoryForm.control}
-                          name="quantity"
-                          label="Quantity"
-                          type="number"
-                          required
-                          value={0}
-                        />
-                      </div>
-                      <div className="col-span-1">
-                        <Button disabled>Adjust</Button>
-                      </div>
-                      <div className="col-span-1"></div>
-
-                      <div className="col-span-1">
-                        <InputWrapper
-                          control={inventoryForm.control}
-                          name="reorderPoint"
-                          label="Reorder Point"
-                          type="number"
-                          required
-                          value={""}
-                        />
-                      </div>
-                      <div className="col-span-1">
-                        <InputWrapper
-                          control={inventoryForm.control}
-                          name="reorderQty"
-                          label="Reorder Qty"
-                          type="number"
-                          required
-                          value={""}
-                        />
-                      </div>
-                      <div className="col-span-1">
-                        <InputWrapper
-                          control={inventoryForm.control}
-                          name="maxQty"
-                          label="Max Qty"
-                          type="number"
-                          required
-                          value={""}
-                        />
-                      </div>
-                      <div className="col-span-1">
-                        <InputWrapper
-                          control={inventoryForm.control}
-                          name="leadTime"
-                          label="Lead Time "
-                          type="number"
-                          required
-                          value={""}
-                        />
-                      </div>
-                      <div className="col-span-1">
-                        <SelectWrapper
-                          control={inventoryForm.control}
-                          name={`movementType`}
-                          label="Type"
-                          options={inventoryMovement}
-                          required
-                        />
-                      </div>
-                    </div>
-                  )}
-                </TabsContent>
-              </Tabs>
+              <WarehouseTabs
+                warehouses={warehouses}
+                setWarehouses={setWarehouses}
+                options={[
+                  { label: "Warehouse A", value: "warehouseA" },
+                  { label: "Warehouse B", value: "warehouseB" },
+                  { label: "Warehouse C", value: "warehouseC" },
+                ]}
+                control={inventoryForm.control}
+                enableTrackingWatch={
+                  enableTrackingWatch ? enableTrackingWatch : false
+                }
+                vendorOptions={vendorOptions}
+                costCenterOptions={costCenterOptions}
+                inventoryMovement={inventoryMovement}
+              />
             </TabsContent>
             <TabsContent value="Advanced" className="grid grid-cols-2 gap-x-1">
               <div className="col-span-1">
@@ -533,13 +162,45 @@ export default function NewInventory() {
                   className="h-full"
                   legend="Markup (invoices)"
                   content={
-                    <SelectWrapper
-                      control={inventoryForm.control}
-                      name={`markUp`}
-                      label="Markup Type"
-                      options={markupTypeOptions}
-                      required
-                    />
+                    <>
+                      <SelectWrapper
+                        control={inventoryForm.control}
+                        name={`markUp`}
+                        label="Markup Type"
+                        options={markupTypeOptions}
+                        required
+                      />
+                      {inventoryForm.watch("markUp") === "percent" && (
+                        <InputWrapper
+                          control={inventoryForm.control}
+                          name="percentMarkup"
+                          label="% Markup"
+                          type="number"
+                          required
+                          value=""
+                        />
+                      )}
+                      {inventoryForm.watch("markUp") === "value" && (
+                        <InputWrapper
+                          control={inventoryForm.control}
+                          name="markupValue"
+                          label="Markup Value"
+                          type="number"
+                          required
+                          value=""
+                        />
+                      )}
+                      {inventoryForm.watch("markUp") === "manual" && (
+                        <InputWrapper
+                          control={inventoryForm.control}
+                          name="markupPrice"
+                          label="Markup Price"
+                          type="number"
+                          required
+                          value=""
+                        />
+                      )}
+                    </>
                   }
                 />
               </div>
@@ -595,32 +256,24 @@ export default function NewInventory() {
                     </TabsTrigger>
                   </TabsList>
                   <TabsContent value="Part Substitutions">
-                    <EditableDataTable
-                      data={[]}
-                      defaultRow={{
-                        partNumber: " ",
-                        name: " ",
-                        manufacturer: " ",
-                        description: " ",
-                      }}
-                      columns={columns}
-                      onDataChange={(newData) => {
-                        console.log("Updated Data:", newData);
-                      }}
+                    {/* A table that has button to add a new row and the headers are part#, name, manufacturer, description. */}
+                    <PartSubstitutionTable
+                      parts={partOptions}
+                      value={partSubs}
+                      onChange={(rows) =>
+                        inventoryForm.setValue("partSubstitutions", rows)
+                      }
                     />
                   </TabsContent>
                   <TabsContent value="Alternate UPC Codes">
-                    <EditableDataTable
-                      data={[]}
-                      defaultRow={{
-                        manufacturerAlt: " ",
-                        vendor: " ",
-                        upc: " ",
-                      }}
-                      columns={AlternateUPCCodesColumns}
-                      onDataChange={(newData) => {
-                        console.log("Updated Data:", newData);
-                      }}
+                    {/* A table that has button to add a new row and the headers are manufacturer, vendor, upc .When a new row is added the manufacturer and vendor becomes a select , and the ups becomes an input fields. */}
+                    <AlternateUpcCodesTable
+                      manufacturers={equipmentManufacturerOptions}
+                      vendors={vendorOptions}
+                      value={inventoryForm.watch("alternateUpcCodes") || []}
+                      onChange={(val) =>
+                        inventoryForm.setValue("alternateUpcCodes", val)
+                      }
                     />
                   </TabsContent>
                 </Tabs>
