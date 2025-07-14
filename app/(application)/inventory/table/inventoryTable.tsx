@@ -34,11 +34,11 @@ import {
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import AdjustInventoryForm from "@/components/forms/actualForms/adjust-inventory-form";
-import TransferInventoryForm from "../form/transferinventory";
 import CategoryChangeForm from "../form/changeCategory";
 import EnableTrackingForm from "../form/enableTracking";
 import ChangeMarkUpForm from "../form/changeMarkUp";
 import HistoryTable from "../view/history-inventory";
+import TransferInventoryForm from "../form/transferInventory";
 
 const getAllEmployees = (
   employees: InventoryInterface[]
