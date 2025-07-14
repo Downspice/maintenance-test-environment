@@ -6,11 +6,7 @@ import { SortableHeader } from "@/components/customUI/sortable-header";
 import { Button } from "@/components/ui/button";
 import {
   MoreHorizontal,
-  Trash2,
-  Printer,
-  CheckCircle,
-  Clock,
-  AlertTriangle,
+  Trash2, 
   FilePenIcon,
 } from "lucide-react";
 import {
@@ -44,6 +40,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import AdjustInventoryForm from "@/components/forms/actualForms/adjust-inventory-form";
 import TransferInventoryForm from "../form/transferinventory";
 import CategoryChangeForm from "../form/changeCategory";
+import EnableTrackingForm from "../form/enableTracking";
+import ChangeMarkUpForm from "../form/changeMarkUp";
 
 const getAllEmployees = (
   employees: InventoryInterface[]
@@ -399,15 +397,20 @@ export default function InventoryDataTable() {
           { label: "Transfer", onSelect: genericDropdown },
         ];
 
-        const dropdownItems2 = [ 
+        const dropdownItems2 = [
           { label: "Change Category", onSelect: genericDropdown },
         ];
 
+        const dropdownItems3 = [
+          { label: "Enable Tacking", onSelect: genericDropdown },
+          { label: "Change MarkUp", onSelect: genericDropdown },
+        ];
         const formComponents = {
           Adjust: <AdjustInventoryForm data={row.original} />,
           Transfer: <TransferInventoryForm data={row.original} />,
           "Change Category": <CategoryChangeForm data={row.original} />,
-          
+          "Enable Tacking": <EnableTrackingForm data={row.original} />,
+          "Change MarkUp": <ChangeMarkUpForm data={row.original} />,
         };
         const renderFormContent = () => {
           const SelectedComponent = formComponents[selectedProjectType || ""];
@@ -436,7 +439,7 @@ export default function InventoryDataTable() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-72" align="start">
-                 <DropdownMenuGroup>
+                <DropdownMenuGroup>
                   {dropdownItems.map((item) => (
                     <DropdownMenuItem
                       key={item.label}
@@ -445,7 +448,7 @@ export default function InventoryDataTable() {
                       <span>{item.label}</span>
                     </DropdownMenuItem>
                   ))}
-                   
+
                   <DropdownMenuItem>
                     History
                     {/* <DropdownMenuShortcut>⌘S</DropdownMenuShortcut> */}
@@ -471,16 +474,22 @@ export default function InventoryDataTable() {
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 {dropdownItems2.map((item) => (
-                    <DropdownMenuItem
-                      key={item.label}
-                      onClick={() => item.onSelect(item.label)}
-                    >
-                      <span>{item.label}</span>
-                    </DropdownMenuItem>
-                  ))} 
+                  <DropdownMenuItem
+                    key={item.label}
+                    onClick={() => item.onSelect(item.label)}
+                  >
+                    <span>{item.label}</span>
+                  </DropdownMenuItem>
+                ))}
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Enable Inventory Tracking</DropdownMenuItem>
-                <DropdownMenuItem>Change Markup</DropdownMenuItem>
+                {dropdownItems3.map((item) => (
+                  <DropdownMenuItem
+                    key={item.label}
+                    onClick={() => item.onSelect(item.label)}
+                  >
+                    <span>{item.label}</span>
+                  </DropdownMenuItem>
+                ))}{" "} 
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>Email Notification</DropdownMenuItem>
                 <DropdownMenuSeparator />

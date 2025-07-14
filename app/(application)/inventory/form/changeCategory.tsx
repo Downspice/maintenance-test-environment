@@ -17,7 +17,6 @@ import SelectWrapper from "@/components/forms/wrappers/SelectWrapper";
 // Define the form schema with Zod
 export const CategoryChangeSchema = z.object({
   category: z.string().min(1, "Transfer to warehouse is required"),
-  
 });
 
 export type CategoryChangeInterface = z.infer<

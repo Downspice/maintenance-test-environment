@@ -286,3 +286,64 @@ export const InventoryData:InventoryInterface[] = [
     markupPrice: 10.5,
   },
 ];
+
+export const StockAdjustmentHistory = [
+  {
+    date: "2025-07-10",
+    qtyRemain: 80,
+    qtyReceived: 20,
+    unit: "pcs",
+    receiptType: "Manual Adjustment",
+    vendor: "GlobalTech Supplies",
+    warehouse: "Main Warehouse",
+    reason: "Inventory recount correction",
+  },
+  {
+    date: "2025-06-28",
+    qtyRemain: 120,
+    qtyReceived: -15,
+    unit: "pcs",
+    receiptType: "Damage Removal",
+    vendor: "TechSource Ltd.",
+    warehouse: "Secondary Warehouse",
+    reason: "Damaged items discarded",
+  },
+];
+
+export const UsageHistory = [
+  {
+    date: "2025-07-09",
+    source: "Main Warehouse",
+    equipment: "Generator A1",
+    used: 5,
+    cost: 12.5,
+    total: 62.5,
+    costCentre: "Operations",
+  },
+  {
+    date: "2025-07-05",
+    source: "Secondary Warehouse",
+    equipment: "Air Conditioner Unit B",
+    used: 2,
+    cost: 45,
+    total: 90,
+    costCentre: "Facilities",
+  },
+];
+
+export const PurchasesHistory = [
+  {
+    dateReceived: "2025-07-01",
+    quantity: 50,
+    vendor: "PartsCo International",
+    receivedTo: "Main Warehouse",
+    price: 18.75,
+  },
+  {
+    dateReceived: "2025-06-15",
+    quantity: 30,
+    vendor: "Alpha Vendors",
+    receivedTo: "Overflow Storage",
+    price: 21.5,
+  },
+];

@@ -2,36 +2,27 @@
 
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  useForm,
-} from "react-hook-form"; 
+import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { GitPullRequestArrow } from "lucide-react";
 import { toast } from "sonner";
-import { 
-  categoryOptions,
-} from "@/lib/equipment-schema";
+import { categoryOptions } from "@/lib/equipment-schema";
 import SelectWrapper from "@/components/forms/wrappers/SelectWrapper";
 import SingleCheckboxWrapper from "@/components/forms/wrappers/SingleCheckboxWrapper";
 
 // Define the form schema with Zod
 export const EnableTrackingSchema = z.object({
-  enableTracking: z.string().min(1, "Transfer to warehouse is required"),
-  
+  enableTracking: z.boolean(),
 });
 
-export type EnableTrackingInterface = z.infer<
-  typeof EnableTrackingSchema
->;
+export type EnableTrackingInterface = z.infer<typeof EnableTrackingSchema>;
 export default function EnableTrackingForm({
   data,
 }: {
   data: EnableTrackingInterface;
 }) {
-  const EnableTrackingForm = useForm<
-    z.infer<typeof EnableTrackingSchema>
-  >({
+  const EnableTrackingForm = useForm<z.infer<typeof EnableTrackingSchema>>({
     resolver: zodResolver(EnableTrackingSchema),
     defaultValues: { ...data },
   });
@@ -53,11 +44,10 @@ export default function EnableTrackingForm({
         >
           <div className="flex flex-col">
             <SingleCheckboxWrapper
-            control={EnableTrackingForm.control}
-                                name="enableTracking"
-                                label="Enable Tracking"
-                              
-            />  
+              control={EnableTrackingForm.control}
+              name="enableTracking"
+              label="Enable Tracking"
+            />
           </div>
           <div className="flex justify-between gap-x-4 my-8 w-full">
             <Button className=" w-full">
