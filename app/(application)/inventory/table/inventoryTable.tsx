@@ -4,11 +4,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { AdvancedDataTable } from "@/components/customUI/advanced-data-table";
 import { SortableHeader } from "@/components/customUI/sortable-header";
 import { Button } from "@/components/ui/button";
-import {
-  MoreHorizontal,
-  Trash2, 
-  FilePenIcon,
-} from "lucide-react";
+import { MoreHorizontal, Trash2, FilePenIcon } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -42,6 +38,7 @@ import TransferInventoryForm from "../form/transferinventory";
 import CategoryChangeForm from "../form/changeCategory";
 import EnableTrackingForm from "../form/enableTracking";
 import ChangeMarkUpForm from "../form/changeMarkUp";
+import HistoryTable from "../view/history-inventory";
 
 const getAllEmployees = (
   employees: InventoryInterface[]
@@ -50,10 +47,6 @@ const getAllEmployees = (
   const traverse = (emps: InventoryInterface[]) => {
     emps.forEach((emp) => {
       result.push(emp);
-      //   if (emp.tasks) {
-      //     console.log(emp.tasks);
-      //     // traverse(emp.tasks);
-      //   }
     });
   };
   traverse(employees);
@@ -395,6 +388,7 @@ export default function InventoryDataTable() {
         const dropdownItems = [
           { label: "Adjust", onSelect: genericDropdown },
           { label: "Transfer", onSelect: genericDropdown },
+          { label: "History", onSelect: genericDropdown },
         ];
 
         const dropdownItems2 = [
@@ -411,6 +405,8 @@ export default function InventoryDataTable() {
           "Change Category": <CategoryChangeForm data={row.original} />,
           "Enable Tacking": <EnableTrackingForm data={row.original} />,
           "Change MarkUp": <ChangeMarkUpForm data={row.original} />,
+          History: <HistoryTable />,
+          // History: <HistoryTable data={row.original} />,
         };
         const renderFormContent = () => {
           const SelectedComponent = formComponents[selectedProjectType || ""];
@@ -448,11 +444,6 @@ export default function InventoryDataTable() {
                       <span>{item.label}</span>
                     </DropdownMenuItem>
                   ))}
-
-                  <DropdownMenuItem>
-                    History
-                    {/* <DropdownMenuShortcut>⌘S</DropdownMenuShortcut> */}
-                  </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
@@ -489,7 +480,7 @@ export default function InventoryDataTable() {
                   >
                     <span>{item.label}</span>
                   </DropdownMenuItem>
-                ))}{" "} 
+                ))}{" "}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>Email Notification</DropdownMenuItem>
                 <DropdownMenuSeparator />
@@ -509,8 +500,8 @@ export default function InventoryDataTable() {
               <SheetContent className="w-[400px] sm:w-2/3">
                 <SheetHeader>
                   <SheetTitle className="flex items-center gap-2">
-                    {/* {selectedType && <selectedType.icon className="h-5 w-5" />} */}
-                    Receive Purchase Order
+                    {selectedType?.label}
+                    {/* Receive Purchase Order */}
                   </SheetTitle>
                   <SheetDescription>
                     {/* {selectedType?.label ||

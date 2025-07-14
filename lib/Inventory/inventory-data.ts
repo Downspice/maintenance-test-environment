@@ -309,6 +309,16 @@ export const StockAdjustmentHistory = [
     reason: "Damaged items discarded",
   },
 ];
+export const stockColumns = [
+  { accessorKey: "date", header: "Date" },
+  { accessorKey: "qtyRemain", header: "Qty Remain" },
+  { accessorKey: "qtyReceived", header: "Qty Received" },
+  { accessorKey: "unit", header: "Unit" },
+  { accessorKey: "receiptType", header: "Receipt Type" },
+  { accessorKey: "vendor", header: "Vendor" },
+  { accessorKey: "warehouse", header: "Warehouse" },
+  { accessorKey: "reason", header: "Reason" },
+];
 
 export const UsageHistory = [
   {
@@ -330,6 +340,15 @@ export const UsageHistory = [
     costCentre: "Facilities",
   },
 ];
+export const usageColumns = [
+  { accessorKey: "date", header: "Date" },
+  { accessorKey: "source", header: "Source" },
+  { accessorKey: "equipment", header: "Equipment" },
+  { accessorKey: "used", header: "Used" },
+  { accessorKey: "cost", header: "Unit Cost" },
+  { accessorKey: "total", header: "Total" },
+  { accessorKey: "costCentre", header: "Cost Centre" },
+];
 
 export const PurchasesHistory = [
   {
@@ -346,4 +365,11 @@ export const PurchasesHistory = [
     receivedTo: "Overflow Storage",
     price: 21.5,
   },
+];
+export const purchaseColumns = [
+  { accessorKey: "dateReceived", header: "Date Received" },
+  { accessorKey: "quantity", header: "Quantity" },
+  { accessorKey: "vendor", header: "Vendor" },
+  { accessorKey: "receivedTo", header: "Received To" },
+  { accessorKey: "price", header: "Price" },
 ];
