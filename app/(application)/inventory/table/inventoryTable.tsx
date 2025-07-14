@@ -42,6 +42,8 @@ import {
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import AdjustInventoryForm from "@/components/forms/actualForms/adjust-inventory-form";
+import TransferInventoryForm from "../form/transferinventory";
+import CategoryChangeForm from "../form/changeCategory";
 
 const getAllEmployees = (
   employees: InventoryInterface[]
@@ -392,10 +394,20 @@ export default function InventoryDataTable() {
           setSelectedProjectType(x);
           setOpen(true);
         };
-        const dropdownItems = [{ label: "Adjust", onSelect: genericDropdown }];
+        const dropdownItems = [
+          { label: "Adjust", onSelect: genericDropdown },
+          { label: "Transfer", onSelect: genericDropdown },
+        ];
+
+        const dropdownItems2 = [ 
+          { label: "Change Category", onSelect: genericDropdown },
+        ];
 
         const formComponents = {
           Adjust: <AdjustInventoryForm data={row.original} />,
+          Transfer: <TransferInventoryForm data={row.original} />,
+          "Change Category": <CategoryChangeForm data={row.original} />,
+          
         };
         const renderFormContent = () => {
           const SelectedComponent = formComponents[selectedProjectType || ""];
@@ -424,8 +436,7 @@ export default function InventoryDataTable() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-72" align="start">
-                {/* <DropdownMenuLabel>My Account</DropdownMenuLabel> */}
-                <DropdownMenuGroup> 
+                 <DropdownMenuGroup>
                   {dropdownItems.map((item) => (
                     <DropdownMenuItem
                       key={item.label}
@@ -434,11 +445,7 @@ export default function InventoryDataTable() {
                       <span>{item.label}</span>
                     </DropdownMenuItem>
                   ))}
-
-                  <DropdownMenuItem>
-                    Transfer
-                    {/* <DropdownMenuShortcut>⌘B</DropdownMenuShortcut> */}
-                  </DropdownMenuItem>
+                   
                   <DropdownMenuItem>
                     History
                     {/* <DropdownMenuShortcut>⌘S</DropdownMenuShortcut> */}
@@ -463,7 +470,14 @@ export default function InventoryDataTable() {
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Change Category</DropdownMenuItem>
+                {dropdownItems2.map((item) => (
+                    <DropdownMenuItem
+                      key={item.label}
+                      onClick={() => item.onSelect(item.label)}
+                    >
+                      <span>{item.label}</span>
+                    </DropdownMenuItem>
+                  ))} 
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>Enable Inventory Tracking</DropdownMenuItem>
                 <DropdownMenuItem>Change Markup</DropdownMenuItem>
@@ -483,23 +497,23 @@ export default function InventoryDataTable() {
               </DropdownMenuContent>
             </DropdownMenu>
             <Sheet open={open} onOpenChange={setOpen}>
-                          <SheetContent className="w-[400px] sm:w-2/3">
-                            <SheetHeader>
-                              <SheetTitle className="flex items-center gap-2">
-                                {/* {selectedType && <selectedType.icon className="h-5 w-5" />} */}
-                                Receive Purchase Order
-                              </SheetTitle>
-                              <SheetDescription>
-                                {/* {selectedType?.label ||
+              <SheetContent className="w-[400px] sm:w-2/3">
+                <SheetHeader>
+                  <SheetTitle className="flex items-center gap-2">
+                    {/* {selectedType && <selectedType.icon className="h-5 w-5" />} */}
+                    Receive Purchase Order
+                  </SheetTitle>
+                  <SheetDescription>
+                    {/* {selectedType?.label ||
                             "Fill out the form below to set up your new development project."} */}
-                              </SheetDescription>
-                            </SheetHeader>
-            
-                            <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
-                              {renderFormContent() || "nothing else"}
-                            </ScrollArea>
-                          </SheetContent>
-                        </Sheet>
+                  </SheetDescription>
+                </SheetHeader>
+
+                <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
+                  {renderFormContent() || "nothing else"}
+                </ScrollArea>
+              </SheetContent>
+            </Sheet>
           </div>
         );
       },
