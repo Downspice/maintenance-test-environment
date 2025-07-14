@@ -21,50 +21,63 @@ import {
 } from "@/lib/option-list";
 import DatePickerWrapper from "../wrappers/DatePickerWrapper";
 import { ComboboxFieldWrapper } from "../wrappers/ComboboxWrapper";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 // Define the form schema with Zod
-export const vendorSchema = z.object({
-  equipmentId: z.string({
-    required_error: "Equipment is required",
-  }),
-  date: z.date().optional(),
-  notes: z.string().optional(),
+export const AdjustInventorySchema = z.object({ 
+  adjustmentType: z.string().min(1, "Adjustment Type is required"),
+  partNumber: z.string().min(1, "Part Number is required"),
+  name: z.string().min(1, "Name is required"),
+  dateAdded: z.coerce.date(),
+  quantity: z.coerce.number().min(1, "Quantity is required"),
+  tax1: z.coerce.number().optional(),
+  tax2: z.coerce.number().optional(),
+  unitCost: z.coerce.number().optional(),
+  extendedCost: z.coerce.number().optional(),
+  warehouse: z.string().min(1, "Warehouse is required"),
+  invoiceNumber: z.string().optional(), // assuming Invoice # is alphanumeric
+  vendor: z.string().optional(),
+  reason: z.string().optional(),
 });
 
-export default function AdjustInventoryForm() {
-  const [customFields, setCustomFields] = useState<
-    { name: string; value: string }[]
-  >([]);
+export type AdjustInventoryInterface =z.infer<typeof AdjustInventorySchema>
+ export default function AdjustInventoryForm({
+   
+   data,
+ }: { 
+   data: AdjustInventoryInterface;
+ }) { 
 
-  const vendorForm = useForm<z.infer<typeof vendorSchema>>({
-    resolver: zodResolver(vendorSchema),
-    defaultValues: {},
+  const AdjustInventoryForm = useForm<z.infer<typeof AdjustInventorySchema>>({
+    resolver: zodResolver(AdjustInventorySchema),
+    defaultValues: {...data},
   });
 
-  async function handleSubmit(data: z.infer<typeof vendorSchema>) {
+  async function handleSubmit(data: z.infer<typeof AdjustInventorySchema>) {
     console.log(data);
     // Here you would typically send the data to your API
-
     toast.success("Work Order submitted successfully!");
   }
 
   return (
+   
     <div className="w-full">
-      <Form {...vendorForm}>
+      <Form {...AdjustInventoryForm}>
         <form
-          onSubmit={vendorForm.handleSubmit((data) => handleSubmit(data))}
+          onSubmit={AdjustInventoryForm.handleSubmit((data) => handleSubmit(data))}
           className="w-full"
         >
           <div className="flex flex-col">
             <SelectWrapper
-              control={vendorForm.control}
+              control={AdjustInventoryForm.control}
               name="adjustmentType"
               label="Type"
               options={inventoryAdjustmentType}
             />
             <ComboboxFieldWrapper
               className="col-span-1"
-              control={vendorForm.control}
+              control={AdjustInventoryForm.control}
               name="partNumber"
               label="Part #"
               options={substituteOptions}
@@ -72,20 +85,20 @@ export default function AdjustInventoryForm() {
 
             <InputWrapper
               className="col-span-1"
-              control={vendorForm.control}
+              control={AdjustInventoryForm.control}
               name="name"
               label="Name"
               type="text"
               value={""}
             />
             <DatePickerWrapper
-              control={vendorForm.control}
+              control={AdjustInventoryForm.control}
               name="dateAdded"
               label="Date"
             />
             <InputWrapper
               className="col-span-1"
-              control={vendorForm.control}
+              control={AdjustInventoryForm.control}
               name="quantity"
               label="Quantity"
               type="number"
@@ -93,7 +106,7 @@ export default function AdjustInventoryForm() {
             />
             <InputWrapper
               className="col-span-1"
-              control={vendorForm.control}
+              control={AdjustInventoryForm.control}
               name="tax1"
               label="Tax 1"
               type="number"
@@ -101,7 +114,7 @@ export default function AdjustInventoryForm() {
             />
             <InputWrapper
               className="col-span-1"
-              control={vendorForm.control}
+              control={AdjustInventoryForm.control}
               name="tax2"
               label="Tax 2"
               type="number"
@@ -109,7 +122,7 @@ export default function AdjustInventoryForm() {
             />
             <InputWrapper
               className="col-span-1"
-              control={vendorForm.control}
+              control={AdjustInventoryForm.control}
               name="unitCost"
               label="Unit Cost"
               type="number"
@@ -117,21 +130,21 @@ export default function AdjustInventoryForm() {
             />
             <InputWrapper
               className="col-span-1"
-              control={vendorForm.control}
+              control={AdjustInventoryForm.control}
               name="extendedCost"
               label="Extended Cost"
               type="number"
               value={""}
             />
             <SelectWrapper
-              control={vendorForm.control}
+              control={AdjustInventoryForm.control}
               name="warehouse"
               label="Warehouse"
               options={warehouseOptions}
             />
             <InputWrapper
               className="col-span-1"
-              control={vendorForm.control}
+              control={AdjustInventoryForm.control}
               name="invoiceNUmber"
               label="Invoice #"
               type="number"
@@ -139,13 +152,13 @@ export default function AdjustInventoryForm() {
             />
             <ComboboxFieldWrapper
               className="col-span-1"
-              control={vendorForm.control}
+              control={AdjustInventoryForm.control}
               name="vendor"
               label="Vendor"
               options={vendorOptions}
             />
             <TextareaWrapper
-              control={vendorForm.control}
+              control={AdjustInventoryForm.control}
               name="reason"
               label="Reason"
               placeholder={""}
@@ -160,6 +173,5 @@ export default function AdjustInventoryForm() {
           </div>
         </form>
       </Form>
-    </div>
-  );
+    </div> )
 }

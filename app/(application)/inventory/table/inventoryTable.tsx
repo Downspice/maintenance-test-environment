@@ -33,6 +33,15 @@ import {
 } from "@/lib/Inventory/inventory-data";
 import { matchesSearchAllFields } from "@/lib/utils";
 import EditInventory from "../view/edit-inventory";
+import {
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+  Sheet,
+} from "@/components/ui/sheet";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import AdjustInventoryForm from "@/components/forms/actualForms/adjust-inventory-form";
 
 const getAllEmployees = (
   employees: InventoryInterface[]
@@ -62,14 +71,10 @@ const category = [
   ...new Set(flatEmployees.map((emp) => emp.category?.toString())),
 ];
 const vendor_names = [
-  ...new Set(
-    flatEmployees.map((emp) => emp?.warehouses?.[0]?.vendor ?? "")
-  ),
+  ...new Set(flatEmployees.map((emp) => emp?.warehouses?.[0]?.vendor ?? "")),
 ];
 const quantity = [
-  ...new Set(
-    flatEmployees.map((emp) => emp?.warehouses?.[0]?.quantity ?? "")
-  ),
+  ...new Set(flatEmployees.map((emp) => emp?.warehouses?.[0]?.quantity ?? "")),
 ];
 
 export default function InventoryDataTable() {
@@ -229,7 +234,6 @@ export default function InventoryDataTable() {
     [paginationInfo.pageSize]
   ); // Add dependencies that actually matter
 
-  
   // Column definitions
   const columns: ColumnDef<InventoryInterface>[] = [
     {
@@ -293,7 +297,7 @@ export default function InventoryDataTable() {
           filterOptions={vendor_names}
         />
       ),
-      cell: ({ row }) => <>{ row.original.warehouses?.[0]?.vendor ?? "" }</>,
+      cell: ({ row }) => <>{row.original.warehouses?.[0]?.vendor ?? ""}</>,
       filterFn: (row, id, value) => {
         return value.length === 0 || value.includes(row.getValue(id));
       },
@@ -311,14 +315,17 @@ export default function InventoryDataTable() {
       cell: ({ row }) => {
         return (
           <div className="flex items-center gap-1 text-sm">
-            
-            {(row.original.warehouses?.[0]?.reorderPoint ?? 0  >= row.original.warehouses?.[0]?.quantity  ?? 0 ) ? (
+            {row.original.warehouses?.[0]?.reorderPoint ??
+            0 >= row.original.warehouses?.[0]?.quantity ??
+            0 ? (
               <span className=" font-bold text-red-600">
-                {row.original.warehouses?.[0]?.quantity?? 0}
+                {row.original.warehouses?.[0]?.quantity ?? 0}
               </span>
             ) : (
-              <div className=" ">{row.original.warehouses?.[0]?.quantity ?? ""} </div>
-            ) }
+              <div className=" ">
+                {row.original.warehouses?.[0]?.quantity ?? ""}{" "}
+              </div>
+            )}
           </div>
         );
       },
@@ -375,18 +382,40 @@ export default function InventoryDataTable() {
             // Here you would typically call your delete API
           }
         };
+        const [open, setOpen] = useState(false);
+        const [selectedProjectType, setSelectedProjectType] = useState<
+          string | null
+        >(null);
+
+        const genericDropdown = (x: string) => {
+          console.log("did something", x);
+          setSelectedProjectType(x);
+          setOpen(true);
+        };
+        const dropdownItems = [{ label: "Adjust", onSelect: genericDropdown }];
+
+        const formComponents = {
+          Adjust: <AdjustInventoryForm data={row.original} />,
+        };
+        const renderFormContent = () => {
+          const SelectedComponent = formComponents[selectedProjectType || ""];
+          console.log("new selected", SelectedComponent);
+          return SelectedComponent ? SelectedComponent : null;
+        };
+        const selectedType = dropdownItems.find(
+          (type) => type.label === selectedProjectType
+        );
 
         return (
           <div className="flex flex-row gap-2 justify-between ">
             <EditInventory
-                          children={
-                            <Button variant={"secondary"} size={"icon"}>
-                              <FilePenIcon />
-                            </Button>
-                          }
-                          data={row.original}
-                        />
-             
+              children={
+                <Button variant={"secondary"} size={"icon"}>
+                  <FilePenIcon />
+                </Button>
+              }
+              data={row.original}
+            />
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -396,11 +425,16 @@ export default function InventoryDataTable() {
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-72" align="start">
                 {/* <DropdownMenuLabel>My Account</DropdownMenuLabel> */}
-                <DropdownMenuGroup>
-                  <DropdownMenuItem>
-                    Adjust
-                    {/* <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut> */}
-                  </DropdownMenuItem>
+                <DropdownMenuGroup> 
+                  {dropdownItems.map((item) => (
+                    <DropdownMenuItem
+                      key={item.label}
+                      onClick={() => item.onSelect(item.label)}
+                    >
+                      <span>{item.label}</span>
+                    </DropdownMenuItem>
+                  ))}
+
                   <DropdownMenuItem>
                     Transfer
                     {/* <DropdownMenuShortcut>⌘B</DropdownMenuShortcut> */}
@@ -448,6 +482,24 @@ export default function InventoryDataTable() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            <Sheet open={open} onOpenChange={setOpen}>
+                          <SheetContent className="w-[400px] sm:w-2/3">
+                            <SheetHeader>
+                              <SheetTitle className="flex items-center gap-2">
+                                {/* {selectedType && <selectedType.icon className="h-5 w-5" />} */}
+                                Receive Purchase Order
+                              </SheetTitle>
+                              <SheetDescription>
+                                {/* {selectedType?.label ||
+                            "Fill out the form below to set up your new development project."} */}
+                              </SheetDescription>
+                            </SheetHeader>
+            
+                            <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
+                              {renderFormContent() || "nothing else"}
+                            </ScrollArea>
+                          </SheetContent>
+                        </Sheet>
           </div>
         );
       },
@@ -486,7 +538,7 @@ export default function InventoryDataTable() {
         onEmailSelected={handleEmailSelected}
         onDeleteSelected={handleDeleteSelected}
         onPrintRow={handlePrintRow}
-        storageKey="employee-table-visibility" 
+        storageKey="employee-table-visibility"
         realServerPagination={isServerMode}
         paginationInfo={isServerMode ? paginationInfo : undefined}
         onPaginationChange={isServerMode ? handlePaginationChange : undefined}
