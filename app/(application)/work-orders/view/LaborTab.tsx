@@ -1,10 +1,22 @@
-'use client'
+"use client";
 import { Pencil, Trash2, Plus } from "lucide-react";
 import { useState } from "react";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
-import { AddLaborFormValues, AddMaintenanceInWorkOrderInterface } from "@/lib/WorkOrder/workOrder-data";
+import {
+  AddLaborFormValues,
+  AddMaintenanceInWorkOrderInterface,
+} from "@/lib/WorkOrder/workOrder-data";
 import AddLabor from "../forms/add-labor";
-  
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+
 export default function LaborTab({
   maintenanceItems,
   laborEntries,
@@ -16,20 +28,30 @@ export default function LaborTab({
 }) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [editingLabor, setEditingLabor] = useState<AddLaborFormValues | null>(null);
+  const [editingLabor, setEditingLabor] = useState<AddLaborFormValues | null>(
+    null
+  );
 
   const allLabor = [
-    ...maintenanceItems.map((m) => m.labor).filter(Boolean) as AddLaborFormValues[],
+    ...(maintenanceItems
+      .map((m) => m.labor)
+      .filter(Boolean) as AddLaborFormValues[]),
     ...laborEntries,
   ];
 
   const isFromMaintenance = (labor: AddLaborFormValues) =>
-    maintenanceItems.some((m) => m.labor?.technicianName === labor?.technicianName && m.labor?.hours === labor.hours);
+    maintenanceItems.some(
+      (m) =>
+        m.labor?.technicianName === labor?.technicianName &&
+        m.labor?.hours === labor.hours
+    );
 
   const handleDelete = (labor: AddLaborFormValues) => {
     if (confirm(`Delete labor entry for ${labor?.technicianName}?`)) {
       console.log("Deleted labor:", labor?.technicianName);
-      const updated = laborEntries.filter((l) => l.technicianName !== labor?.technicianName);
+      const updated = laborEntries.filter(
+        (l) => l.technicianName !== labor?.technicianName
+      );
       onUpdateLabor(updated);
     }
   };
@@ -54,15 +76,15 @@ export default function LaborTab({
         <h3 className="text-lg font-semibold">Labor</h3>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <button
-              className="flex items-center gap-2 border px-3 py-1 rounded text-sm hover:bg-muted"
+            <Button
+              variant="secondary"
               onClick={() => {
                 setEditingLabor(null);
                 setEditingIndex(null);
               }}
             >
               <Plus className="w-4 h-4" /> Add Labor
-            </button>
+            </Button>
           </DialogTrigger>
           <DialogContent className="max-w-xl">
             <AddLabor
@@ -74,26 +96,29 @@ export default function LaborTab({
       </div>
 
       <div className="border rounded-md">
-        <table className="w-full text-sm">
-          <thead className="bg-muted text-left">
-            <tr>
-              <th className="p-2">Name</th>
-              <th className="p-2">Hours</th>
-              <th className="p-2">Rate</th>
-              <th className="p-2">Total</th>
-              <th className="p-2 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
+        <Table className="w-full text-sm">
+          <TableHeader className=" text-left">
+            <TableRow>
+              <TableHead className="p-2">Name</TableHead>
+              <TableHead className="p-2">Hours</TableHead>
+              <TableHead className="p-2">Rate</TableHead>
+              <TableHead className="p-2">Total</TableHead>
+              <TableHead className="p-2 text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {allLabor.map((labor, idx) => {
               const isEditable = !isFromMaintenance(labor);
               return (
-                <tr key={labor?.technicianName + idx} className="border-t">
-                  <td className="p-2">{labor?.technicianName}</td>
-                  <td className="p-2">{labor.hours}</td>
-                  <td className="p-2">${labor.laborRate}</td>
-                  <td className="p-2">${labor.totalCost}</td>
-                  <td className="p-2 text-right space-x-2">
+                <TableRow
+                  key={labor?.technicianName + idx}
+                  className="border-t"
+                >
+                  <TableCell className="p-2">{labor?.technicianName}</TableCell>
+                  <TableCell className="p-2">{labor.hours}</TableCell>
+                  <TableCell className="p-2">${labor.laborRate}</TableCell>
+                  <TableCell className="p-2">${labor.totalCost}</TableCell>
+                  <TableCell className="p-2 text-right space-x-2">
                     {isEditable && (
                       <>
                         <button
@@ -101,7 +126,8 @@ export default function LaborTab({
                           onClick={() => {
                             setEditingLabor(labor);
                             setEditingIndex(
-                              idx - maintenanceItems.filter((m) => m.labor).length
+                              idx -
+                                maintenanceItems.filter((m) => m.labor).length
                             );
                             setDialogOpen(true);
                           }}
@@ -116,12 +142,12 @@ export default function LaborTab({
                         </button>
                       </>
                     )}
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               );
             })}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
     </div>
   );

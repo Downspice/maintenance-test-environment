@@ -1,10 +1,22 @@
-"use client"
+"use client";
 import { Pencil, Trash2, Plus } from "lucide-react";
 import { useState } from "react";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
-import { AddMaintenanceInWorkOrderInterface, Part } from "@/lib/WorkOrder/workOrder-data";
+import {
+  AddMaintenanceInWorkOrderInterface,
+  Part,
+} from "@/lib/WorkOrder/workOrder-data";
 import AddPart from "../forms/add-parts";
- 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+
 export default function PartsTab({
   workOrderParts,
   maintenanceItems,
@@ -24,12 +36,16 @@ export default function PartsTab({
   ];
 
   const isFromMaintenance = (part: Part) =>
-    maintenanceItems.some((m) => m.parts?.some((p) => p.partNumber === part.partNumber));
+    maintenanceItems.some((m) =>
+      m.parts?.some((p) => p.partNumber === part.partNumber)
+    );
 
   const handleDelete = (part: Part) => {
     if (confirm(`Delete part ${part.partNumber}?`)) {
       console.log("Deleted part:", part.partNumber);
-      const updatedParts = workOrderParts.filter((p) => p.partNumber !== part.partNumber);
+      const updatedParts = workOrderParts.filter(
+        (p) => p.partNumber !== part.partNumber
+      );
       onUpdateParts(updatedParts);
     }
   };
@@ -54,15 +70,15 @@ export default function PartsTab({
         <h3 className="text-lg font-semibold">Parts</h3>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <button
-              className="flex items-center gap-2 border px-3 py-1 rounded text-sm hover:bg-muted"
+            <Button
+              variant={"secondary"}
               onClick={() => {
                 setEditIndex(null);
                 setEditingPart(null);
               }}
             >
               <Plus className="w-4 h-4" /> Add Part
-            </button>
+            </Button>
           </DialogTrigger>
           <DialogContent className="max-w-xl">
             <AddPart initialValues={editingPart} onSave={handleSavePart} />
@@ -71,36 +87,40 @@ export default function PartsTab({
       </div>
 
       <div className="border rounded-md">
-        <table className="w-full text-sm">
-          <thead className="bg-muted text-left">
-            <tr>
-              <th className="p-2">Part#</th>
-              <th className="p-2">Name</th>
-              <th className="p-2">Used</th>
-              <th className="p-2">Cost</th>
-              <th className="p-2">Total</th>
-              <th className="p-2 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
+        <Table  >
+          <TableHeader  >
+            <TableRow>
+              <TableHead className="p-2">Part#</TableHead>
+              <TableHead className="p-2">Name</TableHead>
+              <TableHead className="p-2">Used</TableHead>
+              <TableHead className="p-2">Cost</TableHead>
+              <TableHead className="p-2">Total</TableHead>
+              <TableHead className="p-2 text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {allParts.map((part, idx) => {
               const isEditable = !isFromMaintenance(part);
 
               return (
-                <tr key={part.partNumber} className="border-t">
-                  <td className="p-2">{part.partNumber}</td>
-                  <td className="p-2">{part.name}</td>
-                  <td className="p-2">{part.quantityUsed}</td>
-                  <td className="p-2">₹{part.unitCost}</td>
-                  <td className="p-2">₹{part.totalCost}</td>
-                  <td className="p-2 text-right space-x-2">
+                <TableRow key={part.partNumber} className="border-t">
+                  <TableCell className="p-2">{part.partNumber}</TableCell>
+                  <TableCell className="p-2">{part.name}</TableCell>
+                  <TableCell className="p-2">{part.quantityUsed}</TableCell>
+                  <TableCell className="p-2">₹{part.unitCost}</TableCell>
+                  <TableCell className="p-2">₹{part.totalCost}</TableCell>
+                  <TableCell className="p-2 text-right space-x-2">
                     {isEditable && (
                       <>
                         <button
                           className="text-muted-foreground hover:text-primary"
                           onClick={() => {
                             setEditingPart(part);
-                            setEditIndex(idx - maintenanceItems.flatMap((m) => m.parts || []).length);
+                            setEditIndex(
+                              idx -
+                                maintenanceItems.flatMap((m) => m.parts || [])
+                                  .length
+                            );
                             setDialogOpen(true);
                           }}
                         >
@@ -114,12 +134,12 @@ export default function PartsTab({
                         </button>
                       </>
                     )}
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               );
             })}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
     </div>
   );

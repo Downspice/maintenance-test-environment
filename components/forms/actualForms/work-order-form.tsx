@@ -49,10 +49,8 @@ import {
 import PartsTab from "@/app/(application)/work-orders/view/PartsTab";
 import LaborTab from "@/app/(application)/work-orders/view/LaborTab";
 import NotesTab from "@/app/(application)/work-orders/view/NotesTab";
-
 // Equipment options
 const equipmentOptions = [{ value: "1311827", label: "AC-001-07 Class 8" }];
-
 // Assignee options
 const assigneeOptions = [
   { value: "User-246964", label: "Joseph Awer", group: "Employees" },
@@ -131,7 +129,6 @@ export default function NewWorkOrderForm() {
   async function handleSubmit(data: z.infer<typeof WorkOrderSchema>) {
     console.log(data);
     // Here you would typically send the data to your API
-
     toast.success("Work Order submitted successfully!");
   }
 

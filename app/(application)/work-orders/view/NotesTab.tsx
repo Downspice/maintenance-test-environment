@@ -3,7 +3,16 @@ import { Pencil, Trash2, Plus } from "lucide-react";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import AddNotes from "../forms/add-notes";
- 
+import {
+   Table,
+   TableBody,
+   TableCell,
+   TableHead,
+   TableHeader,
+   TableRow,
+ } from "@/components/ui/table";
+ import { Button } from "@/components/ui/button";
+
 export default function NotesTab({
   notes,
   onUpdateNotes,
@@ -45,15 +54,13 @@ export default function NotesTab({
         <h3 className="text-lg font-semibold">Notes</h3>
         <Dialog open={openDialog} onOpenChange={setOpenDialog}>
           <DialogTrigger asChild>
-            <button
-              className="flex items-center gap-2 border px-3 py-1 rounded text-sm hover:bg-muted"
-              onClick={() => {
+            <Button variant="secondary" onClick={() => {
                 setEditingIndex(null);
                 setEditingNote(null);
               }}
             >
               <Plus className="w-4 h-4" /> Add Note
-            </button>
+            </Button>
           </DialogTrigger>
           <DialogContent className="max-w-xl">
             <AddNotes
@@ -65,24 +72,24 @@ export default function NotesTab({
       </div>
 
       <div className="border rounded-md overflow-auto">
-        <table className="w-full text-sm">
-          <thead className="bg-muted text-left">
-            <tr>
-              <th className="p-2">Date Created</th>
-              <th className="p-2">Created By</th>
-              <th className="p-2">Note</th>
-              <th className="p-2 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
+        <Table className="w-full  ">
+          <TableHeader className=" text-left">
+            <TableRow>
+              <TableHead className="p-2">Date Created</TableHead>
+              <TableHead className="p-2">Created By</TableHead>
+              <TableHead className="p-2">Note</TableHead>
+              <TableHead className="p-2 text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {notes.map((note, index) => (
-              <tr key={index} className="border-t">
-                <td className="p-2">
+              <TableRow key={index} className="border-t">
+                <TableCell className="p-2">
                   {new Date(note.createdAt).toLocaleString()}
-                </td>
-                <td className="p-2">{note.createdBy}</td>
-                <td className="p-2">{note.notes}</td>
-                <td className="p-2 text-right space-x-2">
+                </TableCell>
+                <TableCell className="p-2">{note.createdBy}</TableCell>
+                <TableCell className="p-2">{note.notes}</TableCell>
+                <TableCell className="p-2 text-right space-x-2">
                   <button
                     className="text-muted-foreground hover:text-primary"
                     onClick={() => {
@@ -99,11 +106,11 @@ export default function NotesTab({
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
     </div>
   );

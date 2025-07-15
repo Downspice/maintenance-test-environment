@@ -21,21 +21,23 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuPortal,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
+  DropdownMenuItem, 
+  DropdownMenuSeparator, 
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+  Sheet,
+} from "@/components/ui/sheet";
 import { useState } from "react";
 import React from "react";
 import {
   mockWorkOrders,
-  WorkOrder,
-  WorkOrderTask,
-} from "@/lib/work-orders-data";
+  WorkOrderInterface,
+} from "@/lib/WorkOrder/workOrder-data";
 import {
   Tooltip,
   TooltipContent,
@@ -44,6 +46,11 @@ import {
 } from "@/components/ui/tooltip";
 import { Progress } from "@/components/ui/progress";
 import { matchesSearchAllFields } from "@/lib/utils";
+import EditWorkOrderForm from "../../view/edit-work-order";
+import ChangePriorityForm from "../../forms/change-priority";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import ChangeAssigneesForm from "../../forms/change-assignee";
+import ChangeCostCenterForm from "../../forms/change-cost-center";
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -67,35 +74,15 @@ const getTaskStatusIcon = (status: string) => {
     default:
       return <Clock className="h-3 w-3 text-gray-600" />;
   }
-};
-const TaskTooltipContent = ({ tasks }: { tasks: WorkOrderTask[] }) => (
-  <div className="space-y-2 max-w-xs">
-    <div className="font-semibold text-sm">Tasks ({tasks.length})</div>
-    {tasks.map((task) => (
-      <div key={task.id} className="flex items-center gap-2 text-xs">
-        {getTaskStatusIcon(task.status)}
-        <div className="flex-1">
-          <div className="font-medium">{task.name}</div>
-          <div className="text-muted-foreground">
-            Assigned to: {task.assignee}
-            {task.dueDate && ` • Due: ${task.dueDate}`}
-          </div>
-        </div>
-      </div>
-    ))}
-  </div>
-);
+}; 
 
-const getAllEmployees = (employees: WorkOrder[]): WorkOrder[] => {
-  const result: WorkOrder[] = [];
-  const traverse = (emps: WorkOrder[]) => {
+const getAllEmployees = (
+  employees: WorkOrderInterface[]
+): WorkOrderInterface[] => {
+  const result: WorkOrderInterface[] = [];
+  const traverse = (emps: WorkOrderInterface[]) => {
     emps.forEach((emp) => {
       result.push(emp);
-      //   if (emp.tasks) {
-      //     console.log(emp.tasks);
-
-      //     // traverse(emp.tasks);
-      //   }
     });
   };
   traverse(employees);
@@ -103,17 +90,19 @@ const getAllEmployees = (employees: WorkOrder[]): WorkOrder[] => {
 };
 
 const flatEmployees = getAllEmployees(mockWorkOrders);
-const number = [...new Set(flatEmployees.map((emp) => emp.number))];
-const equipment = [...new Set(flatEmployees.map((emp) => emp.equipment.id))];
+const number = [...new Set(flatEmployees.map((emp) => emp.workOrderNumber))];
+const equipment = [...new Set(flatEmployees.map((emp) => emp.equipment))];
 const status = [...new Set(flatEmployees.map((emp) => emp.status))];
-const dueDate = [...new Set(flatEmployees.map((emp) => emp.dueDate))];
+const dueDate = [
+  ...new Set(flatEmployees.map((emp) => emp.dueOn?.toUTCString())),
+];
 const assignees = [
-  ...new Set(flatEmployees.map((emp) => emp.assignees.toString())),
+  ...new Set(flatEmployees.map((emp) => emp?.assigneeIds?.toString() ?? "")),
 ];
-const progress = [
-  ...new Set(flatEmployees.map((emp) => emp.progress.completed.toString())),
-];
-const total = [...new Set(flatEmployees.map((emp) => emp.total))];
+// const progress = [
+//   ...new Set(flatEmployees.map((emp) => emp.progress.completed.toString())),
+// ];
+const total = [...new Set(flatEmployees.map((emp) => emp.workOrderTotal))];
 
 export default function WorkOrderDataTable() {
   const [isServerMode, setIsServerMode] = useState(false);
@@ -286,9 +275,9 @@ export default function WorkOrderDataTable() {
   };
 
   // Column definitions
-  const columns: ColumnDef<WorkOrder>[] = [
+  const columns: ColumnDef<WorkOrderInterface>[] = [
     {
-      accessorKey: "number",
+      accessorKey: "workOrderNumber",
       header: ({ column }) => (
         <SortableHeader
           column={column}
@@ -300,7 +289,7 @@ export default function WorkOrderDataTable() {
       cell: ({ row }) => (
         <div className="font-medium text-primary flex flex-col">
           {" "}
-          {row.getValue("number")}
+          {row.getValue("workOrderNumber")}
         </div>
       ),
     },
@@ -317,9 +306,8 @@ export default function WorkOrderDataTable() {
       cell: ({ row }) => (
         <div className="flex flex-col">
           <div className="font-medium text-primary">
-            {row.original.equipment.id}
+            {row.original.equipment}
           </div>
-          <div>{row.original.equipment.name}</div>
         </div>
       ),
     },
@@ -345,7 +333,7 @@ export default function WorkOrderDataTable() {
       },
     },
     {
-      accessorKey: "dueDate",
+      accessorKey: "dueOn",
       header: ({ column }) => (
         <SortableHeader
           column={column}
@@ -358,7 +346,7 @@ export default function WorkOrderDataTable() {
         <>
           <div className="flex  text-destructive items-center gap-1 text-sm">
             <Calendar className="h-3 w-3 text-destructive" />
-            {row.original.dueDate}
+            {row.original.dueOn?.toUTCString()}
           </div>
         </>
       ),
@@ -380,12 +368,9 @@ export default function WorkOrderDataTable() {
       cell: ({ row }) => {
         return (
           <div className="space-y-1">
-            {row.original.assignees.map((assignee, index) => (
-              <div
-                key={assignee.id}
-                className="flex items-center gap-1 text-sm"
-              >
-                {assignee.type === "employee" ? (
+            {row.original.assigneeIds?.map((assignee, index) => (
+              <div key={assignee} className="flex items-center gap-1 text-sm">
+                {/* {assignee.type === "employee" ? (
                   <Users className="h-3 w-3 text-green-600" />
                 ) : (
                   <Users className="h-3 w-3 text-purple-600" />
@@ -396,9 +381,9 @@ export default function WorkOrderDataTable() {
                       ? "text-green-700"
                       : "text-purple-700"
                   }
-                >
-                  {assignee.name}
-                </span>
+                > */}
+                {assignee}
+                {/* </span> */}
               </div>
             ))}
           </div>
@@ -408,42 +393,41 @@ export default function WorkOrderDataTable() {
         return value.length === 0 || value.includes(row.getValue(id));
       },
     },
-    {
-      accessorKey: "progress",
-      header: ({ column }) => (
-        <SortableHeader
-          column={column}
-          title="Due status"
-          sortable={true}
-          filterOptions={progress}
-        />
-      ),
-      cell: ({ row }) => {
-        const progressPercentage =
-          (row.original.progress.completed / row.original.progress.total) * 100;
+    // {
+    //   accessorKey: "progress",
+    //   header: ({ column }) => (
+    //     <SortableHeader
+    //       column={column}
+    //       title="Due status"
+    //       sortable={true}
+    //     />
+    //   ),
+    //   cell: ({ row }) => {
+    //     const progressPercentage =
+    //       (row.original.progress.completed / row.original.progress.total) * 100;
 
-        return (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="space-y-1 cursor-help">
-                  <div className="flex items-center gap-2">
-                    <Progress value={progressPercentage} className="w-20 h-2" />
-                    <span className="text-xs text-muted-foreground">
-                      {row.original.progress.completed}/
-                      {row.original.progress.total}
-                    </span>
-                  </div>
-                </div>
-              </TooltipTrigger>
-              <TooltipContent side="top" className="max-w-sm">
-                <TaskTooltipContent tasks={row.original.tasks} />
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        );
-      },
-    },
+    //     return (
+    //       <TooltipProvider>
+    //         <Tooltip>
+    //           <TooltipTrigger asChild>
+    //             <div className="space-y-1 cursor-help">
+    //               <div className="flex items-center gap-2">
+    //                 <Progress value={progressPercentage} className="w-20 h-2" />
+    //                 <span className="text-xs text-muted-foreground">
+    //                   {row.original.progress.completed}/
+    //                   {row.original.progress.total}
+    //                 </span>
+    //               </div>
+    //             </div>
+    //           </TooltipTrigger>
+    //           <TooltipContent side="top" className="max-w-sm">
+    //             <TaskTooltipContent tasks={row.original.tasks} />
+    //           </TooltipContent>
+    //         </Tooltip>
+    //       </TooltipProvider>
+    //     );
+    //   },
+    // },
     {
       accessorKey: "total",
       header: ({ column }) => (
@@ -457,7 +441,7 @@ export default function WorkOrderDataTable() {
       cell: ({ row }) => (
         <>
           <div className="flex  items-end gap-1 text-sm">
-            $ {row.original.total}
+            $ {row.original.workOrderTotal}
           </div>
         </>
       ),
@@ -480,37 +464,58 @@ export default function WorkOrderDataTable() {
           }
         };
 
+        const handleStatus = (status: string, row: any) => {
+          console.log("change row status:", row.original);
+          if (
+            confirm(`Are you sure you want to change the status to ${status}?`)
+          ) {
+            alert(`Status changed`);
+            // Here you would typically call your delete API
+          }
+        };
+
+        const [open, setOpen] = useState(false);
+        const [selectedProjectType, setSelectedProjectType] = useState<
+          string | null
+        >(null);
+
+        const genericDropdown = (x: string) => {
+          console.log("did something", x);
+          setSelectedProjectType(x);
+          setOpen(true);
+        };
+        const dropdownItems = [
+          
+          { label: "Change Assignee", onSelect: genericDropdown },
+          { label: "Change Priority", onSelect: genericDropdown },
+        ];
+
+        const formComponents = {
+          "Change Assignee": <ChangeAssigneesForm data={row.original} />,
+          "Change Priority": <ChangePriorityForm data={row.original} />,
+          "Change Cost Center": <ChangeCostCenterForm data={row.original} />,
+        };
+        const renderFormContent = () => {
+          const SelectedComponent = formComponents[selectedProjectType || ""];
+          console.log("new selected", SelectedComponent);
+          return SelectedComponent ? SelectedComponent : null;
+        };
+
+        const selectedType = dropdownItems.find(
+          (type) => type.label === selectedProjectType
+        );
+
         return (
           <div className="flex flex-row gap-2 justify-between ">
-            {/* <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                  <MoreHorizontal className="h-4 w-4" />
+            <EditWorkOrderForm
+              children={
+                <Button variant={"secondary"} size={"icon"}>
+                  <FilePenIcon />
                 </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    alert(`Edit ${row.getValue("name")}`);
-                  }}
-                >
-                  Edit
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handlePrintRow(row);
-                  }}
-                >
-                  <Printer className="mr-2 h-4 w-4" />
-                  Print
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu> */}
-            <Button variant={"secondary"} size={"icon"}>
-              <FilePenIcon />
-            </Button>
+              }
+              data={row.original}
+            />
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant={"secondary"} size={"icon"}>
@@ -528,23 +533,30 @@ export default function WorkOrderDataTable() {
                     Print
                     {/* <DropdownMenuShortcut>⌘B</DropdownMenuShortcut> */}
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    Change Assignee
-                    {/* <DropdownMenuShortcut>⌘S</DropdownMenuShortcut> */}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    Change Priority
-                    {/* <DropdownMenuShortcut>⌘K</DropdownMenuShortcut> */}
-                  </DropdownMenuItem>
+                   
+                  {dropdownItems.map((item) => (
+                    <DropdownMenuItem
+                      key={item.label}
+                      onClick={() => item.onSelect(item.label)}
+                    >
+                      <span>{item.label}</span>
+                    </DropdownMenuItem>
+                  ))}
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>Change Cost Center</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem disabled={row.original.status === "open"}>
+                <DropdownMenuItem
+                  onClick={() => handleStatus("Closed", row)}
+                  disabled={row.original.status === "open"}
+                >
                   Change Status (Open)
                 </DropdownMenuItem>
-                <DropdownMenuItem disabled={row.original.status === "closed"}>
+                <DropdownMenuItem
+                  onClick={() => handleStatus("Open", row)}
+                  disabled={row.original.status === "closed"}
+                >
                   Change Status (Close)
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
@@ -560,6 +572,24 @@ export default function WorkOrderDataTable() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            <Sheet open={open} onOpenChange={setOpen}>
+              <SheetContent className="w-[400px] sm:w-2/3">
+                <SheetHeader>
+                  <SheetTitle className="flex items-center gap-2">
+                    {selectedType?.label}
+                    {/* Receive Purchase Order */}
+                  </SheetTitle>
+                  <SheetDescription>
+                    {/* {selectedType?.label ||
+                                        "Fill out the form below to set up your new development project."} */}
+                  </SheetDescription>
+                </SheetHeader>
+
+                <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
+                  {renderFormContent() || "nothing else"}
+                </ScrollArea>
+              </SheetContent>
+            </Sheet>
           </div>
         );
       },

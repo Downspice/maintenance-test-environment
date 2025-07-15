@@ -145,7 +145,7 @@ export const PurchaseOrderData: PurchaseOrderInterface[] = [
     Credit: "30.00",
     freight: "220.00",
     subTotal: "2700.00",
-    TotalCost: "2925.00",
+    totalCost: "2925.00",
   },
   {
     equipmentId: "EQP-002",
@@ -198,7 +198,7 @@ export const PurchaseOrderData: PurchaseOrderInterface[] = [
     Credit: "50.00",
     freight: "180.00",
     subTotal: "1855.00",
-    TotalCost: "2065.00",
+    totalCost: "2065.00",
   },
   {
     equipmentId: "EQP-001",
@@ -228,7 +228,7 @@ export const PurchaseOrderData: PurchaseOrderInterface[] = [
     Credit: "100.00",
     freight: "200.00",
     subTotal: "5000.00",
-    TotalCost: "5350.00",
+    totalCost: "5350.00",
 
     items: [
       {
