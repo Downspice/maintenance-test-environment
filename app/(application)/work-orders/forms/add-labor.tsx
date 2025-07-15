@@ -1,89 +1,62 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 
-// Form wrappers
-
-// Schema and types
-import {
-  equipmentSchema,
-  vendorOptions,
-  type EquipmentFormValues,
-} from "@/lib/equipment-schema";
 import { toast } from "sonner";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import {
-  ComboboxFieldWrapper,
-  ComboboxOption,
-} from "@/components/forms/wrappers/ComboboxWrapper";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
 import { Form } from "@/components/ui/form";
 import { Save } from "lucide-react";
 import InputWrapper from "@/components/forms/wrappers/InputWrapper";
-import SingleCheckboxWrapper from "@/components/forms/wrappers/SingleCheckboxWrapper";
-import { PurchaseOrderOptions } from "@/lib/purcahse-order-data";
 import { costCenterOptions } from "@/components/forms/actualForms/work-order-form";
-import { equipmentOptionsList } from "@/lib/option-list";
-import Fieldset from "@/components/customUI/fieldset";
-import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";
 import RadioGroupWrapper from "@/components/forms/wrappers/RadioGroupWrapper";
 import { performedOptionList } from "@/lib/work-orders-data";
 import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
+import { z } from "zod";
+import { vendorOptions } from "@/lib/equipment-schema";
+import { AddLaborFormValues ,AddLaborSchema} from "@/lib/WorkOrder/workOrder-data";
 
-export default function AddLabor() {
+
+
+type AddLaborProps = {
+  onSave: (cost: Partial<AddLaborFormValues>) => void;
+  initialValues?: Partial<AddLaborFormValues>;
+};
+
+export default function AddLabor({ onSave, initialValues }: AddLaborProps) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [openSections, setOpenSections] = useState({
-    identification: true,
-    assignment: false,
-    purchase: false,
-    additionalDetails: false,
-  });
 
-  const form = useForm<EquipmentFormValues>({
-    resolver: zodResolver(equipmentSchema),
+  const form = useForm<AddLaborFormValues>({
+    resolver: zodResolver(AddLaborSchema),
     defaultValues: {
+      laborRate: initialValues?.laborRate ?? 0,
+      hours: initialValues?.hours ?? 0,
+      totalCost: initialValues?.totalCost ?? 0,
       usage: "Active",
+      ...initialValues,
     },
   });
 
-  const toggleSection = (section: keyof typeof openSections) => {
-    setOpenSections((prev) => ({
-      ...prev,
-      [section]: !prev[section],
-    }));
-  };
+  const laborRate = form.watch("laborRate");
+  const hours = form.watch("hours");
 
-  const watchPartUnderWarranty = form.watch("PartUnderWarranty");
+  useEffect(() => {
+    const rate = parseFloat(laborRate) || 0;
+    const hrs = parseFloat(hours) || 0;
+    const total = rate * hrs;
+    form.setValue("totalCost", total);
+  }, [laborRate, hours, form]);
 
-  function onSubmit(data: EquipmentFormValues) {
-    console.log("Form submitted with VALUES:", data);
-
-    const getLabel = (options: ComboboxOption[], value: string) =>
-      options.find((option) => option.value === value)?.label || value;
-
-    const getLabels = (options: ComboboxOption[], values: string[]) =>
-      values.map(
-        (value) =>
-          options.find((option) => option.value === value)?.label || value
-      );
-
-    toast("Project created successfully!", {
-      duration: 10000,
-    });
-
+  function onSubmit(data: AddLaborFormValues) {
+    const calculatedCost = Number(data.laborRate) * Number(data.hours);
+    form.setValue("totalCost", calculatedCost);
+    onSave(data); // send cost back to AddMaintenance
+    toast.success("Labor saved.");
     setOpen(false);
-    form.reset();
+    //form.reset();
   }
 
   function onError(errors: any) {
@@ -113,94 +86,80 @@ export default function AddLabor() {
   }
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
-        <Button variant="secondary">Add Parts</Button>
-      </SheetTrigger>
-      <SheetContent className="w-3/4 ">
-        <SheetHeader>
-          <SheetTitle>Add Part</SheetTitle>
-          <SheetDescription>
-            Fill out the form below to Add Part.
-          </SheetDescription>
-        </SheetHeader>
-
-        <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit, onError)}
-              className="space-y-6"
-            >
-              <div>
-                <div className="flex flex-col space-y-0.5">
-                  <RadioGroupWrapper
-                    control={form.control}
-                    name="laborType"
-                    label="Performed by"
-                    options={performedOptionList}
-                  />
-                  <ComboboxFieldWrapper
-                    control={form.control}
-                    name="technicianName"
-                    label="Technician"
-                    options={vendorOptions}
-                  />
-                  <TextareaWrapper
-                    control={form.control}
-                    name="workPerformed"
-                    label="Work Performed"
-                    value={""}
-                  />
-                  <ComboboxFieldWrapper
-                    control={form.control}
-                    name="costCenter"
-                    label="Cost Center"
-                    options={costCenterOptions}
-                  />
-                  <InputWrapper
-                    control={form.control}
-                    name="laborRate"
-                    label="Last Rate"
-                    type="number"
-                    value={""}
-                  />
-                  <InputWrapper
-                    control={form.control}
-                    name="hours"
-                    label="Hours"
-                    type="text"
-                    value={""}
-                  />
-                  <InputWrapper
-                    className="col-span-1"
-                    control={form.control}
-                    name="totalCost"
-                    label="Total Cost"
-                    type="number"
-                    value={""}
-                  />
-                </div>
-              </div>
-              <div className="flex justify-end">
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="min-w-32 my-4 w-full"
-                >
-                  {isSubmitting ? (
-                    "Creating..."
-                  ) : (
-                    <>
-                      <Save className="mr-2 h-4 w-4" />
-                      Create Equipment
-                    </>
-                  )}
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </ScrollArea>
-      </SheetContent>
-    </Sheet>
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit, onError)}
+        className="space-y-6"
+      >
+        <div>
+          <div className="flex flex-col space-y-0.5">
+            <RadioGroupWrapper
+              control={form.control}
+              name="laborType"
+              label="Performed by"
+              options={performedOptionList}
+            />
+            <ComboboxFieldWrapper
+              control={form.control}
+              name="technicianName"
+              label="Technician"
+              options={vendorOptions}
+            />
+            <TextareaWrapper
+              control={form.control}
+              name="workPerformed"
+              label="Work Performed"
+              value={""}
+            />
+            <ComboboxFieldWrapper
+              control={form.control}
+              name="costCenter"
+              label="Cost Center"
+              options={costCenterOptions}
+            />
+            <InputWrapper
+              control={form.control}
+              name="laborRate"
+              label="Last Rate"
+              type="number"
+              value={""}
+            />
+            <InputWrapper
+              control={form.control}
+              name="hours"
+              label="Hours"
+              type="text"
+              value={""}
+            />
+            <InputWrapper
+              className="col-span-1"
+              control={form.control}
+              name="totalCost"
+              label="Total Cost"
+              type="number"
+              value={""}
+              disabled
+            />
+          </div>
+        </div>
+        <div className="flex justify-end">
+          <Button
+            type="button"
+            onClick={form.handleSubmit(onSubmit, onError)}
+            disabled={isSubmitting}
+            className="min-w-32 my-4 w-full"
+          >
+            {isSubmitting ? (
+              "Creating..."
+            ) : (
+              <>
+                <Save className="mr-2 h-4 w-4" />
+                 Add Labor
+              </>
+            )}
+          </Button>
+        </div>
+      </form>
+    </Form>
   );
 }

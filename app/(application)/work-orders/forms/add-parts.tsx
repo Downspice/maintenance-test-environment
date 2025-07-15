@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -8,79 +8,78 @@ import { Button } from "@/components/ui/button";
 // Form wrappers
 
 // Schema and types
-import {
-  equipmentSchema,
-  type EquipmentFormValues,
-} from "@/lib/equipment-schema";
 import { toast } from "sonner";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import {
-  ComboboxFieldWrapper,
-  ComboboxOption,
-} from "@/components/forms/wrappers/ComboboxWrapper";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
 import { Form } from "@/components/ui/form";
 import { Save } from "lucide-react";
 import InputWrapper from "@/components/forms/wrappers/InputWrapper";
 import SingleCheckboxWrapper from "@/components/forms/wrappers/SingleCheckboxWrapper";
-import { PurchaseOrderOptions } from "@/lib/purcahse-order-data";
 import { costCenterOptions } from "@/components/forms/actualForms/work-order-form";
-import { equipmentOptionsList } from "@/lib/option-list";
 import Fieldset from "@/components/customUI/fieldset";
 import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";
+import { invoiceOptionsList } from "@/lib/Invoice/invoices-page-data";
+import { Part, PartSchema } from "@/lib/WorkOrder/workOrder-data";
+import { equipmentOptionsList } from "@/lib/option-list";
 
-export default function AddParts() {
-  const [open, setOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [openSections, setOpenSections] = useState({
-    identification: true,
-    assignment: false,
-    purchase: false,
-    additionalDetails: false,
-  });
-
-  const form = useForm<EquipmentFormValues>({
-    resolver: zodResolver(equipmentSchema),
+export default function AddPart({
+  initialValues,
+  onSave,
+}: {
+  initialValues?: Part | null;
+  onSave: (data: Part) => void;
+}) {
+  const form = useForm<Part>({
+    resolver: zodResolver(PartSchema),
     defaultValues: {
-      usage: "Active",
+      partNumber: "",
+      name: "",
+      quantityUsed: 1,
+      unitCost: 0,
     },
   });
 
-  const toggleSection = (section: keyof typeof openSections) => {
-    setOpenSections((prev) => ({
-      ...prev,
-      [section]: !prev[section],
-    }));
-  };
+  // Load data when editing
+  useEffect(() => {
+    if (initialValues) {
+      form.reset(initialValues);
+    }
+  }, [initialValues, form]);
+
+  // Calculate total cost on quantity/unitCost change
+  const watchQty = form.watch("quantityUsed");
+  const watchCost = form.watch("unitCost");
+
+  useEffect(() => {
+    const total = +(watchQty * watchCost).toFixed(2);
+    form.setValue("totalCost", total);
+  }, [watchQty, watchCost, form]);
+
+  function onSubmit(data: Part) {
+    onSave({
+      ...data,
+      totalCost: +(data.quantityUsed * data.unitCost).toFixed(2),
+    });
+  }
+
+  // const watchQuantity = form.watch("quantityUsed");
+  // const watchCost = form.watch("unitCost");
+
+  // useEffect(() => {
+  //   const total = watchQuantity * watchCost;
+  //   form.setValue("totalCost", total);
+  // }, [watchQuantity, watchCost, form]);
 
   const watchPartUnderWarranty = form.watch("PartUnderWarranty");
 
-  function onSubmit(data: EquipmentFormValues) {
-    console.log("Form submitted with VALUES:", data);
+  // function onSubmit(data: Part) {
+  //   console.log("Form submitted with VALUES:", data);
 
-    const getLabel = (options: ComboboxOption[], value: string) =>
-      options.find((option) => option.value === value)?.label || value;
+  //   toast("Project created successfully!", {
+  //     duration: 10000,
+  //   });
 
-    const getLabels = (options: ComboboxOption[], values: string[]) =>
-      values.map(
-        (value) =>
-          options.find((option) => option.value === value)?.label || value
-      );
-
-    toast("Project created successfully!", {
-      duration: 10000,
-    });
-
-    setOpen(false);
-    form.reset();
-  }
+  //   form.reset();
+  // }
 
   function onError(errors: any) {
     // Get all error messages
@@ -109,162 +108,140 @@ export default function AddParts() {
   }
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
-        <Button variant="secondary">Add Parts</Button>
-      </SheetTrigger>
-      <SheetContent className="w-3/4 ">
-        <SheetHeader>
-          <SheetTitle>Add Part</SheetTitle>
-          <SheetDescription>
-            Fill out the form below to Add Part.
-          </SheetDescription>
-        </SheetHeader>
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit, onError)}
+        className="space-y-6"
+      >
+        <div>
+          <div className="flex flex-col space-y-0.5">
+            <ComboboxFieldWrapper
+              control={form.control}
+              name="AddPartsId"
+              label="AddParts"
+              options={equipmentOptionsList}
+              required={true}
+              searchPlaceholder="Search AddParts..."
+            />
+            <InputWrapper
+              control={form.control}
+              name="name"
+              label="Name"
+              type="text"
+              value={""}
+            />
+            <InputWrapper
+              control={form.control}
+              name="description"
+              label="Description"
+              type="text"
+              value={""}
+            />
+            <ComboboxFieldWrapper
+              control={form.control}
+              name="costCenter"
+              label="Cost Center"
+              options={costCenterOptions}
+            />
+            <InputWrapper
+              control={form.control}
+              name="quantityUsed"
+              label="Quantity Used"
+              type="number"
+            />
+            <InputWrapper
+              className="col-span-1"
+              control={form.control}
+              name="unitCost"
+              label="Unit Cost"
+              type="number"
+            />
+            <div className="grid grid-cols-2">
+              <div className="col-span-1">
+                <InputWrapper
+                  className="col-span-1"
+                  control={form.control}
+                  name="extendCost"
+                  label="Extend Cost"
+                  type="number"
+                  value={""}
+                />
+              </div>
+              <div className="col-span-1 flex items-align-baseline">
+                <SingleCheckboxWrapper
+                  control={form.control}
+                  name="warranty"
+                  label="Replace Under Warranty"
+                />
+              </div>
+            </div>
 
-        <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit, onError)}
-              className="space-y-6"
-            >
-              <div>
-                <div className="flex flex-col space-y-0.5">
-                  <ComboboxFieldWrapper
-                    control={form.control}
-                    name="equipmentId"
-                    label="Equipment"
-                    options={equipmentOptionsList}
-                    required={true}
-                    searchPlaceholder="Search equipment..."
-                  />
-                  <InputWrapper
-                    control={form.control}
-                    name="name"
-                    label="Name"
-                    type="text"
-                    value={""}
-                  />
-                  <InputWrapper
-                    control={form.control}
-                    name="description"
-                    label="Description"
-                    type="text"
-                    value={""}
-                  />
-                  <ComboboxFieldWrapper
-                    control={form.control}
-                    name="costCenter"
-                    label="Cost Center"
-                    options={costCenterOptions}
-                  />
-                  <InputWrapper
-                    control={form.control}
-                    name="quantityUsed"
-                    label="Quantity Used"
-                    type="text"
-                    value={""}
-                  />
-                  <InputWrapper
-                    className="col-span-1"
-                    control={form.control}
-                    name="unitCost"
-                    label="Unit Cost"
-                    type="number"
-                    value={""}
-                  />
-                  <div className="grid grid-cols-2">
-                    <div className="col-span-1">
-                      <InputWrapper
-                        className="col-span-1"
-                        control={form.control}
-                        name="extendCost"
-                        label="Extend Cost"
-                        type="number"
-                        value={""}
-                      />
-                    </div>
-                    <div className="col-span-1 flex items-align-baseline">
-                      <SingleCheckboxWrapper
-                        control={form.control}
-                        name="warranty"
-                        label="Replace Under Warranty"
-                      />
-                    </div>
+            <ComboboxFieldWrapper
+              control={form.control}
+              name="po"
+              label="PO#"
+              options={invoiceOptionsList}
+            />
+            <Fieldset
+              legend="Warranty"
+              content={
+                <div className="grid grid-cols-7 ">
+                  <div className="col-span-7">
+                    <SingleCheckboxWrapper
+                      control={form.control}
+                      name="PartUnderWarranty"
+                      label="Part under warranty"
+                    />
                   </div>
-
-                  <ComboboxFieldWrapper
-                    control={form.control}
-                    name="po"
-                    label="PO#"
-                    options={PurchaseOrderOptions}
-                  />
-                  <Fieldset
-                    legend="Warranty"
-                    content={
-                      <div className="grid grid-cols-7 ">
-                        <div className="col-span-7">
-                          <SingleCheckboxWrapper
-                            control={form.control}
-                            name="PartUnderWarranty"
-                            label="Part under warranty"
-                          />
-                        </div>
-                        <div className="col-span-3">
-                          <InputWrapper
-                            control={form.control}
-                            name={`days`}
-                            label="Days"
-                            type="number"
-                            value={""}
-                            disabled={!watchPartUnderWarranty}
-                            required
-                          />
-                          <InputWrapper
-                            control={form.control}
-                            name={`hours`}
-                            label="Hours"
-                            type="number"
-                            value={""}
-                            disabled={!watchPartUnderWarranty}
-                            required
-                          />
-                        </div>
-                        <div className="col-span-1 font-bold flex items-center justify-center">
-                          --OR--
-                        </div>
-                        <div className="col-span-3">
-                          <DatePickerWrapper
-                            control={form.control}
-                            disabled={!watchPartUnderWarranty}
-                            name="expires"
-                            label="Expires"
-                          />
-                        </div>
-                      </div>
-                    }
-                  />
+                  <div className="col-span-3">
+                    <InputWrapper
+                      control={form.control}
+                      name={`days`}
+                      label="Days"
+                      type="number"
+                      value={""}
+                      disabled={!watchPartUnderWarranty}
+                      required
+                    />
+                    <InputWrapper
+                      control={form.control}
+                      name={`hours`}
+                      label="Hours"
+                      type="number"
+                      value={""}
+                      disabled={!watchPartUnderWarranty}
+                      required
+                    />
+                  </div>
+                  <div className="col-span-1 font-bold flex items-center justify-center">
+                    --OR--
+                  </div>
+                  <div className="col-span-3">
+                    <DatePickerWrapper
+                      control={form.control}
+                      disabled={!watchPartUnderWarranty}
+                      name="expires"
+                      label="Expires"
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className="flex justify-end">
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="min-w-32 my-4 w-full"
-                >
-                  {isSubmitting ? (
-                    "Creating..."
-                  ) : (
-                    <>
-                      <Save className="mr-2 h-4 w-4" />
-                      Create Equipment
-                    </>
-                  )}
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </ScrollArea>
-      </SheetContent>
-    </Sheet>
+              }
+            />
+          </div>
+        </div>
+        <div className="flex justify-end">
+          <Button
+            type="button"
+            onClick={form.handleSubmit(onSubmit, onError)}
+            className="min-w-32 my-4 w-full"
+          >
+            <>
+              <Save className="mr-2 h-4 w-4" />
+              Create AddParts
+            </>
+          </Button>
+        </div>
+      </form>
+    </Form>
   );
 }

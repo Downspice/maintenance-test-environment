@@ -85,7 +85,7 @@ export default function CreateAllButton() {
     "Purchase Order": <NewPurchaseOrderForm />,
     Employee: <NewEmployeeForm />,
     Vendor: <NewVendor />,
-    "Receive | Adjust Inventory": <AdjustInventoryForm />,
+    "Receive | Adjust Inventory": <AdjustInventoryForm data={undefined} />,
     "Receive Purchase Order": <NewPurchaseOrderForm />,
   };
   const renderFormContent = () => {

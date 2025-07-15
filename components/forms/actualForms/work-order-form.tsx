@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,7 +31,6 @@ import {
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Fieldset from "@/components/customUI/fieldset";
-import { PurchaseOrderOptions } from "@/lib/purcahse-order-data";
 import CustomFieldsWrapper from "../wrappers/CustomFieldsWrapper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -42,45 +41,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Labor,
-  maintenanceTableItems,
-  MaintenanceTask,
-  NoteLog,
-  NoteLogType,
-  UsedPart,
-  TechnicianWork,
-} from "@/lib/work-orders-data";
-import FileUploadWrapper from "../wrappers/FileUploadWrapper";
-import UpdateMeters from "@/app/(application)/equipment/components/update-meters-form";
 import AddMaintenance from "@/app/(application)/work-orders/forms/add-maintenance-form";
-import AddParts from "@/app/(application)/work-orders/forms/add-parts";
-import AddLabor from "@/app/(application)/work-orders/forms/add-labor";
-import AddNotes from "@/app/(application)/work-orders/forms/add-notes";
-
-// Define the form schema with Zod
-export const workOrderSchema = z.object({
-  equipmentId: z.string({
-    required_error: "Equipment is required",
-  }),
-  assigneeIds: z.array(z.string()).optional(),
-  scheduledOn: z.date().optional(),
-  dueOn: z.date().optional(),
-  priority: z.string({
-    required_error: "Priority is required",
-  }),
-  workOrderType: z.string().optional(),
-  initialNotes: z.string().optional(),
-  taskIds: z.array(z.string()).min(1, "At least one task must be selected"),
-  customFields: z
-    .array(
-      z.object({
-        name: z.string(),
-        value: z.string(),
-      })
-    )
-    .optional(),
-});
+import {
+  AddMaintenanceInWorkOrderInterface,
+  WorkOrderSchema,
+} from "@/lib/WorkOrder/workOrder-data";
+import PartsTab from "@/app/(application)/work-orders/view/PartsTab";
+import LaborTab from "@/app/(application)/work-orders/view/LaborTab";
+import NotesTab from "@/app/(application)/work-orders/view/NotesTab";
 
 // Equipment options
 const equipmentOptions = [{ value: "1311827", label: "AC-001-07 Class 8" }];
@@ -108,7 +76,12 @@ const priorityOptions = [
   { value: "HIGH", label: "HIGH" },
   { value: "URGENT", label: "URGENT" },
 ];
-
+export const PurchaseOrderOptions = [
+  { value: "LOW", label: "P-00123" },
+  { value: "NORMAL", label: "P-00124" },
+  { value: "HIGH", label: "P-00128" },
+  { value: "URGENT", label: "P-001234" },
+];
 // Work order type options
 export const workOrderTypeOptions = [
   { value: "preventive", label: "Preventive Maintenance" },
@@ -124,80 +97,43 @@ export const costCenterOptions = [
   { value: "other", label: "Other" },
 ];
 
-type SortField =
-  | keyof MaintenanceTask
-  | keyof UsedPart
-  | keyof NoteLogType
-  | keyof TechnicianWork
-  | null;
-type SortDirection = "asc" | "desc";
-
 export default function NewWorkOrderForm() {
-  const [customFields, setCustomFields] = useState<
-    { name: string; value: string }[]
-  >([]);
-
   const [open, setOpen] = useState(false);
-  const [sortField, setSortField] = useState<SortField>(null);
-  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
+  const [maintenanceTasks, setMaintenanceTasks] = useState<
+    AddMaintenanceInWorkOrderInterface[]
+  >([]);
+  const [selectedMaintenance, setSelectedMaintenance] =
+    useState<AddMaintenanceInWorkOrderInterface | null>(null);
+  const [maintenanceList, setMaintenanceList] = useState<
+    AddMaintenanceInWorkOrderInterface[]
+  >([]);
+  const [isMaintenanceSheetOpen, setIsMaintenanceSheetOpen] = useState(false);
 
-  const workOrderForm = useForm<z.infer<typeof workOrderSchema>>({
-    resolver: zodResolver(workOrderSchema),
-    defaultValues: {
-      equipmentId: "1311827",
-      priority: "NORMAL",
-      taskIds: ["25417067"],
-      customFields: [],
-    },
+  function handleAddMaintenanceTask(task: AddMaintenanceInWorkOrderInterface) {
+    const taskWithStatus = { ...task, complete: false };
+    setMaintenanceTasks((prev) => {
+      if (selectedMaintenance) {
+        // If editing, replace the task instead of adding
+        return prev.map((t, i) =>
+          t === selectedMaintenance ? taskWithStatus : t
+        );
+      }
+      return [...prev, taskWithStatus];
+    });
+    setSelectedMaintenance(null);
+  }
+
+  const workOrderForm = useForm<z.infer<typeof WorkOrderSchema>>({
+    resolver: zodResolver(WorkOrderSchema),
+    defaultValues: {},
   });
 
-  const SortableHeader = ({
-    field,
-    children,
-  }: {
-    field: SortField;
-    children: React.ReactNode;
-  }) => (
-    <TableHead
-      className="cursor-pointer hover:bg-muted/50 transition-colors"
-      onClick={() => handleSort(field)}
-    >
-      <div className="flex items-center justify-between">
-        <span>{children}</span>
-        {sortField === field && (
-          <span className="ml-1">
-            {sortDirection === "asc" ? (
-              <ArrowUp className="h-4 w-4" />
-            ) : (
-              <ArrowDown className="h-4 w-4" />
-            )}
-          </span>
-        )}
-      </div>
-    </TableHead>
-  );
-
-  const handleSort = (field: SortField) => {
-    // If clicking the same field, toggle direction
-    if (field === sortField) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
-    } else {
-      // New field, set to ascending by default
-      setSortField(field);
-      setSortDirection("asc");
-    }
-  };
-
-  async function handleSubmit(data: z.infer<typeof workOrderSchema>) {
+  async function handleSubmit(data: z.infer<typeof WorkOrderSchema>) {
     console.log(data);
     // Here you would typically send the data to your API
 
     toast.success("Work Order submitted successfully!");
   }
-
-  const addCustomField = () => {
-    setCustomFields([...customFields, { name: "", value: "" }]);
-  };
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -378,241 +314,123 @@ export default function NewWorkOrderForm() {
                           <TabsTrigger value="Notes">Notes</TabsTrigger>
                         </TabsList>
                         <TabsContent value="Maintenance">
-                          <AddMaintenance />
-                          <div className="space-y-4 shadow-primary">
-                            <div className="rounded-md border">
-                              <Table>
-                                <TableHeader>
-                                  <TableRow>
-                                    <SortableHeader field="maintenanceName">
-                                      Maintenance
-                                    </SortableHeader>
-                                    <SortableHeader field="total">
-                                      Total
-                                    </SortableHeader>
-                                    <SortableHeader field="complete">
-                                      Complete
-                                    </SortableHeader>
-                                    <TableHead className="text-right">
-                                      Action{" "}
-                                    </TableHead>
-                                  </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                  {maintenanceTableItems.map((item) => (
-                                    <TableRow key={item.id}>
-                                      <TableCell>
-                                        {item.maintenanceName}
-                                      </TableCell>
-                                      <TableCell>{item.total}</TableCell>
-                                      <TableCell className="w-[150px]">
-                                        {item.complete.toString()}
-                                      </TableCell>
-                                      <TableCell className="w-[100px]">
-                                        <Button
-                                          variant="outline"
-                                          size="sm"
-                                          onClick={() => console.log(item)}
-                                        >
-                                          <Pen />
-                                        </Button>
-                                        <Button
-                                          variant="outline"
-                                          size="sm"
-                                          onClick={() => console.log(item)}
-                                        >
-                                          <Trash2 />
-                                        </Button>
-                                      </TableCell>
-                                    </TableRow>
-                                  ))}
-                                </TableBody>
-                              </Table>
-                            </div>
+                          <div className="mb-4">
+                            <AddMaintenance
+                              data={selectedMaintenance}
+                              onAdd={handleAddMaintenanceTask}
+                              open={isMaintenanceSheetOpen}
+                              setOpen={setIsMaintenanceSheetOpen}
+                            />
                           </div>
+
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead>Task Name</TableHead>
+                                <TableHead>Total</TableHead>
+                                <TableHead>Complete</TableHead>
+                                <TableHead>Actions</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {maintenanceTasks.map((task, index) => (
+                                <TableRow key={index}>
+                                  <TableCell>{task.task}</TableCell>
+                                  <TableCell>
+                                    $
+                                    {(
+                                      (parseFloat(task.partsCost) || 0) +
+                                      (parseFloat(task.laborCost) || 0)
+                                    ).toFixed(2)}
+                                  </TableCell>
+                                  <TableCell>
+                                    <input
+                                      type="checkbox"
+                                      checked={task.complete}
+                                      onChange={(e) => {
+                                        if (e.target.checked) {
+                                          const confirmed = window.confirm(
+                                            "Mark this task as complete?"
+                                          );
+                                          if (confirmed) {
+                                            setMaintenanceTasks((prev) =>
+                                              prev.map((t, i) =>
+                                                i === index
+                                                  ? { ...t, complete: true }
+                                                  : t
+                                              )
+                                            );
+                                          }
+                                        } else {
+                                          // Optional: uncheck logic, or disable unchecking
+                                          setMaintenanceTasks((prev) =>
+                                            prev.map((t, i) =>
+                                              i === index
+                                                ? { ...t, complete: false }
+                                                : t
+                                            )
+                                          );
+                                        }
+                                      }}
+                                    />
+                                  </TableCell>
+
+                                  <TableCell className="space-x-2">
+                                    <Button
+                                      onClick={() => {
+                                        setSelectedMaintenance(task);
+                                        setIsMaintenanceSheetOpen(true);
+                                      }}
+                                    >
+                                      <Pen />
+                                    </Button>
+                                    <Button
+                                      variant="destructive"
+                                      size="sm"
+                                      onClick={() =>
+                                        setMaintenanceTasks((prev) =>
+                                          prev.filter((_, i) => i !== index)
+                                        )
+                                      }
+                                    >
+                                      Delete
+                                    </Button>
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
                         </TabsContent>
                         <TabsContent value="Parts">
-                          <div className="space-y-4 shadow-primary">
-                            <div className="rounded-md border">
-                              <AddParts />
-                              <Table>
-                                <TableHeader>
-                                  <TableRow>
-                                    <SortableHeader field="partNumber">
-                                      Part#
-                                    </SortableHeader>
-                                    <SortableHeader field="name">
-                                      Name
-                                    </SortableHeader>
-                                    <SortableHeader field="used">
-                                      Used
-                                    </SortableHeader>
-                                    <SortableHeader field="cost">
-                                      Cost
-                                    </SortableHeader>
-                                    <SortableHeader field="total">
-                                      Total
-                                    </SortableHeader>
-                                    <TableHead className="text-right">
-                                      Action{" "}
-                                    </TableHead>
-                                  </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                  {UsedPart.map((item) => (
-                                    <TableRow key={item.id}>
-                                      <TableCell>{item.partNumber}</TableCell>
-                                      <TableCell>{item.name}</TableCell>
-                                      <TableCell>{item.used}</TableCell>
-                                      <TableCell>{item.cost}</TableCell>
-                                      <TableCell>{item.total}</TableCell>
-                                      <TableCell className="w-[100px]">
-                                        <Button
-                                          variant="outline"
-                                          size="sm"
-                                          onClick={() => console.log(item)}
-                                        >
-                                          <Pen />
-                                        </Button>
-                                        <Button
-                                          variant="outline"
-                                          size="sm"
-                                          onClick={() => console.log(item)}
-                                        >
-                                          <Trash2 />
-                                        </Button>
-                                      </TableCell>
-                                    </TableRow>
-                                  ))}
-                                </TableBody>
-                              </Table>
-                            </div>
-                          </div>
-                        </TabsContent>
-                        <TabsContent value="Labor">
-                          <div className="flex justify-end ">
-                            <AddLabor />
-                          </div>
-                          <div className="space-y-4 shadow-primary">
-                            <div className="rounded-md border">
-                              <Table>
-                                <TableHeader>
-                                  <TableRow>
-                                    <SortableHeader field="technicianName">
-                                      Part#
-                                    </SortableHeader>
-                                    <SortableHeader field="comments">
-                                      Comments
-                                    </SortableHeader>
-                                    <SortableHeader field="rateAmount">
-                                      Rate
-                                    </SortableHeader>
-                                    <SortableHeader field="hours">
-                                      Hours
-                                    </SortableHeader>
-                                    <SortableHeader field="totalAmount">
-                                      Total
-                                    </SortableHeader>
-                                    <TableHead className="text-right">
-                                      Action{" "}
-                                    </TableHead>
-                                  </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                  {Labor.map((item) => (
-                                    <TableRow key={item.id}>
-                                      <TableCell>
-                                        {item.technicianName}
-                                      </TableCell>
-                                      <TableCell>{item.comments}</TableCell>
-                                      <TableCell>{item.rateAmount}</TableCell>
-                                      <TableCell>{item.hours}</TableCell>
-                                      <TableCell>{item.totalAmount}</TableCell>
-                                      <TableCell className="w-[100px]">
-                                        <Button
-                                          variant="outline"
-                                          size="sm"
-                                          onClick={() => console.log(item)}
-                                        >
-                                          <Pen />
-                                        </Button>
-                                        <Button
-                                          variant="outline"
-                                          size="sm"
-                                          onClick={() => console.log(item)}
-                                        >
-                                          <Trash2 />
-                                        </Button>
-                                      </TableCell>
-                                    </TableRow>
-                                  ))}
-                                </TableBody>
-                              </Table>
-                            </div>
-                          </div>
-                        </TabsContent>
-                        <TabsContent value="Attachments">
-                          <FileUploadWrapper
-                            control={workOrderForm.control}
-                            name="Attachments"
-                            label="Attachments"
+                          <PartsTab
+                            workOrderParts={workOrderForm.watch("parts") || []}
+                            maintenanceItems={
+                              workOrderForm.watch("maintenance") || []
+                            }
+                            onUpdateParts={(updatedParts) =>
+                              workOrderForm.setValue("parts", updatedParts)
+                            }
                           />
                         </TabsContent>
+                        <TabsContent value="Labor">
+                          <LaborTab
+                            maintenanceItems={
+                              workOrderForm.watch("maintenance") || []
+                            }
+                            laborEntries={workOrderForm.watch("labor") || []}
+                            onUpdateLabor={(updated) =>
+                              workOrderForm.setValue("labor", updated)
+                            }
+                          />
+                        </TabsContent>
+                        <TabsContent value="Attachments"> </TabsContent>
                         <TabsContent value="Notes">
-                          <div className="flex justify-end ">
-                            <AddNotes />
-                          </div>
-                          <div className="space-y-4 shadow-primary">
-                            <div className="rounded-md border">
-                              <Table>
-                                <TableHeader>
-                                  <TableRow>
-                                    <SortableHeader field="date">
-                                      Date
-                                    </SortableHeader>
-                                    <SortableHeader field="createdBy">
-                                      Created By
-                                    </SortableHeader>
-                                    <SortableHeader field="note">
-                                      Note
-                                    </SortableHeader>
-                                    <TableHead className="text-right">
-                                      Action
-                                    </TableHead>
-                                  </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                  {NoteLog.map((item) => (
-                                    <TableRow key={item.id}>
-                                      <TableCell className="w-[100px]">
-                                        {item.date}
-                                      </TableCell>
-                                      <TableCell className="w-[100px]">
-                                        {item.createdBy}
-                                      </TableCell>
-                                      <TableCell>{item.note}</TableCell>
-                                      <TableCell className="w-[100px]">
-                                        <Button
-                                          variant="outline"
-                                          size="sm"
-                                          onClick={() => console.log(item)}
-                                        >
-                                          <Pen />
-                                        </Button>
-                                        <Button
-                                          variant="outline"
-                                          size="sm"
-                                          onClick={() => console.log(item)}
-                                        >
-                                          <Trash2 />
-                                        </Button>
-                                      </TableCell>
-                                    </TableRow>
-                                  ))}
-                                </TableBody>
-                              </Table>
-                            </div>
-                          </div>
+                          <NotesTab
+                            notes={workOrderForm.watch("notes") || []}
+                            onUpdateNotes={(updated) =>
+                              workOrderForm.setValue("notes", updated)
+                            }
+                          />
                         </TabsContent>
                       </Tabs>
                     </div>
