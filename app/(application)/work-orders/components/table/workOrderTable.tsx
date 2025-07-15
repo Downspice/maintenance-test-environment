@@ -21,8 +21,8 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
-  DropdownMenuItem, 
-  DropdownMenuSeparator, 
+  DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -74,7 +74,7 @@ const getTaskStatusIcon = (status: string) => {
     default:
       return <Clock className="h-3 w-3 text-gray-600" />;
   }
-}; 
+};
 
 const getAllEmployees = (
   employees: WorkOrderInterface[]
@@ -92,7 +92,7 @@ const getAllEmployees = (
 const flatEmployees = getAllEmployees(mockWorkOrders);
 const number = [...new Set(flatEmployees.map((emp) => emp.workOrderNumber))];
 const equipment = [...new Set(flatEmployees.map((emp) => emp.equipment))];
-const status = [...new Set(flatEmployees.map((emp) => emp.status))];
+const status = [...new Set(flatEmployees.map((emp) => emp.status ?? ""))];
 const dueDate = [
   ...new Set(flatEmployees.map((emp) => emp.dueOn?.toUTCString())),
 ];
@@ -102,7 +102,9 @@ const assignees = [
 // const progress = [
 //   ...new Set(flatEmployees.map((emp) => emp.progress.completed.toString())),
 // ];
-const total = [...new Set(flatEmployees.map((emp) => emp.workOrderTotal))];
+const total = [
+  ...new Set(flatEmployees.map((emp) => emp.workOrderTotal ?? "")),
+];
 
 export default function WorkOrderDataTable() {
   const [isServerMode, setIsServerMode] = useState(false);
@@ -261,19 +263,6 @@ export default function WorkOrderDataTable() {
     [paginationInfo.pageSize]
   ); // Add dependencies that actually matter
 
-  const getSubRows = (originalRow: WorkOrder) => {
-    return originalRow.tasks;
-  };
-
-  // Custom sub-row renderer
-  const renderSubRow = (
-    subRowData: description,
-    parentRow: any,
-    depth: number
-  ) => {
-    return <div className="space-y-4"></div>;
-  };
-
   // Column definitions
   const columns: ColumnDef<WorkOrderInterface>[] = [
     {
@@ -324,7 +313,7 @@ export default function WorkOrderDataTable() {
       cell: ({ row }) => (
         <>
           <Badge className={`text-xs ${getStatusColor(row.original.status)}`}>
-            {row.original.status.toUpperCase()}
+            {row.original.status?.toUpperCase()}
           </Badge>
         </>
       ),
@@ -457,9 +446,9 @@ export default function WorkOrderDataTable() {
         const handleDeleteRow = (row: any) => {
           console.log("Delete row:", row.original);
           if (
-            confirm(`Are you sure you want to delete ${row.original.name}?`)
+            confirm(`Are you sure you want to delete ${row.original.workOrderNumber}?`)
           ) {
-            alert(`Deleted ${row.original.name}`);
+            alert(`Deleted ${row.original.workOrderNumber}`);
             // Here you would typically call your delete API
           }
         };
@@ -485,9 +474,9 @@ export default function WorkOrderDataTable() {
           setOpen(true);
         };
         const dropdownItems = [
-          
           { label: "Change Assignee", onSelect: genericDropdown },
           { label: "Change Priority", onSelect: genericDropdown },
+          { label: "Change Cost Center", onSelect: genericDropdown },
         ];
 
         const formComponents = {
@@ -533,7 +522,7 @@ export default function WorkOrderDataTable() {
                     Print
                     {/* <DropdownMenuShortcut>⌘B</DropdownMenuShortcut> */}
                   </DropdownMenuItem>
-                   
+
                   {dropdownItems.map((item) => (
                     <DropdownMenuItem
                       key={item.label}
@@ -543,9 +532,6 @@ export default function WorkOrderDataTable() {
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>Change Cost Center</DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={() => handleStatus("Closed", row)}
@@ -600,41 +586,25 @@ export default function WorkOrderDataTable() {
 
   return (
     <div className="">
-      {/* <div className="mb-8">
-         
-
-        <div className="flex items-center gap-4 mb-4">
-          <Button
-            variant={isServerMode ? "default" : "outline"}
-            onClick={() => setIsServerMode(!isServerMode)}
-          >
-            {isServerMode ? "Server Mode ON" : "Client Mode ON"}
-          </Button>
-          {isServerMode && (
-            <Badge variant="secondary">
-              Page {paginationInfo.pageIndex + 1} of {paginationInfo.totalPages}
-            </Badge>
-          )}
-        </div>
-      </div> */}
-
       <AdvancedDataTable
         columns={columns}
         data={isServerMode ? currentData : mockWorkOrders}
-        defaultVisibleColumns={["name", "email", "department", "actions"]}
+        defaultVisibleColumns={[
+          "workOrderNumber",
+          "equipment",
+          "status",
+          "dueOn",
+          "assignees",
+          "total",
+          "actions",
+        ]}
         onRowClick={handleRowClick}
         onCellClick={handleCellClick}
         onPrintSelected={handlePrintSelected}
         onEmailSelected={handleEmailSelected}
         onDeleteSelected={handleDeleteSelected}
         onPrintRow={handlePrintRow}
-        storageKey="employee-table-visibility"
-        getSubRows={getSubRows}
-        enableExpanding={false}
-        // Custom sub-row rendering
-        renderSubRow={renderSubRow}
-        subRowKey="tasks"
-        // Server-side props
+        storageKey="work-order-table-visibility"
         realServerPagination={isServerMode}
         paginationInfo={isServerMode ? paginationInfo : undefined}
         onPaginationChange={isServerMode ? handlePaginationChange : undefined}

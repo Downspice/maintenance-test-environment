@@ -1,30 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { RegisterOptions, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { LucideTrash2, Pen, Save, Trash2 } from "lucide-react";
+import { Pen, Save, Trash2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 // Form wrappers
 import InputWrapper from "@/components/forms/wrappers/InputWrapper";
 import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";
 // Schema and types
-import {
-  equipmentSchema,
-  type EquipmentFormValues,
-  assigneeOptions,
-} from "@/lib/equipment-schema";
+import { assigneeOptions } from "@/lib/equipment-schema";
 import Fieldset from "@/components/customUI/fieldset";
 import { locationOptionsList } from "@/lib/option-list";
 import { toast } from "sonner";
-import {
-  ComboboxFieldWrapper,
-  MultiComboboxWrapper,
-} from "@/components/forms/wrappers/ComboboxWrapper";
+import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
 import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
-import { termsList } from "./new-purchase-order-form";
 import {
   Table,
   TableBody,
@@ -38,8 +30,6 @@ import {
   invoiceOptionsList,
   invoicePaymentMethodOptionsList,
   maintenanceItems,
-  maintenanceItemsInterface,
-  payments,
 } from "@/lib/Invoice/invoices-page-data";
 import { InvoiceInterface, InvoiceSchema } from "@/lib/Invoice/invoice-data";
 import z from "zod";
@@ -644,7 +634,7 @@ export default function NewInvoiceForm({ variant }: triggerVariant) {
                       control={form.control}
                       name="terms"
                       label="Terms"
-                      options={termsList}
+                      options={invoiceOptionsList}
                     />
                     <InputWrapper
                       control={form.control}
