@@ -41,16 +41,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import SelectWrapper from "../wrappers/SelectWrapper";
-
-interface triggerVariant {
-  variant?: "icon" | "default";
-}
-
-const handleDeleteContact = (contactId: string) => {
-  console.log("Delete contact:", contactId);
-};
-
-const itemSchema = z.object({
+ 
+export const InvoiceItemSchema = z.object({
   quantity: z.number(),
   item_name: z.string(),
   description: z.string().optional(),
@@ -58,9 +50,9 @@ const itemSchema = z.object({
   amount: z.number(),
 });
 
-type ItemFormValues = z.infer<typeof itemSchema>;
+export type InvoiceItemInterface = z.infer<typeof InvoiceItemSchema>;
 
-const paymentSchema = z.object({
+export const InvoicePaymentSchema = z.object({
   invoiceNumber: z.string(),
   amount: z.string(),
   date: z.string(),
@@ -74,24 +66,24 @@ const paymentSchema = z.object({
   other: z.string().optional(),
 });
 
-type PaymentFormValues = z.infer<typeof paymentSchema>;
+export type PaymentFormValues = z.infer<typeof InvoicePaymentSchema>;
 
-export default function NewInvoiceForm({ variant }: triggerVariant) {
+export default function NewInvoiceForm( ) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editIndex, setEditIndex] = useState<number | null>(null);
 
-  const [items, setItems] = useState<ItemFormValues[]>(maintenanceItems);
-  const [editItems, setEditItems] = useState<ItemFormValues | null>(null);
+  const [items, setItems] = useState<InvoiceItemInterface[]>([]);
+  const [editItems, setEditItems] = useState<InvoiceItemInterface | null>(null);
   const [openItems, setOpenItems] = useState(false);
 
   //payment states
   const [paymentsList, setPaymentsList] = useState<
-    z.infer<typeof paymentSchema>[]
+    z.infer<typeof InvoicePaymentSchema>[]
   >([]);
   const [editPaymentIndex, setEditPaymentIndex] = useState<number | null>(null);
   const [editPayment, setEditPayment] = useState<z.infer<
-    typeof paymentSchema
+    typeof InvoicePaymentSchema
   > | null>(null);
   const [openPayments, setOpenPayments] = useState(false);
 
@@ -100,19 +92,19 @@ export default function NewInvoiceForm({ variant }: triggerVariant) {
     setItems(filtered);
   };
 
-  const handleEditItem = (item: ItemFormValues, index: number) => {
+  const handleEditItem = (item: InvoiceItemInterface, index: number) => {
     setEditIndex(index);
     setEditItems(item);
     Itemsform.reset(item); // Pre-fill
     setOpenItems(true); // Open the dialog after setting the form
   };
 
-  const Itemsform = useForm<ItemFormValues>({
-    resolver: zodResolver(itemSchema),
+  const Itemsform = useForm<InvoiceItemInterface>({
+    resolver: zodResolver(InvoiceItemSchema),
     defaultValues: {},
   });
 
-  function onSubmitItems(data: ItemFormValues) {
+  function onSubmitItems(data: InvoiceItemInterface) {
     if (editIndex !== null) {
       const updated = [...items];
       updated[editIndex] = data;
@@ -179,13 +171,13 @@ export default function NewInvoiceForm({ variant }: triggerVariant) {
 
   //paYMENT STUFF
   const PaymentsForm = useForm<PaymentFormValues>({
-    resolver: zodResolver(paymentSchema),
+    resolver: zodResolver(InvoicePaymentSchema),
     defaultValues: { ...editPayment },
   });
 
   const paymentMethodWatch = PaymentsForm.watch("paymentMethod");
 
-  function onSubmitPayment(data: z.infer<typeof paymentSchema>) {
+  function onSubmitPayment(data: z.infer<typeof InvoicePaymentSchema>) {
     if (editPaymentIndex !== null) {
       const updated = [...paymentsList];
       updated[editPaymentIndex] = data;
