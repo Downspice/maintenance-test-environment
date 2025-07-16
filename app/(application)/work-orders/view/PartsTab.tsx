@@ -107,8 +107,8 @@ export default function PartsTab({
                   <TableCell className="p-2">{part.partNumber}</TableCell>
                   <TableCell className="p-2">{part.name}</TableCell>
                   <TableCell className="p-2">{part.quantityUsed}</TableCell>
-                  <TableCell className="p-2">₹{part.unitCost}</TableCell>
-                  <TableCell className="p-2">₹{part.totalCost}</TableCell>
+                  <TableCell className="p-2">${part.unitCost}</TableCell>
+                  <TableCell className="p-2">${part.totalCost}</TableCell>
                   <TableCell className="p-2 text-right space-x-2">
                     {isEditable && (
                       <>

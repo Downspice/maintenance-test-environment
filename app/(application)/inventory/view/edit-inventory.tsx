@@ -299,7 +299,7 @@ export default function EditInventory({
                           {/* A table that has button to add a new row and the headers are part#, name, manufacturer, description. */}
                           <PartSubstitutionTable
                             parts={partOptions}
-                            value={partSubs}
+                            value={data.partSubstitutions ?? []}
                             onChange={(rows) =>
                               inventoryForm.setValue("partSubstitutions", rows)
                             }
@@ -310,9 +310,7 @@ export default function EditInventory({
                           <AlternateUpcCodesTable
                             manufacturers={equipmentManufacturerOptions}
                             vendors={vendorOptions}
-                            value={
-                              inventoryForm.watch("alternateUpcCodes") || []
-                            }
+                            value={data.alternateUpcCodes??[]}
                             onChange={(val) =>
                               inventoryForm.setValue("alternateUpcCodes", val)
                             }
