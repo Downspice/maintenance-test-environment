@@ -5,66 +5,21 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Pen, Save, Trash2 } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Save } from "lucide-react";
 // Form wrappers
 import InputWrapper from "@/components/forms/wrappers/InputWrapper";
 import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";
 // Schema and types
-import {
-  assigneeOptions,
-  shipViaOptions,
-  substituteOptions,
-  vendorOptions,
-} from "@/lib/equipment-schema";
 import Fieldset from "@/components/customUI/fieldset";
-import { locationOptionsList } from "@/lib/option-list";
 import { toast } from "sonner";
-import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
-import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import z from "zod";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import {
-  discountTypesOptions,
-  invoiceOptionsList,
-  itemTypeOptionsList,
-  maintenanceItems,
-} from "@/lib/Invoice/invoices-page-data";
-import FileUploadWrapper from "@/components/forms/wrappers/FileUploadWrapper";
-import SingleCheckboxWrapper from "@/components/forms/wrappers/SingleCheckboxWrapper";
-import {
   PurchaseOrderInterface,
-  purchaseOrderItems,
   PurchaseOrderItemSchema,
   PurchaseOrderSchema,
   PurchaseOrderStatusType,
 } from "@/lib/PurchaseOrder/purchaseOrder-data";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
-interface triggerVariant {
-  variant?: "icon" | "default";
-}
 
 type ItemFormValues = z.infer<typeof PurchaseOrderItemSchema>;
 
@@ -287,7 +242,6 @@ export default function ReceivePurchaseOrder({
                       </button>
                     </div>
                   </div>
-                  §
                 </>
               }
             />
