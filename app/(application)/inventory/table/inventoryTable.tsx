@@ -545,14 +545,14 @@ export default function InventoryDataTable() {
       <AdvancedDataTable
         columns={columns}
         data={isServerMode ? currentData : InventoryData}
-        defaultVisibleColumns={["name", "email", "department", "actions"]}
+        defaultVisibleColumns={["number","name","category","vendor","quantity","unit_cost", "number",  "actions"]}
         onRowClick={handleRowClick}
         onCellClick={handleCellClick}
         onPrintSelected={handlePrintSelected}
         onEmailSelected={handleEmailSelected}
         onDeleteSelected={handleDeleteSelected}
         onPrintRow={handlePrintRow}
-        storageKey="employee-table-visibility"
+        storageKey="inventory-table-visibility"
         realServerPagination={isServerMode}
         paginationInfo={isServerMode ? paginationInfo : undefined}
         onPaginationChange={isServerMode ? handlePaginationChange : undefined}

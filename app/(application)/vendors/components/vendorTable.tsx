@@ -393,14 +393,14 @@ export default function VendorDataTable() {
       <AdvancedDataTable
         columns={columns}
         data={isServerMode ? currentData : VendorData}
-        defaultVisibleColumns={["name", "email", "department", "actions"]}
+        defaultVisibleColumns={["name", "type", "contact", "address1", "city", "state_prov", "postal_code","email", "actions"]}
         onRowClick={handleRowClick}
         onCellClick={handleCellClick}
         onPrintSelected={handlePrintSelected}
         onEmailSelected={handleEmailSelected}
         onDeleteSelected={handleDeleteSelected}
         onPrintRow={handlePrintRow}
-        storageKey="employee-table-visibility"
+        storageKey="vendor-table-visibility"
         enableExpanding={false}
         subRowKey="tasks"
         realServerPagination={isServerMode}

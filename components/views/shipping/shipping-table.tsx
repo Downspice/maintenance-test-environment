@@ -380,32 +380,7 @@ export default function ShippingSheetTable() {
 
         return (
           <div className="flex flex-row justify-between ">
-            {/* <DropdownMenu>
-                         <DropdownMenuTrigger asChild>
-                           <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                             <MoreHorizontal className="h-4 w-4" />
-                           </Button>
-                         </DropdownMenuTrigger>
-                         <DropdownMenuContent align="end">
-                           <DropdownMenuItem
-                             onClick={(e) => {
-                               e.stopPropagation();
-                               alert(`Edit ${row.getValue("name")}`);
-                             }}
-                           >
-                             Edit
-                           </DropdownMenuItem>
-                           <DropdownMenuItem
-                             onClick={(e) => {
-                               e.stopPropagation();
-                               handlePrintRow(row);
-                             }}
-                           >
-                             <Printer className="mr-2 h-4 w-4" />
-                             Print
-                           </DropdownMenuItem>
-                         </DropdownMenuContent>
-                       </DropdownMenu> */}
+           
             <Button variant={"secondary"} size={"icon"}>
               <FilePenIcon />
             </Button>
@@ -467,7 +442,7 @@ export default function ShippingSheetTable() {
       <AdvancedDataTable
         columns={columns}
         data={isServerMode ? currentData : VendorData}
-        defaultVisibleColumns={["name", "email", "department", "actions"]}
+        defaultVisibleColumns={["name", "type", "contact", "address1","city","state_prov", "postal_code",   "actions"]}
         onRowClick={handleRowClick}
         onCellClick={handleCellClick}
         onPrintSelected={handlePrintSelected}

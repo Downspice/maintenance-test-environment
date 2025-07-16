@@ -429,14 +429,23 @@ export default function InvoicesDataTable() {
       <AdvancedDataTable
         columns={columns}
         data={isServerMode ? currentData : InvoiceData}
-        defaultVisibleColumns={["name", "email", "department", "actions"]}
+        defaultVisibleColumns={[
+          "invoiceNumber",
+          "status",
+          "date",
+          "dueDate",
+          "customer",
+          "total",
+          "payments",
+          "actions",
+        ]}
         onRowClick={handleRowClick}
         onCellClick={handleCellClick}
         onPrintSelected={handlePrintSelected}
         onEmailSelected={handleEmailSelected}
         onDeleteSelected={handleDeleteSelected}
         onPrintRow={handlePrintRow}
-        storageKey="employee-table-visibility"
+        storageKey="invoices-table-visibility"
         // Server-side props
         realServerPagination={isServerMode}
         paginationInfo={isServerMode ? paginationInfo : undefined}

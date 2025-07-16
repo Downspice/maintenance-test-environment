@@ -812,14 +812,14 @@ export default function DataTableDemo() {
       <AdvancedDataTable
         columns={columns}
         data={isServerMode ? currentData : allEquipments}
-        defaultVisibleColumns={["name", "email", "department", "actions"]}
+        defaultVisibleColumns={["carNumber","carModel","carType","meter","serialNumber","taskStatus", "actions"]}
         onRowClick={handleRowClick}
         onCellClick={handleCellClick}
         onPrintSelected={handlePrintSelected}
         onEmailSelected={handleEmailSelected}
         onDeleteSelected={handleDeleteSelected}
         onPrintRow={handlePrintRow}
-        storageKey="employee-table-visibility"
+        storageKey="equipment-table-visibility"
         getSubRows={getSubRows}
         enableExpanding={true}
         // Custom sub-row rendering

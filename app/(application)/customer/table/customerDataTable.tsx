@@ -395,7 +395,7 @@ export default function CustomerDataTable() {
         onEmailSelected={handleEmailSelected}
         onDeleteSelected={handleDeleteSelected}
         onPrintRow={handlePrintRow}
-        storageKey="employee-table-visibility"
+        storageKey="customer-table-visibility"
         // Server-side props
         realServerPagination={isServerMode}
         paginationInfo={isServerMode ? paginationInfo : undefined}

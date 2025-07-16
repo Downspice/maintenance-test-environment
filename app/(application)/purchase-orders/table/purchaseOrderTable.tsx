@@ -532,14 +532,14 @@ export default function PurchaseOrderDataTable() {
       <AdvancedDataTable
         columns={columns}
         data={isServerMode ? currentData : PurchaseOrderData}
-        defaultVisibleColumns={["name", "email", "department", "actions"]}
+        defaultVisibleColumns={["id","status","created_on","required_on","vendor_name", "buyer_name", "actions"]}
         onRowClick={handleRowClick}
         onCellClick={handleCellClick}
         onPrintSelected={handlePrintSelected}
         onEmailSelected={handleEmailSelected}
         onDeleteSelected={handleDeleteSelected}
         onPrintRow={handlePrintRow}
-        storageKey="employee-table-visibility"
+        storageKey="purchase-table-visibility"
         getSubRows={getSubRows}
         enableExpanding={true}
         // Custom sub-row rendering

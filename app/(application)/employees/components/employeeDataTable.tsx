@@ -415,7 +415,7 @@ export default function EmployeeDataTable() {
       <AdvancedDataTable
         columns={columns}
         data={isServerMode ? currentData : EmployeeData}
-        defaultVisibleColumns={["name", "email", "department", "actions"]}
+        defaultVisibleColumns={["id","name","type","driverNumber","contact", "actions"]}
         onRowClick={handleRowClick}
         onCellClick={handleCellClick}
         onPrintSelected={handlePrintSelected}
