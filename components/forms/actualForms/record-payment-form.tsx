@@ -2,18 +2,14 @@
 
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  useForm,
-} from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { GitPullRequestArrow,  } from "lucide-react";
+import { GitPullRequestArrow } from "lucide-react";
 import { toast } from "sonner";
 import InputWrapper from "../wrappers/InputWrapper";
-import {
-  MultiComboboxWrapper,
-} from "../wrappers/ComboboxWrapper";
+import { MultiComboboxWrapper } from "../wrappers/ComboboxWrapper";
 import {
   invoiceOptionsList,
   invoicePaymentMethodOptionsList,
@@ -21,7 +17,8 @@ import {
 import DatePickerWrapper from "../wrappers/DatePickerWrapper";
 import Fieldset from "@/components/customUI/fieldset";
 import SelectWrapper from "../wrappers/SelectWrapper";
-import {Sheet,
+import {
+  Sheet,
   SheetTrigger,
   SheetContent,
   SheetHeader,
@@ -41,7 +38,6 @@ export const vendorSchema = z.object({
 
 export default function RecordPaymentForm() {
   const [open, setOpen] = useState(false);
-
 
   const vendorForm = useForm<z.infer<typeof vendorSchema>>({
     resolver: zodResolver(vendorSchema),
@@ -68,7 +64,6 @@ export default function RecordPaymentForm() {
             Fill out the form below to record Payment
           </SheetDescription>
         </SheetHeader>
-
         <div>
           <Form {...vendorForm}>
             <form
