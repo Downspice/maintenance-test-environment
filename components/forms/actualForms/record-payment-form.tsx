@@ -59,7 +59,7 @@ export default function RecordPaymentForm() {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="secondary">Manage Payment</Button>
+        <Button variant="secondary">New Payment Record</Button>
       </SheetTrigger>
       <SheetContent className="w-3/4 ">
         <SheetHeader>
