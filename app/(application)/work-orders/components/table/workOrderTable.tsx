@@ -53,13 +53,19 @@ import ChangeAssigneesForm from "../../forms/change-assignee";
 import ChangeCostCenterForm from "../../forms/change-cost-center";
 
 const getStatusColor = (status: string) => {
-  switch (status) {
+  switch (status.toLowerCase()) {
     case "open":
-      return "bg-orange-100 text-orange-800 border-orange-200";
-    case "closed":
-      return "bg-green-100 text-green-800 border-green-200";
+      return "bg-green-100 text-green-800 border border-green-200";
+    case "in progress":
+      return "bg-blue-100 text-blue-800 border border-blue-200";
+    case "on hold":
+      return "bg-yellow-100 text-yellow-800 border border-yellow-200";
+    case "complete":
+      return "bg-purple-100 text-purple-800 border border-purple-200";
+    case "cancelled":
+      return "bg-red-100 text-red-800 border border-red-200";
     default:
-      return "bg-gray-100 text-gray-800 border-gray-200";
+      return "bg-gray-100 text-gray-800 border border-gray-200";
   }
 };
 
@@ -534,13 +540,13 @@ export default function WorkOrderDataTable() {
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  onClick={() => handleStatus("Closed", row)}
+                  onClick={() => handleStatus("Open", row)}
                   disabled={row.original.status === "open"}
                 >
                   Change Status (Open)
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onClick={() => handleStatus("Open", row)}
+                  onClick={() => handleStatus("Closed", row)}
                   disabled={row.original.status === "closed"}
                 >
                   Change Status (Close)

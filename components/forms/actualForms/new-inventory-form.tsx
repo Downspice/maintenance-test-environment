@@ -2,10 +2,10 @@
 
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { GitPullRequestArrow, Trash2 } from "lucide-react";
+import { GitPullRequestArrow } from "lucide-react";
 import { toast } from "sonner";
 import InputWrapper from "../wrappers/InputWrapper";
 import SelectWrapper from "../wrappers/SelectWrapper";
@@ -23,7 +23,6 @@ import {
 import SingleCheckboxWrapper from "../wrappers/SingleCheckboxWrapper";
 import { costCenterOptions } from "./work-order-form";
 import Fieldset from "@/components/customUI/fieldset";
-
 import FileUploadWrapper from "../wrappers/FileUploadWrapper";
 import PartSubstitutionTable from "@/app/(application)/inventory/component/inventory.partSubstitutionTable";
 import AlternateUpcCodesTable from "@/app/(application)/inventory/component/inventory.alternateUpcCodesTable";

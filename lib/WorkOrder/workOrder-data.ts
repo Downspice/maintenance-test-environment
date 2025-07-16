@@ -75,7 +75,7 @@ export const WorkOrderSchema = z.object({
   startedOn: z.date().optional(),
   completedOn: z.date().optional(),
   assigneeIds: z.array(z.string()).optional(),
-  status: z.string().optional(),
+  status: z.string(),
   workOrderType: z
     .enum(["preventive", "corrective", "inspection", "other"])
     .optional(),
@@ -98,7 +98,7 @@ export type Part = z.infer<typeof PartSchema>;
 export const mockWorkOrders: z.infer<typeof WorkOrderSchema>[] = [
   {
     workOrderNumber: "WO-0001",
-    status: "open",
+    status: "Open",
     workOrderTotal: 400,
     priority: "HIGH",
     scheduledOn: new Date("2025-07-20"),
@@ -156,7 +156,7 @@ export const mockWorkOrders: z.infer<typeof WorkOrderSchema>[] = [
   },
   {
     workOrderNumber: "WO-0002",
-    status: "open",
+    status: "Open",
     priority: "NORMAL",
     workOrderTotal: 300,
     scheduledOn: new Date("2025-07-18"),
@@ -206,7 +206,7 @@ export const mockWorkOrders: z.infer<typeof WorkOrderSchema>[] = [
   },
   {
     workOrderNumber: "WO-0003",
-    status: "open",
+    status: "Open",
     priority: "LOW",
     workOrderTotal: 440,
     scheduledOn: new Date("2025-07-25"),
@@ -236,7 +236,7 @@ export const mockWorkOrders: z.infer<typeof WorkOrderSchema>[] = [
   },
   {
     workOrderNumber: "WO-0004",
-    status: "open",
+    status: "Open",
     priority: "URGENT",
     workOrderTotal: 300,
     scheduledOn: new Date("2025-07-15"),
@@ -291,7 +291,7 @@ export const mockWorkOrders: z.infer<typeof WorkOrderSchema>[] = [
   },
   {
     workOrderNumber: "WO-0005",
-    status: "open",
+    status: "Open",
     priority: "NORMAL",
     workOrderTotal: 410,
     scheduledOn: new Date("2025-07-28"),

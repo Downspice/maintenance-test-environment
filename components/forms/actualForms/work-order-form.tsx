@@ -95,6 +95,8 @@ export const costCenterOptions = [
   { value: "other", label: "Other" },
 ];
 
+export const WorkOrderStatuses = ["Open", "In Progress", "On Hold", "Complete"];
+
 export default function NewWorkOrderForm() {
   const [open, setOpen] = useState(false);
   const [maintenanceTasks, setMaintenanceTasks] = useState<
@@ -106,6 +108,7 @@ export default function NewWorkOrderForm() {
     AddMaintenanceInWorkOrderInterface[]
   >([]);
   const [isMaintenanceSheetOpen, setIsMaintenanceSheetOpen] = useState(false);
+  const [status, setStatus] = useState<string>("Open");
 
   function handleAddMaintenanceTask(task: AddMaintenanceInWorkOrderInterface) {
     const taskWithStatus = { ...task, complete: false };
@@ -267,10 +270,35 @@ export default function NewWorkOrderForm() {
                   </div>
                   <div className="col-span-5 space-y-2">
                     <div className="flex justify-end space-x-1 border border-b-black/20">
-                      <Button>Open</Button>
-                      <Button>In Progress</Button>
-                      <Button>On Hold</Button>
-                      <Button>Complete</Button>
+                      <div className="flex gap-2">
+                        {WorkOrderStatuses.map((stat) => (
+                          <button
+                            key={stat}
+                            type="button"
+                            className={`p-3 h-fit rounded-md border text-sm font-medium ${
+                              status === stat
+                                ? stat === "Open"
+                                  ? "bg-green-500 text-white" // Open = Fresh, ready to start
+                                  : stat === "In Progress"
+                                  ? "bg-blue-500 text-white" // In Progress = Active, working
+                                  : stat === "On Hold"
+                                  ? "bg-yellow-400 text-white" // On Hold = Caution, paused
+                                  : stat === "Complete"
+                                  ? "bg-purple-600 text-white" // Complete = Done, celebratory
+                                  : stat === "Cancelled"
+                                  ? "bg-red-600 text-white" // Cancelled = Error or terminated
+                                  : "bg-gray-400 text-white" // Fallback for unexpected status
+                                : "bg-white text-gray-700 border border-gray-300"
+                            }`}
+                            onClick={() => {
+                              workOrderForm.setValue("status", stat);
+                              setStatus(stat);
+                            }}
+                          >
+                            {stat}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                     <div>
                       <div className="flex flex-row justify-between space-x-2 ">
