@@ -167,6 +167,7 @@ export const ownershipOptions = [
   { value: "Owned", label: "Owned" },
   { value: "Leased", label: "Leased" },
   { value: "Rented", label: "Rented" },
+  { value: "Customer", label: "Customer" },
 ]
 
 export const fuelUnitsOptions = [

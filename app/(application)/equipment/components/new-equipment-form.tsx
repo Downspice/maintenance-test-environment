@@ -109,6 +109,7 @@ export default function EquipmentForm({ variant }: triggerVariant) {
   };
 
   const watchHasMeter = form.watch("hasMeter");
+
   const watchStatus = form.watch("status");
   const watchPrimary = form.watch("primaryMeterUnit");
   const watchSecondary = form.watch("secondaryMeterUnit");
@@ -860,6 +861,15 @@ export default function EquipmentForm({ variant }: triggerVariant) {
                                   label="Ownership"
                                   options={ownershipOptions}
                                 />
+                                {form.watch("ownership") === "Customer" && (
+                                  <ComboboxFieldWrapper
+                                    control={form.control}
+                                    name="customerName"
+                                    label="Customer"
+                                    options={assigneeOptions}
+                                    
+                                  />
+                                )}
                                 <DatePickerWrapper
                                   control={form.control}
                                   name="inService"
