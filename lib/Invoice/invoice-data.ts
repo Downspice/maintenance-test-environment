@@ -60,6 +60,11 @@ export const InvoiceSchema = z
           check_number: z.string().optional(),
           name_on_card: z.string().optional(),
           transaction_notes: z.string().optional(),
+          date: z.any().optional(), 
+          paymentMethod: z.any().optional(),
+          chequeNumber: z.any().optional(),
+          name: z.any().optional(),
+          transaction: z.any().optional(),
         })
       )
       .optional(),
@@ -86,8 +91,8 @@ export const InvoiceData: InvoiceInterface[] = [
   {
     invoiceNumber: "INV-001",
     status: "Outstanding",
-    date:  "2025-07-01 ",
-    dueDate:  "2025-07-15 ",
+    date: "2025-07-01 ",
+    dueDate: "2025-07-15 ",
     customer: "John Doe",
     billing: "123 Elm St, Springfield",
     shipping: "456 Maple Ave",
@@ -123,7 +128,7 @@ export const InvoiceData: InvoiceInterface[] = [
     paymentsData: [
       {
         id: 1,
-        date_received:  "2025-07-02 ",
+        date_received: "2025-07-02 ",
         amount: "100",
         payment_type: "Credit Card",
         name_on_card: "John Doe",
@@ -134,8 +139,8 @@ export const InvoiceData: InvoiceInterface[] = [
   {
     invoiceNumber: "INV-002",
     status: "Outstanding",
-    date:  "2025-07-02 ",
-    dueDate:  "2025-07-17 ",
+    date: "2025-07-02 ",
+    dueDate: "2025-07-17 ",
     customer: "Jane Smith",
     billing: "789 Pine St, Portland",
     shipping: "789 Pine St, Portland",
@@ -171,8 +176,8 @@ export const InvoiceData: InvoiceInterface[] = [
   {
     invoiceNumber: "INV-003",
     status: "Outstanding",
-    date:  "2025-07-03 ",
-    dueDate:  "2025-07-18 ",
+    date: "2025-07-03 ",
+    dueDate: "2025-07-18 ",
     customer: "Kwame Osei",
     billing: "Coconut Grove, Accra",
     shipping: "Same",
@@ -200,7 +205,7 @@ export const InvoiceData: InvoiceInterface[] = [
     paymentsData: [
       {
         id: "kw-1",
-        date_received:  "2025-07-03 ",
+        date_received: "2025-07-03 ",
         amount: 150,
         payment_type: "Cash",
         transaction_notes: "Full paid",
@@ -210,8 +215,8 @@ export const InvoiceData: InvoiceInterface[] = [
   {
     invoiceNumber: "INV-004",
     status: "Outstanding",
-    date:  "2025-07-04 ",
-    dueDate:  "2025-07-19 ",
+    date: "2025-07-04 ",
+    dueDate: "2025-07-19 ",
     customer: "Carlos Garcia",
     billing: "55 Market Road, Austin",
     shipping: "",
@@ -239,7 +244,7 @@ export const InvoiceData: InvoiceInterface[] = [
     paymentsData: [
       {
         id: 4,
-        date_received:  "2025-07-04 ",
+        date_received: "2025-07-04 ",
         amount: 50,
         payment_type: "Mobile Money",
         transaction_notes: "Initial payment",
@@ -249,8 +254,8 @@ export const InvoiceData: InvoiceInterface[] = [
   {
     invoiceNumber: "INV-005",
     status: "Outstanding",
-    date:  "2025-07-05 ",
-    dueDate:  "2025-07-20 ",
+    date: "2025-07-05 ",
+    dueDate: "2025-07-20 ",
     customer: "Linh Nguyen",
     billing: "14 Palm Street, San Diego",
     shipping: "14 Palm Street, San Diego",
@@ -284,7 +289,7 @@ export const InvoiceData: InvoiceInterface[] = [
     paymentsData: [
       {
         id: 5,
-        date_received:  "2025-07-06 ",
+        date_received: "2025-07-06 ",
         amount: 275,
         payment_type: "Bank Transfer",
         name_on_card: "Linh Nguyen",
@@ -297,8 +302,8 @@ export const InvoiceData: InvoiceInterface[] = [
   {
     invoiceNumber: "INV-006",
     status: "Outstanding",
-    date:  "2025-07-06 ",
-    dueDate:  "2025-07-21 ",
+    date: "2025-07-06 ",
+    dueDate: "2025-07-21 ",
     customer: "Rebecca Adams",
     billing: "89 Bay Lane, Boston",
     shipping: "Same",
@@ -328,8 +333,8 @@ export const InvoiceData: InvoiceInterface[] = [
   {
     invoiceNumber: "INV-007",
     status: "Outstanding",
-    date:  "2025-07-07 ",
-    dueDate:  "2025-07-22 ",
+    date: "2025-07-07 ",
+    dueDate: "2025-07-22 ",
     customer: "Daniel Kim",
     billing: "104 Cherry Dr, Seattle",
     shipping: "Same",
@@ -363,7 +368,7 @@ export const InvoiceData: InvoiceInterface[] = [
     paymentsData: [
       {
         id: 7,
-        date_received:  "2025-07-08 ",
+        date_received: "2025-07-08 ",
         amount: 150,
         payment_type: "Credit Card",
         name_on_card: "Daniel Kim",
@@ -373,8 +378,8 @@ export const InvoiceData: InvoiceInterface[] = [
   {
     invoiceNumber: "INV-008",
     status: "Outstanding",
-    date:  "2025-07-08 ",
-    dueDate:  "2025-07-23 ",
+    date: "2025-07-08 ",
+    dueDate: "2025-07-23 ",
     customer: "Ama Mensah",
     billing: "23 Peace Road, Kumasi",
     shipping: "Same",
@@ -404,8 +409,8 @@ export const InvoiceData: InvoiceInterface[] = [
   {
     invoiceNumber: "INV-009",
     status: "Outstanding",
-    date:  "2025-07-09 ",
-    dueDate:  "2025-07-24 ",
+    date: "2025-07-09 ",
+    dueDate: "2025-07-24 ",
     customer: "Laura Brown",
     billing: "612 Sunset Blvd, LA",
     shipping: "Same",
@@ -435,8 +440,8 @@ export const InvoiceData: InvoiceInterface[] = [
   {
     invoiceNumber: "INV-010",
     status: "Outstanding",
-    date:  "2025-07-10 ",
-    dueDate:  "2025-07-25 ",
+    date: "2025-07-10 ",
+    dueDate: "2025-07-25 ",
     customer: "Chinedu Okoro",
     billing: "99 Industrial Estate, Lagos",
     shipping: "Same",
@@ -464,7 +469,7 @@ export const InvoiceData: InvoiceInterface[] = [
     paymentsData: [
       {
         id: "ok-10",
-        date_received:  "2025-07-11 ",
+        date_received: "2025-07-11 ",
         amount: 140,
         payment_type: "POS",
         name_on_card: "Okoro C.",

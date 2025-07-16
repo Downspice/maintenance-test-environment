@@ -90,9 +90,9 @@ export default function EditInvoice({
   const [openItems, setOpenItems] = useState(false);
 
   //payment states
-  const [paymentsList, setPaymentsList] = useState<InvoiceItemInterface[]>(data.paymentsData ?? []);
+  const [paymentsList, setPaymentsList] = useState<PaymentFormValues[]>(data.paymentsData ?? []);
   const [editPaymentIndex, setEditPaymentIndex] = useState<number | null>(null);
-  const [editPayment, setEditPayment] = useState<InvoiceItemInterface | null>(
+  const [editPayment, setEditPayment] = useState<PaymentFormValues | null>(
     null
   );
   const [openPayments, setOpenPayments] = useState(false);
