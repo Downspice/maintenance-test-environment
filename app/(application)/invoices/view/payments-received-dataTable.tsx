@@ -219,19 +219,6 @@ export default function PaymentReceivedTable() {
     [paginationInfo.pageSize]
   ); // Add dependencies that actually matter
 
-  const getSubRows = (originalRow: PaymentReceivedInterface) => {
-    return originalRow.vendor_links;
-  };
-
-  // Custom sub-row renderer
-  const renderSubRow = (
-    subRowData: description,
-    parentRow: any,
-    depth: number
-  ) => {
-    return <div className="space-y-4"></div>;
-  };
-
   // Column definitions
   const columns: ColumnDef<PaymentReceivedInterface>[] = [
     {
@@ -418,7 +405,16 @@ export default function PaymentReceivedTable() {
       <AdvancedDataTable
         columns={columns}
         data={isServerMode ? currentData : paymentReceived}
-        defaultVisibleColumns={["name", "email", "department", "actions"]}
+        defaultVisibleColumns={[
+          "dateReceived",
+          "invoiceNumber",
+          "category",
+          "customer",
+          "methodOfPayment",
+          "name",
+          "amount",
+          "actions",
+        ]}
         onRowClick={handleRowClick}
         onCellClick={handleCellClick}
         onPrintSelected={handlePrintSelected}
@@ -426,12 +422,6 @@ export default function PaymentReceivedTable() {
         onDeleteSelected={handleDeleteSelected}
         onPrintRow={handlePrintRow}
         storageKey="payments-received-table-visibility"
-        getSubRows={getSubRows}
-        enableExpanding={false}
-        // Custom sub-row rendering
-        renderSubRow={renderSubRow}
-        subRowKey="tasks"
-        // Server-side props
         realServerPagination={isServerMode}
         paginationInfo={isServerMode ? paginationInfo : undefined}
         onPaginationChange={isServerMode ? handlePaginationChange : undefined}
