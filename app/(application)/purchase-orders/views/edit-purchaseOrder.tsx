@@ -62,9 +62,6 @@ import {
 } from "@/lib/PurchaseOrder/purchaseOrder-data";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-interface triggerVariant {
-  variant?: "icon" | "default";
-}
 
 type ItemFormValues = z.infer<typeof PurchaseOrderItemSchema>;
 
@@ -79,7 +76,7 @@ export default function EditPurchaseOrderForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editIndex, setEditIndex] = useState<number | null>(null);
 
-  const [items, setItems] = useState<ItemFormValues[]>(data.items);
+  const [items, setItems] = useState<ItemFormValues[]>(data.items ?? []);
   const [editItems, setEditItems] = useState<ItemFormValues | null>(null);
   const [openItems, setOpenItems] = useState(false);
 
@@ -663,7 +660,7 @@ export default function EditPurchaseOrderForm({
                   ) : (
                     <>
                       <Save className="mr-2 h-4 w-4" />
-                      Create Purcchase Order
+                      Save Purchase Order
                     </>
                   )}
                 </Button>

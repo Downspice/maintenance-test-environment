@@ -66,7 +66,7 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editIndex, setEditIndex] = useState<number | null>(null);
 
-  const [items, setItems] = useState<ItemFormValues[]>(purchaseOrderItems);
+  const [items, setItems] = useState<ItemFormValues[]>([]);
   const [editItems, setEditItems] = useState<ItemFormValues | null>(null);
   const [openItems, setOpenItems] = useState(false);
 
@@ -78,6 +78,7 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
     "Partial",
     "Closed",
   ];
+  
   const handleDeleteItem = (itemName: string) => {
     const filtered = items.filter((item) => item.partNumber !== itemName);
     setItems(filtered);
