@@ -116,16 +116,7 @@ export default function EquipmentForm({ variant }: triggerVariant) {
   function onSubmit(data: EquipmentFormValues) {
     console.log("Form submitted with VALUES:", data);
 
-    const getLabel = (options: ComboboxOption[], value: string) =>
-      options.find((option) => option.value === value)?.label || value;
-
-    const getLabels = (options: ComboboxOption[], values: string[]) =>
-      values.map(
-        (value) =>
-          options.find((option) => option.value === value)?.label || value
-      );
-
-    toast("Project created successfully!", {
+    toast("Equipment created successfully!", {
       duration: 10000,
     });
 
@@ -193,23 +184,6 @@ export default function EquipmentForm({ variant }: triggerVariant) {
                   orientation="vertical"
                   className="w-full"
                 >
-                  <TabsList orientation="vertical">
-                    <TabsTrigger value="main">Main</TabsTrigger>
-                    <TabsTrigger value="specifications">
-                      Specifications
-                    </TabsTrigger>
-                    <TabsTrigger value="warranty">Warranty/Misc</TabsTrigger>
-                    <TabsTrigger value="purchase">Purchase</TabsTrigger>
-                    <TabsTrigger value="images">Images</TabsTrigger>
-                    <TabsTrigger value="attachments">Attachments</TabsTrigger>
-                    <TabsTrigger value="notifications">
-                      Notifications
-                    </TabsTrigger>
-                    <TabsTrigger value="expenses">Expenses</TabsTrigger>
-                    <TabsTrigger value="notes">Notes</TabsTrigger>
-                    <TabsTrigger value="settings">Settings</TabsTrigger>
-                  </TabsList>
-
                   <div className="flex-1">
                     <TabsContent value="attachments">
                       <FileUploadWrapper
@@ -304,10 +278,10 @@ export default function EquipmentForm({ variant }: triggerVariant) {
                                 value={""}
                               />
                               <DatePickerWrapper
-                                  control={form.control}
-                                  name="lastMaintenanceCheck1"
-                                  label="Last Maintenance check"
-                                />
+                                control={form.control}
+                                name="lastMaintenanceCheck1"
+                                label="Last Maintenance check"
+                              />
                             </div>
                             <div className="col-span-1 space-y-2">
                               <SingleCheckboxWrapper
@@ -321,7 +295,7 @@ export default function EquipmentForm({ variant }: triggerVariant) {
                                 label="Average daily Mi/Km/Hrs"
                                 type="number"
                                 value={""}
-                              /> 
+                              />
                             </div>
                           </div>
                         }
@@ -511,7 +485,7 @@ export default function EquipmentForm({ variant }: triggerVariant) {
                                   <span className="text-xl">No schedule</span>
                                   <Button>Select...</Button>
                                 </div>
-                                <div>
+                                <div className="text-sm">
                                   Selecting an existing PM schedule template can
                                   save data entry time. Or you may add
                                   individualPM services after equipment is
@@ -931,6 +905,25 @@ export default function EquipmentForm({ variant }: triggerVariant) {
                       </div>
                     </TabsContent>
                   </div>
+                  <TabsList
+                    orientation="vertical"
+                    className="border-l border-r-0"
+                  >
+                    <TabsTrigger value="main">Main</TabsTrigger>
+                    <TabsTrigger value="specifications">
+                      Specifications
+                    </TabsTrigger>
+                    <TabsTrigger value="warranty">Warranty/Misc</TabsTrigger>
+                    <TabsTrigger value="purchase">Purchase</TabsTrigger>
+                    <TabsTrigger value="images">Images</TabsTrigger>
+                    <TabsTrigger value="attachments">Attachments</TabsTrigger>
+                    <TabsTrigger value="notifications">
+                      Notifications
+                    </TabsTrigger>
+                    <TabsTrigger value="expenses">Expenses</TabsTrigger>
+                    <TabsTrigger value="notes">Notes</TabsTrigger>
+                    <TabsTrigger value="settings">Settings</TabsTrigger>
+                  </TabsList>
                 </Tabs>
               </div>
               <div className="flex justify-end">

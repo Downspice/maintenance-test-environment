@@ -326,24 +326,44 @@ export function AdvancedDataTable<TData, TValue>({
   }
 
   // Render custom sub-rows
+  // const renderCustomSubRows = (row: Row<TData>) => {
+  //   if (!renderSubRow || !row.getIsExpanded()) return null
+
+  //   const parentData = row.original as any
+  //   const subRowsData = parentData[subRowKey]
+
+  //   if (!subRowsData || !Array.isArray(subRowsData)) return null
+
+  //   return subRowsData.map((subRowData, index) => (
+  //     <TableRow key={`${row.id}-sub-${index}`} className="bg-muted/30 this">
+  //       <TableCell colSpan={columnsWithSelection.length} className="p-0">
+  //         <div className="p-4" style={{ paddingLeft: `${(row.depth + 1) * 20 + 16}px` }}>
+  //           {renderSubRow(subRowData, row, row.depth + 1)}
+  //         </div>
+  //       </TableCell>
+  //     </TableRow>
+  //   ))
+  // }
+
   const renderCustomSubRows = (row: Row<TData>) => {
-    if (!renderSubRow || !row.getIsExpanded()) return null
+  if (!renderSubRow || !row.getIsExpanded()) return null
 
-    const parentData = row.original as any
-    const subRowsData = parentData[subRowKey]
+  const parentData = row.original as any
+  const subRowsData = parentData[subRowKey]
 
-    if (!subRowsData || !Array.isArray(subRowsData)) return null
+  if (!Array.isArray(subRowsData) || subRowsData.length === 0) return null
 
-    return subRowsData.map((subRowData, index) => (
-      <TableRow key={`${row.id}-sub-${index}`} className="bg-muted/30 this">
-        <TableCell colSpan={columnsWithSelection.length} className="p-0">
-          <div className="p-4" style={{ paddingLeft: `${(row.depth + 1) * 20 + 16}px` }}>
-            {renderSubRow(subRowData, row, row.depth + 1)}
-          </div>
-        </TableCell>
-      </TableRow>
-    ))
-  }
+  return subRowsData.map((subRowData, index) => (
+    <TableRow key={`${row.id}-sub-${index}`} className="bg-muted/30">
+      <TableCell colSpan={columnsWithSelection.length} className="p-0">
+        <div className="p-4" style={{ paddingLeft: `${(row.depth + 1) * 20 + 16}px` }}>
+          {renderSubRow(subRowData, row, row.depth + 1)}
+        </div>
+      </TableCell>
+    </TableRow>
+  ))
+}
+
 
   const exportToCSV = () => {
     const visibleColumns = table.getVisibleLeafColumns().filter((col) => col.id !== "select")
@@ -599,7 +619,9 @@ export function AdvancedDataTable<TData, TValue>({
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
+              table.getRowModel().rows
+  .filter((row) => row.depth === 0)
+  .map((row) => (
                 <React.Fragment key={row.id}>
                   <TableRow
                     data-state={row.getIsSelected() && "selected"}

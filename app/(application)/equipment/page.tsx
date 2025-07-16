@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/select";
 import { useSheet } from "@/lib/sheet-providers";
 import EquipmentForm from "./components/new-equipment-form";
-import NotCompleteMessage from "../workInprogress/working";
 import NewEquipmentDataTable from "./components/table/equipmentDatatable";
 import UpdateMeters from "./components/update-meters-form";
 import { locationOptionsList } from "@/lib/option-list";
@@ -65,7 +64,7 @@ export default function EquipmentPage() {
   };
 
   const handleSelectChange = (
-    key: "equipment" | "location" | "custom",
+    key: "equipment" | "location" | "custom"| "search",
     value: string
   ) => {
     if (value === "new") {
