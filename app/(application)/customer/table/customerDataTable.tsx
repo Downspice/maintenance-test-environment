@@ -388,7 +388,7 @@ export default function CustomerDataTable() {
       <AdvancedDataTable
         columns={columns}
         data={isServerMode ? currentData : CustomerData}
-        defaultVisibleColumns={["name", "email", "department", "actions"]}
+        defaultVisibleColumns={["name","type","address1","state", "postalCode", "email", "actions"]}
         onRowClick={handleRowClick}
         onCellClick={handleCellClick}
         onPrintSelected={handlePrintSelected}
