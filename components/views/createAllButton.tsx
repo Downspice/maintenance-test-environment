@@ -17,8 +17,6 @@ import {
   SheetDescription,
   Sheet,
 } from "@/components/ui/sheet";
-import NewWarehouse from "../forms/actualForms/new-warehouse";
-import NotCompleteMessage from "@/app/(application)/workInprogress/working";
 import NewEmployeeForm from "../forms/actualForms/new-employee-form";
 import InspectionForm from "../forms/actualForms/new-inspection";
 import NewVendor from "../forms/actualForms/new-vendor-form";
@@ -29,6 +27,8 @@ import EquipmentAssignment from "../forms/actualForms/assign-equipment";
 import NewAccident from "../forms/actualForms/new-accident";
 import AdjustInventoryForm from "../forms/actualForms/adjust-inventory-form";
 import { ScrollArea } from "../ui/scroll-area";
+import QuickActionsReceivePurchaseOrder from "../forms/actualForms/quickActions/recievePurchaseOrder";
+import NewPart from "../forms/actualForms/quickActions/addPart";
 
 export default function CreateAllButton() {
   const [open, setOpen] = useState(false);
@@ -81,12 +81,12 @@ export default function CreateAllButton() {
     Expense: <GeneralExpense />,
     Assignment: <EquipmentAssignment />,
     Accident: <NewAccident />,
-    Part: <NotCompleteMessage />,
+    Part: <NewPart />,
     "Purchase Order": <NewPurchaseOrderForm />,
     Employee: <NewEmployeeForm />,
     Vendor: <NewVendor />,
     "Receive | Adjust Inventory": <AdjustInventoryForm data={undefined} />,
-    "Receive Purchase Order": <NewPurchaseOrderForm />,
+    "Receive Purchase Order": <QuickActionsReceivePurchaseOrder />,
   };
   const renderFormContent = () => {
     const SelectedComponent = formComponents[selectedProjectType || ""];

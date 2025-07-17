@@ -25,6 +25,7 @@ import WarehouseSetup from "./warehouseView";
 import ShippingView from "./shipping/shippingVieew";
 import ManagePMScheduleTemplateView from "./managePMSheduleTemplate/view";
 import NewVendor from "../forms/actualForms/new-vendor-form";
+import ChoiceList from "../forms/actualForms/setupForms/choiceList";
 
 export default function HeaderSettingsButton() {
   const [open, setOpen] = useState(false);
@@ -86,12 +87,12 @@ export default function HeaderSettingsButton() {
   ].find((type) => type.label === selectedProjectType);
 
   const renderFormContent = () => {
-    const SelectedComponent = formComponents[selectedProjectType || ""];
+    const SelectedComponent = formComponents[selectedProjectType ??""];
     console.log("new selected", SelectedComponent);
     return SelectedComponent ? SelectedComponent : null;
   };
 
-  const formComponents = {
+  const formComponents:any = {
     Settings: <CompanySettings />,
     Locations: <LocationView />,
     Warehouses: <WarehouseSetup />,
@@ -101,7 +102,7 @@ export default function HeaderSettingsButton() {
     "PM Schedule Templates": <ManagePMScheduleTemplateView />,
     Associations: <NotCompleteMessage />,
     "Part Kits": <NotCompleteMessage />,
-    "Choice Lists": <NotCompleteMessage />,
+    "Choice Lists": <ChoiceList />,
     "Scheduled reports": <NotCompleteMessage />,
     Equipment: <NotCompleteMessage />,
     Employees: <NewEmployeeForm />,
