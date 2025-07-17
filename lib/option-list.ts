@@ -43,8 +43,7 @@ export const reportCategoryTypeOptionsList = [
     value: "Presses (Production Equipment)",
     label: "Presses (Production Equipment)",
   },
-  { value: "Pumps", label: "Pumps (Production Equipment)" },
-  { value: "Presses (Drilling)", label: "Presses (Drilling)" },
+  { value: "Pumps", label: "Pumps (Production Equipment)" }, 
 ];
 
 export const iconsOptionList = [
