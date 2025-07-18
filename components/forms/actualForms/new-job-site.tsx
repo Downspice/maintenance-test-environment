@@ -5,33 +5,15 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Camera, LucideTrash2, Save } from "lucide-react";
-import { ColumnDef } from "@tanstack/react-table";
+import { Save } from "lucide-react";
 // Form wrappers
 import InputWrapper from "@/components/forms/wrappers/InputWrapper";
-import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";
 // Schema and types
 import {
   equipmentSchema,
   type EquipmentFormValues,
-  assigneeOptions,
 } from "@/lib/equipment-schema";
-import Fieldset from "@/components/customUI/fieldset";
-import { equipmentOptionsList, locationOptionsList } from "@/lib/option-list";
 import { toast } from "sonner";
-import {
-  ComboboxFieldWrapper, 
-} from "@/components/forms/wrappers/ComboboxWrapper";
-import { EditableDataTable } from "@/components/customUI/editableTable";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { priorityOptions } from "../../../app/(application)/work-orders/forms/newWorkOrderFormSheet";
 import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
 
 interface triggerVariant {
@@ -44,20 +26,6 @@ export default function NewJobSite({ variant }: triggerVariant) {
   const form = useForm<EquipmentFormValues>({
     resolver: zodResolver(equipmentSchema),
     defaultValues: {
-      status: "Active",
-      renewalInterval: 1,
-      primaryMeter: 0,
-      secondaryMeter: 0,
-      purchasePrice: 0,
-      salvagePrice: 0,
-      depreciationLifeMonths: 0,
-      warrantyDescription: "Primary",
-      secondaryWarrantyDescription: "Secondary",
-      mviInterval: 1,
-      ownership: "Owned",
-      fuelVolumeUnits: "Gallons",
-      annualOperatingBudget: 0,
-      hasMeter: false,
     },
   });
 
