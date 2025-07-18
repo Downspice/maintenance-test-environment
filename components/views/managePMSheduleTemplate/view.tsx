@@ -1,7 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function ManagePMScheduleTemplateView() {
-  
   return (
     <Tabs defaultValue="main" orientation="vertical" className="w-full">
       <TabsList orientation="vertical">
@@ -18,18 +17,10 @@ export default function ManagePMScheduleTemplateView() {
       </TabsList>
 
       <div className="flex-1">
-        <TabsContent value="settings" className="space-y-2">
-           
-        </TabsContent>
-        <TabsContent value="notes" className="space-y-2">
-          
-        </TabsContent>
-        <TabsContent value="main">
-         f
-        </TabsContent>
-        <TabsContent value="specifications" className="space-y-2"> 
-
-        </TabsContent>
+        <TabsContent value="settings" className="space-y-2"></TabsContent>
+        <TabsContent value="notes" className="space-y-2"></TabsContent>
+        <TabsContent value="main">f</TabsContent>
+        <TabsContent value="specifications" className="space-y-2"></TabsContent>
         <TabsContent
           value="warranty"
           className="space-x-2 space-y-2 grid grid-cols-2 "
@@ -132,22 +123,14 @@ export default function ManagePMScheduleTemplateView() {
                     </label>
                     <div className="flex items-center gap-2">
                       <span className="text-sm">$</span>
-                      <Input
-                        type="number"
-                        value={""}
-                        className="flex-1"
-                      />
+                      <Input type="number" value={""} className="flex-1" />
                     </div>
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Current Value</label>
                     <div className="flex items-center gap-2">
                       <span className="text-sm">$</span>
-                      <Input
-                        type="number"
-                        value={""}
-                        className="flex-1"
-                      />
+                      <Input type="number" value={""} className="flex-1" />
                     </div>
                   </div>
                 </div>
@@ -214,6 +197,4 @@ export default function ManagePMScheduleTemplateView() {
       </div>
     </Tabs>
   );
-
-
 }

@@ -27,6 +27,7 @@ import ManagePMScheduleTemplateView from "./managePMSheduleTemplate/view";
 import NewVendor from "../forms/actualForms/new-vendor-form";
 import ChoiceList from "../forms/actualForms/setupForms/choiceList";
 import NewScheduledReportForm from "../forms/actualForms/new-scheduled-report-form";
+import ScheduledReportView from "./scheduledReport/scheduled-report";
 
 export default function HeaderSettingsButton() {
   const [open, setOpen] = useState(false);
@@ -104,7 +105,7 @@ export default function HeaderSettingsButton() {
     Associations: <NotCompleteMessage />,
     "Part Kits": <NotCompleteMessage />,
     "Choice Lists": <ChoiceList />,
-    "Scheduled reports": <NewScheduledReportForm />,
+    "Scheduled reports": <ScheduledReportView />,
     Equipment: <NotCompleteMessage />,
     Employees: <NewEmployeeForm />,
     Vendors: <NewVendor />,

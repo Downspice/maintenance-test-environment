@@ -64,7 +64,7 @@ export default function EquipmentPage() {
   };
 
   const handleSelectChange = (
-    key: "equipment" | "location" | "custom"| "search",
+    key: "equipment" | "location" | "custom" | "search",
     value: string
   ) => {
     if (value === "new") {
