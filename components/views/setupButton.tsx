@@ -29,6 +29,7 @@ import ChoiceList from "../forms/actualForms/setupForms/choiceList";
 import NewScheduledReportForm from "../forms/actualForms/new-scheduled-report-form";
 import ScheduledReportView from "./scheduledReport/scheduled-report";
 import PartKitManager from "../forms/actualForms/setupForms/partKit/PartKitManager";
+import AssignmentConfigurations from "../forms/actualForms/setupForms/assignment/assignmentManager";
 
 export default function HeaderSettingsButton() {
   const [open, setOpen] = useState(false);
@@ -103,7 +104,7 @@ export default function HeaderSettingsButton() {
     "User Preferences": <NotCompleteMessage />,
     "PO Shipping Address": <ShippingView />,
     "PM Schedule Templates": <ManagePMScheduleTemplateView />,
-    Associations: <NotCompleteMessage />,
+    Associations: <AssignmentConfigurations />,
     "Part Kits": <PartKitManager />,
     "Choice Lists": <ChoiceList />,
     "Scheduled reports": <ScheduledReportView />,

@@ -210,18 +210,15 @@ export const equipmentCheckboxOptions: CheckboxOption[] = [
 export const EmployeeCheckboxOptions: CheckboxOption[] = [
   {
     id: "attachments",
-    label: "MAintenance",
-    // description: "Include relevant files and documents",
+    label: "MAintenance", 
   },
   {
     id: "expenses",
-    label: "Renewals",
-    // description: "Track all associated costs",
+    label: "Renewals", 
   },
   {
     id: "images",
-    label: "Work Orders",
-    // description: "Add visual references or photos",
+    label: "Work Orders", 
   },]
 export const monthOptionList = [
   { value: "01", label: "January" },

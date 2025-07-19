@@ -23,6 +23,8 @@ import { toast } from "sonner";
 import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
 import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
 import { costCenterOptions } from "@/components/forms/actualForms/work-order-form";
+import CheckboxWrapper from "../wrappers/CheckboxWrapper";
+import FileUploadWrapper from "../wrappers/FileUploadWrapper";
 
 interface triggerVariant {
   variant?: "icon" | "default";
@@ -33,21 +35,7 @@ export default function GeneralExpense({ variant }: triggerVariant) {
 
   const form = useForm<EquipmentFormValues>({
     resolver: zodResolver(equipmentSchema),
-    defaultValues: {
-      status: "Active",
-      renewalInterval: 1,
-      primaryMeter: 0,
-      secondaryMeter: 0,
-      purchasePrice: 0,
-      salvagePrice: 0,
-      depreciationLifeMonths: 0,
-      warrantyDescription: "Primary",
-      secondaryWarrantyDescription: "Secondary",
-      mviInterval: 1,
-      ownership: "Owned",
-      fuelVolumeUnits: "Gallons",
-      annualOperatingBudget: 0,
-      hasMeter: false,
+    defaultValues: { 
     },
   });
 
@@ -176,3 +164,31 @@ export default function GeneralExpense({ variant }: triggerVariant) {
     </Form>
   );
 }
+{/* <>
+ <FileUploadWrapper
+  multiple={true}
+  control={form.control}
+  name={"Attachments"}
+  label={"Attachments"}
+/>  
+
+ <CheckboxWrapper
+    control={employeeForm.control}
+    name={"tracker"}
+    label={""}
+    options={EmployeeCheckboxOptions}
+  /> 
+</>
+  export const EmployeeCheckboxOptions: CheckboxOption[] = [
+  {
+    id: "attachments",
+    label: "MAintenance", 
+  },
+  {
+    id: "expenses",
+    label: "Renewals", 
+  },
+  {
+    id: "images",
+    label: "Work Orders", 
+  },] */}
