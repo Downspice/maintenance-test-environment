@@ -8,7 +8,6 @@ import {
 } from "../ui/dropdown-menu";
 import RepairRequestForm from "../forms/actualForms/repair-request-form";
 import { Plus } from "lucide-react";
-import { toast } from "sonner";
 import { useState } from "react";
 import {
   SheetContent,
@@ -62,18 +61,7 @@ export default function CreateAllButton() {
     { label: "Receive Purchase Order", onSelect: genericDropdown },
   ];
 
-  const handleCloseSheet = () => {
-    setOpen(false);
-    setSelectedProjectType(null);
-    // Reset all forms
-    // webForm.reset()
-    // mobileForm.reset()
-    // apiForm.reset()
-    // desktopForm.reset()
-    // designForm.reset()
-    // aiForm.reset()
-  };
-  //commnets
+  
   const formComponents = {
     "Repair Request": <RepairRequestForm />,
     "Daily Inspection": <InspectionForm />,
@@ -93,60 +81,6 @@ export default function CreateAllButton() {
     console.log("new selected", SelectedComponent);
     return SelectedComponent ? SelectedComponent : null;
   };
-
-  function onSubmit(data: any) {
-    const selectedType = dropdownItems.find(
-      (type) => type.label === selectedProjectType
-    );
-
-    toast("Project created successfully!", {
-      description: (
-        <div className="mt-2 space-y-2">
-          <div>
-            <p className="font-medium">{data.name}</p>
-            <p className="text-xs text-blue-600 font-medium">
-              Type: {selectedType?.label}
-            </p>
-          </div>
-          <p className="text-xs text-muted-foreground">{data.description}</p>
-          <p className="text-xs">
-            Deadline: {data.deadline.toLocaleDateString()}
-          </p>
-        </div>
-      ),
-      duration: 8000,
-    });
-
-    handleCloseSheet();
-  }
-
-  function onError(errors: any) {
-    const errorMessages = Object.entries(errors).map(
-      ([field, error]: [string, any]) => {
-        return `${field}: ${error.message}`;
-      }
-    );
-
-    toast.error("Please fix the following errors:", {
-      description: (
-        <div className="mt-2">
-          <ul className="list-disc list-inside space-y-1 text-sm">
-            {errorMessages.map((message, index) => (
-              <li key={index}>{message}</li>
-            ))}
-          </ul>
-        </div>
-      ),
-      duration: 8000,
-    });
-  }
-
-  // const renderFormContent = () => {
-  //   switch (selectedProjectType) {
-  //     case "Expense":
-  //       return <NewWarehouse />;
-  //   }
-  // };
 
   const selectedType = dropdownItems.find(
     (type) => type.label === selectedProjectType

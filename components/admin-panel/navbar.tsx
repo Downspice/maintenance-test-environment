@@ -3,7 +3,7 @@ import CreateAllButton from "../views/createAllButton";
 import HeaderMeterButton from "../views/headerMeterButton";
 import NotificationsDropdown from "../views/headerMeterButton";
 
-import HeaderUploadButton from "../views/headerUploadButton";
+import HeaderUploadButton from "../views/moreButton";
 import HeaderProfileButton from "../views/profileHeaderButton";
 import HeaderSettingsButton from "../views/setupButton";
 import { Input } from "../ui/input";

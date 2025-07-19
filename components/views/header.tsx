@@ -15,7 +15,7 @@ import HeaderSettingsButton from "./setupButton";
 import NotificationsDropdown from "./headerNotificationsButton";
 import HeaderMeterButton from "./headerMeterButton";
 import HeaderProfileButton from "./profileHeaderButton";
-import HeaderUploadButton from "./headerUploadButton";
+import HeaderUploadButton from "./moreButton";
 import { Separator } from "../ui/separator";
 
 export default function AppHeader() {
