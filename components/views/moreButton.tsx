@@ -38,6 +38,7 @@ import JobSiteAssignment from "../forms/actualForms/moreButtonForms/jobsiteassig
 import MeterUpdatesMoreButton from "../forms/actualForms/moreButtonForms/meterUpdate/meterUpdateView";
 import RepairRequestFormMoreButton from "../forms/actualForms/moreButtonForms/repairRequest/repairRequestForm";
 import RepairRequestView from "../forms/actualForms/moreButtonForms/repairRequest/repairRequestView";
+import PMForecasterView from "../forms/actualForms/moreButtonForms/pmForecaster/pmForecasterView";
 
 export default function HeaderUploadButton() {
     const [open, setOpen] = useState(false);
@@ -79,7 +80,8 @@ export default function HeaderUploadButton() {
       "Email history": <EmailHistoryDataTable />,
       "Job site Assignments":<JobSiteAssignment/>,
       "Meter Updates":<MeterUpdatesMoreButton/>,
-      "Repair Request (Outstanding)":<RepairRequestView/>
+      "Repair Request (Outstanding)":<RepairRequestView/>,
+      "PM Forecaster":<PMForecasterView/>
     };
 
     const renderFormContent = () => {
