@@ -22,11 +22,7 @@ import CheckboxWrapper from "@/components/forms/wrappers/CheckboxWrapper";
 import { MaintenanceTypesOptionList } from "@/lib/work-orders-data";
 
 const PmForecasterSchema = z.object({
-  name: z.string().min(1, "Name is required").max(255),
-  age: z.coerce.number().int().min(0, "Age must be a positive number"),
-  email: z.string().email("Invalid email format").max(255),
-  phone: z.string().min(1, "Phone is required").max(255),
-  intervals: z.string().optional(),
+   intervals: z.string().optional(),
   showMaintenance: z.string().optional(),
   dueRangeOn: z.boolean().optional(),
   dueRangeStart: z.date().optional(),
@@ -104,8 +100,8 @@ export default function PmForecasterForm() {
   useEffect(() => {
     if (intervalsValue === "Unit intervals") {
       form.setValue("dueRangeOn", false);
-      form.setValue("dueRangeStart", null);
-      form.setValue("dueRangeEnd", null);
+      form.setValue("dueRangeStart", undefined);
+      form.setValue("dueRangeEnd", undefined);
     }
   }, [intervalsValue, form]);
 
