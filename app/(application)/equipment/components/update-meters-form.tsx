@@ -74,7 +74,15 @@ export default function UpdateMeters() {
   function onSubmit(data: EquipmentFormValues) {
     console.log("Form submitted with VALUES:", data);
 
-  
+    const getLabel = (options: ComboboxOption[], value: string) =>
+      options.find((option) => option.value === value)?.label || value;
+
+    const getLabels = (options: ComboboxOption[], values: string[]) =>
+      values.map(
+        (value) =>
+          options.find((option) => option.value === value)?.label || value
+      );
+
     toast("Project created successfully!", {
       duration: 10000,
     });

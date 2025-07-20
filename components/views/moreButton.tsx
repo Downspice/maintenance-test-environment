@@ -35,6 +35,7 @@ import QuickActionsReceivePurchaseOrder from "../forms/actualForms/quickActions/
 import RepairRequestForm from "../forms/actualForms/repair-request-form";
 import NewWorkOrderForm from "../forms/actualForms/work-order-form";
 import JobSiteAssignment from "../forms/actualForms/moreButtonForms/jobsiteassignment/jobsiteAssignments";
+import MeterUpdatesMoreButton from "../forms/actualForms/moreButtonForms/meterUpdate/meterUpdateView";
 
 export default function HeaderUploadButton() {
     const [open, setOpen] = useState(false);
@@ -74,7 +75,8 @@ export default function HeaderUploadButton() {
 
     const formComponents = {
       "Email history": <EmailHistoryDataTable />,
-      "Job site Assignments":<JobSiteAssignment/>
+      "Job site Assignments":<JobSiteAssignment/>,
+      "Meter Updates":<MeterUpdatesMoreButton/>
     };
 
     const renderFormContent = () => {
