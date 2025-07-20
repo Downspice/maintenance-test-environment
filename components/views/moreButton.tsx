@@ -36,6 +36,8 @@ import RepairRequestForm from "../forms/actualForms/repair-request-form";
 import NewWorkOrderForm from "../forms/actualForms/work-order-form";
 import JobSiteAssignment from "../forms/actualForms/moreButtonForms/jobsiteassignment/jobsiteAssignments";
 import MeterUpdatesMoreButton from "../forms/actualForms/moreButtonForms/meterUpdate/meterUpdateView";
+import RepairRequestFormMoreButton from "../forms/actualForms/moreButtonForms/repairRequest/repairRequestForm";
+import RepairRequestView from "../forms/actualForms/moreButtonForms/repairRequest/repairRequestView";
 
 export default function HeaderUploadButton() {
     const [open, setOpen] = useState(false);
@@ -76,7 +78,8 @@ export default function HeaderUploadButton() {
     const formComponents = {
       "Email history": <EmailHistoryDataTable />,
       "Job site Assignments":<JobSiteAssignment/>,
-      "Meter Updates":<MeterUpdatesMoreButton/>
+      "Meter Updates":<MeterUpdatesMoreButton/>,
+      "Repair Request (Outstanding)":<RepairRequestView/>
     };
 
     const renderFormContent = () => {
@@ -136,7 +139,7 @@ export default function HeaderUploadButton() {
         </DropdownMenuContent>
       </DropdownMenu>
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent className="w-[400px] sm:w-2/3">
+        <SheetContent className="w-[400px] sm:w-5/6">
           <SheetHeader>
             <SheetTitle className="flex items-center gap-2">
               {/* {selectedType && <selectedType.icon className="h-5 w-5" />} */}
