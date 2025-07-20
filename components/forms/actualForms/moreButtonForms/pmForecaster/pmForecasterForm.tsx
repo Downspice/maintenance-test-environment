@@ -193,7 +193,7 @@ export default function PmForecasterForm() {
         <Fieldset
           legend="Show Maintenance"
           content={
-            <>
+            <div className="space-y-1">
               <RadioGroupWrapper
                 control={form.control}
                 name="showMaintenance"
@@ -323,7 +323,7 @@ export default function PmForecasterForm() {
                   </div>
                 }
               />
-            </>
+            </div>
           }
         />
         <Button type="submit">Save</Button>
