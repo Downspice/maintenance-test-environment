@@ -1,3 +1,5 @@
+import { RadioOption } from "@/components/forms/wrappers/RadioGroupWrapper";
+
 export interface WorkOrderTask {
   id: string;
   name: string;

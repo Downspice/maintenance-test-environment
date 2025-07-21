@@ -40,6 +40,7 @@ import RepairRequestFormMoreButton from "../forms/actualForms/moreButtonForms/re
 import RepairRequestView from "../forms/actualForms/moreButtonForms/repairRequest/repairRequestView";
 import PMForecasterView from "../forms/actualForms/moreButtonForms/pmForecaster/pmForecasterView";
 import GeneratePOMoreButtonView from "../forms/actualForms/moreButtonForms/generatePO/generatePOMoreButton";
+import GenerateWorkOrderMoreButtonView from "../forms/actualForms/moreButtonForms/generateWorkOrder/generateWorkOrderView";
 
 export default function HeaderUploadButton() {
     const [open, setOpen] = useState(false);
@@ -83,7 +84,8 @@ export default function HeaderUploadButton() {
       "Meter Updates":<MeterUpdatesMoreButton/>,
       "Repair Request (Outstanding)":<RepairRequestView/>,
       "PM Forecaster":<PMForecasterView/>,
-      "Generate Purchase Orders": <GeneratePOMoreButtonView/>
+      "Generate Purchase Orders": <GeneratePOMoreButtonView/>,
+      "Generate Work Orders":<GenerateWorkOrderMoreButtonView/>
     };
 
     const renderFormContent = () => {
