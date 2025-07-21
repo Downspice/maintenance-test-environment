@@ -63,16 +63,23 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 
-type ItemFormValues = z.infer<typeof PurchaseOrderItemSchema>;
+export type ItemFormValues = z.infer<typeof PurchaseOrderItemSchema>;
 
 export default function EditPurchaseOrderForm({
   children,
   data,
+  open: externalOpen,
+  onOpenChange,
 }: {
   children: React.ReactNode;
-  data: PurchaseOrderInterface;
+  data: Partial<PurchaseOrderInterface>;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }) {
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = externalOpen !== undefined ? externalOpen : internalOpen;
+  const setOpen = onOpenChange ?? setInternalOpen;
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editIndex, setEditIndex] = useState<number | null>(null);
 
