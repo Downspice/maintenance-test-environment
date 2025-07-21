@@ -7,8 +7,8 @@ export default function GenerateWorkOrderMoreButtonView() {
   return (
     <Tabs defaultValue="GenerateOptionTab">
       <TabsList>
-        <TabsTrigger value="GenerateOptionTab"> GenerateOption </TabsTrigger>
-        <TabsTrigger value="MeterUpdates">Advanced</TabsTrigger>
+        <TabsTrigger value="GenerateOptionTab"> Generate Option </TabsTrigger>
+        <TabsTrigger value="MeterUpdates">Meter Updates</TabsTrigger>
       </TabsList>
       <TabsContent  value="MeterUpdates"  className=" ">
         <MeterUpdatesMoreButton />
