@@ -170,7 +170,7 @@ export default function QuickActionsReceivePurchaseOrder() {
             <div className="flex flex-row w-1/2 gap-x-3">
               <ComboboxFieldWrapper
                 control={form.control}
-                name={"purchaseorderNumber"}
+                name={"purchaseOrderNumber"}
                 label={"Purchase Order #"}
                 options={PurchaseOrderOptions} 
               />

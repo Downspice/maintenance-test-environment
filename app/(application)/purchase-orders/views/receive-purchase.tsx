@@ -172,7 +172,7 @@ export default function ReceivePurchaseOrder({
             <div className="flex flex-row w-1/2 gap-x-3">
               <InputWrapper
                 control={form.control}
-                name={"purchaseorderNumber"}
+                name={"purchaseOrderNumber"}
                 label={"Purchase Order #"}
                 value={""}
                 type="text"

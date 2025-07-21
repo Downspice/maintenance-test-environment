@@ -197,7 +197,7 @@ export default function EditPurchaseOrderForm({
         <SheetHeader>
           <SheetTitle>
             <div className="flex justify-between">
-              <div>{data.purchaseorderNumber}</div>
+              <div>{data.purchaseOrderNumber}</div>
             </div>
           </SheetTitle>
         </SheetHeader>
@@ -211,7 +211,7 @@ export default function EditPurchaseOrderForm({
                 <div className="flex flex-row gap-x-3">
                   <InputWrapper
                     control={form.control}
-                    name={"purchaseorderNumber"}
+                    name={"purchaseOrderNumber"}
                     label={"Purchase Order #"}
                     value={""}
                     type="text"

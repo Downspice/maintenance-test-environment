@@ -201,7 +201,7 @@ export default function EditPurchaseOrderFormMoreButton({
                 <div className="flex flex-row gap-x-3">
                   <InputWrapper
                     control={form.control}
-                    name={"purchaseorderNumber"}
+                    name={"purchaseOrderNumber"}
                     label={"Purchase Order #"}
                     value={""}
                     type="text"

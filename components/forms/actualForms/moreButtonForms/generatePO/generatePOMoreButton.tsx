@@ -43,7 +43,7 @@ export default function GeneratePOMoreButtonView() {
 
   const onSubmit = (data: GeneratePOFormValues) => {
     if (data.generatePO === "Manual PO") {
-      setSubmittedPOData({ purchaseorderNumber: "PO-001", ...data }); // Replace with actual PO data
+      setSubmittedPOData({ purchaseOrderNumber: "PO-001", ...data }); // Replace with actual PO data
       setShowEditPOForm(true);
     } else {
       // Handle other types if needed

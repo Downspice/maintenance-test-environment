@@ -54,7 +54,7 @@ const getAllEmployees = (
 
 const flatEmployees = getAllEmployees(PurchaseOrderData);
 const sequential_id = [
-  ...new Set(flatEmployees.map((emp) => emp.purchaseorderNumber)),
+  ...new Set(flatEmployees.map((emp) => emp.purchaseOrderNumber)),
 ];
 const status = [...new Set(flatEmployees.map((emp) => emp.status))];
 const created_on = [...new Set(flatEmployees.map((emp) => emp.date))];
@@ -299,7 +299,7 @@ export default function PurchaseOrderDataTable() {
           className="font-bold text-primary flex flex-col"
           style={{ paddingLeft: `${row.depth * 20}px` }}
         >
-          <div>{row.original.purchaseorderNumber}</div>
+          <div>{row.original.purchaseOrderNumber}</div>
         </div>
       ),
     },
@@ -379,10 +379,10 @@ export default function PurchaseOrderDataTable() {
           console.log("Delete row:", row.original);
           if (
             confirm(
-              `Are you sure you want to delete ${row.original.purchaseorderNumber}?`
+              `Are you sure you want to delete ${row.original.purchaseOrderNumber}?`
             )
           ) {
-            alert(`Deleted ${row.original.purchaseorderNumber}`);
+            alert(`Deleted ${row.original.purchaseOrderNumber}`);
             // Here you would typically call your delete API
           }
         };
@@ -391,10 +391,10 @@ export default function PurchaseOrderDataTable() {
           console.log("Delete row:", row.original);
           if (
             confirm(
-              `Are you sure you want to close P0 #${row.original.purchaseorderNumber}?`
+              `Are you sure you want to close P0 #${row.original.purchaseOrderNumber}?`
             )
           ) {
-            alert(`P0 #${row.original.purchaseorderNumber} is closed`);
+            alert(`P0 #${row.original.purchaseOrderNumber} is closed`);
             // Here you would typically call your delete API
           }
         };

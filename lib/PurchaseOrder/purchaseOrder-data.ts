@@ -25,7 +25,7 @@ export const PurchaseOrderSchema = z.object({
   notes: z.string().optional(),
   items: z.array(PurchaseOrderItemSchema),
 
-  purchaseorderNumber: z.string().optional(),
+  purchaseOrderNumber: z.string().optional(),
   invoiceNumber: z.string().optional(),
   orderNumber: z.string().optional(),
   woNumber: z.string().optional(),
@@ -127,7 +127,7 @@ export const PurchaseOrderData: PurchaseOrderInterface[] = [
         notes: "All delivered",
       },
     ],
-    purchaseorderNumber: "PO-2025-0003",
+    purchaseOrderNumber: "PO-2025-0003",
     customer: "BuildGhana Co.",
     vendor: "Equipment Supplies Ghana",
     shipVia: "FedEx Freight",
@@ -180,7 +180,7 @@ export const PurchaseOrderData: PurchaseOrderInterface[] = [
         notes: "Bulk order for Q3 servicing",
       },
     ],
-    purchaseorderNumber: "PO-2025-0002",
+    purchaseOrderNumber: "PO-2025-0002",
     customer: "RoadConstruct Ltd.",
     vendor: "AutoParts Wholesale",
     shipVia: "DHL Express",
@@ -209,7 +209,7 @@ export const PurchaseOrderData: PurchaseOrderInterface[] = [
     notes: "Finalized and invoiced. Paid in full.",
 
     // Optional fields used in your form but not strictly validated in the schema (you can extend schema if needed)
-    purchaseorderNumber: "PO-2025-0001",
+    purchaseOrderNumber: "PO-2025-0001",
     customer: "TechFleet Inc.",
     vendor: "FuelMasters Ltd.",
     shipVia: "Freight Logistics",
