@@ -41,6 +41,8 @@ import RepairRequestView from "../forms/actualForms/moreButtonForms/repairReques
 import PMForecasterView from "../forms/actualForms/moreButtonForms/pmForecaster/pmForecasterView";
 import GeneratePOMoreButtonView from "../forms/actualForms/moreButtonForms/generatePO/generatePOMoreButton";
 import GenerateWorkOrderMoreButtonView from "../forms/actualForms/moreButtonForms/generateWorkOrder/generateWorkOrderView";
+import PhysicalInventoryUpdateMoreButton from "../forms/actualForms/moreButtonForms/updatePhysicalInventory/updatePhysicalInventoryView";
+import UpdateMetersTable from "@/app/(application)/equipment/components/update-meter-table";
 
 export default function HeaderUploadButton() {
     const [open, setOpen] = useState(false);
@@ -85,7 +87,9 @@ export default function HeaderUploadButton() {
       "Repair Request (Outstanding)":<RepairRequestView/>,
       "PM Forecaster":<PMForecasterView/>,
       "Generate Purchase Orders": <GeneratePOMoreButtonView/>,
-      "Generate Work Orders":<GenerateWorkOrderMoreButtonView/>
+      "Generate Work Orders":<GenerateWorkOrderMoreButtonView/>,
+      "Physical Inventory Count": <PhysicalInventoryUpdateMoreButton/>,
+      "Update Meters":<UpdateMetersTable/>
     };
 
     const renderFormContent = () => {

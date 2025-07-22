@@ -1,7 +1,7 @@
 import { Separator } from "../ui/separator";
 import CreateAllButton from "../views/createAllButton";
-import HeaderMeterButton from "../views/headerMeterButton";
-import NotificationsDropdown from "../views/headerMeterButton";
+import HeaderMeterButton from "../views/reportsButton";
+import NotificationsDropdown from "../views/reportsButton";
 
 import HeaderUploadButton from "../views/moreButton";
 import HeaderProfileButton from "../views/profileHeaderButton";
