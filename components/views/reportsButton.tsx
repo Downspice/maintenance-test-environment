@@ -17,6 +17,11 @@ import {
 } from "../ui/dropdown-menu";
 import { Separator } from "../ui/separator";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
+import HistoryReportGeneration from "./reportDialogs/history";
+import FuelReportGeneration from "./reportDialogs/fuel";
+import EquipmentReportGeneration from "./reportDialogs/equipments";
+import InventoryReportGeneration from "./reportDialogs/inventory";
+import InventoryUsageReportGeneration from "./reportDialogs/inventoryUsage";
 
 export default function HeaderMeterButton() {
   const [openDialog, setOpenDialog] = useState(false);
@@ -32,23 +37,23 @@ export default function HeaderMeterButton() {
   const dropdownItemsSection1 = [
     {
       label: "History (Cost Summary)",
-      content: <div>Cost Summary Details...</div>,
+      content: <HistoryReportGeneration/>,
     },
     {
       label: "Fuel History",
-      content: <div>Fuel History Details...</div>,
+      content: <FuelReportGeneration/>,
     },
     {
       label: "Equipment Usage",
-      content: <div>Usage Chart or Summary...</div>,
+      content: <EquipmentReportGeneration/>,
     },
     {
       label: "Inventory Listing",
-      content: <div>Inventory items here...</div>,
+      content: <InventoryReportGeneration/>,
     },
     {
-      label: "Update",
-      content: <div>Update form or data...</div>,
+      label: " Inventory Update",
+      content: <InventoryUsageReportGeneration/>,
     },
   ];
 
@@ -106,7 +111,7 @@ export default function HeaderMeterButton() {
       </DropdownMenu>
 
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-        <DialogContent>
+        <DialogContent className="max-w-xl">
           <DialogHeader>
             <DialogTitle>{dialogTitle}</DialogTitle>
           </DialogHeader>

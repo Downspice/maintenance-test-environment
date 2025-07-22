@@ -15,7 +15,7 @@ import NewEquipmentDataTable from "./components/table/equipmentDatatable";
 import UpdateMeters from "./components/update-meters-form";
 import { locationOptionsList } from "@/lib/option-list";
 
-const equipmentActiveDropdown = [
+export const equipmentActiveDropdown = [
   { value: "my", label: "My" },
   { value: "Active", label: "Active" },
   { value: "due", label: "Due" },
