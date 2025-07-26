@@ -234,3 +234,9 @@ export const monthOptionList = [
   { value: "11", label: "November" },
   { value: "12", label: "December" },
 ];
+
+export const pmScheduleOptionList = [
+  { value: "drill Press", label: "Drill Press" },
+  { value: "Ac Units", label: "Ac Units" },
+  { value: "Generator", label: "Generator" },
+]

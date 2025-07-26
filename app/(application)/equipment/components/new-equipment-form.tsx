@@ -9,17 +9,17 @@ import { CardContent } from "@/components/ui/card";
 import { LucideTrash2, Save } from "lucide-react";
 
 // Form wrappers
-import InputWrapper from "../../../../components/forms/wrappers/InputWrapper";
-import TextareaWrapper from "../../../../components/forms/wrappers/TextareaWrapper";
-import SelectWrapper from "../../../../components/forms/wrappers/SelectWrapper";
-import MultiSelectWrapper from "../../../../components/forms/wrappers/MultiSelectWrapper";
-import DatePickerWrapper from "../../../../components/forms/wrappers/DatePickerWrapper";
-import CustomFieldsWrapper from "../../../../components/forms/wrappers/CustomFieldsWrapper";
+import InputWrapper from "@/components/forms/wrappers/InputWrapper";
+import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
+import SelectWrapper from "@/components/forms/wrappers/SelectWrapper";
+import MultiSelectWrapper from "@/components/forms/wrappers/MultiSelectWrapper";
+import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";
+import CustomFieldsWrapper from "@/components/forms/wrappers/CustomFieldsWrapper";
 
 // Schema and types
 import {
-  equipmentSchema,
-  type EquipmentFormValues,
+  // equipmentSchema,
+  // type EquipmentFormValues,
   equipmentTypeOptions,
   colorOptions,
   statusOptions,
@@ -37,6 +37,7 @@ import {
   carModelOptionsList,
   equipmentCheckboxOptions,
   makeOptionsList,
+  pmScheduleOptionList,
 } from "@/lib/option-list";
 import { toast } from "sonner";
 import { Plus } from "lucide-react";
@@ -67,10 +68,126 @@ import {
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import SingleCheckboxWrapper from "@/components/forms/wrappers/SingleCheckboxWrapper";
+import z from "zod";
 
 interface triggerVariant {
   variant?: "icon" | "default";
 }
+
+export const equipmentSchema = z.object({
+  // Identification
+  name: z.string().min(1, "Unit # is required"),
+  make: z.string().optional(),
+  model: z.string().optional(),
+  serialNumber: z.string().optional(),
+  year: z.coerce.number().optional(),
+  equipmentType: z.string().optional(),
+
+  // Assignment
+  status: z.string(),
+  soldDate: z.string().optional(),
+  soldTo: z.string().optional(),
+  soldPrice: z.coerce.number().optional(),
+  assigneeIds: z.array(z.string()).optional(),
+  categoryId: z.string().optional(),
+  parentId: z.string().optional(),
+
+  // Meter Configurations
+  pmSchedule: z.string().optional(),
+  primaryMeterUnit: z.string().optional(),
+  primary: z.coerce.number().optional(),
+  secondaryMeterUnit: z.string().optional(),
+  secondary: z.coerce.number().optional(),
+
+  // Custom Fields
+  btu: z.string().optional(),
+  inputVolts: z.string().optional(),
+  installDate: z.string().optional(),
+  custom: z.any().optional(),
+
+  // Specifications
+  color: z.string().optional(),
+  length: z.string().optional(),
+  width: z.string().optional(),
+  height: z.string().optional(),
+  grossWeight: z.coerce.number().optional(),
+  customSpecifications: z.any().optional(),
+
+  // Warranty
+  warrantyDescription: z.string().optional(),
+  warrantyExpirationDate: z.string().optional(),
+  primaryWarrantyMeter: z.coerce.number().optional(),
+  secondaryWarrantyDescription: z.string().optional(),
+  secondaryWarrantyExpirationDate: z.string().optional(),
+  secondaryWarrantyMeter: z.coerce.number().optional(),
+  CustomSecondary: z.any().optional(),
+
+  // Purchase
+  vendor: z.string().optional(),
+  purchaseDate: z.string().optional(),
+  meter: z.coerce.number().optional(),
+  price: z.coerce.number().optional(),
+  purchaseOrderCustom: z.any().optional(),
+  note: z.string().optional(),
+
+  // Depreciation
+  depreciationLifeMonths: z.coerce.number().optional(),
+  startingPrice: z.coerce.number().optional(),
+  salvagePrice: z.coerce.number().optional(),
+
+  // Ownership/Status
+  ownership: z.string().optional(),
+  customerName: z.string().optional(),
+  inService: z.string().optional(),
+  outService: z.string().optional(),
+  transferred: z.string().optional(),
+  notes: z.string().optional(),
+
+  // Settings
+  tracker: z.array(z.string()).optional(),
+  budget: z.coerce.number().optional(),
+  enableMeter1: z.boolean().optional(),
+  average1: z.coerce.number().optional(),
+  lastMaintenanceCheck1: z.string().optional(),
+  enableMeter2: z.boolean().optional(),
+  average2: z.coerce.number().optional(),
+
+  // Attachments & Images
+  Attachments: z.any().optional(),
+
+  // Notes
+  generalNotes: z.string().optional(),
+
+  // Editable Table Data
+  expenses: z
+    .array(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        lastDate: z.string().optional(),
+        nextDate: z.string().optional(),
+        period: z.string().optional(),
+        interval: z.coerce.number().optional(),
+        cost: z.coerce.number().optional(),
+        quantity: z.coerce.number().optional(),
+        notes: z.string().optional(),
+      })
+    )
+    .optional(),
+  notifications: z
+    .array(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        email: z.string().optional(),
+        maintenance: z.boolean().optional(),
+        renewals: z.boolean().optional(),
+        workOrders: z.boolean().optional(),
+      })
+    )
+    .optional(),
+});
+
 export default function EquipmentForm({ variant }: triggerVariant) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -202,7 +319,7 @@ export default function EquipmentForm({ variant }: triggerVariant) {
                         </div>
                       </div>
                       <EditableDataTable
-                        data={people}
+                        data={expenseLogging}
                         columns={columns}
                         defaultRow={{ id: Date.now() }}
                         onDataChange={(newData) => {
@@ -360,46 +477,7 @@ export default function EquipmentForm({ variant }: triggerVariant) {
                                   />
                                 </div>
 
-                                {/* <SingleCheckboxWrapper
-                                  control={form.control}
-                                  name="hasMeter"
-                                  label="Equipment has a meter (e.g. miles, kilometers, or hours)"
-                                />
-
-                                {watchHasMeter && (
-                                  <div className="space-y-4 p-4 border rounded-md bg-muted/30">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                      <SelectWrapper
-                                        control={form.control}
-                                        name="primaryMeterUnits"
-                                        label="Primary Meter"
-                                        options={meterUnitsOptions}
-                                      />
-                                      <InputWrapper
-                                        control={form.control}
-                                        name="primaryMeter"
-                                        label="Current Reading"
-                                        type="number"
-                                        value={""}
-                                      />
-                                    </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                      <SelectWrapper
-                                        control={form.control}
-                                        name="secondaryMeterUnits"
-                                        label="Secondary Meter"
-                                        options={meterUnitsOptions}
-                                      />
-                                      <InputWrapper
-                                        control={form.control}
-                                        name="secondaryMeter"
-                                        label="Current Reading"
-                                        type="number"
-                                        value={""}
-                                      />
-                                    </div>
-                                  </div>
-                                )} */}
+                                
                               </>
                             }
                           />
@@ -483,8 +561,12 @@ export default function EquipmentForm({ variant }: triggerVariant) {
                             content={
                               <>
                                 <div className="flex justify-between items-center ">
-                                  <span className="text-xl">No schedule</span>
-                                  <Button>Select...</Button>
+                                  <ComboboxFieldWrapper
+                                    label="Select PM Schedule"
+                                    control={form.control}
+                                    options={pmScheduleOptionList}
+                                    name="pmSchedule"
+                                  />
                                 </div>
                                 <div className="text-sm">
                                   Selecting an existing PM schedule template can
@@ -960,7 +1042,7 @@ export default function EquipmentForm({ variant }: triggerVariant) {
   );
 }
 
-const people = [{}];
+const expenseLogging = [{}];
 const emailPeople = [{}];
 
 type emailTableType = {
@@ -1167,7 +1249,7 @@ export const columns: ColumnDef<expenseTableType>[] = [
     cell: ({ row, updateRow, rowIndex }: any) => (
       <Input
         value={row.original.cost}
-        onChange={(e) => updateRow(rowIndex, "cost", e)}
+        onChange={(e) => updateRow(rowIndex, "cost", e.target.value)}
       />
     ),
     enableSorting: true,

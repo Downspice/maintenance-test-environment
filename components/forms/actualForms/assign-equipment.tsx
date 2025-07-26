@@ -316,7 +316,7 @@ export const columns: ColumnDef<RepairRequestInterface>[] = [
     cell: ({ row, updateRow, rowIndex }: any) => (
       <Input
         value={row.original.name}
-        onChange={(e) => updateRow(rowIndex, "descritpion", e)}
+        onChange={(e) => updateRow(rowIndex, "description", e)}
       />
     ),
     enableSorting: true,

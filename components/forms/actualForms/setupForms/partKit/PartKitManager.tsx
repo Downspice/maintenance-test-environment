@@ -26,10 +26,14 @@ import {
 const initial: PartKitType[] = [
   {
     id: "1",
-    name: "Starter Kit",
-    notes: "First set",
-    parts: [],
-  },
+  "name": "Quarterly Equipment Inspection",
+  "notes": "Includes checks for electrical, mechanical, and safety systems.",
+  "trackByDate": true,
+  "trackByMeterPrimary": true,
+  "meterPrimaryType": "hour",
+  "trackByMeterSecondary": false,
+  "meterSecondaryType": null
+}
 ];
 
 export default function PartKitManager() {

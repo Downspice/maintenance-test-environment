@@ -7,11 +7,6 @@ import { Button } from "@/components/ui/button";
 import {
   MoreHorizontal,
   Trash2,
-  Printer,
-  CheckCircle,
-  Clock,
-  AlertTriangle,
-  FileTextIcon,
   FilePenIcon,
 } from "lucide-react";
 import {
@@ -19,17 +14,12 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuPortal,
   DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 import React from "react";
 import { InvoiceData, InvoiceInterface } from "@/lib/Invoice/invoice-data";
-import EditVendor from "../view/edit-invoice";
 import { matchesSearchAllFields } from "@/lib/utils";
 import EditInvoice from "../view/edit-invoice";
 

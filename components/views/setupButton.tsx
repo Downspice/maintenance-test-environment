@@ -23,13 +23,12 @@ import { ScrollArea } from "../ui/scroll-area";
 import LocationView from "./locationView";
 import WarehouseSetup from "./warehouseView";
 import ShippingView from "./shipping/shippingVieew";
-import ManagePMScheduleTemplateView from "./managePMSheduleTemplate/view";
 import NewVendor from "../forms/actualForms/new-vendor-form";
 import ChoiceList from "../forms/actualForms/setupForms/choiceList";
-import NewScheduledReportForm from "../forms/actualForms/new-scheduled-report-form";
 import ScheduledReportView from "./scheduledReport/scheduled-report";
 import PartKitManager from "../forms/actualForms/setupForms/partKit/PartKitManager";
 import AssignmentConfigurations from "../forms/actualForms/setupForms/assignment/assignmentManager";
+import ManagePMScheduleManager from "../forms/actualForms/setupForms/managePMSchedule/ManagePMScheduleManager";
 
 export default function HeaderSettingsButton() {
   const [open, setOpen] = useState(false);
@@ -103,7 +102,7 @@ export default function HeaderSettingsButton() {
     "Manage Users": <NotCompleteMessage />,
     "User Preferences": <NotCompleteMessage />,
     "PO Shipping Address": <ShippingView />,
-    "PM Schedule Templates": <ManagePMScheduleTemplateView />,
+    "PM Schedule Templates": <ManagePMScheduleManager />,
     Associations: <AssignmentConfigurations />,
     "Part Kits": <PartKitManager />,
     "Choice Lists": <ChoiceList />,

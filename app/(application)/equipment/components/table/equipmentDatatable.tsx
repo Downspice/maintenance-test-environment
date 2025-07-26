@@ -22,13 +22,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 import React from "react";
+import EditEquipment from "../views/EditEquipment";
+import EquipmentProfile from "../views/EquipmentProfile";
 
 // Enhanced data type with sub-rows
 type Employee = {
   id: number;
-  carName: string;
-  carModel: string;
-  carNumber: string;
+  name: string;
+  model: string;
+  unitNumber: string;
   tasksPending: number;
   carImage: string;
   taskStatus: "due soon" | "overdue";
@@ -43,7 +45,7 @@ type Employee = {
   }[]; // Added tasks array for sub-rows
   make: string; // e.g., Toyota, Honda
   meter: string;
-  carType: string; // e.g., SUV, Sedan, Truck
+  equipmentType: string; // e.g., SUV, Sedan, Truck
   serialNumber: string; // VIN or internal serial
   location: string; // e.g., "Nairobi Garage", "Lot 5"
   category: string;
@@ -61,11 +63,11 @@ interface Task {
 const allEquipments: Employee[] = [
   {
     id: 1,
-    carName: "Toyota Camry",
-    carModel: "2020",
-    carNumber: "KAB 123A",
+    name: "Toyota Camry",
+    model: "2020",
+    unitNumber: "KAB 123A",
     make: "Toyota",
-    carType: "Sedan",
+    equipmentType: "Sedan",
     meter: "4hours",
     serialNumber: "JTNB11HK2L3056789",
     location: "Nairobi Garage A",
@@ -102,259 +104,141 @@ const allEquipments: Employee[] = [
     ],
   },
   {
-    id: 2,
-    carName: "Honda Accord",
-    carModel: "2019",
-    carNumber: "KCE 456B",
-    meter: "6hours",
-    make: "Honda",
-    carType: "Sedan",
-    serialNumber: "1HGCV1F33KA078963",
-    location: "Garage B - West Lot",
-    category: "Leased",
-    tasksPending: 1,
-    carImage: "/placeholder.svg?height=60&width=100",
-    taskStatus: "overdue",
-    taskTypes: ["maintenance"],
-    tasks: [
-      {
-        id: "2-1",
-        title: "Transmission Service",
-        type: "maintenance",
-        instructions: "Flush transmission fluid and replace filter",
-        woNumber: "WO126",
-        dueDate: "2025-05-15",
-      },
-    ],
-  },
-  {
-    id: 3,
-    carName: "Mazda CX-5",
-    carModel: "2021",
-    carNumber: "KBX 789C",
-    make: "Mazda",
-    meter: "9hours",
-    carType: "SUV",
-    serialNumber: "JM3KFBCM6M0334567",
-    location: "Mombasa Depot",
-    category: "Fleet",
-    tasksPending: 2,
-    carImage: "/placeholder.svg?height=60&width=100",
-    taskStatus: "due soon",
-    taskTypes: ["incident", "inspection"],
-    tasks: [
-      {
-        id: "3-1",
-        title: "Window Repair",
-        type: "incident",
-        instructions: "Replace broken driver side window",
-        woNumber: "WO127",
-        dueDate: "2025-05-24",
-      },
-      {
-        id: "3-2",
-        title: "Annual Safety Inspection",
-        type: "inspection",
-        instructions: "Complete annual safety inspection checklist",
-        woNumber: "WO123",
-        dueDate: "2025-05-27",
-      },
-    ],
-  },
-  {
-    id: 4,
-    carName: "Subaru Forester",
-    carModel: "2018",
-    carNumber: "KDD 321D",
-    meter: "10 hours",
-    make: "Subaru",
-    carType: "SUV",
-    serialNumber: "JF2SKABC2JH567890",
-    location: "Central Yard",
-    category: "Owned",
-    tasksPending: 4,
-    carImage: "/placeholder.svg?height=60&width=100",
-    taskStatus: "overdue",
-    taskTypes: ["maintenance", "incident", "pm"],
-  },
-  {
-    id: 5,
-    carName: "Ford Ranger",
-    carModel: "2022",
-    carNumber: "KCZ 654E",
-    meter: "34 hours",
-    make: "Ford",
-    carType: "Truck",
-    serialNumber: "1FT7W2B68NEG12345",
-    location: "Offsite Lot 3",
-    category: "Fleet",
-    tasksPending: 1,
-    carImage: "/placeholder.svg?height=60&width=100",
-    taskStatus: "due soon",
-    taskTypes: ["incident"],
-    tasks: [
-      {
-        id: "5-1",
-        title: "Bumper Repair",
-        type: "incident",
-        instructions: "Fix damaged rear bumper",
-        woNumber: "WO123",
-        dueDate: "2025-05-29",
-      },
-    ],
-  },
-  {
-    id: 6,
-    carName: "Nissan X-Trail",
-    carModel: "2020",
-    carNumber: "KCL 987F",
-    meter: "60 hours",
-    make: "Nissan",
-    carType: "SUV",
-    serialNumber: "JN1BJ1CW3LW321654",
-    location: "Nairobi Garage B",
-    category: "Leased",
-    tasksPending: 2,
-    carImage: "/placeholder.svg?height=60&width=100",
-    taskStatus: "overdue",
-    taskTypes: ["maintenance", "renewal"],
-    tasks: [
-      {
-        id: "6-1",
-        title: "Brake Pad Replacement",
-        type: "maintenance",
-        instructions: "Replace front and rear brake pads",
-        woNumber: "WO123",
-        dueDate: "2025-05-18",
-      },
-      {
-        id: "6-2",
-        title: "Registration Renewal",
-        type: "renewal",
-        instructions: "Process vehicle registration renewal",
-        woNumber: "WO123",
-        dueDate: "2025-05-19",
-      },
-    ],
-  },
-  {
-    id: 7,
-    carName: "Volkswagen Golf",
-    carModel: "2017",
-    carNumber: "KAR 741G",
-    meter: "90 hours",
-    make: "Volkswagen",
-    carType: "Hatchback",
-    serialNumber: "WVWZZZAUZHP567321",
-    location: "Garage A - East Lot",
-    category: "Owned",
-    tasksPending: 3,
-    carImage: "/placeholder.svg?height=60&width=100",
-    taskStatus: "due soon",
-    taskTypes: ["maintenance", "incident", "pm"],
-    tasks: [
-      {
-        id: "7-1",
-        title: "Timing Belt Replacement",
-        type: "maintenance",
-        instructions: "Replace timing belt and water pump",
-        woNumber: "WO123",
-        dueDate: "2025-05-26",
-      },
-      {
-        id: "7-2",
-        title: "30,000 Mile Service",
-        type: "pm",
-        instructions: "Complete 30k mile preventive maintenance",
-        woNumber: "WO123",
-        dueDate: "2025-05-27",
-      },
-      {
-        id: "7-3",
-        title: "Paint Scratch Repair",
-        type: "incident",
-        instructions: "Fix paint scratches on driver side door",
-        woNumber: "WO12344",
-        dueDate: "2025-05-28",
-      },
-    ],
-  },
-  {
-    id: 8,
-    carName: "BMW X3",
-    carModel: "2023",
-    carNumber: "KDA 852H",
-    meter: "400 hours",
-    make: "BMW",
-    carType: "SUV",
-    serialNumber: "5UXTY5C02P9J98765",
-    location: "Inspection Bay",
-    category: "Fleet",
-    tasksPending: 1,
-    carImage: "/placeholder.svg?height=60&width=100",
-    taskStatus: "due soon",
-    taskTypes: ["inspection"],
-    tasks: [
-      {
-        id: "8-1",
-        title: "Pre-delivery Inspection",
-        type: "inspection",
-        instructions: "Complete new vehicle inspection checklist",
-        woNumber: "WO1233",
-        dueDate: "2025-05-30",
-      },
-    ],
-  },
-  {
-    id: 9,
-    carName: "Mercedes-Benz C200",
-    carModel: "2021",
-    carNumber: "KBM 963J",
-    meter: "560 hours",
-    make: "Mercedes-Benz",
-    carType: "Sedan",
-    serialNumber: "WDDWF4JB8MR123456",
-    location: "Garage C",
-    category: "Leased",
-    tasksPending: 5,
-    carImage: "/placeholder.svg?height=60&width=100",
-    taskStatus: "overdue",
-    taskTypes: ["incident", "renewal", "inspection"],
-  },
-  {
-    id: 10,
-    carName: "Hyundai Tucson",
-    carModel: "2020",
-    carNumber: "KCX 159K",
-    meter: "100 hours",
-    make: "Hyundai",
-    carType: "SUV",
-    serialNumber: "KM8J3CA46LU123789",
-    location: "Main Warehouse",
-    category: "Fleet",
-    tasksPending: 2,
-    carImage: "/placeholder.svg?height=60&width=100",
-    taskStatus: "due soon",
-    taskTypes: ["maintenance", "pm"],
-    tasks: [
-      {
-        id: "10-1",
-        title: "Oil Change",
-        type: "pm",
-        instructions: "Change oil and replace filter",
-        woNumber: "WO1234",
-        dueDate: "2025-05-29",
-      },
-      {
-        id: "10-2",
-        title: "Air Conditioning Service",
-        type: "maintenance",
-        instructions: "Recharge AC system and check for leaks",
-        woNumber: "WO1234",
-        dueDate: "2025-05-30",
-      },
-    ],
-  },
+    "unitNumber": "EQ-001",
+  "name": "Unit 1",
+  "make": "Hayes Inc",
+  "model": "result",
+  "serialNumber": "7cbbf4e0-1677-43b4-affd-c863bd9eed13",
+  "year": 2024,
+  "equipmentType": "food",
+  "status": "active",
+  "soldDate": "2025-02-14",
+  "soldTo": "Murphy-Davis",
+  "soldPrice": 30407.75,
+  "assigneeIds": [
+    "32e9484c-94b3-407c-9ba6-10c1a24a988e",
+    "202bc0e0-b7ca-4fd6-b8a1-5a9d8454a084"
+  ],
+  "categoryId": "7546c7ee-d459-4d44-bdae-af7cb7bd19c3",
+  "parentId": "57997d1c-b00a-4fe1-83fc-8f3946738b47",
+  "pmSchedule": "quarterly",
+  "primaryMeterUnit": "hours",
+  "primary": 1086,
+  "secondaryMeterUnit": "miles",
+  "secondary": 18719,
+  "btu": "12090",
+  "inputVolts": "110V",
+  "installDate": "2024-09-27",
+  "custom": {},
+  "color": "HotPink",
+  "length": "1 ft",
+  "width": "2 ft",
+  "height": "4 ft",
+  "grossWeight": 7963.82,
+  "customSpecifications": {},
+  "warrantyDescription": "Standard 1-year warranty",
+  "warrantyExpirationDate": "2020-12-09",
+  "primaryWarrantyMeter": 4978,
+  "secondaryWarrantyDescription": "Extended coverage",
+  "secondaryWarrantyExpirationDate": "2023-12-07",
+  "secondaryWarrantyMeter": 10357,
+  "CustomSecondary": {},
+  "vendor": "Bryan, Keith and White",
+  "purchaseDate": "2024-04-03",
+  "meter": 3809,
+  "price": 60084.82,
+  "purchaseOrderCustom": {},
+  "note": "Require Republican cause fill both enter just.",
+  "depreciationLifeMonths": 68,
+  "startingPrice": 33301.58,
+  "salvagePrice": 9729.81,
+  "ownership": "owned",
+  "customerName": "Garcia PLC",
+  "inService": "2025-01-02",
+  "outService": "2024-10-16",
+  "transferred": "yes",
+  "notes": "Section its result bit line alone interesting. Pm thousand behavior me already choose. Eight do law institution study region agent.",
+  "tracker": ["6462e621-d6d7-4401-9bc5-3e598317f5fb"],
+  "budget": 11581.32,
+  "enableMeter1": true,
+  "average1": 12.18,
+  "lastMaintenanceCheck1": "2021-08-03",
+  "enableMeter2": false,
+  "average2": 19.68,
+  "Attachments": [],
+  "generalNotes": "Like cold material sense difference. Whose knowledge civil admit low strategy people thank. Machine lot save history.",
+  "expenses": [
+    {
+      "id": "c1572788-5906-4557-8d79-a791828d636b",
+      "name": "life",
+      "lastDate": "2021-02-12",
+      "nextDate": "2021-12-09",
+      "period": "monthly",
+      "interval": 2,
+      "cost": 1007.09,
+      "quantity": 8,
+      "notes": "Quality production sign."
+    },
+    {
+      "id": "25e87fb8-0984-4234-8538-cd1dd75de1cd",
+      "name": "never",
+      "lastDate": "2025-05-06",
+      "nextDate": "2022-06-29",
+      "period": "annually",
+      "interval": 4,
+      "cost": 1892.87,
+      "quantity": 10,
+      "notes": "Movement candidate television according."
+    }
+  ],
+  "notifications": [
+    {
+      "id": "028cbb1c-d71e-4b55-b9c9-7a83ff6a762d",
+      "name": "Kelly Shepard",
+      "email": "charles72@yahoo.com",
+      "maintenance": true,
+      "renewals": false,
+      "workOrders": true
+    },
+    {
+      "id": "12a4ea89-da99-4249-8ae5-1d6ddb080d7b",
+      "name": "James Hensley",
+      "email": "ericksonlinda@johnson-smith.com",
+      "maintenance": false,
+      "renewals": false,
+      "workOrders": true
+    }
+  ],
+  "taskStatus": "due soon",
+  "taskTypes": ["maintenance", "incident", "pm"],
+  "tasks": [
+    {
+      "id": "1-1",
+      "title": "Oil Change",
+      "type": "pm",
+      "instructions": "Change oil and replace filter",
+      "woNumber": "WO123",
+      "dueDate": "2025-05-25"
+    },
+    {
+      "id": "1-2",
+      "title": "Brake Inspection",
+      "type": "maintenance",
+      "instructions": "Check brake pads and rotors",
+      "woNumber": "WO124",
+      "dueDate": "2025-05-26"
+    },
+    {
+      "id": "1-3",
+      "title": "Accident Damage",
+      "type": "incident",
+      "instructions": "Repair front bumper damage",
+      "woNumber": "WO125",
+      "dueDate": "2025-05-28"
+    }
+  ]
+}
+
 ];
 
 // Get unique values for filter options (including sub-rows)
@@ -375,10 +259,10 @@ const getAllEmployees = (employees: Employee[]): Employee[] => {
 };
 
 const flatEmployees = getAllEmployees(allEquipments);
-const carNumber = [...new Set(flatEmployees.map((emp) => emp.carNumber))];
-const carModel = [...new Set(flatEmployees.map((emp) => emp.carModel))];
+const unitNumber = [...new Set(flatEmployees.map((emp) => emp.unitNumber))];
+const model = [...new Set(flatEmployees.map((emp) => emp.model))];
 const serialNumber = [...new Set(flatEmployees.map((emp) => emp.serialNumber))];
-const carType = [...new Set(flatEmployees.map((emp) => emp.carType))];
+const equipmentType = [...new Set(flatEmployees.map((emp) => emp.equipmentType))];
 const meter = [...new Set(flatEmployees.map((emp) => emp.meter))];
 const taskStatus = [...new Set(flatEmployees.map((emp) => emp.taskStatus))];
 
@@ -522,8 +406,8 @@ export default function DataTableDemo() {
         if (searchValue.trim()) {
           filteredData = allEquipments.filter(
             (emp) =>
-              emp.carName.toLowerCase().includes(searchValue.toLowerCase()) ||
-              emp.carNumber.toLowerCase().includes(searchValue.toLowerCase()) ||
+              emp.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+              emp.unitNumber.toLowerCase().includes(searchValue.toLowerCase()) ||
               emp.serialNumber.toLowerCase().includes(searchValue.toLowerCase())
           );
         }
@@ -585,13 +469,13 @@ export default function DataTableDemo() {
   // Column definitions
   const columns: ColumnDef<Employee>[] = [
     {
-      accessorKey: "carNumber",
+      accessorKey: "unitNumber",
       header: ({ column }) => (
         <SortableHeader
           column={column}
           title="Unit"
           sortable={true}
-          filterOptions={carNumber}
+          filterOptions={unitNumber}
         />
       ),
       cell: ({ row }) => (
@@ -599,16 +483,16 @@ export default function DataTableDemo() {
           className="font-medium flex flex-col"
           style={{ paddingLeft: `${row.depth * 20}px` }}
         >
-          <div>{row.getValue("carNumber")}</div>
-          <div>{row.original.carName}</div>
+          <div>{row.getValue("unitNumber")}</div>
+          <div>{row.original.name}</div>
         </div>
       ),
     },
     {
-      accessorKey: "carModel",
+      accessorKey: "model",
       header: ({ column }) => (
         <SortableHeader
-          filterOptions={carModel}
+          filterOptions={model}
           column={column}
           title="Year"
           sortable={true}
@@ -616,16 +500,16 @@ export default function DataTableDemo() {
       ),
     },
     {
-      accessorKey: "carType",
+      accessorKey: "equipmentType",
       header: ({ column }) => (
         <SortableHeader
           column={column}
           title="Type"
           sortable={true}
-          filterOptions={carType}
+          filterOptions={equipmentType}
         />
       ),
-      cell: ({ row }) => <>{row.original.carType}</>,
+      cell: ({ row }) => <>{row.original.equipmentType}</>,
       filterFn: (row, id, value) => {
         return value.length === 0 || value.includes(row.getValue(id));
       },
@@ -685,39 +569,18 @@ export default function DataTableDemo() {
 
         return (
           <div className="flex flex-row justify-between">
-            {/* <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    alert(`Edit ${row.getValue("name")}`);
-                  }}
-                >
-                  Edit
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handlePrintRow(row);
-                  }}
-                >
-                  <Printer className="mr-2 h-4 w-4" />
-                  Print
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu> */}
-            <Button variant={"secondary"} size={"icon"}>
-              <FileTextIcon />
-            </Button>
+            <EquipmentProfile
+            children={
+              <Button variant="ghost" size="icon">
+                <FileTextIcon className="h-4 w-4" />
+              </Button>
+            }
+            data={row.original} />
+            
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant={"secondary"} size={"icon"}>
-                  <MoreHorizontal   />
+                  <MoreHorizontal />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-72" align="start">
@@ -812,7 +675,15 @@ export default function DataTableDemo() {
       <AdvancedDataTable
         columns={columns}
         data={isServerMode ? currentData : allEquipments}
-        defaultVisibleColumns={["carNumber","carModel","carType","meter","serialNumber","taskStatus", "actions"]}
+        defaultVisibleColumns={[
+          "unitNumber",
+          "model",
+          "equipmentType",
+          "meter",
+          "serialNumber",
+          "taskStatus",
+          "actions",
+        ]}
         onRowClick={handleRowClick}
         onCellClick={handleCellClick}
         onPrintSelected={handlePrintSelected}
