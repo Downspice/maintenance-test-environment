@@ -42,8 +42,154 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Trash2, X } from "lucide-react";
+import Image from "next/image";
+import { Pencil } from "lucide-react";
 
-import { Pencil, Trash2 } from "lucide-react";
+
+type ImageItem = {
+  id: string;
+  name: string;
+  src: string;
+};
+
+
+function ImageGrid() {
+  const [images, setImages] = useState<ImageItem[]>([
+    {
+      id: "1",
+      name: "joseph",
+      src: "/joseph.png",
+    },
+  ]);
+
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [newFile, setNewFile] = useState<File | null>(null);
+
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState<ImageItem | null>(null);
+
+  const handleAddImage = () => {
+    if (!newName || !newFile) return;
+
+    const imageUrl = URL.createObjectURL(newFile);
+    const newImage: ImageItem = {
+      id: Date.now().toString(),
+      name: newName,
+      src: imageUrl,
+    };
+
+    setImages((prev) => [...prev, newImage]);
+    setNewName("");
+    setNewFile(null);
+    setDialogOpen(false);
+  };
+
+  const handleDelete = (id: string) => {
+    setImages((prev) => prev.filter((img) => img.id !== id));
+  };
+
+  const handlePreview = (img: ImageItem) => {
+    setPreviewImage(img);
+    setPreviewOpen(true);
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Add Button */}
+      <div className="flex justify-between items-center">
+        <h2 className="text-lg font-semibold">Images</h2>
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogTrigger asChild>
+            <Button size="sm">+ Add</Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add Image</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <Input
+                placeholder="Image name"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+              />
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setNewFile(e.target.files?.[0] || null)}
+              />
+            </div>
+            <DialogFooter>
+              <Button onClick={handleAddImage}>Save</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {/* Image Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        {images.map((img) => (
+          <div
+            key={img.id}
+            className="relative group border rounded-md p-2 bg-white shadow hover:shadow-md transition"
+          >
+            {/* Delete Button */}
+            <button
+              className="absolute top-1 right-1 p-1 rounded-full bg-white shadow hover:bg-red-100"
+              onClick={() => handleDelete(img.id)}
+            >
+              <Trash2 className="text-red-500" size={16} />
+            </button>
+
+            {/* Clickable Image */}
+            <div
+              onClick={() => handlePreview(img)}
+              className="w-full aspect-square relative overflow-hidden rounded cursor-pointer hover:opacity-90"
+            >
+              <Image
+                src={img.src}
+                alt={img.name}
+                fill
+                className="object-cover"
+              />
+            </div>
+
+            {/* File Name */}
+            <p className="mt-2 text-center text-sm text-gray-700 font-medium truncate">
+              {img.name}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      {/* Preview Dialog */}
+      {previewImage && (
+        <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
+          <DialogContent className="max-w-3xl p-0 overflow-hidden">
+            <div className="relative w-full h-[70vh]">
+              <Image
+                src={previewImage.src}
+                alt={previewImage.name}
+                fill
+                className="object-contain bg-black"
+              />
+              <button
+                onClick={() => setPreviewOpen(false)}
+                className="absolute top-2 right-2 z-10 p-2 bg-white rounded-full shadow hover:bg-red-100"
+              >
+                <X size={20} className="text-red-600" />
+              </button>
+            </div>
+            <div className="p-4 text-center text-sm text-gray-600">
+              {previewImage.name}
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+    </div>
+  );
+}
 
 type Attachment = {
   id: string;
@@ -299,7 +445,7 @@ export const sidebarMenu = [
     id: "images",
     label: "Images",
     icon: <ImageIcon size={20} />,
-    content: <div>Gallery of equipment images</div>,
+    content: <ImageGrid/>,
   },
   {
     id: "attachments",
