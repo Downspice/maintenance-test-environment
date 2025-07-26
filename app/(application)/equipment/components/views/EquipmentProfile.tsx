@@ -32,6 +32,151 @@ import {
 import SidebarLayout from "@/components/customUI/customSideBar";
 import React from "react";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+
+import { Pencil, Trash2 } from "lucide-react";
+
+type Attachment = {
+  id: string;
+  name: string;
+  file: File | null;
+};
+
+ function AttachmentTable() {
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [newFile, setNewFile] = useState<File | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+
+  const handleAddOrUpdate = () => {
+    if (!newName) return;
+
+    if (editingId) {
+      // Update
+      setAttachments((prev) =>
+        prev.map((att) =>
+          att.id === editingId ? { ...att, name: newName, file: newFile || att.file } : att
+        )
+      );
+    } else {
+      // Add
+      const newAttachment: Attachment = {
+        id: Date.now().toString(),
+        name: newName,
+        file: newFile,
+      };
+      setAttachments((prev) => [...prev, newAttachment]);
+    }
+
+    // Reset form
+    setNewName("");
+    setNewFile(null);
+    setEditingId(null);
+    setDialogOpen(false);
+  };
+
+  const handleEdit = (attachment: Attachment) => {
+    setEditingId(attachment.id);
+    setNewName(attachment.name);
+    setNewFile(null); // keep original file unless replaced
+    setDialogOpen(true);
+  };
+
+  const handleDelete = (id: string) => {
+    setAttachments((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Header */}
+      <div className="flex justify-between items-center">
+        <h2 className="text-lg font-semibold">Attachments</h2>
+        <Dialog open={dialogOpen} onOpenChange={(open) => {
+          if (!open) {
+            setEditingId(null);
+            setNewName("");
+            setNewFile(null);
+          }
+          setDialogOpen(open);
+        }}>
+          <DialogTrigger asChild>
+            <Button size="sm">+ Add</Button>
+          </DialogTrigger>
+
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{editingId ? "Edit Attachment" : "Add Attachment"}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <Input
+                placeholder="Attachment name"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+              />
+              <Input
+                type="file"
+                onChange={(e) => setNewFile(e.target.files?.[0] || null)}
+              />
+              {editingId && (
+                <p className="text-sm text-muted-foreground">
+                  {newFile ? `New File: ${newFile.name}` : "Existing file will be kept"}
+                </p>
+              )}
+            </div>
+            <DialogFooter>
+              <Button onClick={handleAddOrUpdate}>
+                {editingId ? "Update" : "Save"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {/* Table */}
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Name</TableHead>
+            <TableHead className="text-right">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {attachments.map((item) => (
+            <TableRow key={item.id}>
+              <TableCell>{item.name}</TableCell>
+              <TableCell className="text-right space-x-2">
+                <Button
+                  size="icon"
+                  variant="secondary"
+                  onClick={() => handleEdit(item)}
+                >
+                  <Pencil size={16} />
+                </Button>
+                <Button
+                  size="icon"
+                  variant="secondary"
+                  onClick={() => handleDelete(item.id)}
+                >
+                  <Trash2 size={16} className="text-red-500" />
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
+}
 
 const CollapsibleSection = ({
   title,
@@ -160,7 +305,7 @@ export const sidebarMenu = [
     id: "attachments",
     label: "Attachments",
     icon: <Paperclip size={20} />,
-    content: <div>Documents and file attachments</div>,
+    content: <AttachmentTable/>,
   },
   {
     id: "notes",
