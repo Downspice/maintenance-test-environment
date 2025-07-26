@@ -135,17 +135,12 @@ function ImageGrid() {
             className="relative group border rounded-md p-2 bg-white shadow hover:shadow-md transition"
           >
             {/* Delete Button */}
-            <button
-              className="absolute top-1 right-1 p-1 rounded-full bg-white shadow hover:bg-red-100"
-              onClick={() => handleDelete(img.id)}
-            >
-              <Trash2 className="text-red-500" size={16} />
-            </button>
+            
 
             {/* Clickable Image */}
             <div
               onClick={() => handlePreview(img)}
-              className="w-full aspect-square relative overflow-hidden rounded cursor-pointer hover:opacity-90"
+              className="w-full aspect-square relative overflow-hidden rounded cursor-pointer hover:opacity-40"
             >
               <Image
                 src={img.src}
@@ -156,9 +151,16 @@ function ImageGrid() {
             </div>
 
             {/* File Name */}
+            <div className="flex justify-between items-center mt-1">
             <p className="mt-2 text-center text-sm text-gray-700 font-medium truncate">
               {img.name}
             </p>
+            <button
+              className=" p-1 rounded-full bg-white shadow hover:bg-text-destructive"
+              onClick={() => handleDelete(img.id)}
+            >
+              <Trash2 className="text-red-500" size={16} />
+            </button></div>
           </div>
         ))}
       </div>
