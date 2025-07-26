@@ -26,7 +26,7 @@ const SidebarLayout: React.FC<SidebarLayoutProps> = ({
   return (
     <div className="flex h-full bg-gray-100">
       {/* Sidebar */}
-      <div className="w-64 h-full     flex flex-col p-4 space-y-2 bg-accent">
+      <div className="w-64 h-full bg-white   flex flex-col p-4 space-y-2 bg-accent">
         {headerItem}
         {menuItems.map((item) => (
           <button
