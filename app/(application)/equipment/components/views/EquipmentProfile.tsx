@@ -65,6 +65,339 @@ import Summary from "./summary";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ChevronUp, Plus } from "lucide-react";
 
+
+
+
+const sampleFuel = [
+  {
+    "id": "1",
+    "date": "2025-07-25",
+    "hours": 1800,
+    "volume": 45.5,
+    "price": 5.20,
+    "total": 236.6,
+    "economy": "9.2 L/100km",
+    "vendor": "Shell"
+  },
+  {
+    "id": "2",
+    "date": "2025-07-26",
+    "hours": 1825,
+    "volume": 38.0,
+    "price": 5.00,
+    "total": 190.0,
+    "economy": "8.9 L/100km",
+    "vendor": "Total"
+  },
+  {
+    "id": "3",
+    "date": "2025-07-27",
+    "hours": 1850,
+    "volume": 50.0,
+    "price": 4.95,
+    "total": 247.5,
+    "economy": "10.1 L/100km",
+    "vendor": "Goil"
+  },
+  {
+    "id": "4",
+    "date": "2025-07-28",
+    "hours": 1880,
+    "volume": 40.0,
+    "price": 5.10,
+    "total": 204.0,
+    "economy": "9.0 L/100km",
+    "vendor": "Allied"
+  }
+]
+
+
+function FuelTab() {
+  const [filter, setFilter] = useState("");
+  const [open, setOpen] = useState(false);
+
+  const filteredData = sampleFuel.filter((item) =>
+    item.vendor.toLowerCase().includes(filter.toLowerCase())
+  );
+
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-between items-center gap-4">
+        <Input
+          placeholder="Filter Fuel..."
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          className="max-w-sm"
+        />
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetTrigger asChild>
+            <Button>Add Fuel</Button>
+          </SheetTrigger>
+          <SheetContent>
+            <SheetHeader>
+              <SheetTitle>Add New Fuel</SheetTitle>
+            </SheetHeader>
+            {/* Add your form here */}
+            <div className="mt-4 text-sm text-muted-foreground">Form goes here</div>
+          </SheetContent>
+        </Sheet>
+      </div>
+
+      <div className="rounded-md border overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Date</TableHead>
+              <TableHead>Hours</TableHead>
+              <TableHead>Volume</TableHead>
+              <TableHead>Price</TableHead>
+              <TableHead>Total</TableHead>
+              <TableHead>Economy</TableHead>
+              <TableHead>Vendor</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredData.map((item) => (
+              <TableRow key={item.id}>
+                <TableCell>{item.date}</TableCell>
+                <TableCell>{item.hours}</TableCell>
+                <TableCell>{item.volume}</TableCell>
+                <TableCell>{item.price}</TableCell>
+                <TableCell>{item.total}</TableCell>
+                <TableCell>{item.economy}</TableCell>
+                <TableCell>{item.vendor}</TableCell>
+                <TableCell className="text-right space-x-2">
+                  <Button size="icon" variant="ghost">
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button size="icon" variant="ghost">
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
+  );
+}
+
+
+const sampleExpenses = [
+  {
+    id: 1,
+    date: "2025-07-01",
+    expense: "Oil Change",
+    meter: "12345",
+    qty: 2,
+    cost: 120,
+    costCentre: "Fleet A",
+    notes: "Routine change",
+  },
+  {
+    id: 2,
+    date: "2025-07-10",
+    expense: "Brake Pads",
+    meter: "12890",
+    qty: 4,
+    cost: 300,
+    costCentre: "Fleet B",
+    notes: "Emergency replacement",
+  },
+];
+
+function ExpensesTab() {
+  const [filter, setFilter] = useState("");
+  const [open, setOpen] = useState(false);
+
+  const filteredData = sampleExpenses.filter((item) =>
+    item.expense.toLowerCase().includes(filter.toLowerCase())
+  );
+
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-between items-center gap-4">
+        <Input
+          placeholder="Filter expenses..."
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          className="max-w-sm"
+        />
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetTrigger asChild>
+            <Button>Add Expense</Button>
+          </SheetTrigger>
+          <SheetContent>
+            <SheetHeader>
+              <SheetTitle>Add New Expense</SheetTitle>
+            </SheetHeader>
+            {/* Add your form here */}
+            <div className="mt-4 text-sm text-muted-foreground">Form goes here</div>
+          </SheetContent>
+        </Sheet>
+      </div>
+
+      <div className="rounded-md border overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Date</TableHead>
+              <TableHead>Expense</TableHead>
+              <TableHead>Meter#1</TableHead>
+              <TableHead>Qty</TableHead>
+              <TableHead>Cost</TableHead>
+              <TableHead>Cost Centre</TableHead>
+              <TableHead>Notes</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredData.map((item) => (
+              <TableRow key={item.id}>
+                <TableCell>{item.date}</TableCell>
+                <TableCell>{item.expense}</TableCell>
+                <TableCell>{item.meter}</TableCell>
+                <TableCell>{item.qty}</TableCell>
+                <TableCell>{item.cost}</TableCell>
+                <TableCell>{item.costCentre}</TableCell>
+                <TableCell>{item.notes}</TableCell>
+                <TableCell className="text-right space-x-2">
+                  <Button size="icon" variant="ghost">
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button size="icon" variant="ghost">
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
+  );
+}
+
+type Inspection = {
+  id: string;
+  date: string;
+  condition: string;
+  inspector: string;
+  notes: string;
+  hours: number;
+};
+
+const sampleInspections: Inspection[] = [
+  {
+    id: "1",
+    date: "2025-07-25",
+    condition: "Good",
+    inspector: "John Doe",
+    notes: "All parts functional.",
+    hours: 2,
+  },
+  {
+    id: "2",
+    date: "2025-07-20",
+    condition: "Fair",
+    inspector: "Jane Smith",
+    notes: "Needs minor repairs.",
+    hours: 1.5,
+  },
+  {
+    id: "3",
+    date: "2025-07-18",
+    condition: "Poor",
+    inspector: "Alex Johnson",
+    notes: "Brake issue identified.",
+    hours: 3,
+  },
+];
+
+function InspectionTab() {
+  const [filter, setFilter] = useState("");
+  const [open, setOpen] = useState(false);
+
+  const filtered = sampleInspections.filter(
+    (item) =>
+      item.inspector.toLowerCase().includes(filter.toLowerCase()) ||
+      item.condition.toLowerCase().includes(filter.toLowerCase()) ||
+      item.notes.toLowerCase().includes(filter.toLowerCase())
+  );
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between gap-4">
+        <Input
+          placeholder="Filter by inspector, condition, or notes..."
+          className="max-w-sm"
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+        />
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetTrigger asChild>
+            <Button className="flex items-center gap-2">
+              <Plus className="w-4 h-4" /> Add Inspection
+            </Button>
+          </SheetTrigger>
+          <SheetContent className="w-[400px]">
+            <SheetHeader>
+              <SheetTitle>Add Inspection</SheetTitle>
+            </SheetHeader>
+            {/* Add your form here */}
+            <div className="mt-4 text-sm text-muted-foreground">
+              Form goes here...
+            </div>
+          </SheetContent>
+        </Sheet>
+      </div>
+
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Date</TableHead>
+              <TableHead>Condition</TableHead>
+              <TableHead>Inspector</TableHead>
+              <TableHead>Notes</TableHead>
+              <TableHead>Hours</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filtered.map((item) => (
+              <TableRow key={item.id}>
+                <TableCell>{item.date}</TableCell>
+                <TableCell>{item.condition}</TableCell>
+                <TableCell>{item.inspector}</TableCell>
+                <TableCell>{item.notes}</TableCell>
+                <TableCell>{item.hours}</TableCell>
+                <TableCell className="text-right space-x-2">
+                  <Button size="icon" variant="outline">
+                    <Pencil className="w-4 h-4" />
+                  </Button>
+                  <Button size="icon" variant="destructive">
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+            {filtered.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center text-muted-foreground">
+                  No inspection records found.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
+  );
+}
+
 const workOrders = [
   {
     id: "WO-001",
@@ -589,16 +922,58 @@ type Props = {
   defaultTab?: TabKey;
 };
 
-const tabItems: { label: string; value: TabKey }[] = [
-  { label: "Maintenance", value: "maintenance" },
-  { label: "Inspections", value: "inspections" },
-  { label: "Expenses", value: "expenses" },
-  { label: "Fuel", value: "fuel" },
-  { label: "Assignments", value: "assignments" },
-  { label: "Fluids", value: "fluids" },
-  { label: "Accidents", value: "accidents" },
-  { label: "Meter Log", value: "meter-log" },
-  { label: "Meter Replacement", value: "meter-replacement" },
+type TabItem = {
+  label: string;
+  value: TabKey;
+  content: React.ReactNode;
+};
+
+const tabItems: TabItem[] = [
+  {
+    label: "Maintenance",
+    value: "maintenance",
+    content: <div>Maintenance content</div>,
+  },
+  {
+    label: "Inspections",
+    value: "inspections",
+    content: <InspectionTab/>,
+  },
+  {
+    label: "Expenses",
+    value: "expenses",
+    content: <ExpensesTab/>,
+  },
+  {
+    label: "Fuel",
+    value: "fuel",
+    content: <FuelTab/>,
+  },
+  {
+    label: "Assignments",
+    value: "assignments",
+    content: <div>Assignments content</div>,
+  },
+  {
+    label: "Fluids",
+    value: "fluids",
+    content: <div>Fluids content</div>,
+  },
+  {
+    label: "Accidents",
+    value: "accidents",
+    content: <div>Accidents content</div>,
+  },
+  {
+    label: "Meter Log",
+    value: "meter-log",
+    content: <div>Meter Log content</div>,
+  },
+  {
+    label: "Meter Replacement",
+    value: "meter-replacement",
+    content: <div>Meter Replacement content</div>,
+  },
 ];
 
 function HistoryTabs({ defaultTab = "maintenance" }: Props) {
@@ -614,11 +989,7 @@ function HistoryTabs({ defaultTab = "maintenance" }: Props) {
 
       {tabItems.map((tab) => (
         <TabsContent key={tab.value} value={tab.value}>
-          <div className="border rounded p-4">
-            <p className="text-sm text-muted-foreground">
-              {tab.label} content goes here.
-            </p>
-          </div>
+          {tab.content}
         </TabsContent>
       ))}
     </Tabs>
