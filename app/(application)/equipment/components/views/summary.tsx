@@ -2,7 +2,7 @@ export default function Summary() {
   return (
     <div className="grid grid-cols-2 gap-1 min-h-screen">
       {/* First Column */}
-      <div className="grid grid-cols-5 gap-1 h-fit ">
+      <div className="grid grid-cols-5 gap-2 h-fit ">
         {/* First 4 Sub-columns */}
         <div className="col-span-4  border border-gray-300 p-4    ">
           <h2 className="text-sm   mb-4">Notifications</h2>
@@ -27,8 +27,8 @@ export default function Summary() {
           </div>
         </div>
 
-        <div className="col-span-5  border  border-gray-300 p-1  ">
-          <div className="grid grid-cols-6    p-1  ">
+        <div className="col-span-5  border  gap-2 border-gray-300 p-1  ">
+          <div className="grid grid-cols-6       ">
             <div className="col-span-2  border  border-gray-300 p-1   flex flex-col items-center justify-center">
               <div className="col-span-1 p-3 font-bold text-xl mb-3 flex flex-col items-center justify-center">
                 $0.00<span className="font-light text-sm">Total</span>
