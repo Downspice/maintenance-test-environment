@@ -369,7 +369,7 @@ const WorkOrdersComponent = () => {
     </div>
   );
 };
-// Dummy data
+
 const pmData = [
   {
     id: 1,
