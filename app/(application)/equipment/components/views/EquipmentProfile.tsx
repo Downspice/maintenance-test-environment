@@ -16,7 +16,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   BookText,
@@ -41,18 +41,353 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Trash2, X } from "lucide-react";
 import Image from "next/image";
 import { Pencil } from "lucide-react";
+import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import z from "zod";
+import InputWrapper from "@/components/forms/wrappers/InputWrapper";
+import RadioGroupWrapper from "@/components/forms/wrappers/RadioGroupWrapper";
+import { Form } from "@/components/ui/form";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from "@/components/ui/tabs";
+import Summary from "./summary";
 
+type TabKey =
+  | "maintenance"
+  | "inspections"
+  | "expenses"
+  | "fuel"
+  | "assignments"
+  | "fluids"
+  | "accidents"
+  | "meter-log"
+  | "meter-replacement";
+
+type Props = {
+  defaultTab?: TabKey;
+};
+
+const tabItems: { label: string; value: TabKey }[] = [
+  { label: "Maintenance", value: "maintenance" },
+  { label: "Inspections", value: "inspections" },
+  { label: "Expenses", value: "expenses" },
+  { label: "Fuel", value: "fuel" },
+  { label: "Assignments", value: "assignments" },
+  { label: "Fluids", value: "fluids" },
+  { label: "Accidents", value: "accidents" },
+  { label: "Meter Log", value: "meter-log" },
+  { label: "Meter Replacement", value: "meter-replacement" },
+];
+
+function HistoryTabs({ defaultTab = "maintenance" }: Props) {
+  return (
+    <Tabs defaultValue={defaultTab} className="w-full space-y-4">
+      <TabsList className="flex flex-wrap justify-start gap-2">
+        {tabItems.map((tab) => (
+          <TabsTrigger key={tab.value} value={tab.value}>
+            {tab.label}
+          </TabsTrigger>
+        ))}
+      </TabsList>
+
+      {tabItems.map((tab) => (
+        <TabsContent key={tab.value} value={tab.value}>
+          <div className="border rounded p-4">
+            <p className="text-sm text-muted-foreground">
+              {tab.label} content goes here.
+            </p>
+          </div>
+        </TabsContent>
+      ))}
+    </Tabs>
+  );
+}
+
+const partOptions = [
+  {
+    label: "Oil Filter (PN-123)",
+    value: "PN-123",
+    name: "Oil Filter",
+    warehouse: "WH1",
+    description: "Standard oil filter",
+  },
+  {
+    label: "Hydraulic Fluid (PN-456)",
+    value: "PN-456",
+    name: "Hydraulic Fluid",
+    warehouse: "WH2",
+    description: "High pressure fluid",
+  },
+];
+
+const equipmentOptions = [
+  { label: "Forklift", value: "forklift" },
+  { label: "Light System", value: "lights" },
+];
+
+const serviceOptions = [
+  { label: "repairTypes", value: "Repair Types" },
+  { label: "repairs", value: "Repairs" },
+  { label: "taskTypes", value: "Task Types" },
+];
+
+const partSchema = z.object({
+  equipment: z.string().min(1, "Equipment is required"),
+  service: z.string(),
+  mode: z.enum(["assigned", "fixed"]),
+  partNumber: z.string().optional(),
+  name: z.string().optional(),
+  warehouse: z.string().optional(),
+  description: z.string().optional(),
+  quantity: z.coerce.number().optional(),
+  cost: z.coerce.number().optional(),
+});
+
+type PartForm = z.infer<typeof partSchema>;
+type PartRecord = PartForm & { id: string };
+
+type PartsProps = {
+  equipment: string;
+};
+
+function PartsManager({ equipment }: PartsProps) {
+  const [parts, setParts] = useState<PartRecord[]>([]);
+  const [open, setOpen] = useState(false);
+  const [editingPart, setEditingPart] = useState<PartRecord | null>(null);
+
+  const form = useForm<PartForm>({
+    resolver: zodResolver(partSchema),
+    defaultValues: {
+      equipment: equipment,
+      mode: "assigned",
+    },
+  });
+
+  const { watch, setValue, reset, handleSubmit } = form;
+  const mode = watch("mode");
+  const partNumber = watch("partNumber");
+
+  useEffect(() => {
+    if (editingPart) {
+      reset(editingPart);
+    } else {
+      reset({
+        equipment: equipment, 
+        mode: "assigned",
+      });
+    }
+  }, [editingPart, reset, equipment]);
+
+  useEffect(() => {
+    if (mode === "assigned" && partNumber) {
+      const selected = partOptions.find((p) => p.value === partNumber);
+      if (selected) {
+        setValue("warehouse", selected.warehouse);
+        setValue("name", selected.name);
+        setValue("description", selected.description);
+      }
+    }
+  }, [partNumber, mode, setValue]);
+
+  const onSubmit = (data: PartForm) => {
+    if (editingPart) {
+      setParts((prev) =>
+        prev.map((p) =>
+          p.id === editingPart.id
+            ? { ...p, quantity: data.quantity, cost: data.cost }
+            : p
+        )
+      );
+    } else {
+      setParts((prev) => [...prev, { ...data, id: crypto.randomUUID() }]);
+    }
+
+    setOpen(false);
+    setEditingPart(null);
+    reset();
+  };
+
+  const onEdit = (part: PartRecord) => {
+    setEditingPart(part);
+    setOpen(true);
+  };
+
+  const onDelete = (id: string) => {
+    setParts((prev) => prev.filter((p) => p.id !== id));
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Add Button */}
+      <div className="flex justify-end">
+        <Button onClick={() => setOpen(true)}>+ Add Part</Button>
+      </div>
+
+      {/* Table */}
+      <div className="border rounded-md overflow-x-auto">
+        <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Part#</TableHead>
+            <TableHead>Name</TableHead>
+            <TableHead>Description</TableHead>
+            <TableHead>Task</TableHead>
+            <TableHead>Qty</TableHead>
+            <TableHead>Cost</TableHead>
+            <TableHead className="text-right">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {parts.map((part) => (
+            <TableRow key={part.id}>
+              <TableCell>{part.partNumber ?? "N/A"}</TableCell>
+              <TableCell>{part.name ?? "N/A"}</TableCell>
+              <TableCell>{part.description ?? "N/A"}</TableCell>
+              <TableCell>{part.equipment ?? "N/A"}</TableCell>
+              <TableCell>{part.quantity ?? "N/A"}</TableCell>
+              <TableCell>{part.cost ?? "N/A"}</TableCell>
+              <TableCell className="text-right space-x-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => onEdit(part)}
+                >
+                  <Pencil className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => onDelete(part.id)}
+                >
+                  <Trash2 className="w-4 h-4 text-red-500" />
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+      </div>
+
+      {/* Dialog Form */}
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>{editingPart ? "Edit Part" : "Add Part"}</DialogTitle>
+          </DialogHeader>
+          <Form {...form}>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              <InputWrapper
+                  control={form.control}
+                  name="equipment"
+                  label="Equipment"
+                  type="number" 
+                  disabled
+              />
+
+              <ComboboxFieldWrapper
+                control={form.control}
+                disabled={!!editingPart}
+                name="service"
+                label="Service"
+                options={serviceOptions}
+              />
+
+              <RadioGroupWrapper
+                control={form.control}
+                name="mode"
+                label="Part Type"
+                disabled={!!editingPart}
+                options={[
+                  { label: "Assigned Part", value: "assigned" },
+                  { label: "Fixed Cost", value: "fixed" },
+                ]}
+              />
+
+              {mode === "fixed" ? (
+                <InputWrapper
+                  control={form.control}
+                  name="cost"
+                  label="Cost"
+                  type="number"
+                  disabled={!!editingPart}
+                />
+              ) : (
+                <>
+                  <ComboboxFieldWrapper
+                    control={form.control}
+                    name="partNumber"
+                    label="Part Number"
+                    options={partOptions.map((p) => ({
+                      label: p.label,
+                      value: p.value,
+                    }))}
+                    placeholder="Select part"
+                    emptyText="No part found"
+                    searchPlaceholder="Search parts..."
+                    disabled={!!editingPart}
+                  />
+                  <InputWrapper
+                    control={form.control}
+                    name="warehouse"
+                    label="Warehouse"
+                    disabled
+                    type="text"
+                  />
+                  <InputWrapper
+                    control={form.control}
+                    name="name"
+                    label="Name"
+                    disabled
+                    type="text"
+                  />
+                  <InputWrapper
+                    control={form.control}
+                    name="description"
+                    label="Description"
+                    disabled
+                    type="text"
+                  />
+                  <InputWrapper
+                    control={form.control}
+                    name="quantity"
+                    label="Quantity"
+                    type="number"
+                    disabled={!!editingPart && mode === "fixed"}
+                  />
+                </>
+              )}
+
+              <div className="flex justify-end">
+                <Button type="submit">{editingPart ? "Update" : "Add"}</Button>
+              </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
 
 type ImageItem = {
   id: string;
   name: string;
   src: string;
 };
-
 
 function ImageGrid() {
   const [images, setImages] = useState<ImageItem[]>([
@@ -135,7 +470,6 @@ function ImageGrid() {
             className="relative group border rounded-md p-2 bg-white shadow hover:shadow-md transition"
           >
             {/* Delete Button */}
-            
 
             {/* Clickable Image */}
             <div
@@ -152,15 +486,16 @@ function ImageGrid() {
 
             {/* File Name */}
             <div className="flex justify-between items-center mt-1">
-            <p className="mt-2 text-center text-sm text-gray-700 font-medium truncate">
-              {img.name}
-            </p>
-            <button
-              className=" p-1 rounded-full bg-white shadow hover:bg-text-destructive"
-              onClick={() => handleDelete(img.id)}
-            >
-              <Trash2 className="text-red-500" size={16} />
-            </button></div>
+              <p className="mt-2 text-center text-sm text-gray-700 font-medium truncate">
+                {img.name}
+              </p>
+              <button
+                className=" p-1 rounded-full bg-white shadow hover:bg-text-destructive"
+                onClick={() => handleDelete(img.id)}
+              >
+                <Trash2 className="text-red-500" size={16} />
+              </button>
+            </div>
           </div>
         ))}
       </div>
@@ -199,7 +534,7 @@ type Attachment = {
   file: File | null;
 };
 
- function AttachmentTable() {
+function AttachmentTable() {
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [newName, setNewName] = useState("");
@@ -213,7 +548,9 @@ type Attachment = {
       // Update
       setAttachments((prev) =>
         prev.map((att) =>
-          att.id === editingId ? { ...att, name: newName, file: newFile || att.file } : att
+          att.id === editingId
+            ? { ...att, name: newName, file: newFile || att.file }
+            : att
         )
       );
     } else {
@@ -249,21 +586,26 @@ type Attachment = {
       {/* Header */}
       <div className="flex justify-between items-center">
         <h2 className="text-lg font-semibold">Attachments</h2>
-        <Dialog open={dialogOpen} onOpenChange={(open) => {
-          if (!open) {
-            setEditingId(null);
-            setNewName("");
-            setNewFile(null);
-          }
-          setDialogOpen(open);
-        }}>
+        <Dialog
+          open={dialogOpen}
+          onOpenChange={(open) => {
+            if (!open) {
+              setEditingId(null);
+              setNewName("");
+              setNewFile(null);
+            }
+            setDialogOpen(open);
+          }}
+        >
           <DialogTrigger asChild>
             <Button size="sm">+ Add</Button>
           </DialogTrigger>
 
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>{editingId ? "Edit Attachment" : "Add Attachment"}</DialogTitle>
+              <DialogTitle>
+                {editingId ? "Edit Attachment" : "Add Attachment"}
+              </DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <Input
@@ -277,7 +619,9 @@ type Attachment = {
               />
               {editingId && (
                 <p className="text-sm text-muted-foreground">
-                  {newFile ? `New File: ${newFile.name}` : "Existing file will be kept"}
+                  {newFile
+                    ? `New File: ${newFile.name}`
+                    : "Existing file will be kept"}
                 </p>
               )}
             </div>
@@ -412,12 +756,23 @@ const EquipmentDetailsSection = () => {
   );
 };
 
-export const sidebarMenu = [
+
+
+export default function EquipmentProfile({
+  children,
+  data,
+}: {
+  children: React.ReactNode;
+  data: any;
+}) {
+  const [open, setOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+const sidebarMenu = [
   {
     id: "summary",
     label: "Summary",
     icon: <FileText size={20} />,
-    content: <div>Overview and quick stats</div>,
+    content: <Summary/>,
   },
   {
     id: "details",
@@ -435,51 +790,43 @@ export const sidebarMenu = [
     id: "history",
     label: "History",
     icon: <History size={20} />,
-    content: <div>Maintenance and usage history</div>,
+    content: <HistoryTabs/>,
   },
   {
     id: "commonParts",
     label: "Common Parts",
     icon: <BookText size={20} />,
-    content: <div>Frequently used parts</div>,
+    content: <PartsManager equipment={data.name}  />,
   },
   {
     id: "images",
     label: "Images",
     icon: <ImageIcon size={20} />,
-    content: <ImageGrid/>,
+    content: <ImageGrid />,
   },
   {
     id: "attachments",
     label: "Attachments",
     icon: <Paperclip size={20} />,
-    content: <AttachmentTable/>,
+    content: <AttachmentTable />,
   },
   {
     id: "notes",
     label: "Notes",
     icon: <StickyNote size={20} />,
-    content: <Textarea 
+    content: (
+      <Textarea
         className="w-full h-full resize-none rounded-md border border-gray-300 p-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-     placeholder="Add notes here..." />,
+        placeholder="Add notes here..."
+      />
+    ),
   },
 ];
-
-export default function EquipmentProfile({
-  children,
-  data,
-}: {
-  children: React.ReactNode;
-  data: any;
-}) {
-  const [open, setOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
   return (
     <>
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>{children}</SheetTrigger>
-        <SheetContent className="w-3/4 ">
+        <SheetContent className="w-5/6 ">
           <SheetHeader>
             <SheetTitle>
               <div className="flex justify-between">
