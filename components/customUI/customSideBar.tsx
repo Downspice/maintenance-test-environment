@@ -46,8 +46,8 @@ const SidebarLayout: React.FC<SidebarLayoutProps> = ({
       </div>
 
       {/* Content Area */}
-      <div className="flex-1 p-6 overflow-auto">
-        <h2 className="text-xl font-semibold mb-4">{active?.label}</h2>
+      <div className="flex-1 px-2 overflow-auto">
+        {/* <h2 className="text-xl font-semibold mb-4">{active?.label}</h2> */}
         <div className="bg-white rounded-lg shadow p-4 h-full">{active?.content}</div>
       </div>
     </div>
