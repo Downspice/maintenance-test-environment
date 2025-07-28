@@ -4,7 +4,7 @@ export default function Summary() {
       {/* First Column */}
       <div className="grid grid-cols-5 gap-2 h-fit ">
         {/* First 4 Sub-columns */}
-        <div className="col-span-4  border border-gray-300 p-4    ">
+        <div className="col-span-4  border border-gray-300 p-4">
           <h2 className="text-sm   mb-4">Notifications</h2>
           <div className="grid grid-cols-3 gap-1">
             <div className="col-span-1 p-3 font-bold text-xl mb-3 flex flex-col items-center justify-center">
