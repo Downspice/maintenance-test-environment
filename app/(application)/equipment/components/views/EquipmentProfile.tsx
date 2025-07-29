@@ -65,72 +65,341 @@ import Summary from "./summary";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ChevronUp, Plus } from "lucide-react";
 
+const sampleFluids = [
+  {
+    date: "2025-07-28",
+    fluid: "Engine Oil",
+    partNumber: "EO-1001",
+    qty: 5,
+    meter1: 12500,
+    unitCost: 12.5,
+    total: 62.5,
+  },
+  {
+    date: "2025-07-27",
+    fluid: "Transmission Fluid",
+    partNumber: "TF-2030",
+    qty: 3,
+    meter1: 12300,
+    unitCost: 15.0,
+    total: 45.0,
+  },
+  {
+    date: "2025-07-25",
+    fluid: "Coolant",
+    partNumber: "CL-4578",
+    qty: 2,
+    meter1: 12050,
+    unitCost: 10.0,
+    total: 20.0,
+  },
+  {
+    date: "2025-07-22",
+    fluid: "Brake Fluid",
+    partNumber: "BF-8870",
+    qty: 1,
+    meter1: 11800,
+    unitCost: 8.0,
+    total: 8.0,
+  },
+];
 
+function FluidsTab() {
+  const [filter, setFilter] = useState("");
+  const [open, setOpen] = useState(false);
+
+  const filteredData = sampleFluids.filter((item) =>
+    item.fluid.toLowerCase().includes(filter.toLowerCase())
+  );
+
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-between items-center gap-4">
+        <Input
+          placeholder="Filter Fuel..."
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          className="max-w-sm"
+        />
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetTrigger asChild>
+            <Button>Add Fuel</Button>
+          </SheetTrigger>
+          <SheetContent>
+            <SheetHeader>
+              <SheetTitle>Add New Fuel</SheetTitle>
+            </SheetHeader>
+            {/* Add your form here */}
+            <div className="mt-4 text-sm text-muted-foreground">
+              Form goes here
+            </div>
+          </SheetContent>
+        </Sheet>
+      </div>
+
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Date</TableHead>
+            <TableHead>Fluid</TableHead>
+            <TableHead>Part #</TableHead>
+            <TableHead>Qty</TableHead>
+            <TableHead>Meter 1</TableHead>
+            <TableHead>Unit Cost</TableHead>
+            <TableHead>Total</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {filteredData.map((item, index) => (
+            <TableRow key={index}>
+              <TableCell>{item.date}</TableCell>
+              <TableCell>{item.fluid}</TableCell>
+              <TableCell>{item.partNumber}</TableCell>
+              <TableCell>{item.qty}</TableCell>
+              <TableCell>{item.meter1}</TableCell>
+              <TableCell>${item.unitCost.toFixed(2)}</TableCell>
+              <TableCell>${item.total.toFixed(2)}</TableCell>{" "}
+              <TableCell className="text-right space-x-2">
+                <Button size="icon" variant="ghost">
+                  <Pencil className="h-4 w-4" />
+                </Button>
+                <Button size="icon" variant="ghost">
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
+}
+
+const sampleAssignments = [
+  {
+    operator: "Samuel Tetteh",
+    jobSite: "Tema Port Expansion",
+    signOut: {
+      date: "2025-07-01",
+      time: "08:00",
+      mileage: 10234,
+    },
+    signIn: {
+      date: "2025-07-01",
+      time: "17:30",
+      mileage: 10310,
+    },
+  },
+  {
+    operator: "Akosua Dapaah",
+    jobSite: "Accra Mall Construction",
+    signOut: {
+      date: "2025-07-02",
+      time: "07:45",
+      mileage: 20300,
+    },
+    signIn: {
+      date: "2025-07-02",
+      time: "16:15",
+      mileage: 20375,
+    },
+  },
+  {
+    operator: "Kwabena Boateng",
+    jobSite: "Takoradi Highway Repair",
+    signOut: {
+      date: "2025-07-03",
+      time: "06:30",
+      mileage: 45560,
+    },
+    signIn: {
+      date: "2025-07-03",
+      time: "15:00",
+      mileage: 45640,
+    },
+  },
+  {
+    operator: "Efua Kyei",
+    jobSite: "Kumasi Industrial Hub",
+    signOut: {
+      date: "2025-07-04",
+      time: "08:10",
+      mileage: 12000,
+    },
+    signIn: {
+      date: "2025-07-04",
+      time: "17:00",
+      mileage: 12085,
+    },
+  },
+  {
+    operator: "Joseph Awer",
+    jobSite: "North Ridge Office Tower",
+    signOut: {
+      date: "2025-07-05",
+      time: "09:00",
+      mileage: 33050,
+    },
+    signIn: {
+      date: "2025-07-05",
+      time: "18:00",
+      mileage: 33130,
+    },
+  },
+];
+
+function AssignmentsTab() {
+  const [filter, setFilter] = useState("");
+  const [open, setOpen] = useState(false);
+
+  const filteredData = sampleAssignments.filter((item) =>
+    item.operator.toLowerCase().includes(filter.toLowerCase())
+  );
+
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-between items-center gap-4">
+        <Input
+          placeholder="Filter Fuel..."
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          className="max-w-sm"
+        />
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetTrigger asChild>
+            <Button>Add Fuel</Button>
+          </SheetTrigger>
+          <SheetContent>
+            <SheetHeader>
+              <SheetTitle>Add New Fuel</SheetTitle>
+            </SheetHeader>
+            {/* Add your form here */}
+            <div className="mt-4 text-sm text-muted-foreground">
+              Form goes here
+            </div>
+          </SheetContent>
+        </Sheet>
+      </div>
+
+      <div className="rounded-md border overflow-x-auto">
+        <Table>
+          <TableHeader>
+            {/* First header row */}
+            <TableRow>
+              <TableHead colSpan={3} className="text-center border-r">
+                Sign In
+              </TableHead>
+              <TableHead colSpan={3} className="text-center border-r">
+                Sign Out
+              </TableHead>
+              <TableHead rowSpan={2}>Operator</TableHead>
+              <TableHead rowSpan={2}>Job Site</TableHead>
+              <TableHead rowSpan={2} className="text-right">
+                Actions
+              </TableHead>
+            </TableRow>
+
+            {/* Second header row */}
+            <TableRow>
+              <TableHead>Date</TableHead>
+              <TableHead>Time</TableHead>
+              <TableHead>Mileage</TableHead>
+              <TableHead>Date</TableHead>
+              <TableHead>Time</TableHead>
+              <TableHead>Mileage</TableHead>
+            </TableRow>
+          </TableHeader>
+
+          <TableBody>
+            {filteredData.map((item) => (
+              <TableRow key={item.id}>
+                <TableCell>{item.signIn.date}</TableCell>
+                <TableCell>{item.signIn.time}</TableCell>
+                <TableCell>{item.signIn.mileage}</TableCell>
+                <TableCell>{item.signOut.date}</TableCell>
+                <TableCell>{item.signOut.time}</TableCell>
+                <TableCell>{item.signOut.mileage}</TableCell>
+                <TableCell>{item.operator}</TableCell>
+                <TableCell>{item.jobSite}</TableCell>
+                <TableCell className="text-right space-x-2">
+                  <Button size="icon" variant="ghost">
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button size="icon" variant="ghost">
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
+  );
+}
 
 const sampleAccidents = [
   {
-    "id": "ACC001",
-    "date": "2025-07-10",
-    "time": "14:35",
-    "driver": "James Owusu",
-    "claimNumber": "CLM1023",
-    "meter1": "34560",
-    "units": 2,
-    "injuries": 0,
-    "damage": "Minor dent on rear bumper",
-    "other": "No police report filed"
+    id: "ACC001",
+    date: "2025-07-10",
+    time: "14:35",
+    driver: "James Owusu",
+    claimNumber: "CLM1023",
+    meter1: "34560",
+    units: 2,
+    injuries: 0,
+    damage: "Minor dent on rear bumper",
+    other: "No police report filed",
   },
   {
-    "id": "ACC002",
-    "date": "2025-07-14",
-    "time": "09:20",
-    "driver": "Akua Mensah",
-    "claimNumber": "CLM1048",
-    "meter1": "45800",
-    "units": 1,
-    "injuries": 1,
-    "damage": "Front left fender damaged",
-    "other": "Passenger taken to clinic"
+    id: "ACC002",
+    date: "2025-07-14",
+    time: "09:20",
+    driver: "Akua Mensah",
+    claimNumber: "CLM1048",
+    meter1: "45800",
+    units: 1,
+    injuries: 1,
+    damage: "Front left fender damaged",
+    other: "Passenger taken to clinic",
   },
   {
-    "id": "ACC003",
-    "date": "2025-07-18",
-    "time": "17:45",
-    "driver": "Kwame Nkrumah",
-    "claimNumber": "CLM1062",
-    "meter1": "50120",
-    "units": 3,
-    "injuries": 0,
-    "damage": "Broken side mirror",
-    "other": "Accident occurred during delivery"
+    id: "ACC003",
+    date: "2025-07-18",
+    time: "17:45",
+    driver: "Kwame Nkrumah",
+    claimNumber: "CLM1062",
+    meter1: "50120",
+    units: 3,
+    injuries: 0,
+    damage: "Broken side mirror",
+    other: "Accident occurred during delivery",
   },
   {
-    "id": "ACC004",
-    "date": "2025-07-21",
-    "time": "11:10",
-    "driver": "Linda Boateng",
-    "claimNumber": "CLM1090",
-    "meter1": "52005",
-    "units": 1,
-    "injuries": 2,
-    "damage": "Vehicle totaled",
-    "other": "Insurance contacted, investigation ongoing"
+    id: "ACC004",
+    date: "2025-07-21",
+    time: "11:10",
+    driver: "Linda Boateng",
+    claimNumber: "CLM1090",
+    meter1: "52005",
+    units: 1,
+    injuries: 2,
+    damage: "Vehicle totaled",
+    other: "Insurance contacted, investigation ongoing",
   },
   {
-    "id": "ACC005",
-    "date": "2025-07-28",
-    "time": "07:55",
-    "driver": "Yaw Asante",
-    "claimNumber": "CLM1111",
-    "meter1": "54800",
-    "units": 2,
-    "injuries": 0,
-    "damage": "Cracked windshield",
-    "other": "Reported by supervisor"
-  }
-]
-
-
+    id: "ACC005",
+    date: "2025-07-28",
+    time: "07:55",
+    driver: "Yaw Asante",
+    claimNumber: "CLM1111",
+    meter1: "54800",
+    units: 2,
+    injuries: 0,
+    damage: "Cracked windshield",
+    other: "Reported by supervisor",
+  },
+];
 
 function AccidentsTab() {
   const [filter, setFilter] = useState("");
@@ -172,12 +441,12 @@ function AccidentsTab() {
               <TableHead>Date</TableHead>
               <TableHead>Time</TableHead>
               <TableHead>Driver</TableHead>
-              <TableHead>Claim #</TableHead> 
-              <TableHead>Meter #1</TableHead> 
-              <TableHead>Units #</TableHead> 
-              <TableHead>Injuries</TableHead> 
-              <TableHead>Damage</TableHead> 
-              <TableHead>Other</TableHead> 
+              <TableHead>Claim #</TableHead>
+              <TableHead>Meter #1</TableHead>
+              <TableHead>Units #</TableHead>
+              <TableHead>Injuries</TableHead>
+              <TableHead>Damage</TableHead>
+              <TableHead>Other</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -193,7 +462,7 @@ function AccidentsTab() {
                 <TableCell>{item.injuries}</TableCell>
                 <TableCell>{item.damage}</TableCell>
                 <TableCell>{item.other}</TableCell>
-                 <TableCell className="text-right space-x-2">
+                <TableCell className="text-right space-x-2">
                   <Button size="icon" variant="ghost">
                     <Pencil className="h-4 w-4" />
                   </Button>
@@ -212,29 +481,30 @@ function AccidentsTab() {
 
 const sampleMeterReplacement = [
   {
-    "replaceDate": "2025-07-01",
-    "currentMeter": "12345",
-    "replacementMeter": "67890",
-    "description": "Replaced due to malfunction during diagnostics"
+    replaceDate: "2025-07-01",
+    currentMeter: "12345",
+    replacementMeter: "67890",
+    description: "Replaced due to malfunction during diagnostics",
   },
   {
-    "replaceDate": "2025-07-05",
-    "currentMeter": "23456",
-    "replacementMeter": "78901",
-    "description": "Preventive replacement after 10,000 hours"
+    replaceDate: "2025-07-05",
+    currentMeter: "23456",
+    replacementMeter: "78901",
+    description: "Preventive replacement after 10,000 hours",
   },
   {
-    "replaceDate": "2025-07-10",
-    "currentMeter": "34567",
-    "replacementMeter": "89012",
-    "description": "Old meter inaccurate, replaced with new unit"
+    replaceDate: "2025-07-10",
+    currentMeter: "34567",
+    replacementMeter: "89012",
+    description: "Old meter inaccurate, replaced with new unit",
   },
   {
-    "replaceDate": "2025-07-15",
-    "currentMeter": "45678",
-    "replacementMeter": "90123",
-    "description": "Meter"}]
-
+    replaceDate: "2025-07-15",
+    currentMeter: "45678",
+    replacementMeter: "90123",
+    description: "Meter",
+  },
+];
 
 function MeterReplacementTab() {
   const [filter, setFilter] = useState("");
@@ -276,7 +546,7 @@ function MeterReplacementTab() {
               <TableHead>Replace Date</TableHead>
               <TableHead>Current Meter</TableHead>
               <TableHead>Replacement Meter</TableHead>
-              <TableHead>Description</TableHead> 
+              <TableHead>Description</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -287,7 +557,7 @@ function MeterReplacementTab() {
                 <TableCell>{item.currentMeter}</TableCell>
                 <TableCell>{item.replacementMeter}</TableCell>
                 <TableCell>{item.description}</TableCell>
-                 <TableCell className="text-right space-x-2">
+                <TableCell className="text-right space-x-2">
                   <Button size="icon" variant="ghost">
                     <Pencil className="h-4 w-4" />
                   </Button>
@@ -304,54 +574,53 @@ function MeterReplacementTab() {
   );
 }
 
-
 function MeterLog() {
   const [rows, setRows] = useState(meterData);
 
   return (
     <div className="overflow-auto">
       <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead  >Log Date</TableHead>
-          <TableHead className="text-center  ">Meter 1</TableHead>
-          <TableHead className="text-center">Meter 2</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {rows.map((row, index) => (
-          <TableRow key={index}>
-            <TableCell>{row.logDate}</TableCell>
-            <TableCell>
-              <Input
-                value={row.meter1.new}
-                onChange={(e) => {
-                  const updated = [...rows];
-                  updated[index].meter1.new = e.target.value;
-                  setRows(updated);
-                }}
-              />
-            </TableCell>
-            <TableCell>
-              {row.meter2 ? (
+        <TableHeader>
+          <TableRow>
+            <TableHead>Log Date</TableHead>
+            <TableHead className="text-center  ">Meter 1</TableHead>
+            <TableHead className="text-center">Meter 2</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {rows.map((row, index) => (
+            <TableRow key={index}>
+              <TableCell>{row.logDate}</TableCell>
+              <TableCell>
                 <Input
-                  value={row.meter2.new}
+                  value={row.meter1.new}
                   onChange={(e) => {
                     const updated = [...rows];
-                    if (updated[index].meter2) {
-                      updated[index].meter2!.new = e.target.value;
-                    }
+                    updated[index].meter1.new = e.target.value;
                     setRows(updated);
                   }}
                 />
-              ) : (
-                <span className="text-muted-foreground italic">—</span>
-              )}
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+              </TableCell>
+              <TableCell>
+                {row.meter2 ? (
+                  <Input
+                    value={row.meter2.new}
+                    onChange={(e) => {
+                      const updated = [...rows];
+                      if (updated[index].meter2) {
+                        updated[index].meter2!.new = e.target.value;
+                      }
+                      setRows(updated);
+                    }}
+                  />
+                ) : (
+                  <span className="text-muted-foreground italic">—</span>
+                )}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </div>
   );
 }
@@ -1289,17 +1558,17 @@ const tabItems: TabItem[] = [
   {
     label: "Assignments",
     value: "assignments",
-    content: <div>Assignments content</div>,
+    content: <AssignmentsTab />,
   },
   {
     label: "Fluids",
     value: "fluids",
-    content: <div>Fluids content</div>,
+    content: <FluidsTab/>,
   },
   {
     label: "Accidents",
     value: "accidents",
-    content: <AccidentsTab/>,
+    content: <AccidentsTab />,
   },
   {
     label: "Meter Log",
@@ -1309,7 +1578,7 @@ const tabItems: TabItem[] = [
   {
     label: "Meter Replacement",
     value: "meter-replacement",
-    content: <MeterReplacementTab/>,
+    content: <MeterReplacementTab />,
   },
 ];
 
