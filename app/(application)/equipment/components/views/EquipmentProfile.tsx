@@ -7,7 +7,13 @@ import {
 } from "@/components/ui/collapsible";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, MinusSquare, Pen, PlusSquare } from "lucide-react";
+import {
+  ChevronDown,
+  EllipsisVertical,
+  MinusSquare,
+  Pen,
+  PlusSquare,
+} from "lucide-react";
 import EditEquipment from "./EditEquipment";
 import {
   Sheet,
@@ -65,8 +71,6 @@ import Summary from "./summary";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ChevronUp, Plus } from "lucide-react";
 
-
-
 const MaintenanceHistoryComponent = () => {
   const [filter, setFilter] = useState("outstanding");
   const [searchTerm, setSearchTerm] = useState("");
@@ -79,7 +83,6 @@ const MaintenanceHistoryComponent = () => {
   return (
     <div className="space-y-4">
       <div className="flex justify-between">
-         
         <Input
           placeholder="Search work orders..."
           value={searchTerm}
@@ -371,8 +374,8 @@ function FluidsTab() {
                   <Pencil className="h-4 w-4" />
                 </Button>
                 <Button size="icon" variant="destructive">
-                    <Trash2 className="w-4 h-4 text-white" />
-                  </Button>
+                  <Trash2 className="w-4 h-4 text-white" />
+                </Button>
               </TableCell>
             </TableRow>
           ))}
@@ -1745,7 +1748,7 @@ const tabItems: TabItem[] = [
   {
     label: "Maintenance",
     value: "maintenance",
-    content: <MaintenanceHistoryComponent/>,
+    content: <MaintenanceHistoryComponent />,
   },
   {
     label: "Inspections",
@@ -1770,7 +1773,7 @@ const tabItems: TabItem[] = [
   {
     label: "Fluids",
     value: "fluids",
-    content: <FluidsTab/>,
+    content: <FluidsTab />,
   },
   {
     label: "Accidents",
@@ -2535,7 +2538,7 @@ export default function EquipmentProfile({
               defaultActiveId="summary"
               headerItem={
                 <>
-                  <div className="border border-b border-black grid grid-cols-1 md:grid-cols-2 gap-1 bg-white ">
+                  <div className=" border-b border-black grid grid-cols-1 md:grid-cols-2 gap-1 bg-white ">
                     {/* Vehicle Image */}
                     <div className="w-full h-32 md:h-auto flex items-center justify-center bg-gray-100 rounded-lg overflow-hidden">
                       <img
@@ -2544,7 +2547,6 @@ export default function EquipmentProfile({
                         className="object-cover w-full h-full"
                       />
                     </div>
-
                     {/* Text Information */}
                     <div className="flex text-sm flex-col justify-center space-y-1 text-gray-800">
                       <div>
@@ -2575,15 +2577,18 @@ export default function EquipmentProfile({
                         </div>
                       </div>
                     </div>
-                    <div>
+                    <div className="flex flex-row justify-end gap-1 col-span-2">
                       <EditEquipment
                         children={
-                          <Button variant="ghost" size="icon">
+                          <Button variant="secondary" size="icon">
                             <Pen className="h-4 w-4" />
                           </Button>
                         }
                         data={data}
                       />
+                      <Button variant="secondary" size="icon">
+                        <EllipsisVertical className="h-4 w-4 " />
+                      </Button>
                     </div>
                   </div>
                 </>
