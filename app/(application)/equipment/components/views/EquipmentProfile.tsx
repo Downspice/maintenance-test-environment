@@ -65,6 +65,211 @@ import Summary from "./summary";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ChevronUp, Plus } from "lucide-react";
 
+
+
+const MaintenanceHistoryComponent = () => {
+  const [filter, setFilter] = useState("outstanding");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [expandedRow, setExpandedRow] = useState<string | null>(null);
+
+  const filteredOrders = workOrders.filter((wo) =>
+    wo.id.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-between">
+         
+        <Input
+          placeholder="Search work orders..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-1/3"
+        />
+
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button>
+              <Plus className="mr-2 h-4 w-4" /> New
+            </Button>
+          </SheetTrigger>
+          <SheetContent>
+            <h2 className="text-lg font-semibold mb-4">Add Work Order</h2>
+            {/* Add Work Order Form Here */}
+          </SheetContent>
+        </Sheet>
+      </div>
+
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Date</TableHead>
+            <TableHead>WO</TableHead>
+            <TableHead>Hours</TableHead>
+            <TableHead>Maintenance Performed</TableHead>
+            <TableHead>Assigned To</TableHead>
+            <TableHead>Total</TableHead>
+            <TableHead>Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {filteredOrders.map((wo) => (
+            <React.Fragment key={wo.id}>
+              <TableRow
+                className="cursor-pointer"
+                onClick={() =>
+                  setExpandedRow(expandedRow === wo.id ? null : wo.id)
+                }
+              >
+                <TableCell>
+                  {expandedRow === wo.id ? (
+                    <PlusSquare className="inline ml-1" />
+                  ) : (
+                    <MinusSquare className="inline ml-1" />
+                  )}
+                  {wo.date}
+                </TableCell>
+                <TableCell>{wo.id}</TableCell>
+                <TableCell>{wo.hours}</TableCell>
+                <TableCell>{wo.maintenancePerformed}</TableCell>
+                <TableCell>{wo.assignedTo}</TableCell>
+                <TableCell>{wo.total}</TableCell>
+                <TableCell className="text-right">
+                  <Button variant="ghost" size="sm">
+                    Edit
+                  </Button>
+                  <Button variant="ghost" size="sm">
+                    Delete
+                  </Button>
+                </TableCell>
+              </TableRow>
+              {expandedRow === wo.id && (
+                <TableRow>
+                  <TableCell colSpan={7} className="p-0 bg-muted">
+                    <div className="p-4">
+                      <Tabs defaultValue="pm">
+                        <TabsList>
+                          <TabsTrigger value="pm">PM</TabsTrigger>
+                          <TabsTrigger value="repairs">Repairs</TabsTrigger>
+                          <TabsTrigger value="parts">Parts</TabsTrigger>
+                          <TabsTrigger value="labor">Labor</TabsTrigger>
+                        </TabsList>
+
+                        <TabsContent value="pm">
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead>Date</TableHead>
+                                <TableHead>Preventive Maintenance</TableHead>
+                                <TableHead>Cost (Parts)</TableHead>
+                                <TableHead>Cost (Labor)</TableHead>
+                                <TableHead>Total Cost (PM)</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {/* Dummy row */}
+                              <TableRow>
+                                <TableCell>2025-07-01</TableCell>
+                                <TableCell>Oil Change</TableCell>
+                                <TableCell>$50</TableCell>
+                                <TableCell>$30</TableCell>
+                                <TableCell>$80</TableCell>
+                              </TableRow>
+                            </TableBody>
+                          </Table>
+                        </TabsContent>
+
+                        <TabsContent value="repairs">
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead>Date</TableHead>
+                                <TableHead>Repairs Performed</TableHead>
+                                <TableHead>Cost (Parts)</TableHead>
+                                <TableHead>Cost (Labor)</TableHead>
+                                <TableHead>Total Cost (Repairs)</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              <TableRow>
+                                <TableCell>2025-07-01</TableCell>
+                                <TableCell>Brake Replacement</TableCell>
+                                <TableCell>$70</TableCell>
+                                <TableCell>$40</TableCell>
+                                <TableCell>$110</TableCell>
+                              </TableRow>
+                            </TableBody>
+                          </Table>
+                        </TabsContent>
+
+                        <TabsContent value="parts">
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead>Part#</TableHead>
+                                <TableHead>Name</TableHead>
+                                <TableHead>Description</TableHead>
+                                <TableHead>Quantity</TableHead>
+                                <TableHead>Unit Cost</TableHead>
+                                <TableHead>Extended Cost</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              <TableRow>
+                                <TableCell>001</TableCell>
+                                <TableCell>Filter</TableCell>
+                                <TableCell>Oil filter</TableCell>
+                                <TableCell>2</TableCell>
+                                <TableCell>$10</TableCell>
+                                <TableCell>$20</TableCell>
+                              </TableRow>
+                            </TableBody>
+                          </Table>
+                        </TabsContent>
+
+                        <TabsContent value="labor">
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead>Labor Provider</TableHead>
+                                <TableHead>Description of Work</TableHead>
+                                <TableHead>Hours</TableHead>
+                                <TableHead>Rate</TableHead>
+                                <TableHead>Extended Cost</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              <TableRow>
+                                <TableCell>John Smith</TableCell>
+                                <TableCell>Engine inspection</TableCell>
+                                <TableCell>3</TableCell>
+                                <TableCell>$25</TableCell>
+                                <TableCell>$75</TableCell>
+                              </TableRow>
+                            </TableBody>
+                          </Table>
+                        </TabsContent>
+                      </Tabs>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              )}
+            </React.Fragment>
+          ))}
+        </TableBody>
+        <TableFooter>
+          <TableRow>
+            <TableCell colSpan={5}>Total</TableCell>
+            <TableCell>
+              ${filteredOrders.reduce((acc, curr) => acc + curr.total, 0)}
+            </TableCell>
+            <TableCell></TableCell>
+          </TableRow>
+        </TableFooter>
+      </Table>
+    </div>
+  );
+};
 const sampleFluids = [
   {
     date: "2025-07-28",
@@ -123,7 +328,7 @@ function FluidsTab() {
         />
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
-            <Button>Add Fuel</Button>
+            <Button>Add</Button>
           </SheetTrigger>
           <SheetContent>
             <SheetHeader>
@@ -267,7 +472,7 @@ function AssignmentsTab() {
         />
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
-            <Button>Add Fuel</Button>
+            <Button>Add</Button>
           </SheetTrigger>
           <SheetContent>
             <SheetHeader>
@@ -420,7 +625,7 @@ function AccidentsTab() {
         />
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
-            <Button>Add Fuel</Button>
+            <Button>Add</Button>
           </SheetTrigger>
           <SheetContent>
             <SheetHeader>
@@ -525,7 +730,7 @@ function MeterReplacementTab() {
         />
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
-            <Button>Add Fuel</Button>
+            <Button>Add</Button>
           </SheetTrigger>
           <SheetContent>
             <SheetHeader>
@@ -731,7 +936,7 @@ function FuelTab() {
         />
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
-            <Button>Add Fuel</Button>
+            <Button>Add</Button>
           </SheetTrigger>
           <SheetContent>
             <SheetHeader>
@@ -1538,7 +1743,7 @@ const tabItems: TabItem[] = [
   {
     label: "Maintenance",
     value: "maintenance",
-    content: <div>Maintenance content</div>,
+    content: <MaintenanceHistoryComponent/>,
   },
   {
     label: "Inspections",
