@@ -2546,7 +2546,7 @@ export default function EquipmentProfile({
                     </div>
 
                     {/* Text Information */}
-                    <div className="flex text-sm flex-col justify-center gap-3 text-gray-800">
+                    <div className="flex text-sm flex-col justify-center space-y-1 text-gray-800">
                       <div>
                         <span className="font-semibold text-gray-600">
                           CNC:
@@ -2558,17 +2558,17 @@ export default function EquipmentProfile({
                         </span>{" "}
                         <span>SN-44983-21A</span>
                       </div>
-                      <div className="flex flex-wrap gap-8 mt-2">
+                      <div className="flex flex-wrap gap-1 mt-2">
                         <div>
                           <span className="font-semibold text-gray-600">
                             Hours:
-                          </span>{" "}
+                          </span>
                           <span>1,250 hrs</span>
                         </div>
                         <div>
                           <span className="font-semibold text-gray-600">
                             Status:
-                          </span>{" "}
+                          </span>
                           <span className="text-green-600 font-semibold">
                             Active
                           </span>
