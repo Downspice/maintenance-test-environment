@@ -109,7 +109,7 @@ const MaintenanceHistoryComponent = () => {
             <TableHead>Maintenance Performed</TableHead>
             <TableHead>Assigned To</TableHead>
             <TableHead>Total</TableHead>
-            <TableHead>Actions</TableHead>
+            <TableHead className="w-[100px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -135,11 +135,11 @@ const MaintenanceHistoryComponent = () => {
                 <TableCell>{wo.assignedTo}</TableCell>
                 <TableCell>{wo.total}</TableCell>
                 <TableCell className="text-right">
-                  <Button variant="ghost" size="sm">
-                    Edit
+                  <Button size="icon" variant="outline">
+                    <Pencil className="w-4 h-4" />
                   </Button>
-                  <Button variant="ghost" size="sm">
-                    Delete
+                  <Button size="icon" variant="destructive">
+                    <Trash2 className="w-4 h-4 text-white" />
                   </Button>
                 </TableCell>
               </TableRow>
@@ -352,6 +352,7 @@ function FluidsTab() {
             <TableHead>Meter 1</TableHead>
             <TableHead>Unit Cost</TableHead>
             <TableHead>Total</TableHead>
+            <TableHead className="w-[100px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -365,12 +366,12 @@ function FluidsTab() {
               <TableCell>${item.unitCost.toFixed(2)}</TableCell>
               <TableCell>${item.total.toFixed(2)}</TableCell>{" "}
               <TableCell className="text-right space-x-2">
-                <Button size="icon" variant="ghost">
+                <Button size="icon" variant="outline">
                   <Pencil className="h-4 w-4" />
                 </Button>
-                <Button size="icon" variant="ghost">
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                <Button size="icon" variant="destructive">
+                    <Trash2 className="w-4 h-4 text-white" />
+                  </Button>
               </TableCell>
             </TableRow>
           ))}
@@ -517,7 +518,7 @@ function AssignmentsTab() {
 
           <TableBody>
             {filteredData.map((item) => (
-              <TableRow key={item.id}>
+              <TableRow key={item.jobSite}>
                 <TableCell>{item.signIn.date}</TableCell>
                 <TableCell>{item.signIn.time}</TableCell>
                 <TableCell>{item.signIn.mileage}</TableCell>
@@ -527,11 +528,11 @@ function AssignmentsTab() {
                 <TableCell>{item.operator}</TableCell>
                 <TableCell>{item.jobSite}</TableCell>
                 <TableCell className="text-right space-x-2">
-                  <Button size="icon" variant="ghost">
-                    <Pencil className="h-4 w-4" />
+                  <Button size="icon" variant="outline">
+                    <Pencil className="w-4 h-4" />
                   </Button>
-                  <Button size="icon" variant="ghost">
-                    <Trash2 className="h-4 w-4" />
+                  <Button size="icon" variant="destructive">
+                    <Trash2 className="w-4 h-4 text-white" />
                   </Button>
                 </TableCell>
               </TableRow>
@@ -652,7 +653,7 @@ function AccidentsTab() {
               <TableHead>Injuries</TableHead>
               <TableHead>Damage</TableHead>
               <TableHead>Other</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead className="text-right w-[100px]">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -668,11 +669,11 @@ function AccidentsTab() {
                 <TableCell>{item.damage}</TableCell>
                 <TableCell>{item.other}</TableCell>
                 <TableCell className="text-right space-x-2">
-                  <Button size="icon" variant="ghost">
-                    <Pencil className="h-4 w-4" />
+                  <Button size="icon" variant="outline">
+                    <Pencil className="w-4 h-4" />
                   </Button>
-                  <Button size="icon" variant="ghost">
-                    <Trash2 className="h-4 w-4" />
+                  <Button size="icon" variant="destructive">
+                    <Trash2 className="w-4 h-4 text-white" />
                   </Button>
                 </TableCell>
               </TableRow>
@@ -763,11 +764,11 @@ function MeterReplacementTab() {
                 <TableCell>{item.replacementMeter}</TableCell>
                 <TableCell>{item.description}</TableCell>
                 <TableCell className="text-right space-x-2">
-                  <Button size="icon" variant="ghost">
-                    <Pencil className="h-4 w-4" />
+                  <Button size="icon" variant="outline">
+                    <Pencil className="w-4 h-4" />
                   </Button>
-                  <Button size="icon" variant="ghost">
-                    <Trash2 className="h-4 w-4" />
+                  <Button size="icon" variant="destructive">
+                    <Trash2 className="w-4 h-4 text-white" />
                   </Button>
                 </TableCell>
               </TableRow>
@@ -975,11 +976,11 @@ function FuelTab() {
                 <TableCell>{item.economy}</TableCell>
                 <TableCell>{item.vendor}</TableCell>
                 <TableCell className="text-right space-x-2">
-                  <Button size="icon" variant="ghost">
-                    <Pencil className="h-4 w-4" />
+                  <Button size="icon" variant="outline">
+                    <Pencil className="w-4 h-4" />
                   </Button>
-                  <Button size="icon" variant="ghost">
-                    <Trash2 className="h-4 w-4" />
+                  <Button size="icon" variant="destructive">
+                    <Trash2 className="w-4 h-4 text-white" />
                   </Button>
                 </TableCell>
               </TableRow>
@@ -1072,11 +1073,11 @@ function ExpensesTab() {
                 <TableCell>{item.costCentre}</TableCell>
                 <TableCell>{item.notes}</TableCell>
                 <TableCell className="text-right space-x-2">
-                  <Button size="icon" variant="ghost">
-                    <Pencil className="h-4 w-4" />
+                  <Button size="icon" variant="outline">
+                    <Pencil className="w-4 h-4" />
                   </Button>
-                  <Button size="icon" variant="ghost">
-                    <Trash2 className="h-4 w-4" />
+                  <Button size="icon" variant="destructive">
+                    <Trash2 className="w-4 h-4 text-white" />
                   </Button>
                 </TableCell>
               </TableRow>
@@ -1187,7 +1188,7 @@ function InspectionTab() {
                     <Pencil className="w-4 h-4" />
                   </Button>
                   <Button size="icon" variant="destructive">
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-4 h-4 text-white" />
                   </Button>
                 </TableCell>
               </TableRow>
@@ -1352,7 +1353,7 @@ const WorkOrdersComponent = () => {
             <TableHead>Maintenance Performed</TableHead>
             <TableHead>Assigned To</TableHead>
             <TableHead>Total</TableHead>
-            <TableHead>Actions</TableHead>
+            <TableHead className="w-[100px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -1378,11 +1379,11 @@ const WorkOrdersComponent = () => {
                 <TableCell>{wo.assignedTo}</TableCell>
                 <TableCell>{wo.total}</TableCell>
                 <TableCell className="text-right">
-                  <Button variant="ghost" size="sm">
-                    Edit
+                  <Button size="icon" variant="outline">
+                    <Pencil className="w-4 h-4" />
                   </Button>
-                  <Button variant="ghost" size="sm">
-                    Delete
+                  <Button size="icon" variant="destructive">
+                    <Trash2 className="w-4 h-4 text-white" />
                   </Button>
                 </TableCell>
               </TableRow>
@@ -1606,7 +1607,7 @@ function Tasks() {
                     <Pencil className="w-4 h-4" />
                   </Button>
                   <Button size="icon" variant="destructive">
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-4 h-4 text-white" />
                   </Button>
                 </TableCell>
               </TableRow>
@@ -1659,7 +1660,7 @@ function Tasks() {
                     <Pencil className="w-4 h-4" />
                   </Button>
                   <Button size="icon" variant="destructive">
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-4 h-4 text-white" />
                   </Button>
                 </TableCell>
               </TableRow>
@@ -1706,7 +1707,7 @@ function Tasks() {
                     <Pencil className="w-4 h-4" />
                   </Button>
                   <Button size="icon" variant="destructive">
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-4 h-4 text-white" />
                   </Button>
                 </TableCell>
               </TableRow>
