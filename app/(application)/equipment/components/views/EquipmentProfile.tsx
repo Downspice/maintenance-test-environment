@@ -67,50 +67,381 @@ import { ChevronUp, Plus } from "lucide-react";
 
 
 
-
-const sampleFuel = [
+const sampleAccidents = [
   {
-    "id": "1",
-    "date": "2025-07-25",
-    "hours": 1800,
-    "volume": 45.5,
-    "price": 5.20,
-    "total": 236.6,
-    "economy": "9.2 L/100km",
-    "vendor": "Shell"
+    "id": "ACC001",
+    "date": "2025-07-10",
+    "time": "14:35",
+    "driver": "James Owusu",
+    "claimNumber": "CLM1023",
+    "meter1": "34560",
+    "units": 2,
+    "injuries": 0,
+    "damage": "Minor dent on rear bumper",
+    "other": "No police report filed"
   },
   {
-    "id": "2",
-    "date": "2025-07-26",
-    "hours": 1825,
-    "volume": 38.0,
-    "price": 5.00,
-    "total": 190.0,
-    "economy": "8.9 L/100km",
-    "vendor": "Total"
+    "id": "ACC002",
+    "date": "2025-07-14",
+    "time": "09:20",
+    "driver": "Akua Mensah",
+    "claimNumber": "CLM1048",
+    "meter1": "45800",
+    "units": 1,
+    "injuries": 1,
+    "damage": "Front left fender damaged",
+    "other": "Passenger taken to clinic"
   },
   {
-    "id": "3",
-    "date": "2025-07-27",
-    "hours": 1850,
-    "volume": 50.0,
-    "price": 4.95,
-    "total": 247.5,
-    "economy": "10.1 L/100km",
-    "vendor": "Goil"
+    "id": "ACC003",
+    "date": "2025-07-18",
+    "time": "17:45",
+    "driver": "Kwame Nkrumah",
+    "claimNumber": "CLM1062",
+    "meter1": "50120",
+    "units": 3,
+    "injuries": 0,
+    "damage": "Broken side mirror",
+    "other": "Accident occurred during delivery"
   },
   {
-    "id": "4",
+    "id": "ACC004",
+    "date": "2025-07-21",
+    "time": "11:10",
+    "driver": "Linda Boateng",
+    "claimNumber": "CLM1090",
+    "meter1": "52005",
+    "units": 1,
+    "injuries": 2,
+    "damage": "Vehicle totaled",
+    "other": "Insurance contacted, investigation ongoing"
+  },
+  {
+    "id": "ACC005",
     "date": "2025-07-28",
-    "hours": 1880,
-    "volume": 40.0,
-    "price": 5.10,
-    "total": 204.0,
-    "economy": "9.0 L/100km",
-    "vendor": "Allied"
+    "time": "07:55",
+    "driver": "Yaw Asante",
+    "claimNumber": "CLM1111",
+    "meter1": "54800",
+    "units": 2,
+    "injuries": 0,
+    "damage": "Cracked windshield",
+    "other": "Reported by supervisor"
   }
 ]
 
+
+
+function AccidentsTab() {
+  const [filter, setFilter] = useState("");
+  const [open, setOpen] = useState(false);
+
+  const filteredData = sampleAccidents.filter((item) =>
+    item.damage.toLowerCase().includes(filter.toLowerCase())
+  );
+
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-between items-center gap-4">
+        <Input
+          placeholder="Filter Fuel..."
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          className="max-w-sm"
+        />
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetTrigger asChild>
+            <Button>Add Fuel</Button>
+          </SheetTrigger>
+          <SheetContent>
+            <SheetHeader>
+              <SheetTitle>Add New Fuel</SheetTitle>
+            </SheetHeader>
+            {/* Add your form here */}
+            <div className="mt-4 text-sm text-muted-foreground">
+              Form goes here
+            </div>
+          </SheetContent>
+        </Sheet>
+      </div>
+
+      <div className="rounded-md border overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Date</TableHead>
+              <TableHead>Time</TableHead>
+              <TableHead>Driver</TableHead>
+              <TableHead>Claim #</TableHead> 
+              <TableHead>Meter #1</TableHead> 
+              <TableHead>Units #</TableHead> 
+              <TableHead>Injuries</TableHead> 
+              <TableHead>Damage</TableHead> 
+              <TableHead>Other</TableHead> 
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredData.map((item) => (
+              <TableRow key={item.id}>
+                <TableCell>{item.date}</TableCell>
+                <TableCell>{item.time}</TableCell>
+                <TableCell>{item.driver}</TableCell>
+                <TableCell>{item.claimNumber}</TableCell>
+                <TableCell>{item.meter1}</TableCell>
+                <TableCell>{item.units}</TableCell>
+                <TableCell>{item.injuries}</TableCell>
+                <TableCell>{item.damage}</TableCell>
+                <TableCell>{item.other}</TableCell>
+                 <TableCell className="text-right space-x-2">
+                  <Button size="icon" variant="ghost">
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button size="icon" variant="ghost">
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
+  );
+}
+
+const sampleMeterReplacement = [
+  {
+    "replaceDate": "2025-07-01",
+    "currentMeter": "12345",
+    "replacementMeter": "67890",
+    "description": "Replaced due to malfunction during diagnostics"
+  },
+  {
+    "replaceDate": "2025-07-05",
+    "currentMeter": "23456",
+    "replacementMeter": "78901",
+    "description": "Preventive replacement after 10,000 hours"
+  },
+  {
+    "replaceDate": "2025-07-10",
+    "currentMeter": "34567",
+    "replacementMeter": "89012",
+    "description": "Old meter inaccurate, replaced with new unit"
+  },
+  {
+    "replaceDate": "2025-07-15",
+    "currentMeter": "45678",
+    "replacementMeter": "90123",
+    "description": "Meter"}]
+
+
+function MeterReplacementTab() {
+  const [filter, setFilter] = useState("");
+  const [open, setOpen] = useState(false);
+
+  const filteredData = sampleMeterReplacement.filter((item) =>
+    item.replacementMeter.toLowerCase().includes(filter.toLowerCase())
+  );
+
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-between items-center gap-4">
+        <Input
+          placeholder="Filter Fuel..."
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          className="max-w-sm"
+        />
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetTrigger asChild>
+            <Button>Add Fuel</Button>
+          </SheetTrigger>
+          <SheetContent>
+            <SheetHeader>
+              <SheetTitle>Add New Fuel</SheetTitle>
+            </SheetHeader>
+            {/* Add your form here */}
+            <div className="mt-4 text-sm text-muted-foreground">
+              Form goes here
+            </div>
+          </SheetContent>
+        </Sheet>
+      </div>
+
+      <div className="rounded-md border overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Replace Date</TableHead>
+              <TableHead>Current Meter</TableHead>
+              <TableHead>Replacement Meter</TableHead>
+              <TableHead>Description</TableHead> 
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredData.map((item) => (
+              <TableRow key={item.replaceDate}>
+                <TableCell>{item.replaceDate}</TableCell>
+                <TableCell>{item.currentMeter}</TableCell>
+                <TableCell>{item.replacementMeter}</TableCell>
+                <TableCell>{item.description}</TableCell>
+                 <TableCell className="text-right space-x-2">
+                  <Button size="icon" variant="ghost">
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button size="icon" variant="ghost">
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
+  );
+}
+
+
+function MeterLog() {
+  const [rows, setRows] = useState(meterData);
+
+  return (
+    <div className="overflow-auto">
+      <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead  >Log Date</TableHead>
+          <TableHead className="text-center  ">Meter 1</TableHead>
+          <TableHead className="text-center">Meter 2</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {rows.map((row, index) => (
+          <TableRow key={index}>
+            <TableCell>{row.logDate}</TableCell>
+            <TableCell>
+              <Input
+                value={row.meter1.new}
+                onChange={(e) => {
+                  const updated = [...rows];
+                  updated[index].meter1.new = e.target.value;
+                  setRows(updated);
+                }}
+              />
+            </TableCell>
+            <TableCell>
+              {row.meter2 ? (
+                <Input
+                  value={row.meter2.new}
+                  onChange={(e) => {
+                    const updated = [...rows];
+                    if (updated[index].meter2) {
+                      updated[index].meter2!.new = e.target.value;
+                    }
+                    setRows(updated);
+                  }}
+                />
+              ) : (
+                <span className="text-muted-foreground italic">—</span>
+              )}
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+    </div>
+  );
+}
+
+interface MeterRow {
+  equipment: string;
+  category: string;
+  meter1: {
+    current: string;
+    new: string;
+  };
+  meter2?: {
+    current: string;
+    new: string;
+  };
+  logDate: string;
+}
+
+const meterData: MeterRow[] = [
+  {
+    equipment: "Compressor A",
+    category: "Pressure",
+    meter1: { current: "250 psi", new: "260 psi" },
+    meter2: { current: "87 hrs", new: "90 hrs" },
+    logDate: "2025-07-18",
+  },
+  {
+    equipment: "Generator B",
+    category: "Voltage",
+    meter1: { current: "480 V", new: "482 V" },
+    meter2: { current: "123 hrs", new: "126 hrs" },
+    logDate: "2025-07-18",
+  },
+  {
+    equipment: "Pump C",
+    category: "Flow Rate",
+    meter1: { current: "15 L/min", new: "16 L/min" },
+    logDate: "2025-07-17", // No meter2
+  },
+  {
+    equipment: "Fan D",
+    category: "Speed",
+    meter1: { current: "1800 RPM", new: "1850 RPM" },
+    meter2: { current: "310 hrs", new: "312 hrs" },
+    logDate: "2025-07-17",
+  },
+];
+
+const sampleFuel = [
+  {
+    id: "1",
+    date: "2025-07-25",
+    hours: 1800,
+    volume: 45.5,
+    price: 5.2,
+    total: 236.6,
+    economy: "9.2 L/100km",
+    vendor: "Shell",
+  },
+  {
+    id: "2",
+    date: "2025-07-26",
+    hours: 1825,
+    volume: 38.0,
+    price: 5.0,
+    total: 190.0,
+    economy: "8.9 L/100km",
+    vendor: "Total",
+  },
+  {
+    id: "3",
+    date: "2025-07-27",
+    hours: 1850,
+    volume: 50.0,
+    price: 4.95,
+    total: 247.5,
+    economy: "10.1 L/100km",
+    vendor: "Goil",
+  },
+  {
+    id: "4",
+    date: "2025-07-28",
+    hours: 1880,
+    volume: 40.0,
+    price: 5.1,
+    total: 204.0,
+    economy: "9.0 L/100km",
+    vendor: "Allied",
+  },
+];
 
 function FuelTab() {
   const [filter, setFilter] = useState("");
@@ -138,7 +469,9 @@ function FuelTab() {
               <SheetTitle>Add New Fuel</SheetTitle>
             </SheetHeader>
             {/* Add your form here */}
-            <div className="mt-4 text-sm text-muted-foreground">Form goes here</div>
+            <div className="mt-4 text-sm text-muted-foreground">
+              Form goes here
+            </div>
           </SheetContent>
         </Sheet>
       </div>
@@ -183,7 +516,6 @@ function FuelTab() {
     </div>
   );
 }
-
 
 const sampleExpenses = [
   {
@@ -234,7 +566,9 @@ function ExpensesTab() {
               <SheetTitle>Add New Expense</SheetTitle>
             </SheetHeader>
             {/* Add your form here */}
-            <div className="mt-4 text-sm text-muted-foreground">Form goes here</div>
+            <div className="mt-4 text-sm text-muted-foreground">
+              Form goes here
+            </div>
           </SheetContent>
         </Sheet>
       </div>
@@ -386,7 +720,10 @@ function InspectionTab() {
             ))}
             {filtered.length === 0 && (
               <TableRow>
-                <TableCell colSpan={6} className="text-center text-muted-foreground">
+                <TableCell
+                  colSpan={6}
+                  className="text-center text-muted-foreground"
+                >
                   No inspection records found.
                 </TableCell>
               </TableRow>
@@ -937,17 +1274,17 @@ const tabItems: TabItem[] = [
   {
     label: "Inspections",
     value: "inspections",
-    content: <InspectionTab/>,
+    content: <InspectionTab />,
   },
   {
     label: "Expenses",
     value: "expenses",
-    content: <ExpensesTab/>,
+    content: <ExpensesTab />,
   },
   {
     label: "Fuel",
     value: "fuel",
-    content: <FuelTab/>,
+    content: <FuelTab />,
   },
   {
     label: "Assignments",
@@ -962,17 +1299,17 @@ const tabItems: TabItem[] = [
   {
     label: "Accidents",
     value: "accidents",
-    content: <div>Accidents content</div>,
+    content: <AccidentsTab/>,
   },
   {
     label: "Meter Log",
     value: "meter-log",
-    content: <div>Meter Log content</div>,
+    content: <MeterLog />,
   },
   {
     label: "Meter Replacement",
     value: "meter-replacement",
-    content: <div>Meter Replacement content</div>,
+    content: <MeterReplacementTab/>,
   },
 ];
 
