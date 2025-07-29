@@ -270,6 +270,7 @@ const MaintenanceHistoryComponent = () => {
     </div>
   );
 };
+
 const sampleFluids = [
   {
     date: "2025-07-28",
@@ -2520,7 +2521,7 @@ export default function EquipmentProfile({
     <>
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>{children}</SheetTrigger>
-        <SheetContent className="w-5/6 ">
+        <SheetContent className="w-5/6 p-2">
           <SheetHeader>
             <SheetTitle>
               <div className="flex justify-between">
@@ -2534,7 +2535,7 @@ export default function EquipmentProfile({
               defaultActiveId="summary"
               headerItem={
                 <>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-1 bg-white ">
+                  <div className="border border-b border-black grid grid-cols-1 md:grid-cols-2 gap-1 bg-white ">
                     {/* Vehicle Image */}
                     <div className="w-full h-32 md:h-auto flex items-center justify-center bg-gray-100 rounded-lg overflow-hidden">
                       <img

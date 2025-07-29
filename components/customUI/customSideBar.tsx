@@ -26,16 +26,16 @@ const SidebarLayout: React.FC<SidebarLayoutProps> = ({
   return (
     <div className="flex h-full bg-gray-100">
       {/* Sidebar */}
-      <div className="w-64 h-full bg-white   flex flex-col p-4 space-y-2 bg-accent">
+      <div className="w-64 h-screen overflow-auto bg-white flex flex-col pl-1 space-y-1">
         {headerItem}
         {menuItems.map((item) => (
           <button
             key={item.id}
             onClick={() => setActiveMenu(item.id)}
             className={clsx(
-              "flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium",
+              "flex items-center gap-2 px-3 py-2 text-sm font-medium",
               activeMenu === item.id
-                ? "bg-blue-100 text-blue-600"
+                ? "bg-accent text-primary"
                 : "text-gray-700 hover:bg-gray-100"
             )}
           >
