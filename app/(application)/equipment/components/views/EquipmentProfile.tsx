@@ -716,7 +716,7 @@ const sampleMeterReplacement = [
   },
 ];
 
-function MeterReplacementTab() {
+export function MeterReplacementTab() {
   const [filter, setFilter] = useState("");
   const [open, setOpen] = useState(false);
 

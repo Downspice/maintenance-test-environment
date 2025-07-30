@@ -97,8 +97,7 @@ export const costCenterOptions = [
 
 export const WorkOrderStatuses = ["Open", "In Progress", "On Hold", "Complete"];
 
-export default function NewWorkOrderForm() {
-  const [open, setOpen] = useState(false);
+export function ActualWorkOrderForm(){
   const [maintenanceTasks, setMaintenanceTasks] = useState<
     AddMaintenanceInWorkOrderInterface[]
   >([]);
@@ -135,25 +134,8 @@ export default function NewWorkOrderForm() {
     toast.success("Work Order submitted successfully!");
   }
 
-  return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
-        <Button>
-          <Plus />
-          Create New Work Order
-        </Button>
-      </SheetTrigger>
-      <SheetContent className="w-5/6 ">
-        <SheetHeader>
-          <SheetTitle>Create New Order</SheetTitle>
-          <SheetDescription>
-            Fill out the form below to set up your new Work Order.
-          </SheetDescription>
-        </SheetHeader>
-
-        <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
-          <div>
-            <Form {...workOrderForm}>
+  return(
+    <Form {...workOrderForm}>
               <form
                 onSubmit={workOrderForm.handleSubmit((data) =>
                   handleSubmit(data)
@@ -468,7 +450,30 @@ export default function NewWorkOrderForm() {
                 </div>
               </form>
             </Form>
-          </div>
+  )
+}
+export default function NewWorkOrderForm() {
+  const [open, setOpen] = useState(false);
+
+
+  return (
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetTrigger asChild>
+        <Button>
+          <Plus />
+          Create New Work Order
+        </Button>
+      </SheetTrigger>
+      <SheetContent className="w-5/6 ">
+        <SheetHeader>
+          <SheetTitle>Create New Order</SheetTitle>
+          <SheetDescription>
+            Fill out the form below to set up your new Work Order.
+          </SheetDescription>
+        </SheetHeader>
+
+        <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
+          <ActualWorkOrderForm/>
         </ScrollArea>
       </SheetContent>
     </Sheet>

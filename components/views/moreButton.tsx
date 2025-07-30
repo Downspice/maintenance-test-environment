@@ -43,6 +43,7 @@ import GeneratePOMoreButtonView from "../forms/actualForms/moreButtonForms/gener
 import GenerateWorkOrderMoreButtonView from "../forms/actualForms/moreButtonForms/generateWorkOrder/generateWorkOrderView";
 import PhysicalInventoryUpdateMoreButton from "../forms/actualForms/moreButtonForms/updatePhysicalInventory/updatePhysicalInventoryView";
 import UpdateMetersTable from "@/app/(application)/equipment/components/update-meter-table";
+import { MeterReplacementTab } from "@/app/(application)/equipment/components/views/EquipmentProfile";
 
 export default function HeaderUploadButton() {
     const [open, setOpen] = useState(false);
@@ -89,7 +90,9 @@ export default function HeaderUploadButton() {
       "Generate Purchase Orders": <GeneratePOMoreButtonView/>,
       "Generate Work Orders":<GenerateWorkOrderMoreButtonView/>,
       "Physical Inventory Count": <PhysicalInventoryUpdateMoreButton/>,
-      "Update Meters":<UpdateMetersTable/>
+      "Update Meters":<UpdateMetersTable/>,
+      "Meter Replacements":<MeterReplacementTab/>,
+
     };
 
     const renderFormContent = () => {

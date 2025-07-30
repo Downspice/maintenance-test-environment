@@ -41,13 +41,15 @@ const getAllEmployees = (
 };
 
 const flatEmployees = getAllEmployees(CustomerData);
-const name = [...new Set(flatEmployees.map((emp) => emp.name))];
-const type = [...new Set(flatEmployees.map((emp) => emp.type))];
-const address1 = [...new Set(flatEmployees.map((emp) => emp.street1))];
-const city = [...new Set(flatEmployees.map((emp) => emp.city))];
-const state_prov = [...new Set(flatEmployees.map((emp) => emp.state))];
-const postal_code = [...new Set(flatEmployees.map((emp) => emp.postalCode))];
-const email = [...new Set(flatEmployees.map((emp) => emp.email))];
+const name = [...new Set(flatEmployees.map((emp) => emp.name ?? ""))];
+const type = [...new Set(flatEmployees.map((emp) => emp.type ?? ""))];
+const address1 = [...new Set(flatEmployees.map((emp) => emp.street1 ?? ""))];
+const city = [...new Set(flatEmployees.map((emp) => emp.city ?? ""))];
+const state_prov = [...new Set(flatEmployees.map((emp) => emp.state ?? ""))];
+const postal_code = [
+  ...new Set(flatEmployees.map((emp) => emp.postalCode ?? "")),
+];
+const email = [...new Set(flatEmployees.map((emp) => emp.email ?? ""))];
 
 export default function CustomerDataTable() {
   const [isServerMode, setIsServerMode] = useState(false);
@@ -388,7 +390,15 @@ export default function CustomerDataTable() {
       <AdvancedDataTable
         columns={columns}
         data={isServerMode ? currentData : CustomerData}
-        defaultVisibleColumns={["name","type","address1","state", "postalCode", "email", "actions"]}
+        defaultVisibleColumns={[
+          "name",
+          "type",
+          "address1",
+          "state",
+          "postalCode",
+          "email",
+          "actions",
+        ]}
         onRowClick={handleRowClick}
         onCellClick={handleCellClick}
         onPrintSelected={handlePrintSelected}

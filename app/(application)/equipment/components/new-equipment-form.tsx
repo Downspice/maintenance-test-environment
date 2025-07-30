@@ -188,9 +188,8 @@ export const equipmentSchema = z.object({
     .optional(),
 });
 
-export default function EquipmentForm({ variant }: triggerVariant) {
-  const [open, setOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+export function ActualEquipmentForm(){
+const [isSubmitting, setIsSubmitting] = useState(false);
   const [openSections, setOpenSections] = useState({
     identification: true,
     assignment: false,
@@ -269,29 +268,7 @@ export default function EquipmentForm({ variant }: triggerVariant) {
   }
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
-        <Button variant={variant}>
-          {variant === "icon" ? (
-            <Plus />
-          ) : (
-            <>
-              <Plus />
-              Create New Equipment
-            </>
-          )}
-        </Button>
-      </SheetTrigger>
-      <SheetContent className="w-3/4 ">
-        <SheetHeader>
-          <SheetTitle>Create New Equipment</SheetTitle>
-          <SheetDescription>
-            Fill out the form below to set up your new Equipment project.
-          </SheetDescription>
-        </SheetHeader>
-
-        <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
-          <Form {...form}>
+    <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit, onError)}
               className="space-y-6"
@@ -1036,6 +1013,38 @@ export default function EquipmentForm({ variant }: triggerVariant) {
               </div>
             </form>
           </Form>
+  )
+}
+export default function EquipmentForm({ variant }: triggerVariant) {
+  const [open, setOpen] = useState(false);
+  
+
+  
+
+  return (
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetTrigger asChild>
+        <Button variant={variant}>
+          {variant === "icon" ? (
+            <Plus />
+          ) : (
+            <>
+              <Plus />
+              Create New Equipment
+            </>
+          )}
+        </Button>
+      </SheetTrigger>
+      <SheetContent className="w-3/4 ">
+        <SheetHeader>
+          <SheetTitle>Create New Equipment</SheetTitle>
+          <SheetDescription>
+            Fill out the form below to set up your new Equipment project.
+          </SheetDescription>
+        </SheetHeader>
+
+        <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
+          <ActualEquipmentForm/>
         </ScrollArea>
       </SheetContent>
     </Sheet>

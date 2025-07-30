@@ -29,6 +29,7 @@ import ScheduledReportView from "./scheduledReport/scheduled-report";
 import PartKitManager from "../forms/actualForms/setupForms/partKit/PartKitManager";
 import AssignmentConfigurations from "../forms/actualForms/setupForms/assignment/assignmentManager";
 import ManagePMScheduleManager from "../forms/actualForms/setupForms/managePMSchedule/ManagePMScheduleManager";
+import { ActualEquipmentForm } from "@/app/(application)/equipment/components/new-equipment-form";
 
 export default function HeaderSettingsButton() {
   const [open, setOpen] = useState(false);
@@ -107,7 +108,7 @@ export default function HeaderSettingsButton() {
     "Part Kits": <PartKitManager />,
     "Choice Lists": <ChoiceList />,
     "Scheduled reports": <ScheduledReportView />,
-    Equipment: <NotCompleteMessage />,
+    Equipment: <ActualEquipmentForm />,
     Employees: <NewEmployeeForm />,
     Vendors: <NewVendor />,
     "Parts Inventory": <NotCompleteMessage />,
@@ -121,7 +122,7 @@ export default function HeaderSettingsButton() {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
-          className="w-48 rounded-lg"
+          className="w-64 rounded-lg"
           // side={isMobile ? "bottom" : "right"}
           // align={isMobile ? "end" : "start"}
         >

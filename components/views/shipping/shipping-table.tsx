@@ -26,6 +26,7 @@ import React from "react";
 import { VendorData, VendorInterface } from "@/lib/vendor-data";
 import { WorkOrderTask } from "@/lib/work-orders-data";
 import { matchesSearchAllFields } from "@/lib/utils";
+import EditShipToForm from "./edit-shipping-form copy";
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -229,11 +230,11 @@ export default function ShippingSheetTable() {
       setTimeout(() => {
         let filteredData = VendorData;
 
-         if (searchValue.trim()) {
-                  filteredData = VendorData.filter((emp) =>
-                    matchesSearchAllFields(emp, searchValue.trim())
-                  );
-                }
+        if (searchValue.trim()) {
+          filteredData = VendorData.filter((emp) =>
+            matchesSearchAllFields(emp, searchValue.trim())
+          );
+        }
 
         // Reset to first page and update data
         const newData = filteredData.slice(0, paginationInfo.pageSize);
@@ -250,19 +251,6 @@ export default function ShippingSheetTable() {
     },
     [paginationInfo.pageSize]
   ); // Add dependencies that actually matter
-
-  const getSubRows = (originalRow: VendorInterface) => {
-    return originalRow.vendor_links;
-  };
-
-  // Custom sub-row renderer
-  const renderSubRow = (
-    subRowData: description,
-    parentRow: any,
-    depth: number
-  ) => {
-    return <div className="space-y-4"></div>;
-  };
 
   // Column definitions
   const columns: ColumnDef<VendorInterface>[] = [
@@ -380,10 +368,15 @@ export default function ShippingSheetTable() {
 
         return (
           <div className="flex flex-row justify-between ">
-           
-            <Button variant={"secondary"} size={"icon"}>
-              <FilePenIcon />
-            </Button>
+            <EditShipToForm
+              children={
+                <Button variant={"secondary"} size={"icon"}>
+                  <FilePenIcon />
+                </Button>
+              }
+              data={row.original}
+            />
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant={"secondary"} size={"icon"}>
@@ -442,7 +435,16 @@ export default function ShippingSheetTable() {
       <AdvancedDataTable
         columns={columns}
         data={isServerMode ? currentData : VendorData}
-        defaultVisibleColumns={["name", "type", "contact", "address1","city","state_prov", "postal_code",   "actions"]}
+        defaultVisibleColumns={[
+          "name",
+          "type",
+          "contact",
+          "address1",
+          "city",
+          "state_prov",
+          "postal_code",
+          "actions",
+        ]}
         onRowClick={handleRowClick}
         onCellClick={handleCellClick}
         onPrintSelected={handlePrintSelected}
@@ -450,12 +452,6 @@ export default function ShippingSheetTable() {
         onDeleteSelected={handleDeleteSelected}
         onPrintRow={handlePrintRow}
         storageKey="shipping-sheet-table-visibility"
-        getSubRows={getSubRows}
-        enableExpanding={false}
-        // Custom sub-row rendering
-        renderSubRow={renderSubRow}
-        subRowKey="tasks"
-        // Server-side props
         realServerPagination={isServerMode}
         paginationInfo={isServerMode ? paginationInfo : undefined}
         onPaginationChange={isServerMode ? handlePaginationChange : undefined}

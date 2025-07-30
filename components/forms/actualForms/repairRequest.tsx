@@ -36,7 +36,7 @@ import { priorityOptions } from "../../../app/(application)/work-orders/forms/ne
 interface triggerVariant {
   variant?: "icon" | "default";
 }
-export default function RepairRequestForm({ variant }: triggerVariant) {
+export default function ActualRepairRequestForm({ variant }: triggerVariant) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 

@@ -52,7 +52,7 @@ export default function PartKitPartsTable({
         <span>Actions</span>
       </div>
 
-      {parts.map(part => (
+      {(parts ?? []).map(part => (
         <div key={part.id} className="grid grid-cols-6 p-2 border-b items-center text-sm">
           <span>{part.partNumber}</span>
           <span>{part.name}</span>
@@ -156,15 +156,14 @@ export  function PartForm({
         name="name"
         label="Name"
         value={selectedPart?.name || ""}
-        disabled
-      />
+        disabled type={""}      />
 
       <InputWrapper
         control={form.control}
         name="warehouse"
         label="Warehouse"
         value={selectedPart?.warehouse || ""}
-        disabled
+        disabled type={""} 
       />
 
       <InputWrapper
