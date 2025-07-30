@@ -27,9 +27,10 @@ export default function Summary() {
           </div>
         </div>
 
-        <div className="col-span-5  border  gap-2 border-gray-300 p-1  ">
-          <div className="grid grid-cols-6       ">
-            <div className="col-span-2  border  border-gray-300 p-1   flex flex-col items-center justify-center">
+        <div className="col-span-5  border  space-y-2 border-gray-300 p-1  ">
+          <div className="grid grid-cols-6 ">
+
+            <div className="col-span-2  border-r  border-gray-300 p-1   flex flex-col items-center justify-center">
               <div className="col-span-1 p-3 font-bold text-xl mb-3 flex flex-col items-center justify-center">
                 $0.00<span className="font-light text-sm">Total</span>
               </div>
@@ -38,7 +39,8 @@ export default function Summary() {
                 $0.00<span className="font-light text-sm">Monthly Average</span>
               </div>
             </div>
-            <div className="col-span-4  border  border-gray-300 p-1   flex flex-col items-center justify-center">
+
+            <div className="col-span-4  p-1  mt-2 flex flex-col items-center justify-center">
               No Monthly Data
             </div>
           </div>
@@ -86,7 +88,7 @@ export default function Summary() {
           </div>
           <div className="col-span-5  border  border-gray-300 p-1  ">
             <div className="grid grid-cols-6    p-1  ">
-              <div className="col-span-2  border  border-gray-300 p-1   flex flex-col items-center justify-center">
+              <div className="col-span-2  border-r border-gray-300 p-1   flex flex-col items-center justify-center">
                 <div className="col-span-1 p-3 font-bold text-xl mb-3 flex flex-col items-center justify-center">
                   0.00
                   <span className="font-light text-sm">CPM</span>
@@ -98,7 +100,7 @@ export default function Summary() {
                   <span className="font-light text-sm">Previous 30-days</span>
                 </div>
               </div>
-              <div className="col-span-4 border  border-gray-300 p-1 flex flex-col items-center justify-center">
+              <div className="col-span-4 p-1 flex flex-col items-center justify-center">
                 No Monthly Data
               </div>
             </div>

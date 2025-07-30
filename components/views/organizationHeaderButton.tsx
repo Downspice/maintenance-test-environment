@@ -60,8 +60,6 @@ export default function OrganizationHeaderButton() {
   const selectedType = [...dropdownItems1, ...dropdownItems2].find(
     (type) => type.label === selectedProjectType
   );
-  // const currentForm = getCurrentForm();
-
   return (
     <>
       <DropdownMenu>
