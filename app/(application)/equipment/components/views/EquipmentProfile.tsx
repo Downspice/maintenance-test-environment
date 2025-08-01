@@ -85,6 +85,9 @@ import EditWorkOrderForm from "@/app/(application)/work-orders/view/edit-work-or
 import FluidConsumedForm, {
   EditFluidConsumption,
 } from "../../forms/FluidConsumed";
+import NewAccident, {
+  EditAccidents,
+} from "@/components/forms/actualForms/new-accident";
 
 const MaintenanceHistoryComponent = () => {
   const [filter, setFilter] = useState("outstanding");
@@ -657,9 +660,9 @@ function AccidentsTab() {
               <SheetTitle>Add New Fuel</SheetTitle>
             </SheetHeader>
             {/* Add your form here */}
-            <div className="mt-4 text-sm text-muted-foreground">
-              Form goes here
-            </div>
+            <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
+              <NewAccident />
+            </ScrollArea>
           </SheetContent>
         </Sheet>
       </div>
@@ -693,9 +696,15 @@ function AccidentsTab() {
                 <TableCell>{item.damage}</TableCell>
                 <TableCell>{item.other}</TableCell>
                 <TableCell className="text-right space-x-2">
-                  <Button size="icon" variant="outline">
-                    <Pencil className="w-4 h-4" />
-                  </Button>
+                  <EditAccidents
+                    children={
+                      <Button size="icon" variant="outline">
+                        <Pencil className="w-4 h-4" />
+                      </Button>
+                    }
+                    data={item}
+                  />
+
                   <Button size="icon" variant="destructive">
                     <Trash2 className="w-4 h-4 text-white" />
                   </Button>
