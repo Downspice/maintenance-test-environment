@@ -91,6 +91,7 @@ import NewAccident, {
 import NewMeterReplacementForm, {
   UpdateMeterReplacementForm,
 } from "../forms/MeterReplacement";
+import FuelTransactionForm,{UpdateFuelTransactionForm} from "../forms/FuelTransactionForm";
 
 const MaintenanceHistoryComponent = () => {
   const [filter, setFilter] = useState("outstanding");
@@ -984,9 +985,9 @@ function FuelTab() {
               <SheetTitle>Add New Fuel</SheetTitle>
             </SheetHeader>
             {/* Add your form here */}
-            <div className="mt-4 text-sm text-muted-foreground">
-              Form goes here
-            </div>
+            <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
+              <FuelTransactionForm />
+            </ScrollArea>
           </SheetContent>
         </Sheet>
       </div>
@@ -1016,9 +1017,15 @@ function FuelTab() {
                 <TableCell>{item.economy}</TableCell>
                 <TableCell>{item.vendor}</TableCell>
                 <TableCell className="text-right space-x-2">
-                  <Button size="icon" variant="outline">
-                    <Pencil className="w-4 h-4" />
-                  </Button>
+                  <UpdateFuelTransactionForm
+                    children={
+                      <Button size="icon" variant="outline">
+                        <Pencil className="w-4 h-4" />
+                      </Button>
+                    }
+                    data={item}
+                  />
+
                   <Button size="icon" variant="destructive">
                     <Trash2 className="w-4 h-4 text-white" />
                   </Button>

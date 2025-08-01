@@ -135,49 +135,45 @@ export function UpdateMeterReplacementForm({
           </SheetTitle>
         </SheetHeader>
         <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
-       
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-1"
-              >
-                <ComboboxFieldWrapper
-                  control={form.control}
-                  name="equipment"
-                  label="Equipment"
-                  options={equipmentOptions}
-                />
-                <RadioGroupWrapper
-                  control={form.control}
-                  name="meterType"
-                  label="Meter Type"
-                  options={meterTypeOptions}
-                />
-                <DatePickerWrapper
-                  control={form.control}
-                  name="date"
-                  label="Date"
-                />
-                <InputWrapper
-                  control={form.control}
-                  name="currentReading"
-                  label="Current Reading"
-                  type="number"
-                />
-                <InputWrapper
-                  control={form.control}
-                  name="replacement"
-                  label="Replacement"
-                  type="number"
-                />
-                <TextareaWrapper
-                  control={form.control}
-                  name="description"
-                  label="Description"
-                />
-                <Button type="submit">Submit</Button>
-              </form>
-            </Form> 
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-1">
+              <ComboboxFieldWrapper
+                control={form.control}
+                name="equipment"
+                label="Equipment"
+                options={equipmentOptions}
+              />
+              <RadioGroupWrapper
+                control={form.control}
+                name="meterType"
+                label="Meter Type"
+                options={meterTypeOptions}
+              />
+              <DatePickerWrapper
+                control={form.control}
+                name="date"
+                label="Date"
+              />
+              <InputWrapper
+                control={form.control}
+                name="currentReading"
+                label="Current Reading"
+                type="number"
+              />
+              <InputWrapper
+                control={form.control}
+                name="replacement"
+                label="Replacement"
+                type="number"
+              />
+              <TextareaWrapper
+                control={form.control}
+                name="description"
+                label="Description"
+              />
+              <Button type="submit">Submit</Button>
+            </form>
+          </Form>
         </ScrollArea>
       </SheetContent>
     </Sheet>

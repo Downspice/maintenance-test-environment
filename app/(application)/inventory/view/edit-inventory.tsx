@@ -24,6 +24,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 import PartSubstitutionTable from "@/app/(application)/inventory/component/inventory.partSubstitutionTable";
 import AlternateUpcCodesTable from "@/app/(application)/inventory/component/inventory.alternateUpcCodesTable";
@@ -33,7 +34,6 @@ import {
 } from "@/lib/Inventory/inventory-data";
 import { useState } from "react";
 import WarehouseTabs from "@/app/(application)/inventory/component/inventory.warehouse";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import InputWrapper from "@/components/forms/wrappers/InputWrapper";
 import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
 import SelectWrapper from "@/components/forms/wrappers/SelectWrapper";
