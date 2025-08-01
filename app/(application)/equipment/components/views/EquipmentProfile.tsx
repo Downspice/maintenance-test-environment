@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import {
   ChevronDown,
   EllipsisVertical,
+  FilePenIcon,
   MinusSquare,
   Pen,
   PlusSquare,
@@ -18,6 +19,7 @@ import EditEquipment from "./EditEquipment";
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -28,7 +30,6 @@ import {
   BookText,
   ClipboardList,
   FileText,
-  FolderOpen,
   History,
   Image as ImageIcon,
   Paperclip,
@@ -70,6 +71,20 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import Summary from "./summary";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ChevronUp, Plus } from "lucide-react";
+import UpdateEquipmentRenewalForm, {
+  NewEquipmentRenewalForm,
+} from "./equipmentRenewal";
+import NewRepairRequestForm from "@/components/forms/actualForms/moreButtonForms/repairRequest/repairRequestForm";
+import ActualRepairRequestForm, {
+  EditActualUpdateRepairRequestForm,
+} from "@/components/forms/actualForms/repairRequest";
+import NewWorkOrderForm, {
+  ActualWorkOrderForm,
+} from "@/components/forms/actualForms/work-order-form";
+import EditWorkOrderForm from "@/app/(application)/work-orders/view/edit-work-order";
+import FluidConsumedForm, {
+  EditFluidConsumption,
+} from "../../forms/FluidConsumed";
 
 const MaintenanceHistoryComponent = () => {
   const [filter, setFilter] = useState("outstanding");
@@ -98,7 +113,7 @@ const MaintenanceHistoryComponent = () => {
           </SheetTrigger>
           <SheetContent>
             <h2 className="text-lg font-semibold mb-4">Add Work Order</h2>
-            {/* Add Work Order Form Here */}
+            <ActualWorkOrderForm />
           </SheetContent>
         </Sheet>
       </div>
@@ -334,14 +349,13 @@ function FluidsTab() {
           <SheetTrigger asChild>
             <Button>Add</Button>
           </SheetTrigger>
-          <SheetContent>
+          <SheetContent className="w-1/4">
             <SheetHeader>
               <SheetTitle>Add New Fuel</SheetTitle>
             </SheetHeader>
-            {/* Add your form here */}
-            <div className="mt-4 text-sm text-muted-foreground">
-              Form goes here
-            </div>
+            <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
+              <FluidConsumedForm />
+            </ScrollArea>
           </SheetContent>
         </Sheet>
       </div>
@@ -370,9 +384,14 @@ function FluidsTab() {
               <TableCell>${item.unitCost.toFixed(2)}</TableCell>
               <TableCell>${item.total.toFixed(2)}</TableCell>{" "}
               <TableCell className="text-right space-x-2">
-                <Button size="icon" variant="outline">
-                  <Pencil className="h-4 w-4" />
-                </Button>
+                <EditFluidConsumption
+                  children={
+                    <Button size="icon" variant="outline">
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                  }
+                  data={item}
+                />
                 <Button size="icon" variant="destructive">
                   <Trash2 className="w-4 h-4 text-white" />
                 </Button>
@@ -458,6 +477,7 @@ const sampleAssignments = [
   },
 ];
 
+//Todo finish up assignments
 function AssignmentsTab() {
   const [filter, setFilter] = useState("");
   const [open, setOpen] = useState(false);
@@ -1342,8 +1362,13 @@ const WorkOrdersComponent = () => {
             </Button>
           </SheetTrigger>
           <SheetContent>
-            <h2 className="text-lg font-semibold mb-4">Add Work Order</h2>
-            {/* Add Work Order Form Here */}
+            <SheetHeader>
+              <SheetTitle>Create New Order</SheetTitle>
+              <SheetDescription>
+                Fill out the form below to set up your new Work Order.
+              </SheetDescription>
+            </SheetHeader>
+            <ActualWorkOrderForm />
           </SheetContent>
         </Sheet>
       </div>
@@ -1383,9 +1408,15 @@ const WorkOrdersComponent = () => {
                 <TableCell>{wo.assignedTo}</TableCell>
                 <TableCell>{wo.total}</TableCell>
                 <TableCell className="text-right">
-                  <Button size="icon" variant="outline">
-                    <Pencil className="w-4 h-4" />
-                  </Button>
+                  <EditWorkOrderForm
+                    children={
+                      <Button size="icon" variant="outline">
+                        <Pencil className="w-4 h-4" />
+                      </Button>
+                    }
+                    data={wo}
+                  />
+
                   <Button size="icon" variant="destructive">
                     <Trash2 className="w-4 h-4 text-white" />
                   </Button>
@@ -1633,9 +1664,7 @@ function Tasks() {
               <SheetHeader>
                 <SheetTitle>Add Repair Request</SheetTitle>
               </SheetHeader>
-              <div className="mt-4 space-y-4">
-                <p className="text-sm text-muted-foreground">Form goes here</p>
-              </div>
+              <ActualRepairRequestForm />
             </SheetContent>
           </Sheet>
         </div>
@@ -1659,10 +1688,17 @@ function Tasks() {
                 <TableCell>{item.dueAt}</TableCell>
                 <TableCell>{item.requestedBy}</TableCell>
                 <TableCell>{item.wo}</TableCell>
+
                 <TableCell className="text-right space-x-2">
-                  <Button size="icon" variant="outline">
-                    <Pencil className="w-4 h-4" />
-                  </Button>
+                  <EditActualUpdateRepairRequestForm
+                    children={
+                      <Button size="icon" variant="outline">
+                        <Pencil className="w-4 h-4" />
+                      </Button>
+                    }
+                    data={item}
+                  />
+
                   <Button size="icon" variant="destructive">
                     <Trash2 className="w-4 h-4 text-white" />
                   </Button>
@@ -1682,13 +1718,11 @@ function Tasks() {
             <SheetTrigger asChild>
               <Button>Add Renewal</Button>
             </SheetTrigger>
-            <SheetContent side="right">
+            <SheetContent side="right" className="w-[400px]">
               <SheetHeader>
                 <SheetTitle>Add Renewal</SheetTitle>
               </SheetHeader>
-              <div className="mt-4 space-y-4">
-                <p className="text-sm text-muted-foreground">Form goes here</p>
-              </div>
+              <NewEquipmentRenewalForm />
             </SheetContent>
           </Sheet>
         </div>
@@ -1707,9 +1741,15 @@ function Tasks() {
                 <TableCell>{item.renewal}</TableCell>
                 <TableCell>{item.dueOn}</TableCell>
                 <TableCell className="text-right space-x-2">
-                  <Button size="icon" variant="outline">
-                    <Pencil className="w-4 h-4" />
-                  </Button>
+                  <UpdateEquipmentRenewalForm
+                    children={
+                      <Button variant={"secondary"} size={"icon"}>
+                        <FilePenIcon />
+                      </Button>
+                    }
+                    data={item}
+                  />
+
                   <Button size="icon" variant="destructive">
                     <Trash2 className="w-4 h-4 text-white" />
                   </Button>
@@ -2538,7 +2578,8 @@ export default function EquipmentProfile({
               defaultActiveId="summary"
               headerItem={
                 <>
-                  <div className=" border-b border-black grid grid-cols-1 md:grid-cols-2 gap-1 bg-white ">
+                  <span>Equipment 100- Fully functional</span>
+                  <div className=" pb-1 border-b border-gray-300 grid grid-cols-1 md:grid-cols-2 gap-1 bg-white ">
                     {/* Vehicle Image */}
                     <div className="w-full h-32 md:h-auto flex items-center justify-center bg-gray-100 rounded-lg overflow-hidden">
                       <img
@@ -2551,7 +2592,7 @@ export default function EquipmentProfile({
                     <div className="flex text-sm flex-col justify-center space-y-1 text-gray-800">
                       <div>
                         <span className="font-semibold text-gray-600">
-                          CNC:
+                          Equipment Name
                         </span>{" "}
                       </div>
                       <div>
@@ -2580,13 +2621,13 @@ export default function EquipmentProfile({
                     <div className="flex flex-row justify-end gap-1 col-span-2">
                       <EditEquipment
                         children={
-                          <Button variant="secondary" size="icon">
+                          <Button variant="outline" size="icon">
                             <Pen className="h-4 w-4" />
                           </Button>
                         }
                         data={data}
                       />
-                      <Button variant="secondary" size="icon">
+                      <Button variant="outline" size="icon">
                         <EllipsisVertical className="h-4 w-4 " />
                       </Button>
                     </div>

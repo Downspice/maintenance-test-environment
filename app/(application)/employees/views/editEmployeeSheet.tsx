@@ -67,6 +67,7 @@ export default function EditEmployee({
   data: EmployeeInterface;
 }) {
   const [open, setOpen] = useState(false);
+  const [openRenewal, setOpenRenewal] = useState(false);
   console.log("in vendor  data new", data);
   const employeeForm = useForm<z.infer<typeof EmployeeSchema>>({
     resolver: zodResolver(EmployeeSchema),
@@ -352,14 +353,14 @@ export default function EditEmployee({
                 </TabsContent>
                 <TabsContent value="renewals">
                   <div className="flex items-end space-y-2 flex-col">
-                    <Sheet open={open} onOpenChange={setOpen}>
+                    <Sheet open={openRenewal} onOpenChange={setOpenRenewal}>
                       <SheetTrigger asChild>
                         <Button className="w-fit">
                           <Plus />
                           Create New
                         </Button>
                       </SheetTrigger>
-                      <SheetContent className="w-3/4">
+                      <SheetContent className="w-1/4">
                         <SheetHeader>
                           <SheetTitle>Create Renewal</SheetTitle>
                           <SheetDescription>

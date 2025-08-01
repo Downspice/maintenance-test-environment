@@ -10,21 +10,23 @@ export type SidebarItem = {
 };
 
 type SidebarLayoutProps = {
-    headerItem: React.ReactNode;
+  headerItem: React.ReactNode;
   menuItems: SidebarItem[];
   defaultActiveId?: string;
 };
 
 const SidebarLayout: React.FC<SidebarLayoutProps> = ({
-    headerItem,
+  headerItem,
   menuItems,
   defaultActiveId,
 }) => {
-  const [activeMenu, setActiveMenu] = useState(defaultActiveId || menuItems[0]?.id);
+  const [activeMenu, setActiveMenu] = useState(
+    defaultActiveId || menuItems[0]?.id
+  );
   const active = menuItems.find((item) => item.id === activeMenu);
 
   return (
-    <div className="flex h-full bg-gray-100">
+    <div className="flex h-full bg-accent">
       {/* Sidebar */}
       <div className="w-64 h-screen overflow-auto bg-white flex flex-col pl-1 space-y-1">
         {headerItem}
@@ -46,9 +48,8 @@ const SidebarLayout: React.FC<SidebarLayoutProps> = ({
       </div>
 
       {/* Content Area */}
-      <div className="flex-1 px-2 overflow-auto">
-        {/* <h2 className="text-xl font-semibold mb-4">{active?.label}</h2> */}
-        <div className="bg-white rounded-lg shadow p-4 h-full">{active?.content}</div>
+      <div className="flex-1  overflow-auto">
+        <div className="bg-white pl-1 shadow h-full">{active?.content}</div>
       </div>
     </div>
   );

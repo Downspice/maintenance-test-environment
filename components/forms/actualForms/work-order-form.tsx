@@ -464,7 +464,7 @@ export default function NewWorkOrderForm() {
           Create New Work Order
         </Button>
       </SheetTrigger>
-      <SheetContent className="w-5/6 ">
+      <SheetContent className="w-5/6">
         <SheetHeader>
           <SheetTitle>Create New Order</SheetTitle>
           <SheetDescription>

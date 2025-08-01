@@ -82,8 +82,8 @@ export default function ManagePMScheduleManager() {
           {/* Adjust 100px as needed */}
           <div className="h-full flex flex-col overflow-hidden">
             <h2 className="font-bold mb-2">Maintenance Schedule Templates</h2>
-            <div className="flex-1 overflow-auto border rounded-md">
-              <Table>
+            <div className="flex-1 overflow-auto border rounded-md h-full">
+              <Table className="h-full">
                 <TableHeader>
                   <TableRow>
                     <TableHead>Name</TableHead>
