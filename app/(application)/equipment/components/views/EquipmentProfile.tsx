@@ -84,10 +84,13 @@ import NewWorkOrderForm, {
 import EditWorkOrderForm from "@/app/(application)/work-orders/view/edit-work-order";
 import FluidConsumedForm, {
   EditFluidConsumption,
-} from "../../forms/FluidConsumed";
+} from "../forms/FluidConsumed";
 import NewAccident, {
   EditAccidents,
 } from "@/components/forms/actualForms/new-accident";
+import NewMeterReplacementForm, {
+  UpdateMeterReplacementForm,
+} from "../forms/MeterReplacement";
 
 const MaintenanceHistoryComponent = () => {
   const [filter, setFilter] = useState("outstanding");
@@ -766,14 +769,13 @@ export function MeterReplacementTab() {
           <SheetTrigger asChild>
             <Button>Add</Button>
           </SheetTrigger>
-          <SheetContent>
+          <SheetContent className="w-1/4">
             <SheetHeader>
               <SheetTitle>Add New Fuel</SheetTitle>
             </SheetHeader>
-            {/* Add your form here */}
-            <div className="mt-4 text-sm text-muted-foreground">
-              Form goes here
-            </div>
+            <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
+              <NewMeterReplacementForm />
+            </ScrollArea>
           </SheetContent>
         </Sheet>
       </div>
@@ -797,9 +799,14 @@ export function MeterReplacementTab() {
                 <TableCell>{item.replacementMeter}</TableCell>
                 <TableCell>{item.description}</TableCell>
                 <TableCell className="text-right space-x-2">
-                  <Button size="icon" variant="outline">
-                    <Pencil className="w-4 h-4" />
-                  </Button>
+                  <UpdateMeterReplacementForm
+                    children={
+                      <Button size="icon" variant="outline">
+                        <Pencil className="w-4 h-4" />
+                      </Button>
+                    }
+                    data={item}
+                  />
                   <Button size="icon" variant="destructive">
                     <Trash2 className="w-4 h-4 text-white" />
                   </Button>

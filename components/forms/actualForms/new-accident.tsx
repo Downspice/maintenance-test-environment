@@ -23,8 +23,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   SheetContent,
   SheetHeader,
-  SheetTitle,
-  SheetDescription,
+  SheetTitle, 
   Sheet,
   SheetTrigger,
 } from "@/components/ui/sheet";
