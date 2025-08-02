@@ -80,6 +80,7 @@ import ActualRepairRequestForm, {
 } from "@/components/forms/actualForms/repairRequest";
 import NewWorkOrderForm, {
   ActualWorkOrderForm,
+  EditActualWorkOrderForm,
 } from "@/components/forms/actualForms/work-order-form";
 import EditWorkOrderForm from "@/app/(application)/work-orders/view/edit-work-order";
 import FluidConsumedForm, {
@@ -97,7 +98,12 @@ import FuelTransactionForm, {
 import AssignEquipmentForm, {
   EditAssignEquipmentForm,
 } from "../forms/AssignEquipment";
-import GeneralExpense, { EditGeneralExpense } from "@/components/forms/actualForms/new-general-expense";
+import GeneralExpense, {
+  EditGeneralExpense,
+} from "@/components/forms/actualForms/new-general-expense";
+import InspectionForm, {
+  EditInspectionForm,
+} from "@/components/forms/actualForms/new-inspection";
 
 const MaintenanceHistoryComponent = () => {
   const [filter, setFilter] = useState("outstanding");
@@ -166,9 +172,19 @@ const MaintenanceHistoryComponent = () => {
                 <TableCell>{wo.assignedTo}</TableCell>
                 <TableCell>{wo.total}</TableCell>
                 <TableCell className="text-right">
-                  <Button size="icon" variant="outline">
-                    <Pencil className="w-4 h-4" />
-                  </Button>
+                  <EditActualWorkOrderForm
+                    children={
+                      <Button size="icon" variant="outline">
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                    }
+                    data={wo}
+                    // onEdit={(wo) => {
+                    //   // Handle edit logic
+                    //   console.log("Edited data:", fuel);
+                    // }}
+                  />
+
                   <Button size="icon" variant="destructive">
                     <Trash2 className="w-4 h-4 text-white" />
                   </Button>
@@ -1093,7 +1109,7 @@ function ExpensesTab() {
           <SheetTrigger asChild>
             <Button>Add Expense</Button>
           </SheetTrigger>
-          <SheetContent>
+          <SheetContent className="w-1/4">
             <SheetHeader>
               <SheetTitle>Add New Expense</SheetTitle>
             </SheetHeader>
@@ -1216,18 +1232,16 @@ function InspectionTab() {
               <Plus className="w-4 h-4" /> Add Inspection
             </Button>
           </SheetTrigger>
-          <SheetContent className="w-[400px]">
+          <SheetContent className=" ">
             <SheetHeader>
               <SheetTitle>Add Inspection</SheetTitle>
             </SheetHeader>
-            {/* Add your form here */}
-            <div className="mt-4 text-sm text-muted-foreground">
-              Form goes here...
-            </div>
+            <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
+              <InspectionForm />
+            </ScrollArea>
           </SheetContent>
         </Sheet>
       </div>
-
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -1249,9 +1263,18 @@ function InspectionTab() {
                 <TableCell>{item.notes}</TableCell>
                 <TableCell>{item.hours}</TableCell>
                 <TableCell className="text-right space-x-2">
-                  <Button size="icon" variant="outline">
-                    <Pencil className="w-4 h-4" />
-                  </Button>
+                  <EditInspectionForm
+                    children={
+                      <Button size="icon" variant="outline">
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                    }
+                    data={item}
+                    // onEdit={(fuel) => {
+                    //   // Handle edit logic
+                    //   console.log("Edited data:", fuel);
+                    // }}
+                  />
                   <Button size="icon" variant="destructive">
                     <Trash2 className="w-4 h-4 text-white" />
                   </Button>
