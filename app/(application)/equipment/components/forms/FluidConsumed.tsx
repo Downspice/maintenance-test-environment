@@ -40,7 +40,10 @@ export const fluidConsumedSchema = z.object({
 
 type FluidConsumedFormValues = z.infer<typeof fluidConsumedSchema>;
 
-export default function FluidConsumedForm() {
+export default function FluidConsumedForm(  {onCreate}: {
+  onCreate?: (data: FluidConsumedFormValues) => void; // optional callback
+}  
+) {
   const [total, setTotal] = useState(0);
 
   const form = useForm<FluidConsumedFormValues>({
@@ -75,6 +78,8 @@ export default function FluidConsumedForm() {
       total: Number(watchQuantity) * Number(watchUnitCost),
     };
     console.log(submission);
+    onCreate?.(submission); // Call the optional callback if provided
+    form.reset(); // Reset the form after submission
   }
 
   return (
@@ -147,9 +152,11 @@ export default function FluidConsumedForm() {
 export function EditFluidConsumption({
   children,
   data,
+  onEdit, // optional callback
 }: {
   children: React.ReactNode;
   data: FluidConsumedFormValues;
+  onEdit?: (data: FluidConsumedFormValues) => void; // optional
 }) {
   const [open, setOpen] = useState(false);
   const [total, setTotal] = useState(0);
@@ -175,6 +182,10 @@ export function EditFluidConsumption({
       total: Number(watchQuantity) * Number(watchUnitCost),
     };
     console.log(submission);
+    if (onEdit) {
+      onEdit(submission); // Call the optional callback if provided
+    }
+    setOpen(false); // Close the sheet after submission
   }
 
   return (
@@ -270,3 +281,5 @@ export function EditFluidConsumption({
     </Sheet>
   );
 }
+
+ 

@@ -128,7 +128,7 @@ export default function NewAccident({ variant }: triggerVariant) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit, onError)}
-        className="space-y-6"
+        className="space-y-1"
       >
         <div className="flex flex-col">
           <div className="grid grid-cols-1 space-x-3">
@@ -412,7 +412,7 @@ export function EditAccidents({
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit, onError)}
-                className="space-y-6"
+                className="space-y-1"
               >
                 <div className="flex flex-col">
                   <div className="grid grid-cols-1 space-x-3">

@@ -92,6 +92,7 @@ import NewMeterReplacementForm, {
   UpdateMeterReplacementForm,
 } from "../forms/MeterReplacement";
 import FuelTransactionForm,{UpdateFuelTransactionForm} from "../forms/FuelTransactionForm";
+import AssignEquipmentForm from "../forms/AssignEquipment";
 
 const MaintenanceHistoryComponent = () => {
   const [filter, setFilter] = useState("outstanding");
@@ -382,7 +383,7 @@ function FluidsTab() {
         </TableHeader>
         <TableBody>
           {filteredData.map((item, index) => (
-            <TableRow key={index}>
+            <TableRow key={item.date}>
               <TableCell>{item.date}</TableCell>
               <TableCell>{item.fluid}</TableCell>
               <TableCell>{item.partNumber}</TableCell>
@@ -511,9 +512,9 @@ function AssignmentsTab() {
               <SheetTitle>Add New Fuel</SheetTitle>
             </SheetHeader>
             {/* Add your form here */}
-            <div className="mt-4 text-sm text-muted-foreground">
-              Form goes here
-            </div>
+            <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
+              <AssignEquipmentForm />
+            </ScrollArea>
           </SheetContent>
         </Sheet>
       </div>
@@ -650,7 +651,7 @@ function AccidentsTab() {
     <div className="space-y-4">
       <div className="flex justify-between items-center gap-4">
         <Input
-          placeholder="Filter Fuel..."
+          placeholder="Search Accidents..."
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
           className="max-w-sm"
@@ -661,7 +662,7 @@ function AccidentsTab() {
           </SheetTrigger>
           <SheetContent>
             <SheetHeader>
-              <SheetTitle>Add New Fuel</SheetTitle>
+              <SheetTitle>Add New Accident</SheetTitle>
             </SheetHeader>
             {/* Add your form here */}
             <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
