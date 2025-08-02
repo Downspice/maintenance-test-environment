@@ -91,8 +91,13 @@ import NewAccident, {
 import NewMeterReplacementForm, {
   UpdateMeterReplacementForm,
 } from "../forms/MeterReplacement";
-import FuelTransactionForm,{UpdateFuelTransactionForm} from "../forms/FuelTransactionForm";
-import AssignEquipmentForm from "../forms/AssignEquipment";
+import FuelTransactionForm, {
+  UpdateFuelTransactionForm,
+} from "../forms/FuelTransactionForm";
+import AssignEquipmentForm, {
+  EditAssignEquipmentForm,
+} from "../forms/AssignEquipment";
+import GeneralExpense, { EditGeneralExpense } from "@/components/forms/actualForms/new-general-expense";
 
 const MaintenanceHistoryComponent = () => {
   const [filter, setFilter] = useState("outstanding");
@@ -485,7 +490,6 @@ const sampleAssignments = [
   },
 ];
 
-//Todo finish up assignments
 function AssignmentsTab() {
   const [filter, setFilter] = useState("");
   const [open, setOpen] = useState(false);
@@ -560,9 +564,14 @@ function AssignmentsTab() {
                 <TableCell>{item.operator}</TableCell>
                 <TableCell>{item.jobSite}</TableCell>
                 <TableCell className="text-right space-x-2">
-                  <Button size="icon" variant="outline">
-                    <Pencil className="w-4 h-4" />
-                  </Button>
+                  <EditAssignEquipmentForm
+                    children={
+                      <Button variant={"secondary"} size={"icon"}>
+                        <FilePenIcon />
+                      </Button>
+                    }
+                    data={item}
+                  />
                   <Button size="icon" variant="destructive">
                     <Trash2 className="w-4 h-4 text-white" />
                   </Button>
@@ -1088,10 +1097,9 @@ function ExpensesTab() {
             <SheetHeader>
               <SheetTitle>Add New Expense</SheetTitle>
             </SheetHeader>
-            {/* Add your form here */}
-            <div className="mt-4 text-sm text-muted-foreground">
-              Form goes here
-            </div>
+            <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
+              <GeneralExpense />
+            </ScrollArea>
           </SheetContent>
         </Sheet>
       </div>
@@ -1121,9 +1129,18 @@ function ExpensesTab() {
                 <TableCell>{item.costCentre}</TableCell>
                 <TableCell>{item.notes}</TableCell>
                 <TableCell className="text-right space-x-2">
-                  <Button size="icon" variant="outline">
-                    <Pencil className="w-4 h-4" />
-                  </Button>
+                  <EditGeneralExpense
+                    children={
+                      <Button size="icon" variant="outline">
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                    }
+                    data={item}
+                    onEdit={(item) => {
+                      console.log("Edited data:", item);
+                    }}
+                  />
+
                   <Button size="icon" variant="destructive">
                     <Trash2 className="w-4 h-4 text-white" />
                   </Button>
