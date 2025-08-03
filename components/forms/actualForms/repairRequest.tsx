@@ -272,6 +272,7 @@ export default function ActualRepairRequestForm({ variant }: triggerVariant) {
         onSubmit={form.handleSubmit(onSubmit, onError)}
         className="space-y-6"
       >
+        
         <div className="flex flex-col">
           <ComboboxFieldWrapper
             control={form.control}
@@ -361,7 +362,7 @@ export const columns: ColumnDef<RepairRequestInterface>[] = [
         value={row.original.repair}
         onValueChange={(e) => updateRow(rowIndex, "repair", e)}
       >
-        <SelectTrigger className="w-[180px]">
+        <SelectTrigger className=" ">
           <SelectValue placeholder="All Locations" />
         </SelectTrigger>
         <SelectContent>
@@ -384,7 +385,7 @@ export const columns: ColumnDef<RepairRequestInterface>[] = [
         value={row.original.type}
         onValueChange={(e) => updateRow(rowIndex, "type", e)}
       >
-        <SelectTrigger className="w-[180px]">
+        <SelectTrigger className=" ">
           <SelectValue placeholder="All Locations" />
         </SelectTrigger>
         <SelectContent>
@@ -407,7 +408,7 @@ export const columns: ColumnDef<RepairRequestInterface>[] = [
         value={row.original.priority}
         onValueChange={(e) => updateRow(rowIndex, "priority", e)}
       >
-        <SelectTrigger className="w-[180px]">
+        <SelectTrigger className=" ">
           <SelectValue placeholder="All Locations" />
         </SelectTrigger>
         <SelectContent>

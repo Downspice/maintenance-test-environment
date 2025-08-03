@@ -104,6 +104,7 @@ import GeneralExpense, {
 import InspectionForm, {
   EditInspectionForm,
 } from "@/components/forms/actualForms/new-inspection";
+import EquipmentPMServiceForm, { UpdateEquipmentPMServiceForm } from "../forms/equipmentPMServiceform";
 
 const MaintenanceHistoryComponent = () => {
   const [filter, setFilter] = useState("outstanding");
@@ -1679,9 +1680,9 @@ function Tasks() {
               <SheetHeader>
                 <SheetTitle>Add Preventive Maintenance</SheetTitle>
               </SheetHeader>
-              <div className="mt-4 space-y-4">
-                <p className="text-sm text-muted-foreground">Form goes here</p>
-              </div>
+              <ScrollArea className="h-[calc(100vh-20px)] pr-4 mt-6">
+                <EquipmentPMServiceForm />
+              </ScrollArea>
             </SheetContent>
           </Sheet>
         </div>
@@ -1702,9 +1703,15 @@ function Tasks() {
                 <TableCell>{item.frequency}</TableCell>
                 <TableCell>{item.lastDate}</TableCell>
                 <TableCell className="text-right space-x-2">
-                  <Button size="icon" variant="outline">
-                    <Pencil className="w-4 h-4" />
-                  </Button>
+                  
+                  <UpdateEquipmentPMServiceForm
+                    children={
+                      <Button size="icon" variant="outline">
+                        <Pencil className="w-4 h-4" />
+                      </Button>
+                    }
+                    data={item}
+                  />
                   <Button size="icon" variant="destructive">
                     <Trash2 className="w-4 h-4 text-white" />
                   </Button>
