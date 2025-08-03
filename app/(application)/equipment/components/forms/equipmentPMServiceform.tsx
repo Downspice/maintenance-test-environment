@@ -112,7 +112,6 @@ type PMServiceFormValues = z.infer<typeof pmServiceSchema>;
 type PartFormValues = z.infer<typeof partSchema>;
 
 export default function EquipmentPMServiceForm() {
-  const [tab, setTab] = useState("frequency");
 
   const form = useForm<PMServiceFormValues>({
     resolver: zodResolver(pmServiceSchema),
@@ -221,7 +220,7 @@ export default function EquipmentPMServiceForm() {
           label="Priority"
           options={priorityOptions}
         />
-        <Tabs defaultValue="frequency" value={tab} onValueChange={setTab}>
+        <Tabs defaultValue="frequency" >
           <TabsList>
             <TabsTrigger value="frequency">Frequency</TabsTrigger>
             <TabsTrigger value="parts">Parts</TabsTrigger>
@@ -664,7 +663,7 @@ export function UpdateEquipmentPMServiceForm({
           label="Priority"
           options={priorityOptions}
         />
-        <Tabs defaultValue="frequency" value={tab} onValueChange={setTab}>
+        <Tabs defaultValue="frequency">
           <TabsList>
             <TabsTrigger value="frequency">Frequency</TabsTrigger>
             <TabsTrigger value="parts">Parts</TabsTrigger>
