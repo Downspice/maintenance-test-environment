@@ -627,6 +627,77 @@ export function UpdateEquipmentPMServiceForm({
     defaultValues: data,
   });
 
+
+  const {
+    fields: partFields,
+    append: appendPart,
+    update: updatePart,
+    remove: removePart,
+  } = useFieldArray({
+    control: form.control,
+    name: "parts",
+  });
+
+  // Use form.watch for all toggles and radios
+  const dateEnabled = form.watch("frequency.dateEnabled");
+  const dateType = form.watch("frequency.dateType") || "dueOn";
+  const hoursEnabled = form.watch("frequency.hoursEnabled");
+  const hoursType = form.watch("frequency.hoursType") || "dueEvery";
+  const includeEmail = form.watch("includeEmail");
+  const linkedPMService = form.watch("linkedPMService");
+  const terminateOnDate = form.watch("termination.terminateOnDate");
+  const terminateOnMeters = form.watch("termination.terminateOnMeters");
+  const seasonalIgnore = form.watch("seasonal.seasonalIgnore");
+
+  // Parts Dialog State (still needs local state for dialog and editing index)
+  const [partDialogOpen, setPartDialogOpen] = useState(false);
+  const [editIndex, setEditIndex] = useState<number | null>(null);
+  const [assignedPart, setAssignedPart] = useState(true);
+  const [partForm, setPartForm] = useState<PartFormValues>({
+    partNumber: "",
+    name: "",
+    qty: 0,
+    cost: 0,
+    equipment: "",
+    warehouse: "",
+    description: "",
+    fixedCost: 0,
+    assignedPart: true,
+  });
+
+  function handlePartSave() {
+    if (editIndex !== null) {
+      updatePart(editIndex, partForm);
+    } else {
+      appendPart(partForm);
+    }
+    setPartDialogOpen(false);
+    setEditIndex(null);
+    setPartForm({
+      partNumber: "",
+      name: "",
+      qty: 0,
+      cost: 0,
+      equipment: "",
+      warehouse: "",
+      description: "",
+      fixedCost: 0,
+      assignedPart: true,
+    });
+    setAssignedPart(true);
+  }
+
+  function handlePartEdit(idx: number) {
+    setEditIndex(idx);
+    setPartForm(partFields[idx]);
+    setAssignedPart(!!partFields[idx].assignedPart);
+    setPartDialogOpen(true);
+  }
+
+  function handlePartDelete(idx: number) {
+    removePart(idx);
+  }
+  
   return (
 
     <Sheet open={open} onOpenChange={setOpen}>
