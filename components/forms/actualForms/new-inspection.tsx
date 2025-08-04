@@ -72,7 +72,6 @@ export default function InspectionForm() {
       duration: 10000,
     });
 
-    setOpen(false);
     form.reset();
   }
 
@@ -167,19 +166,9 @@ export default function InspectionForm() {
           />
         </div>
         <div className="flex justify-end">
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-            className="min-w-32 my-4 w-full"
-          >
-            {isSubmitting ? (
-              "Creating..."
-            ) : (
-              <>
-                <Save className="mr-2 h-4 w-4" />
-                Create Equipment
-              </>
-            )}
+          <Button type="submit" className="min-w-32 my-4 w-full">
+            <Save className="mr-2 h-4 w-4" />
+            Create Inspection
           </Button>
         </div>
       </form>
@@ -407,14 +396,9 @@ export function EditInspectionForm({
                 />
               </div>
               <div className="flex justify-end">
-                <Button
-                  type="submit"
-                   className="min-w-32 my-4 w-full"
-                >
-                    
-                      <Save className="mr-2 h-4 w-4" />
-                      Create Inspection
-                     
+                <Button type="submit" className="min-w-32 my-4 w-full">
+                  <Save className="mr-2 h-4 w-4" />
+                  Create Inspection
                 </Button>
               </div>
             </form>

@@ -1,0 +1,26 @@
+{
+  "name": "commitment-request-app",
+  "version": "1.0.0",
+  "description": "A web application for managing commitment requests.",
+  "main": "src/app.tsx",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "dependencies": {
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-scripts": "4.0.3",
+    "formik": "^2.2.6",
+    "yup": "^0.32.9"
+  },
+  "devDependencies": {
+    "typescript": "^4.1.3",
+    "@types/react": "^17.0.3",
+    "@types/react-dom": "^17.0.3"
+  },
+  "homepage": ".",
+  "license": "MIT"
+}
