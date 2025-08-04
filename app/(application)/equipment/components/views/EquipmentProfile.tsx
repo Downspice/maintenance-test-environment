@@ -381,7 +381,7 @@ function FluidsTab() {
           </SheetTrigger>
           <SheetContent className="w-1/4">
             <SheetHeader>
-              <SheetTitle>Add New Fuel</SheetTitle>
+              <SheetTitle>Add New Fluids</SheetTitle>
             </SheetHeader>
             <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
               <FluidConsumedForm />

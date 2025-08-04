@@ -125,9 +125,12 @@ export function EditableDataTable<TData>({
             </DropdownMenu>
           )}
         </div>
+
+        {defaultRow && (
         <Button type='button' onClick={addNewRow} variant="default">
           Add Row
-        </Button>
+        </Button>)}
+
       </div>
 
       {/* Table */}
