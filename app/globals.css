@@ -97,10 +97,10 @@
   --background: #ffffff;
   --foreground: #122c32;
 
-  --card: rgba(255, 255, 255, 0.25);
+  --card: rgba(255, 255, 255, 0.892);
   --card-foreground: #122c32;
 
-  --popover: rgba(255, 255, 255, 0.725);
+  --popover: rgba(255, 255, 255, 0.818);
   --popover-foreground: #122c32;
 
   --primary: #55b2c9;
