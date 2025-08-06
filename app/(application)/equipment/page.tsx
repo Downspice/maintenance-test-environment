@@ -29,6 +29,7 @@ export const equipmentActiveDropdown = [
   { value: "deleted", label: "Deleted" },
   { value: "all", label: "All" },
 ];
+
 export default function EquipmentPage() {
   const [filters, setFilters] = useState({
     equipment: "",

@@ -24,8 +24,9 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { useEffect, useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useEffect, useState } from "react";
+
 import {
   BookText,
   ClipboardList,
@@ -1654,7 +1655,7 @@ const renewalData = [
   { id: 2, renewal: "Insurance", dueOn: "2025-09-20" },
 ];
 
-function Tasks() {
+export function Tasks() {
   const [openPM, setOpenPM] = useState(false);
   const [openRepair, setOpenRepair] = useState(false);
   const [openRenewal, setOpenRenewal] = useState(false);
@@ -1903,7 +1904,7 @@ const tabItems: TabItem[] = [
   },
 ];
 
-function HistoryTabs({ defaultTab = "maintenance" }: Props) {
+export function HistoryTabs({ defaultTab = "maintenance" }: Props) {
   return (
     <Tabs defaultValue={defaultTab} className="w-full space-y-4">
       <TabsList className="flex flex-wrap justify-start gap-2">
@@ -1970,7 +1971,7 @@ type PartsProps = {
   equipment: string;
 };
 
-function PartsManager({ equipment }: PartsProps) {
+export function PartsManager({ equipment }: PartsProps) {
   const [parts, setParts] = useState<PartRecord[]>([]);
   const [open, setOpen] = useState(false);
   const [editingPart, setEditingPart] = useState<PartRecord | null>(null);
