@@ -436,6 +436,17 @@ export default function EquipmentCalendar() {
             {tabName === "equipment-due" && (
               <Button variant="outline">Repair</Button>
             )}
+            
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+
+            <Search className="h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-64"
+            />
             {tabName === "assignments" && (
               <Select
                 value={selectedJobSite}
@@ -454,15 +465,6 @@ export default function EquipmentCalendar() {
                 </SelectContent>
               </Select>
             )}
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <Search className="h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-64"
-            />
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-48">
                 <SelectValue placeholder="Status" />
