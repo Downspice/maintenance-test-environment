@@ -377,26 +377,17 @@ export default function EquipmentCalendar() {
     const currentYear = currentDate.getFullYear();
     const currentMonth = currentDate.getMonth();
 
-    return [
-      {
-        year: currentMonth === 0 ? currentYear - 1 : currentYear,
-        month: currentMonth === 0 ? 11 : currentMonth - 1,
-        name: shortMonthNames[currentMonth === 0 ? 11 : currentMonth - 1],
-        isCurrent: false,
-      },
-      {
-        year: currentYear,
-        month: currentMonth,
-        name: shortMonthNames[currentMonth],
-        isCurrent: true,
-      },
-      {
-        year: currentMonth === 11 ? currentYear + 1 : currentYear,
-        month: currentMonth === 11 ? 0 : currentMonth + 1,
-        name: shortMonthNames[currentMonth === 11 ? 0 : currentMonth + 1],
-        isCurrent: false,
-      },
-    ];
+    return Array.from({ length: 13 }, (_, i) => {
+  const offset = i - 6; // so index 6 = current month
+  const date = new Date(currentYear, currentMonth + offset, 1);
+
+  return {
+    year: date.getFullYear(),
+    month: date.getMonth(),
+    name: shortMonthNames[date.getMonth()],
+    isCurrent: offset === 0, // only current month true
+  };
+});
   };
 
   const renderTabControls = (tabName: string) => {
@@ -655,7 +646,7 @@ export default function EquipmentCalendar() {
                                     ))}
                                   </div>
 
-                                  <div className="flex items-center space-x-2">
+                                  {/* <div className="flex items-center space-x-2">
                                     <Checkbox
                                       id="task-due"
                                       checked={taskDue}
@@ -667,7 +658,7 @@ export default function EquipmentCalendar() {
                                     >
                                       Task due
                                     </label>
-                                  </div>
+                                  </div> */}
 
                                   <Button
                                     onClick={handleIssueWorkOrder}

@@ -47,7 +47,7 @@ function TabsTrigger({
       className={cn(
         "data-[state=active]:bg-background dark:data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring dark:data-[state=active]:border-input dark:data-[state=active]:bg-input/30 text-foreground dark:text-muted-foreground inline-flex items-center justify-center gap-1.5 cursor-pointer",
         orientation === "vertical" // Adjust styles for vertical orientation
-          ? "w-full flex py-2 text-left text-red-950 "
+          ? "w-full flex py-2 text-left text-red-950 rounded-none "
           : "py-1 px-4 text-sm font-medium whitespace-nowrap transition-all rounded-md ", // Horizontal styles
         className
       )}
