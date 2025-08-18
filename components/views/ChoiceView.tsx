@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import {
   Dialog,
   DialogContent,
@@ -26,140 +26,213 @@ interface ContentItem {
 
 interface Props {
   tabs: TabData[];
-  contents: Record<string, ContentItem[]>; // key = tabId or tabId:subId
+  contents: Record<string, ContentItem[]>;
 }
 
 export default function TabbedMenuEditor({ tabs, contents }: Props) {
   const [activeTab, setActiveTab] = useState<string>(tabs[0]?.id);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [dialogMode, setDialogMode] = useState<"new" | "edit">("new");
-  const [dialogInput, setDialogInput] = useState("");
-  const [editingItem, setEditingItem] = useState<null | string>(null);
 
-  const isSubTab = activeTab.includes(":");
-  const [mainTabId, subTabId] = activeTab.split(":");
+  const [dialog, setDialog] = useState<{
+    open: boolean;
+    mode: "new" | "edit";
+    input: string;
+    editingId: string | null;
+    loading: boolean;
+  }>({
+    open: false,
+    mode: "new",
+    input: "",
+    editingId: null,
+    loading: false,
+  });
+
+  const isSubTab = useMemo(() => activeTab.includes(":"), [activeTab]);
+  const [mainTabId, subTabId] = useMemo(
+    () => activeTab.split(":"),
+    [activeTab]
+  );
 
   const currentTab = isSubTab ? `${mainTabId}:${subTabId}` : activeTab;
-  const currentTabLabel = (() => {
+
+  const currentTabLabel = useMemo(() => {
     const main = tabs.find((t) => t.id === mainTabId || t.id === activeTab);
     const sub = main?.subs?.find((s) => s.id === subTabId);
-    return isSubTab ? `${main?.name} > ${sub?.name}` : main?.name;
-  })();
+    return isSubTab ? `${main?.name} › ${sub?.name}` : main?.name;
+  }, [tabs, mainTabId, subTabId, activeTab, isSubTab]);
 
-  const handleNew = () => {
-    setDialogInput("");
-    setDialogMode("new");
-    setEditingItem(null);
-    setDialogOpen(true);
-  };
+  const openNewDialog = useCallback(() => {
+    setDialog({
+      open: true,
+      mode: "new",
+      input: "",
+      editingId: null,
+      loading: false,
+    });
+  }, []);
 
-  const handleEdit = (item: ContentItem) => {
-    setDialogInput(item.label);
-    setDialogMode("edit");
-    setEditingItem(item.value);
-    setDialogOpen(true);
-  };
+  const openEditDialog = useCallback((item: ContentItem) => {
+    setDialog({
+      open: true,
+      mode: "edit",
+      input: item.label,
+      editingId: item.value,
+      loading: false,
+    });
+  }, []);
 
-  const handleSubmit = async () => {
-    const action = dialogMode;
-    const menuPath = isSubTab ? `${mainTabId}/${subTabId}` : mainTabId;
-    const url = `/${action}/choice/${menuPath}/${dialogInput}`;
-    await fetch(url, { method: "POST" });
-    setDialogOpen(false);
-  };
+  const handleSubmit = useCallback(async () => {
+    if (!dialog.input.trim()) return;
+    try {
+      setDialog((d) => ({ ...d, loading: true }));
+      const action = dialog.mode;
+      const menuPath = isSubTab ? `${mainTabId}/${subTabId}` : mainTabId;
+      const url = `/${action}/choice/${menuPath}/${dialog.input}`;
+      const res = await fetch(url, { method: "POST" });
+      if (!res.ok) throw new Error("Failed request");
+      setDialog({
+        open: false,
+        mode: "new",
+        input: "",
+        editingId: null,
+        loading: false,
+      });
+    } catch (err) {
+      console.error(err);
+      setDialog((d) => ({ ...d, loading: false }));
+    }
+  }, [dialog.input, dialog.mode, isSubTab, mainTabId, subTabId]);
 
   return (
-    <div className="flex h-full w-full">
+    <div className="flex flex-1 h-[calc(100vh-120px)] w-full bg-muted/20">
       {/* Tabs Section */}
-      <div className="w-1/4 h-full border-r border-border bg-muted p-4">
-        {tabs.map((tab) => (
-          <div key={tab.id}>
-            <button
-              className={cn(
-                "w-full text-left py-2 px-3 rounded hover:bg-primary/10",
-                (activeTab === tab.id || activeTab.startsWith(`${tab.id}:`)) &&
-                  "bg-primary/30 font-semibold"
-              )}
-              onClick={() => {
-                if (tab.subs && tab.subs.length > 0) {
-                  setActiveTab(`${tab.id}:${tab.subs[0].id}`);
-                } else {
-                  setActiveTab(tab.id);
-                }
-              }}
-            >
-              {tab.name}
-            </button>
+      <aside className="w-64 h-[calc(100vh-120px)] overflow-scroll border-r border-border bg-card p-4 shadow-sm">
+        <h3 className="text-sm font-semibold text-muted-foreground mb-4">
+          Menu
+        </h3>
+        <nav className="space-y-0.5">
+          {tabs.map((tab) => {
+            const activeMain =
+              activeTab === tab.id || activeTab.startsWith(`${tab.id}:`);
+            return (
+              <div key={tab.id}>
+                <button
+                  aria-selected={activeMain}
+                  className={cn(
+                    "w-full text-left py-2 px-3 rounded-md transition-colors",
+                    "hover:bg-primary/10 focus:outline-none focus:ring-2 focus:ring-primary",
+                    activeMain && "bg-primary/20 text-primary font-medium"
+                  )}
+                  onClick={() =>
+                    setActiveTab(
+                      tab.subs?.length ? `${tab.id}:${tab.subs[0].id}` : tab.id
+                    )
+                  }
+                >
+                  {tab.name}
+                </button>
 
-            {tab.subs && activeTab.startsWith(`${tab.id}:`) && (
-              <div className="ml-4">
-                {tab.subs.map((sub) => (
-                  <button
-                    key={sub.id}
-                    className={cn(
-                      "w-full text-left py-1 px-2 rounded hover:bg-primary/10 text-sm",
-                      activeTab === `${tab.id}:${sub.id}` &&
-                        "bg-primary/30 font-semibold"
-                    )}
-                    onClick={() => setActiveTab(`${tab.id}:${sub.id}`)}
-                  >
-                    {sub.name}
-                  </button>
-                ))}
+                {tab.subs && activeMain && (
+                  <div className="ml-3 mt-1 space-y-1 border-l border-border pl-3">
+                    {tab.subs.map((sub) => (
+                      <button
+                        key={sub.id}
+                        aria-selected={activeTab === `${tab.id}:${sub.id}`}
+                        className={cn(
+                          "w-full text-left py-1.5 px-2 rounded-md text-sm transition-colors",
+                          "hover:bg-primary/10 focus:outline-none focus:ring-2 focus:ring-primary",
+                          activeTab === `${tab.id}:${sub.id}` &&
+                            "bg-primary/20 text-primary font-medium"
+                        )}
+                        onClick={() => setActiveTab(`${tab.id}:${sub.id}`)}
+                      >
+                        {sub.name}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        ))}
-      </div>
+            );
+          })}
+        </nav>
+      </aside>
 
       {/* Content Section */}
-      <div className="w-3/4 p-6 space-y-4 bg-background">
-        <div className="flex justify-between items-center">
-          <h2 className="text-xl font-semibold">{currentTabLabel}</h2>
-          <Button onClick={handleNew}>Add New</Button>
+      <main className="flex-1 p-8 space-y-6 overflow-y-auto">
+        <div className="flex justify-between items-center border-b-3 border-text">
+          <h2 className="text-2xl font-bold tracking-tight">
+            {currentTabLabel}
+          </h2>
+          <Button size="sm" onClick={openNewDialog}>
+            + Add Item
+          </Button>
         </div>
-        <ul className="space-y-0.5">
-          {contents[currentTab]?.map((item) => (
-            <li
-              key={item.value}
-              className="flex justify-between items-center px-3  border border-border rounded-md hover:bg-primary/10"
-            >
-              <span>{item.label}</span>
-              <div className="space-x-2">
-                <Button
-                  size={"sm"}
-                  variant="outline"
-                  onClick={() => handleEdit(item)}
-                >
-                  <FilePenIcon />
-                </Button>
-                <Button size={"sm"} variant="outline">
-                  <Trash2 className="text-destructive" />
-                </Button>
-              </div>
-            </li>
-          )) || <p className="text-muted-foreground">No items yet.</p>}
+
+        <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {contents[currentTab]?.length ? (
+            contents[currentTab].map((item) => (
+              <li
+                key={item.value}
+                className="flex justify-between items-center rounded-lg border border-border bg-card px-4 py-3 shadow-sm hover:shadow-md transition-shadow"
+              >
+                <span className="font-medium">{item.label}</span>
+                <div className="flex gap-2">
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => openEditDialog(item)}
+                    className="hover:bg-primary/10"
+                  >
+                    <FilePenIcon className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="hover:bg-destructive/10"
+                  >
+                    <Trash2 className="h-4 w-4 text-destructive" />
+                  </Button>
+                </div>
+              </li>
+            ))
+          ) : (
+            <p className="text-muted-foreground italic">
+              No items yet. Click “Add Item” to get started.
+            </p>
+          )}
         </ul>
-      </div>
+      </main>
 
       {/* Dialog */}
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent>
+      <Dialog
+        open={dialog.open}
+        onOpenChange={(open) => setDialog((d) => ({ ...d, open }))}
+      >
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>
-              {dialogMode === "new"
-                ? `Enter the name of ${currentTabLabel}`
-                : `Enter new name for ${currentTabLabel}`}
+            <DialogTitle className="text-lg font-semibold">
+              {dialog.mode === "new"
+                ? `Add to ${currentTabLabel}`
+                : `Edit ${currentTabLabel}`}
             </DialogTitle>
           </DialogHeader>
-          <Input
-            value={dialogInput}
-            onChange={(e) => setDialogInput(e.target.value)}
-            placeholder="Enter name"
-          />
+          <div className="py-2">
+            <Input
+              value={dialog.input}
+              onChange={(e) =>
+                setDialog((d) => ({ ...d, input: e.target.value }))
+              }
+              placeholder="Enter name"
+              className="h-11 text-base"
+              autoFocus
+            />
+          </div>
           <DialogFooter>
-            <Button onClick={handleSubmit} disabled={!dialogInput.trim()}>
-              Submit
+            <Button
+              onClick={handleSubmit}
+              disabled={!dialog.input.trim() || dialog.loading}
+              className="w-full sm:w-auto"
+            >
+              {dialog.loading ? "Saving..." : "Submit"}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -1,12 +1,7 @@
 import TabbedMenuEditor from "@/components/views/ChoiceView";
 
 export default function ChoiceList() {
-  return (
-    <>
-      <h4>Choice List</h4>
-      <TabbedMenuEditor tabs={tabData} contents={contentData} />
-    </>
-  );
+  return <TabbedMenuEditor tabs={tabData} contents={contentData} />;
 }
 
 const tabData = [
