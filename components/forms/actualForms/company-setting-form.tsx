@@ -239,7 +239,7 @@ export default function CompanySettings() {
                           {
                             id: "warn",
                             label:
-                              "Warn user of inccompleted steps before saving",
+                              "Warn user of incomplete steps before saving",
                           },
                         ]}
                       />
