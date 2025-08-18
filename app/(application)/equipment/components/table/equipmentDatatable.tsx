@@ -719,9 +719,7 @@ export default function DataTableDemo() {
                     {/* Receive Purchase Order */}
                   </SheetTitle>
                   <SheetDescription>
-                    {/* {selectedType?.label ||
-                                        "Fill out the form below to set up your new development project."} */}
-                  </SheetDescription>
+                    </SheetDescription>
                 </SheetHeader>
 
                 <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">

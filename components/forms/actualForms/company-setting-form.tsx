@@ -232,7 +232,7 @@ export default function CompanySettings() {
                     <>
                       <CheckboxWrapper
                         control={vendorForm.control}
-                        name="pushOrPull"
+                        name="pushOrPullInspections"
                         label=" "
                         options={[
                           { id: "Hide", label: "Hide 'All OK'Option" },
