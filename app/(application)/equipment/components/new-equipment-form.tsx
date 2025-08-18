@@ -1093,7 +1093,7 @@ export const emailColumns: ColumnDef<emailTableType>[] = [
     cell: ({ row, updateRow, rowIndex }: any) => (
       <Input
         value={row.original.email}
-        onChange={(e) => updateRow(rowIndex, "email", e.target.name)}
+        onChange={(e) => updateRow(rowIndex, "email", e.target.email)}
       />
     ),
     enableSorting: true,
@@ -1198,7 +1198,8 @@ export const columns: ColumnDef<expenseTableType>[] = [
     header: "Last Date",
     cell: ({ row, updateRow, rowIndex }: any) => (
       <Input
-        value={row.original.name}
+      type="date"
+        value={row.original.lastDate}
         onChange={(e) => updateRow(rowIndex, "lastDate", e.target.value)}
       />
     ),
@@ -1209,8 +1210,8 @@ export const columns: ColumnDef<expenseTableType>[] = [
     accessorKey: "nextDate",
     header: "Next Date",
     cell: ({ row, updateRow, rowIndex }: any) => (
-      <Input
-        value={row.original.name}
+      <Input type="date"
+        value={row.original.nextDate}
         onChange={(e) => updateRow(rowIndex, "nextDate", e.target.value)}
       />
     ),

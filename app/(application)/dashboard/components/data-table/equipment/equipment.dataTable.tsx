@@ -36,7 +36,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useSheet } from "@/lib/sheet-providers";
-import WorkOrderForm from "@/components/forms/actualForms/work-order-form";
+import WorkOrderForm, { ActualWorkOrderForm } from "@/components/forms/actualForms/work-order-form";
 import NotCompleteMessage from "@/app/(application)/invoices/page";
 import {
   Popover,
@@ -44,6 +44,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
+import NewWorkOrderForm from "@/components/forms/actualForms/work-order-form";
 
 // Define the data structure
 interface Task {
@@ -567,7 +568,7 @@ export function EquipmentDataTable({ realServer }: DataTableProps) {
       title: "Create Work Order",
       description:
         "Fill out the form below to create a new work order for equipment maintenance or repair.",
-      content: <NotCompleteMessage />,
+      content: <ActualWorkOrderForm />,
     });
   };
 

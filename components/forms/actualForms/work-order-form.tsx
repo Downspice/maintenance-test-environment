@@ -279,7 +279,7 @@ export function ActualWorkOrderForm() {
               </div>
             </div>
             <div>
-              <div className="flex flex-row justify-between space-x-2 ">
+              <div className="flex flex-row justify-between space-x-2 pb-2">
                 <div className="flex w-fit items-end">
                   <ComboboxFieldWrapper
                     control={workOrderForm.control}
