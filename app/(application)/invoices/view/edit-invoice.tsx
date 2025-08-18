@@ -311,7 +311,7 @@ export default function EditInvoice({
                                 >
                                   <Button variant="outline">Add Item</Button>
                                 </DialogTrigger>
-                                <DialogContent>
+                                <DialogContent className="max-w-sm">
                                   <DialogHeader>
                                     <DialogTitle>
                                       {editIndex !== null
@@ -455,7 +455,7 @@ export default function EditInvoice({
                                 <Button variant="outline">Add Payment</Button>
                               </DialogTrigger>
 
-                              <DialogContent>
+                              <DialogContent className="max-w-sm">
                                 <DialogHeader>
                                   <DialogTitle>
                                     {editPaymentIndex !== null

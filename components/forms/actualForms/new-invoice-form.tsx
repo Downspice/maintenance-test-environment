@@ -286,7 +286,7 @@ export default function NewInvoiceForm( ) {
                         >
                           <Button variant="outline">Add Item</Button>
                         </DialogTrigger>
-                        <DialogContent>
+                        <DialogContent className="max-w-sm">
                           <DialogHeader>
                             <DialogTitle>
                               {editIndex !== null
