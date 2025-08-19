@@ -4,11 +4,14 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { AdvancedDataTable } from "@/components/customUI/advanced-data-table";
 import { SortableHeader } from "@/components/customUI/sortable-header";
 import { Button } from "@/components/ui/button";
+import { MoreHorizontal, Trash2, FilePenIcon } from "lucide-react";
 import {
-  MoreHorizontal,
-  Trash2,
-  FilePenIcon,
-} from "lucide-react";
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+  Sheet,
+} from "@/components/ui/sheet";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,6 +25,8 @@ import React from "react";
 import { InvoiceData, InvoiceInterface } from "@/lib/Invoice/invoice-data";
 import { matchesSearchAllFields } from "@/lib/utils";
 import EditInvoice from "../view/edit-invoice";
+import { ActualRecordPaymentForm } from "@/components/forms/actualForms/record-payment-form";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const getAllEmployees = (employees: InvoiceInterface[]): InvoiceInterface[] => {
   const result: InvoiceInterface[] = [];
@@ -340,7 +345,32 @@ export default function InvoicesDataTable() {
           }
         };
 
-        
+        const [open, setOpen] = useState(false);
+        const [selectedProjectType, setSelectedProjectType] = useState<
+          string | null
+        >(null);
+
+        const genericDropdown = (x: string) => {
+          console.log("did something", x);
+          setSelectedProjectType(x);
+          setOpen(true);
+        };
+        const dropdownItems = [
+          { label: "Record Payment", onSelect: genericDropdown },
+        ];
+
+        const formComponents = {
+          "Record Payment": <ActualRecordPaymentForm />,
+        };
+        const renderFormContent = () => {
+          const SelectedComponent = formComponents[selectedProjectType || ""];
+          console.log("new selected", SelectedComponent);
+          return SelectedComponent ? SelectedComponent : null;
+        };
+
+        const selectedType = dropdownItems.find(
+          (type) => type.label === selectedProjectType
+        );
 
         return (
           <div className="flex flex-row justify-between ">
@@ -362,10 +392,14 @@ export default function InvoicesDataTable() {
               <DropdownMenuContent className="w-62 " align="start">
                 {/* <DropdownMenuLabel>My Account</DropdownMenuLabel> */}
                 <DropdownMenuGroup>
-                  <DropdownMenuItem>
-                    Record Payment
-                    {/* <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut> */}
-                  </DropdownMenuItem>
+                  {dropdownItems.map((item) => (
+                    <DropdownMenuItem
+                      key={item.label}
+                      onClick={() => item.onSelect(item.label)}
+                    >
+                      <span>{item.label}</span>
+                    </DropdownMenuItem>
+                  ))}
                   <DropdownMenuSeparator />
 
                   <DropdownMenuItem>
@@ -390,6 +424,23 @@ export default function InvoicesDataTable() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            <Sheet open={open} onOpenChange={setOpen}>
+              <SheetContent className="w-[700px]">
+                <SheetHeader>
+                  <SheetTitle className="flex items-center gap-2">
+                    {selectedType?.label}
+                    {/* Receive Purchase Order */}
+                  </SheetTitle>
+                  <SheetDescription>
+
+                  </SheetDescription>
+                </SheetHeader>
+
+                <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
+                  {renderFormContent() || "nothing else"}
+                </ScrollArea>
+              </SheetContent>
+            </Sheet>
           </div>
         );
       },

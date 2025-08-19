@@ -230,7 +230,7 @@ export default function NewInvoiceForm( ) {
             <div className="col-span-1 flex flex-col"></div>
           </div>
           <div className="grid grid-cols-8 gap-4">
-            <div className="col-span-6 grid grid-cols-2 gap-2">
+            <div className="col-span-6 grid grid-cols-2 gap-1">
               <div className="col-span-1">
                 <Fieldset
                   legend="Billing"
@@ -286,7 +286,7 @@ export default function NewInvoiceForm( ) {
                         >
                           <Button variant="outline">Add Item</Button>
                         </DialogTrigger>
-                        <DialogContent className="max-w-sm">
+                        <DialogContent className="max-w-2xl">
                           <DialogHeader>
                             <DialogTitle>
                               {editIndex !== null
@@ -423,7 +423,7 @@ export default function NewInvoiceForm( ) {
                         <Button variant="outline">Add Payment</Button>
                       </DialogTrigger>
 
-                      <DialogContent>
+                      <DialogContent className="max-w-2xl">
                         <DialogHeader>
                           <DialogTitle>
                             {editPaymentIndex !== null
