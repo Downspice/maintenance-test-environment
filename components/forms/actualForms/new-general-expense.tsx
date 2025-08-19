@@ -177,7 +177,7 @@ export default function GeneralExpense() {
         <div className="flex justify-end">
           <Button type="submit" className="min-w-32 my-4 w-full">
             <Save className="mr-2 h-4 w-4" />
-            Create Equipment
+            Save
           </Button>
         </div>
       </form>
@@ -337,7 +337,7 @@ export function EditGeneralExpense({
               <div className="flex justify-end">
                 <Button type="submit" className="min-w-32 my-4 w-full">
                   <Save className="mr-2 h-4 w-4" />
-                  Create Equipment
+                  Submit
                 </Button>
               </div>
             </form>

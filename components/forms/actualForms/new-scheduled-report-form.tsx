@@ -225,7 +225,7 @@ export default function NewScheduledReportForm() {
         </div>
         <div className="flex justify-end">
           <Button type="submit" disabled={isSubmitting} className="min-w-32 my-4 w-full">
-            {isSubmitting ? "Creating..." : (<><Save className="mr-2 h-4 w-4" /> Create Equipment</>)}
+            {isSubmitting ? "Creating..." : (<><Save className="mr-2 h-4 w-4" /> Submit</>)}
           </Button>
         </div>
       </form>
