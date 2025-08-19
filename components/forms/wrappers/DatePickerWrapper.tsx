@@ -65,7 +65,7 @@ export default function DatePickerWrapper({
         >
           <FormLabel
             className={cn(
-              direction === "horizontal" ? "w-1/4 text-right" : "mb-1"
+              direction === "horizontal" ? "w-[10rem] text-right" : "mb-1"
             )}
           >
             {required && <span className="text-red-500 mr-1">*</span>}
