@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import type { Control } from "react-hook-form";
+import { cn } from "@/lib/utils";
 
 interface InputWrapperProps {
   control: Control<any>;
@@ -21,6 +22,7 @@ interface InputWrapperProps {
   disabled?: boolean;
   required?: boolean;
   warning?: string;
+  direction?: "horizontal" | "vertical"; // NEW
 }
 
 export default function InputWrapper({
@@ -29,23 +31,35 @@ export default function InputWrapper({
   label,
   type,
   className,
-  value,
   placeholder,
   disabled = false,
   required = false,
   warning,
+  direction = "horizontal", // default
 }: InputWrapperProps) {
   return (
     <FormField
       control={control}
       name={name}
       render={({ field }) => (
-        <>
-          <FormItem className="w-full">
-            <FormLabel>
-              {required && <span className="text-red-500 mr-1">*</span>}
-              {label}
-            </FormLabel>
+        <FormItem
+          className={cn(
+            "w-full",
+            direction === "horizontal"
+              ? "flex items-center gap-4"
+              : "flex flex-col"
+          )}
+        >
+          <FormLabel
+            className={cn(
+              direction === "horizontal" ? "w-1/4 text-right" : "mb-1"
+            )}
+          >
+            {required && <span className="text-red-500 mr-1">*</span>}
+            {label}
+          </FormLabel>
+
+          <div className="flex-1 flex flex-col">
             <FormControl>
               <Input
                 type={type}
@@ -56,9 +70,11 @@ export default function InputWrapper({
               />
             </FormControl>
             <FormMessage />
-          </FormItem>
-          <span className="font-light">{warning}</span>
-        </>
+            {warning && (
+              <span className="text-xs text-amber-500 mt-1">{warning}</span>
+            )}
+          </div>
+        </FormItem>
       )}
     />
   );

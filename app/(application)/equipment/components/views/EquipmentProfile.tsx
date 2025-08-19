@@ -2246,7 +2246,7 @@ function ImageGrid() {
             <Button size="sm">+ Add</Button>
           </DialogTrigger>
           <DialogContent>
-            <DialogHeader>
+            <DialogHeader className="w-sm">
               <DialogTitle>Add Image</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
@@ -2407,7 +2407,7 @@ function AttachmentTable() {
             <Button size="sm">+ Add</Button>
           </DialogTrigger>
 
-          <DialogContent>
+          <DialogContent className="w-sm">
             <DialogHeader>
               <DialogTitle>
                 {editingId ? "Edit Attachment" : "Add Attachment"}

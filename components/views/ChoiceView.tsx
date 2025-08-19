@@ -166,7 +166,6 @@ export default function TabbedMenuEditor({ tabs, contents }: Props) {
             + Add Item
           </Button>
         </div>
-
         <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {contents[currentTab]?.length ? (
             contents[currentTab].map((item) => (

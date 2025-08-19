@@ -203,7 +203,9 @@ export default function EquipmentPMServiceForm() {
         onSubmit={form.handleSubmit((data) => console.log(data))}
         className="space-y-6"
       >
-        <InputWrapper
+        <div className="grid grid-cols-2">
+          <div className="col-span-1">
+            <InputWrapper
           control={form.control}
           name="pmService"
           label="PM Service"
@@ -220,6 +222,9 @@ export default function EquipmentPMServiceForm() {
           label="Priority"
           options={priorityOptions}
         />
+          </div>
+        </div>
+        
         <Tabs defaultValue="frequency" >
           <TabsList>
             <TabsTrigger value="frequency">Frequency</TabsTrigger>

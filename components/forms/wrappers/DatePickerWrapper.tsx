@@ -8,7 +8,13 @@ import { useState } from "react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 interface DateFieldProps {
@@ -24,6 +30,7 @@ interface DateFieldProps {
   disableFuture?: boolean
   fromDate?: Date
   toDate?: Date
+  direction?: "horizontal" | "vertical" // NEW
 }
 
 export default function DatePickerWrapper({
@@ -39,6 +46,7 @@ export default function DatePickerWrapper({
   disableFuture = false,
   fromDate,
   toDate,
+  direction = "horizontal", // default
 }: DateFieldProps) {
   const [open, setOpen] = useState(false)
 
@@ -47,13 +55,25 @@ export default function DatePickerWrapper({
       control={control}
       name={name}
       render={({ field }) => (
-        <>
-          <FormItem className="w-full">
-            <FormLabel>
-              {required && <span className="text-red-500 mr-1">*</span>}
-              {label}
-            </FormLabel>
-            <Popover open={open} onOpenChange={setOpen} modal={true}>
+        <FormItem
+          className={cn(
+                      "w-full",
+                      direction === "horizontal"
+                        ? "flex items-center gap-4"
+                        : "flex flex-col"
+                    )}
+        >
+          <FormLabel
+            className={cn(
+              direction === "horizontal" ? "w-1/4 text-right" : "mb-1"
+            )}
+          >
+            {required && <span className="text-red-500 mr-1">*</span>}
+            {label}
+          </FormLabel>
+
+          <div className="flex-1 w-full">
+            <Popover open={open} onOpenChange={setOpen} modal>
               <PopoverTrigger asChild>
                 <FormControl>
                   <Button
@@ -62,10 +82,10 @@ export default function DatePickerWrapper({
                     className={cn(
                       "w-full justify-start text-left font-normal",
                       !field.value && "text-muted-foreground",
-                      className,
+                      className
                     )}
                   >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    <CalendarIcon className="mr-2 h-4 w-4 opacity-70" />
                     {field.value ? format(field.value, "PPP") : placeholder}
                   </Button>
                 </FormControl>
@@ -97,9 +117,13 @@ export default function DatePickerWrapper({
               </PopoverContent>
             </Popover>
             <FormMessage />
-          </FormItem>
-          {warning && <span className="font-light text-sm text-muted-foreground">{warning}</span>}
-        </>
+            {warning && (
+              <span className="mt-1 block font-light text-sm text-muted-foreground">
+                {warning}
+              </span>
+            )}
+          </div>
+        </FormItem>
       )}
     />
   )

@@ -153,7 +153,7 @@ export default function CustomFieldsWrapper({
           </Button>
         </div>
 
-        {fields.length > 0 && (
+        {/* {fields.length > 0 && (
           <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
             <div className="flex items-start gap-2">
               <div className="text-blue-500 mt-0.5">
@@ -174,7 +174,7 @@ export default function CustomFieldsWrapper({
               </div>
             </div>
           </div>
-        )}
+        )} */}
       </CardContent>
     </Card>
   )
