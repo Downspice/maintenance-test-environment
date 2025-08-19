@@ -1,6 +1,7 @@
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useCallback, useState, useEffect, useRef, useMemo } from "react";
 import { isDeepEqual } from "./deep-utils";
+import { useRouter } from '@bprogress/next/app';
 
 // Flag to track if we're currently in a batch update
 let isInBatchUpdate = false;
