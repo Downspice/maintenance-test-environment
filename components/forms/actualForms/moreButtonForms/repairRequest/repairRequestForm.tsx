@@ -112,35 +112,39 @@ export default function NewRepairRequestForm() {
         )}
         className="space-y-1"
       >
-        <ComboboxFieldWrapper
-          control={form.control}
-          name="equipment"
-          label="Equipment"
-          options={equipmentOptionsList}
-        />
+        <div className="grid grid-cols-2">
+          <div className="col-span-1">
+            <ComboboxFieldWrapper
+              control={form.control}
+              name="equipment"
+              label="Equipment"
+              options={equipmentOptionsList}
+            />
 
-        <ComboboxFieldWrapper
-          control={form.control}
-          name="requestedBy"
-          label="Requested By"
-          options={assigneeOptions}
-        />
+            <ComboboxFieldWrapper
+              control={form.control}
+              name="requestedBy"
+              label="Requested By"
+              options={assigneeOptions}
+            />
 
-        <DatePickerWrapper
-          control={form.control}
-          name="dueDate"
-          label="Due Date"
-        />
+            <DatePickerWrapper
+              control={form.control}
+              name="dueDate"
+              label="Due Date"
+            />
 
-        <InputWrapper
-          control={form.control}
-          name="repairBy"
-          label="Repair By"
-          type="number"
-        />
+            <InputWrapper
+              control={form.control}
+              name="repairBy"
+              label="Repair By"
+              type="number"
+            />
+          </div>{" "}
+        </div>
 
         <div>
-          <div className="flex justify-between items-center mb-2">
+          <div className="flex justify-between items-center mt-5 mb-2">
             <h3 className="font-medium">Repairs Needed</h3>
             <Button
               type="button"

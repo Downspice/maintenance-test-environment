@@ -31,6 +31,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Checkbox } from "@/components/ui/checkbox";
+import NewWorkOrderForm from "@/components/forms/actualForms/work-order-form";
+import RepairSheet from "../sheets/RepairSheet";
 
 // Sample data
 const equipmentList = [
@@ -378,29 +380,25 @@ export default function EquipmentCalendar() {
     const currentMonth = currentDate.getMonth();
 
     return Array.from({ length: 13 }, (_, i) => {
-  const offset = i - 6; // so index 6 = current month
-  const date = new Date(currentYear, currentMonth + offset, 1);
+      const offset = i - 6; // so index 6 = current month
+      const date = new Date(currentYear, currentMonth + offset, 1);
 
-  return {
-    year: date.getFullYear(),
-    month: date.getMonth(),
-    name: shortMonthNames[date.getMonth()],
-    isCurrent: offset === 0, // only current month true
-  };
-});
+      return {
+        year: date.getFullYear(),
+        month: date.getMonth(),
+        name: shortMonthNames[date.getMonth()],
+        isCurrent: offset === 0, // only current month true
+      };
+    });
   };
 
   const renderTabControls = (tabName: string) => {
     const getButtonLabel = () => {
       switch (tabName) {
-        case "work-orders":
-          return "Issue Work Order";
         case "fuel":
           return "Add Fuel";
         case "assignments":
           return "Sign Out";
-        default:
-          return "Issue Work Order";
       }
     };
 
@@ -420,17 +418,14 @@ export default function EquipmentCalendar() {
         {/* Action Buttons and Controls */}
         <div className="flex flex-wrap justify-between items-center gap-4 ">
           <div className="flex gap-2">
-            <Button className="flex items-center gap-2">
-              {getButtonIcon()}
-              {getButtonLabel()}
-            </Button>
+            <NewWorkOrderForm />
             {tabName === "equipment-due" && (
-              <Button variant="outline">Repair</Button>
+              <div className="flex gap-2">
+                <RepairSheet />{" "}
+              </div>
             )}
-            
           </div>
           <div className="flex flex-wrap items-center gap-2">
-
             <Search className="h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search..."
