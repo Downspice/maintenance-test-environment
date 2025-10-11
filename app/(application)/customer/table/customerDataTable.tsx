@@ -47,7 +47,7 @@ const address1 = [...new Set(flatEmployees.map((emp) => emp.street1 ?? ""))];
 const city = [...new Set(flatEmployees.map((emp) => emp.city ?? ""))];
 const state_prov = [...new Set(flatEmployees.map((emp) => emp.state ?? ""))];
 const postal_code = [
-  ...new Set(flatEmployees.map((emp) => emp.postalCode ?? "")),
+  ...new Set(flatEmployees.map((emp) => emp.postal_code ?? "")),
 ];
 const email = [...new Set(flatEmployees.map((emp) => emp.email ?? ""))];
 
@@ -284,7 +284,7 @@ export default function CustomerDataTable() {
       },
     },
     {
-      accessorKey: "postalCode",
+      accessorKey: "postal_code",
       header: ({ column }) => (
         <SortableHeader
           column={column}
@@ -395,7 +395,7 @@ export default function CustomerDataTable() {
           "type",
           "address1",
           "state",
-          "postalCode",
+          "postal_code",
           "email",
           "actions",
         ]}

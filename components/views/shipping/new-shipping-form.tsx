@@ -153,7 +153,7 @@ export default function NewShipToForm() {
                       <div className="col-span-1">
                         <InputWrapper
                           control={vendorForm.control}
-                          name="postalCode"
+                          name="postal_code"
                           label="Postal Code"
                           type="text"
                           value={""}
@@ -202,7 +202,7 @@ export default function NewShipToForm() {
                     />
                     <InputWrapper
                       control={vendorForm.control}
-                      name="billingRate"
+                      name="billing_rate"
                       label="Billing Rate"
                       type="number"
                       value={""}
@@ -227,7 +227,7 @@ export default function NewShipToForm() {
                   <div className="flex flex-col gap-1">
                     <InputWrapper
                       control={vendorForm.control}
-                      name="phone1"
+                      name="phone_1"
                       label="Phone 1:"
                       type="text"
                       required
@@ -235,7 +235,7 @@ export default function NewShipToForm() {
                     />
                     <InputWrapper
                       control={vendorForm.control}
-                      name="phone2"
+                      name="phone_2"
                       label="Phone 2:"
                       type="text"
                       value={""}

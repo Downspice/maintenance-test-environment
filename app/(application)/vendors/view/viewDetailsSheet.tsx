@@ -20,8 +20,7 @@ export default function ViewVendor({
   data: VendorInterface;
 }) {
   const [open, setOpen] = useState(false);
-  console.log("in data", data);
-  return (
+   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>{children}</SheetTrigger>
       <SheetContent className="w-3/4 ">
@@ -41,7 +40,7 @@ export default function ViewVendor({
             <div className="col-span-1 font-semibold">Contact</div>
             <div className="col-span-5">{data.contact}</div>
             <div className="col-span-1 font-semibold">Home</div>
-            <div className="col-span-5">{data.phone1}</div>
+            <div className="col-span-5">{data.phone_1}</div>
             <div className="col-span-1 font-semibold">Address</div>
             <div className="col-span-5">{data.address1}</div>
             <div className="col-span-1 font-semibold">City</div>

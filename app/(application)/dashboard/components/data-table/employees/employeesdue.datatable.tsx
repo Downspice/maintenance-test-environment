@@ -43,7 +43,7 @@ interface EmployeesDueItem {
   address: string;
   city: string;
   stateProv: string;
-  postalCode: string;
+  postal_code: string;
   renewal: string;
   issued: string; // format: YYYY-MM-DD
   expired: string; // format: YYYY-MM-DD
@@ -68,7 +68,7 @@ const mockEmployeesDueData: EmployeesDueItem[] = [
     address: "123 Maple St",
     city: "Cheyenne",
     stateProv: "WY",
-    postalCode: "82001",
+    postal_code: "82001",
     renewal: "CDL",
     issued: "2024-06-01",
     expired: "2025-05-31",
@@ -87,7 +87,7 @@ const mockEmployeesDueData: EmployeesDueItem[] = [
     address: "456 Oak Ave",
     city: "Laramie",
     stateProv: "WY",
-    postalCode: "82070",
+    postal_code: "82070",
     renewal: "Training",
     issued: "2024-07-15",
     expired: "2025-07-14",
@@ -106,7 +106,7 @@ const mockEmployeesDueData: EmployeesDueItem[] = [
     address: "789 Pine Rd",
     city: "Casper",
     stateProv: "WY",
-    postalCode: "82601",
+    postal_code: "82601",
     renewal: "Professional",
     issued: "2024-08-10",
     expired: "2025-08-09",
@@ -125,7 +125,7 @@ const mockEmployeesDueData: EmployeesDueItem[] = [
     address: "321 Birch Blvd",
     city: "Gillette",
     stateProv: "WY",
-    postalCode: "82718",
+    postal_code: "82718",
     renewal: "Contract",
     issued: "2024-09-20",
     expired: "2025-09-19",
@@ -144,7 +144,7 @@ const mockEmployeesDueData: EmployeesDueItem[] = [
     address: "654 Cedar Ln",
     city: "Rock Springs",
     stateProv: "WY",
-    postalCode: "82901",
+    postal_code: "82901",
     renewal: "Professional",
     issued: "2024-10-05",
     expired: "2025-10-04",
@@ -457,7 +457,7 @@ export function EmployeesDataTable({ realServer }: EmployeesDueDataTableProps) {
                             <div className="grid grid-cols-3 items-center gap-1">
                               <Label htmlFor="width">Postal Code</Label>
                               <span className="col-span-2  ">
-                                {item.postalCode}
+                                {item.postal_code}
                               </span>
                             </div>
                           </div>

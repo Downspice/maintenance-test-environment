@@ -6,8 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import type { Control } from "react-hook-form"
 
 interface SelectOption {
-  value: string
-  label: string
+  id: string
+  name: string
 }
 
 interface SelectWrapperProps {
@@ -64,8 +64,8 @@ export default function SelectWrapper({
               </FormControl>
               <SelectContent>
                 {options.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
+                  <SelectItem key={option.id} value={option.id}>
+                    {option.name}
                   </SelectItem>
                 ))}
               </SelectContent>

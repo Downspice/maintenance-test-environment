@@ -68,7 +68,7 @@ export default function EditEmployee({
 }) {
   const [open, setOpen] = useState(false);
   const [openRenewal, setOpenRenewal] = useState(false);
-  console.log("in vendor  data new", data);
+ 
   const employeeForm = useForm<z.infer<typeof EmployeeSchema>>({
     resolver: zodResolver(EmployeeSchema),
     defaultValues: { ...data },
@@ -168,7 +168,7 @@ export default function EditEmployee({
                       <div className="col-span-1">
                         <InputWrapper
                           control={employeeForm.control}
-                          name="postalCode"
+                          name="postal_code"
                           label="Postal Code"
                           type="text"
                         />
@@ -298,7 +298,7 @@ export default function EditEmployee({
                         {" "}
                         <InputWrapper
                           control={employeeForm.control}
-                          name="billingRate"
+                          name="billing_rate"
                           label="Billing Rate"
                           type="number"
                         />

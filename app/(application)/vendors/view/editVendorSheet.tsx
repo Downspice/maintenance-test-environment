@@ -34,7 +34,7 @@ export default function EditVendor({
   data: VendorInterface;
 }) {
   const [open, setOpen] = useState(false);
-  console.log("in vendor  data new", data);
+ 
   const vendorForm = useForm<z.infer<typeof VendorSchema>>({
     resolver: zodResolver(VendorSchema),
     defaultValues: { ...data },
@@ -196,14 +196,14 @@ export default function EditVendor({
                   <div className="flex flex-col gap-1">
                     <InputWrapper
                       control={vendorForm.control}
-                      name="phone1"
+                      name="phone_1"
                       label="Phone 1:"
                       type="text"
                       required
                     />
                     <InputWrapper
                       control={vendorForm.control}
-                      name="phone2"
+                      name="phone_2"
                       label="Phone 2:"
                       type="text"
                     />
