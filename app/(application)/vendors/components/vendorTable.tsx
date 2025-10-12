@@ -29,12 +29,12 @@ export default function VendorDataTable() {
   } = useGetVendors();
 
   return VendorData ? (
-    <VendorDataTable VendorData={VendorData} />
+    <VendorTableLoader VendorData={VendorData} isLoading={isLoading}/>
   ) : (
     <div>is loading.......</div>
   );
 }
-export function VendorTableLoader({ VendorData }) {
+export function VendorTableLoader({ VendorData,isLoading }) {
   const [isServerMode, setIsServerMode] = useState(false);
   // const [isLoading, setIsLoading] = useState(isLoading);
   const [currentData, setCurrentData] = useState(VendorData.slice(0, 5)); // Show first 5 for demo
