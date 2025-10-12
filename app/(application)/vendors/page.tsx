@@ -11,12 +11,23 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { useSheet } from "@/lib/sheet-providers";
-import { locationOptionsList, vendorTypeOptions } from "@/lib/option-list";
-import NotCompleteMessage from "../workInprogress/working";
+ 
 import VendorDataTable from "./components/vendorTable";
 import NewVendor from "@/components/forms/actualForms/new-vendor-form";
+import { useGetLocations, useGetVendorTypes } from "@/services/setups/vendor";
 
 export default function VendorsPage() {
+const { 
+data: vendorTypeOptions, 
+isLoading, 
+error: vendorTypesError
+} = useGetVendorTypes<Array<{ id: string, name: string }>>();
+    const { 
+    data: locationOptionsList, 
+    isLoading:locationOptionsListLoading, 
+    error: locationOptionsListError
+  } = useGetLocations<Array<{ id: string, name: string }>>();
+  console.log("vendorTypeOptions",vendorTypeOptions)
   const [filters, setFilters] = useState({
     equipment: "",
     location: "",
@@ -102,9 +113,9 @@ export default function VendorsPage() {
               <SelectValue placeholder="All Locations" />
             </SelectTrigger>
             <SelectContent>
-              {locationOptionsList.map((item) => (
-                <SelectItem value={item.value} key={item.value}>
-                  {item.label}
+              {locationOptionsList?.map((item) => (
+                <SelectItem value={item.id} key={item.id}>
+                  {item.name}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -116,9 +127,9 @@ export default function VendorsPage() {
               <SelectValue placeholder="All Vendors" />
             </SelectTrigger>
             <SelectContent>
-              {vendorTypeOptions.map((item) => (
-                <SelectItem value={item.value} key={item.value}>
-                  {item.label}
+              {vendorTypeOptions?.map((item) => (
+                <SelectItem value={item.id} key={item.id}>
+                  {item.name}
                 </SelectItem>
               ))}
             </SelectContent>

@@ -10,9 +10,16 @@ import { ColumnDef } from "@tanstack/react-table";
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
-import { locationOptionsList } from "@/lib/option-list";
+ 
+import { useGetLocations } from "@/services/setups/vendor";
 
 export default function PhysicalInventoryUpdateMoreButton() {
+    const { 
+    data: locationOptionsList, 
+    isLoading:locationOptionsListLoading, 
+    error: locationOptionsListError
+  } = useGetLocations<Array<{ id: string, name: string }>>();
+  
       const handleSelectChange = (
     key: "equipment" | "location" | "custom",
     value: string
@@ -38,8 +45,8 @@ export default function PhysicalInventoryUpdateMoreButton() {
             </SelectTrigger>
             <SelectContent>
               {locationOptionsList.map((item) => (
-                <SelectItem value={item.value} key={item.value}>
-                  {item.label}
+                <SelectItem value={item.id} key={item.id}>
+                  {item.name}
                 </SelectItem>
               ))}
             </SelectContent>

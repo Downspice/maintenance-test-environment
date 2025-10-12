@@ -41,7 +41,7 @@
 /* //@custom-variant dark (&:is(.dark *)); */
 
 @theme inline {
-  --text-base: [0.6rem, 2.6rem];
+  --text-base: [0.4rem, 2.6rem];
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -190,7 +190,7 @@
     @apply border-border outline-ring/50;
   }
   html {
-    font-size: 0.85rem; /* All rem units now based on 0.6rem = 9.6px */
+    font-size: 0.75rem; /* All rem units now based on 0.6rem = 9.6px */
   }
   body {
     @apply bg-background text-foreground;

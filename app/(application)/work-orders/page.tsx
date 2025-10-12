@@ -122,8 +122,8 @@ export default function EquipmentPage() {
             </SelectTrigger>
             <SelectContent>
               {equipmentActiveDropdown.map((item) => (
-                <SelectItem value={item.value} key={item.value}>
-                  {item.label}
+                <SelectItem value={item.id} key={item.id}>
+                  {item.name}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -136,8 +136,8 @@ export default function EquipmentPage() {
             </SelectTrigger>
             <SelectContent>
               {locations.map((item) => (
-                <SelectItem value={item.value} key={item.value}>
-                  {item.label}
+                <SelectItem value={item.id} key={item.id}>
+                  {item.name}
                 </SelectItem>
               ))}
             </SelectContent>

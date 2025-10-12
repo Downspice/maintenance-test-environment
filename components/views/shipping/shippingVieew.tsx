@@ -10,6 +10,7 @@ import NewShipToForm from "./new-shipping-form";
 import ShippingSheetTable from "./shipping-table";
 import { locationOptionsList, vendorTypeOptions } from "@/lib/option-list";
 import { useState } from "react";
+import { useGetLocations } from "@/services/setups/vendor";
 
 export default function ShippingView() {
   const [filters, setFilters] = useState({
@@ -56,7 +57,11 @@ export default function ShippingView() {
       buildURL(updated);
     }
   };
-
+   const { 
+    data: locationOptionsList, 
+    isLoading:locationOptionsListLoading, 
+    error: locationOptionsListError
+  } = useGetLocations<Array<{ id: string, name: string }>>();
   return (
     <>
       <div className="flex flex-row justify-between">
@@ -67,8 +72,8 @@ export default function ShippingView() {
             </SelectTrigger>
             <SelectContent>
               {vendorTypeOptions.map((item) => (
-                <SelectItem value={item.value} key={item.value}>
-                  {item.label}
+                <SelectItem value={item.id} key={item.id}>
+                  {item.name}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -79,8 +84,8 @@ export default function ShippingView() {
             </SelectTrigger>
             <SelectContent>
               {locationOptionsList.map((item) => (
-                <SelectItem value={item.value} key={item.value}>
-                  {item.label}
+                <SelectItem value={item.id} key={item.id}>
+                  {item.name}
                 </SelectItem>
               ))}
             </SelectContent>

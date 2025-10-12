@@ -18,7 +18,7 @@ import {
   vendorOptions,
 } from "@/lib/equipment-schema";
 import Fieldset from "@/components/customUI/fieldset";
-import { locationOptionsList } from "@/lib/option-list";
+ 
 import { toast } from "sonner";
 import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
 import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
@@ -54,6 +54,7 @@ import {
   PurchaseOrderSchema,
   PurchaseOrderStatusType,
 } from "@/lib/PurchaseOrder/purchaseOrder-data";
+import { useGetLocations } from "@/services/setups/vendor";
 
 interface triggerVariant {
   variant?: "icon" | "default";
@@ -62,6 +63,7 @@ interface triggerVariant {
 type ItemFormValues = z.infer<typeof PurchaseOrderItemSchema>;
 
 export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
+  
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editIndex, setEditIndex] = useState<number | null>(null);
@@ -71,7 +73,11 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
   const [openItems, setOpenItems] = useState(false);
 
   const [status, setStatus] = useState<PurchaseOrderStatusType>("Requisition");
-
+    const { 
+    data: locationOptionsList, 
+    isLoading:locationOptionsListLoading, 
+    error: locationOptionsListError
+  } = useGetLocations<Array<{ id: string, name: string }>>();
   const PurchaseOrderStatuses: PurchaseOrderStatusType[] = [
     "Requisition",
     "Ordered",

@@ -16,7 +16,6 @@ import Fieldset from "@/components/customUI/fieldset";
 import {
   conditionOptionsList,
   equipmentOptionsList,
-  locationOptionsList,
 } from "@/lib/option-list";
 import { toast } from "sonner";
 import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
@@ -61,6 +60,12 @@ export type InspectionFormValues = z.infer<typeof inspectionFormSchema>;
 export type InspectionItem = z.infer<typeof inspectionItemSchema>;
 
 export default function InspectionForm() {
+     const { 
+    data: locationOptionsList, 
+    isLoading:locationOptionsListLoading, 
+    error: locationOptionsListError
+  } = useGetLocations<Array<{ id: string, name: string }>>();
+
   const form = useForm<InspectionFormValues>({
     resolver: zodResolver(inspectionFormSchema),
     defaultValues: {},

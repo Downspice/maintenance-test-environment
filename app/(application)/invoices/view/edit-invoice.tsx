@@ -10,7 +10,7 @@ import { Pen, Save, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { assigneeOptions } from "@/lib/equipment-schema";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { locationOptionsList } from "@/lib/option-list";
+ 
 import InputWrapper from "@/components/forms/wrappers/InputWrapper";
 import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
 import {
@@ -46,6 +46,7 @@ import Fieldset from "@/components/customUI/fieldset";
    DialogTrigger,
  } from "@/components/ui/dialog";
 import SelectWrapper from "@/components/forms/wrappers/SelectWrapper";
+import { useGetLocations } from "@/services/setups/vendor";
 
 export const InvoiceItemSchema = z.object({
   quantity: z.number(),
@@ -81,6 +82,11 @@ export default function EditInvoice({
   children: React.ReactNode;
   data: InvoiceInterface;
 }) {
+    const { 
+    data: locationOptionsList, 
+    isLoading:locationOptionsListLoading, 
+    error: locationOptionsListError
+  } = useGetLocations<Array<{ id: string, name: string }>>();
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editIndex, setEditIndex] = useState<number | null>(null);

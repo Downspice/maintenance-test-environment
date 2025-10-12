@@ -1,3 +1,4 @@
+'use client'
 import { useQuery, useMutation, useQueryClient, UseMutationOptions, UseQueryOptions } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 // Assuming these imports and environment variable are correctly configured
@@ -69,10 +70,12 @@ export function useGetVendorTypes<TData = TEntity[]>(options?: UseQueryOptions<A
     return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
         queryKey: ["vendor-types"],
         queryFn: async () => {
+            console.log("......")
             const { data } = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-vendor-types"));
+            
             return data;
         },
-        select: (data) => data.data as TData,
+        select: (data) => data as TData,
         staleTime: Infinity,
         ...options,
     });
@@ -88,7 +91,7 @@ export function useGetLocations<TData = TEntity[]>(options?: UseQueryOptions<Api
             const { data } = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-locations"));
             return data;
         },
-        select: (data) => data.data as TData,
+        select: (data) => data as TData,
         staleTime: Infinity,
         ...options,
     });
@@ -104,7 +107,7 @@ export function useGetPurchaseOrderTerms<TData = TEntity[]>(options?: UseQueryOp
             const { data } = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-purchase-order-terms"));
             return data;
         },
-        select: (data) => data.data as TData,
+        select: (data) => data as TData,
         staleTime: Infinity,
         ...options,
     });
@@ -120,7 +123,7 @@ export function useGetStatusOnes<TData = TEntity[]>(options?: UseQueryOptions<Ap
             const { data } = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-status-one"));
             return data;
         },
-        select: (data) => data.data as TData,
+        select: (data) => data as TData,
         staleTime: Infinity,
         ...options,
     });
@@ -136,7 +139,7 @@ export function useGetVendors<TData = TEntity[]>(options?: UseQueryOptions<ApiRe
             const { data } = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-vendors"));
             return data;
         },
-        select: (data) => data.data as TData,
+        select: (data) => data as TData,
         staleTime: Infinity,
         ...options,
     });
@@ -153,7 +156,7 @@ export function useGetVendor<TData = TEntity>(id: TId, options?: UseQueryOptions
             const { data } = await dummyApiClient<ApiResponse<TData>>(buildUrl(`/api/get-vendor/${id}`));
             return data;
         },
-        select: (data) => data.data as TData,
+        select: (data) => data as TData,
         enabled: !!id,
         ...options,
     });

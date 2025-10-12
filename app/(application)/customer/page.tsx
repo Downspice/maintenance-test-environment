@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { useSheet } from "@/lib/sheet-providers";
 import NotCompleteMessage from "../workInprogress/working";
 import CustomerDataTable from "./table/customerDataTable";
-import { locationOptionsList } from "@/lib/option-list";
+ 
 import NewCustomer from "@/components/forms/actualForms/new-customer-form";
 
 export default function EmployeesPage() {
@@ -103,8 +103,8 @@ export default function EmployeesPage() {
             </SelectTrigger>
             <SelectContent>
               {locationOptionsList.map((item) => (
-                <SelectItem value={item.value} key={item.value}>
-                  {item.label}
+                <SelectItem value={item.id} key={item.id}>
+                  {item.name}
                 </SelectItem>
               ))}
             </SelectContent>

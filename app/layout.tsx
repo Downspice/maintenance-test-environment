@@ -6,6 +6,7 @@ import "./globals.css";
 import { Providers } from "@/lib/providers";
 import { SheetProvider } from "@/lib/sheet-providers";
 import { DialogProvider } from "@/lib/dialog-provider";
+import QueryProvider from "@/lib/QueryProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,17 +32,15 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased joseph `}
-      >
-        <Providers>
-          <SheetProvider>
-            <DialogProvider>
-              <NuqsAdapter>
-                {children}
-                <Toaster />
-              </NuqsAdapter>
-            </DialogProvider>
-          </SheetProvider>
-        </Providers>
+      ><QueryProvider>
+        <SheetProvider>
+          <DialogProvider>
+            <NuqsAdapter>
+              {children}
+              <Toaster />
+            </NuqsAdapter>
+          </DialogProvider>
+        </SheetProvider></QueryProvider>
       </body>
     </html>
   );

@@ -13,7 +13,6 @@ import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";
 // Schema and types
 import { assigneeOptions } from "@/lib/equipment-schema";
 import Fieldset from "@/components/customUI/fieldset";
-import { locationOptionsList } from "@/lib/option-list";
 import { toast } from "sonner";
 import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
 import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
@@ -41,6 +40,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import SelectWrapper from "../wrappers/SelectWrapper";
+import { useGetLocations } from "@/services/setups/vendor";
  
 export const InvoiceItemSchema = z.object({
   quantity: z.number(),
@@ -72,7 +72,11 @@ export default function NewInvoiceForm( ) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editIndex, setEditIndex] = useState<number | null>(null);
-
+    const { 
+    data: locationOptionsList, 
+    isLoading:locationOptionsListLoading, 
+    error: locationOptionsListError
+  } = useGetLocations<Array<{ id: string, name: string }>>();
   const [items, setItems] = useState<InvoiceItemInterface[]>([]);
   const [editItems, setEditItems] = useState<InvoiceItemInterface | null>(null);
   const [openItems, setOpenItems] = useState(false);

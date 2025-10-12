@@ -12,8 +12,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { useSheet } from "@/lib/sheet-providers";
 import NewEmployeeForm from "@/components/forms/actualForms/new-employee-form";
-import { locationOptionsList } from "@/lib/option-list";
+ 
 import EmployeeDataTable from "./components/employeeDataTable";
+import { useGetLocations } from "@/services/setups/vendor";
 
 const ActiveDropdown = [
   { label: "All Employees", value: "all" },
@@ -27,6 +28,12 @@ const ActiveDropdown = [
 ];
 
 export default function EmployeesPage() {
+      const { 
+    data: locationOptionsList, 
+    isLoading:locationOptionsListLoading, 
+    error: locationOptionsListError
+  } = useGetLocations<Array<{ id: string, name: string }>>();
+  
   const [filters, setFilters] = useState({
     equipment: "",
     location: "",
@@ -113,8 +120,8 @@ export default function EmployeesPage() {
             </SelectTrigger>
             <SelectContent>
               {ActiveDropdown.map((item) => (
-                <SelectItem value={item.value} key={item.value}>
-                  {item.label}
+                <SelectItem value={item.id} key={item.id}>
+                  {item.name}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -126,8 +133,8 @@ export default function EmployeesPage() {
             </SelectTrigger>
             <SelectContent>
               {locationOptionsList.map((item) => (
-                <SelectItem value={item.value} key={item.value}>
-                  {item.label}
+                <SelectItem value={item.id} key={item.id}>
+                  {item.name}
                 </SelectItem>
               ))}
             </SelectContent>

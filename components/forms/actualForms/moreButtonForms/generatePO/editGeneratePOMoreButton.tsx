@@ -18,7 +18,7 @@ import {
   vendorOptions,
 } from "@/lib/equipment-schema";
 import Fieldset from "@/components/customUI/fieldset";
-import { locationOptionsList } from "@/lib/option-list";
+ 
 import { toast } from "sonner";
 import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
 import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
@@ -61,6 +61,7 @@ import {
   PurchaseOrderStatusType,
 } from "@/lib/PurchaseOrder/purchaseOrder-data";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useGetLocations } from "@/services/setups/vendor";
 
 
 export type ItemFormValues = z.infer<typeof PurchaseOrderItemSchema>;
@@ -87,7 +88,11 @@ export default function EditPurchaseOrderFormMoreButton({
   const [openItems, setOpenItems] = useState(false);
 
   const [status, setStatus] = useState<PurchaseOrderStatusType>("Requisition");
-
+    const { 
+    data: locationOptionsList, 
+    isLoading:locationOptionsListLoading, 
+    error: locationOptionsListError
+  } = useGetLocations<Array<{ id: string, name: string }>>();
   const PurchaseOrderStatuses: PurchaseOrderStatusType[] = [
     "Requisition",
     "Ordered",

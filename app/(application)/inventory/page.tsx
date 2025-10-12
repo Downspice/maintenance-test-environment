@@ -121,8 +121,8 @@ export default function EmployeesPage() {
             </SelectTrigger>
             <SelectContent>
               {ActiveDropdown.map((item) => (
-                <SelectItem value={item.value} key={item.value}>
-                  {item.label}
+                <SelectItem value={item.id} key={item.id}>
+                  {item.name}
                 </SelectItem>
               ))}
             </SelectContent>

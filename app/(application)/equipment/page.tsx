@@ -13,7 +13,8 @@ import { useSheet } from "@/lib/sheet-providers";
 import EquipmentForm from "./components/new-equipment-form";
 import NewEquipmentDataTable from "./components/table/equipmentDatatable";
 import UpdateMeters from "./components/update-meters-form";
-import { locationOptionsList } from "@/lib/option-list";
+ 
+import { useGetLocations } from "@/services/setups/vendor";
 
 export const equipmentActiveDropdown = [
   { value: "my", label: "My" },
@@ -31,6 +32,12 @@ export const equipmentActiveDropdown = [
 ];
 
 export default function EquipmentPage() {
+      const { 
+    data: locationOptionsList, 
+    isLoading:locationOptionsListLoading, 
+    error: locationOptionsListError
+  } = useGetLocations<Array<{ id: string, name: string }>>();
+  
   const [filters, setFilters] = useState({
     equipment: "",
     location: "",
@@ -106,8 +113,8 @@ export default function EquipmentPage() {
             </SelectTrigger>
             <SelectContent>
               {equipmentActiveDropdown.map((item) => (
-                <SelectItem value={item.value} key={item.value}>
-                  {item.label}
+                <SelectItem value={item.id} key={item.id}>
+                  {item.name}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -120,8 +127,8 @@ export default function EquipmentPage() {
             </SelectTrigger>
             <SelectContent>
               {locationOptionsList.map((item) => (
-                <SelectItem value={item.value} key={item.value}>
-                  {item.label}
+                <SelectItem value={item.id} key={item.id}>
+                  {item.name}
                 </SelectItem>
               ))}
             </SelectContent>
