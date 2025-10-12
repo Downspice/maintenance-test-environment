@@ -9,10 +9,6 @@ import { ApiError, ApiResponse } from "@/types/types";
 const BASEURL = process.env.NEXT_PUBLIC_BASE_URL;
 
 // --- Type Definitions for better readability ---
-// TEntity: The shape of the data item (e.g., Location, VendorType, Vendor)
-// TParams: The shape of the data sent in POST/PUT requests
-// TId: Type for item IDs, assumed to be string or number
-
 type TId = string | number;
 type TEntity = unknown; // Replace 'unknown' with your actual data type (e.g., Vendor, Location)
 type TParams = Record<string, any>; // Replace with specific payload types
@@ -43,8 +39,17 @@ const useBaseMutation = <TResponse = TEntity, TPayload = TParams, TContext = unk
 
     const mutationFn = async (payload: TPayload) => {
         const url = buildUrl(endpoint(payload));
-        const { data } = await dummyApiClient[method]<ApiResponse<TResponse>>(url, method !== 'delete' ? payload : undefined);
-        return data;
+        
+        // --- FIX APPLIED HERE ---
+        // CRITICAL: Call dummyApiClient directly and pass method and data in the config object.
+        const response = await dummyApiClient<ApiResponse<TResponse>>(url, {
+            method: method,
+            // Only pass the payload (data) for POST and PUT. DELETE requests typically send data via URL/params.
+            data: (method === 'post' || method === 'put') ? payload : undefined, 
+        });
+        
+        // Return the actual data payload from the API response
+        return response.data as TResponse; 
     };
 
     return useMutation<TResponse, AxiosError<ApiError>, TPayload, TContext>({
@@ -70,12 +75,12 @@ export function useGetVendorTypes<TData = TEntity[]>(options?: UseQueryOptions<A
     return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
         queryKey: ["vendor-types"],
         queryFn: async () => {
-            console.log("......")
-            const { data } = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-vendor-types"));
-            
-            return data;
+            // FIX: Call dummyApiClient and store the full response object
+            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-vendor-types"));
+            return response;
         },
-        select: (data) => data as TData,
+        // FIX: Select function extracts the data payload from the response object
+        select: (response) => response.data as TData,
         staleTime: Infinity,
         ...options,
     });
@@ -88,10 +93,10 @@ export function useGetLocations<TData = TEntity[]>(options?: UseQueryOptions<Api
     return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
         queryKey: ["locations"],
         queryFn: async () => {
-            const { data } = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-locations"));
-            return data;
+            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-locations"));
+            return response;
         },
-        select: (data) => data as TData,
+        select: (response) => response.data as TData,
         staleTime: Infinity,
         ...options,
     });
@@ -104,10 +109,10 @@ export function useGetPurchaseOrderTerms<TData = TEntity[]>(options?: UseQueryOp
     return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
         queryKey: ["purchase-order-terms"],
         queryFn: async () => {
-            const { data } = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-purchase-order-terms"));
-            return data;
+            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-purchase-order-terms"));
+            return response;
         },
-        select: (data) => data as TData,
+        select: (response) => response.data as TData,
         staleTime: Infinity,
         ...options,
     });
@@ -120,10 +125,10 @@ export function useGetStatusOnes<TData = TEntity[]>(options?: UseQueryOptions<Ap
     return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
         queryKey: ["status-ones"],
         queryFn: async () => {
-            const { data } = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-status-one"));
-            return data;
+            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-status-one"));
+            return response;
         },
-        select: (data) => data as TData,
+        select: (response) => response.data as TData,
         staleTime: Infinity,
         ...options,
     });
@@ -136,10 +141,10 @@ export function useGetVendors<TData = TEntity[]>(options?: UseQueryOptions<ApiRe
     return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
         queryKey: ["vendors"],
         queryFn: async () => {
-            const { data } = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-vendors"));
-            return data;
+            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-vendors"));
+            return response;
         },
-        select: (data) => data as TData,
+        select: (response) => response.data as TData,
         staleTime: Infinity,
         ...options,
     });
@@ -153,10 +158,10 @@ export function useGetVendor<TData = TEntity>(id: TId, options?: UseQueryOptions
     return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
         queryKey: ["vendor", id],
         queryFn: async () => {
-            const { data } = await dummyApiClient<ApiResponse<TData>>(buildUrl(`/api/get-vendor/${id}`));
-            return data;
+            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl(`/api/get-vendor/${id}`));
+            return response;
         },
-        select: (data) => data as TData,
+        select: (response) => response.data as TData,
         enabled: !!id,
         ...options,
     });
@@ -345,8 +350,8 @@ export function useDeleteStatusOne() {
 // ------------------------------------------------
 
 type VendorPayload = TParams & { id?: TId };
-type AttachmentPayload = FormData & { id: TId }; // Assuming attachments use FormData
-type ContactPayload = TParams & { id: TId, contactId?: TId }; // 'id' is vendorId, 'contactId' is contact ID for PUT
+type AttachmentPayload = FormData & { id: TId }; // Assuming 'id' is Vendor ID
+type ContactPayload = TParams & { vendorId: TId, id?: TId }; // 'vendorId' is required for invalidation, 'id' is for PUT/DELETE
 
 /**
  * Adds a new Vendor. Invalidates the 'vendors' list.
@@ -402,15 +407,16 @@ export function useAddVendorAttachment() {
 }
 
 /**
- * Deletes a Vendor Attachment. Invalidates the specific 'vendor' detail query.
- * 'id' in payload refers to the Attachment ID being deleted.
+ * Deletes a Vendor Attachment. Invalidates the specific 'vendor' detail query (if vendorId is known).
+ * 'id' in payload refers to the Attachment ID being deleted. We'll invalidate all vendors for safety.
  */
 export function useDeleteVendorAttachment() {
     return useBaseMutation<TEntity, { id: TId }>(
         ["delete-vendor-attachment"],
         (payload) => `/api/delete-vendor-attachment/${payload.id}`,
         'delete',
-        () => [['vendor']] // Invalidate all vendor detail queries to refresh attachments
+        // Invalidate all vendor detail queries to refresh attachments across all visible vendors
+        () => [['vendors']] 
     );
 }
 
@@ -421,9 +427,10 @@ export function useDeleteVendorAttachment() {
  * 'id' in payload refers to the Vendor ID.
  */
 export function useAddVendorContact() {
-    return useBaseMutation<TEntity, ContactPayload>(
+    // We assume the payload must contain the vendor ID for invalidation
+    return useBaseMutation<TEntity, ContactPayload & { id: TId }>( 
         ["add-vendor-contact"],
-        (payload) => `/api/add-vendor-contact/${payload.id}`,
+        (payload) => `/api/add-vendor-contact/${payload.id}`, // Assuming payload.id is the Vendor ID
         'post',
         (payload) => [['vendor', payload.id]]
     );
@@ -431,17 +438,15 @@ export function useAddVendorContact() {
 
 /**
  * Updates an existing Vendor Contact. Invalidates the specific 'vendor' detail query.
- * 'id' in payload refers to the Contact ID.
+ * Assuming the endpoint takes the Contact ID, and we pass the Vendor ID (vendorId) in the payload
+ * for accurate invalidation.
  */
 export function useUpdateVendorContact() {
-    // Assuming the URL /api/update-vendor-contact/{id} takes the CONTACT ID, not the vendor ID.
-    // If the API structure is different (e.g., /vendor/{vendorId}/contact/{contactId}), adjust accordingly.
     return useBaseMutation<TEntity, ContactPayload & { id: TId }>(
         ["update-vendor-contact"],
-        (payload) => `/api/update-vendor-contact/${payload.id}`, // Assuming payload.id is the contact ID
+        (payload) => `/api/update-vendor-contact/${payload.id}`, // Assuming payload.id is the Contact ID
         'put',
-        // NOTE: Without the vendorId, we must invalidate all vendor queries or rely on the caller to pass vendorId.
-        // For robustness, we will assume the mutation is related to a specific vendor's ID which must be available in the payload.
-        (payload) => [['vendor']] // Invalidate all vendor details if the vendorId is not easily available
+        // Use vendorId from the payload for targeted invalidation
+        (payload) => [['vendor', payload.vendorId]] 
     );
 }

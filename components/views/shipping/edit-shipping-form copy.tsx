@@ -217,7 +217,7 @@ export const vendorSchema = z.object({
                     </div>
                     <CustomFieldsWrapper
                       control={vendorForm.control}
-                      name="Custom"
+                       name="others"
                       label="Custom Fields"
                     />
                   </div>

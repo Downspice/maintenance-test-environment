@@ -10,24 +10,33 @@ import { GitPullRequestArrow } from "lucide-react";
 import TextareaWrapper from "../wrappers/TextareaWrapper";
 import { toast } from "sonner";
 import InputWrapper from "../wrappers/InputWrapper";
-import { categoryOptions, statusOptions } from "@/lib/equipment-schema";
+import { categoryOptions } from "@/lib/equipment-schema";
 import SelectWrapper from "../wrappers/SelectWrapper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CustomFieldsWrapper from "../wrappers/CustomFieldsWrapper";
 import FileUploadWrapper from "../wrappers/FileUploadWrapper";
-import { useAddVendor, useGetVendorTypes } from "@/services/setups/vendor";
+import {
+  useAddVendor,
+  useGetVendorTypes,
+  useGetLocations,
+  useGetStatusOnes,
+  useGetPurchaseOrderTerms,
+} from "@/services/setups/vendor";
+
+export type VendorFormValues = z.infer<typeof vendorSchema>;
 
 // Define the form schema with Zod
 export const vendorSchema = z.object({
   // General Tab
+  id: z.string().optional(),
+
   name: z.string().min(1, { message: "Vendor name is required" }),
-  vendor_number: z.string().optional(),
+  vendor_number: z.string().min(1, { message: "Vendor number is required" }),
   contactNumber: z.string().optional(),
-  street1: z.string().optional(),
-  street2: z.string().optional(),
+  address: z.string().optional(),
   city: z.string().optional(),
-  state: z.string().optional(),
-  postal_code: z.string().optional(),
+  state: z.string().min(1, { message: "Vendor number is required" }),
+  postal_code: z.string().min(1, { message: "Vendor number is required" }),
   country: z.string().optional(),
 
   location_id: z.string().min(1, { message: "Location is required" }),
@@ -36,22 +45,20 @@ export const vendorSchema = z.object({
   term_id: z.string().min(1, { message: "Payment term is required" }),
 
   billing_rate: z
-    .union([
-      z.number({ invalid_type_error: "Billing rate must be a number" }),
-      z.string().regex(/^\d+(\.\d{1,2})?$/, {
-        message: "Billing rate must be a valid number (up to 2 decimal places)",
-      }),
-    ])
+    .string({ invalid_type_error: "Billing rate must be a number" })
     .optional()
     .transform((val) => (typeof val === "string" ? parseFloat(val) : val)),
 
   notes: z.string().optional(),
 
-  Custom: z.any().optional(), // Can refine later
+  others: z.any().optional(), // Can refine later
 
   // Contact Tab
-  phone_1: z.string().min(1, { message: "Primary phone number is required" }).optional(),
-  phone_2: z.string().optional(),
+  phone_one: z
+    .string()
+    .min(1, { message: "Primary phone number is required" })
+    .optional(),
+  phone_two: z.string().optional(),
   fax: z.string().optional(),
 
   email: z
@@ -73,20 +80,26 @@ export const vendorSchema = z.object({
 });
 
 export default function NewVendor() {
-   const { 
-    mutate, 
-    isPending, 
-    isError, 
-    isSuccess, 
-    error 
-  } =useAddVendor();
-
-    const { 
-    data: vendorTypeOptions, 
-    isLoading, 
-    error: vendorTypesError
-  } = useGetVendorTypes<Array<{ id: string, name: string }>>();
-
+  const {
+    data: termsOptionsList,
+    isLoading: termsOptionsListLoading,
+    error: termsOptionsListError,
+  } = useGetPurchaseOrderTerms<Array<{ id: string; name: string }>>();
+  const {
+    data: statusOptions,
+    isLoading: statusOptionsLoading,
+    error: statusOptionsError,
+  } = useGetStatusOnes<Array<{ id: string; name: string }>>();
+  const {
+    data: vendorTypeOptions,
+    isLoading,
+    error: vendorTypesError,
+  } = useGetVendorTypes<Array<{ id: string; name: string }>>();
+  const {
+    data: locationOptionsList,
+    isLoading: locationOptionsListLoading,
+    error: locationOptionsListError,
+  } = useGetLocations<Array<{ id: string; name: string }>>();
 
   const [customFields, setCustomFields] = useState<
     { name: string; value: string }[]
@@ -94,16 +107,38 @@ export default function NewVendor() {
 
   const vendorForm = useForm<z.infer<typeof vendorSchema>>({
     resolver: zodResolver(vendorSchema),
-    defaultValues: {},
+    defaultValues: {
+      name: "",
+    },
   });
 
-  async function handleSubmit(data: z.infer<typeof vendorSchema>) {
-    console.log(data);
-    mutate(data);
-    // Here you would typically send the data to your API
+  const { 
+    mutateAsync, 
+    isPending, 
+  } = useAddVendor(); 
 
-    toast.success("Work Order submitted successfully!");
-  }
+  // 3. Define the mutation handler that receives validated data
+  const handleSubmit = async (data: VendorFormValues) => {
+    console.log("Submitting data:", data);
+    
+    // try {
+      // 4. AWAIT the mutateAsync call, passing the validated 'data' object
+      const res = await mutateAsync(data); 
+
+      // 5. Handle success and feedback
+      // Assuming 'res' contains a success message or the created object
+      toast.success(res?.messagee); 
+      vendorForm.reset(); // Reset form state on success
+
+      // In a real application, you would likely close the sheet/modal here
+
+    // } catch (error: any) {
+    //   // 6. Handle error and feedback using the try/catch block
+    //   console.error("Mutation failed:", error);
+    //   const errorMessage = error?.response?.data?.message || 'Failed to create vendor.';
+    //   toast.error(errorMessage);
+    // }
+  };
 
   const addCustomField = () => {
     setCustomFields([...customFields, { name: "", value: "" }]);
@@ -140,7 +175,7 @@ export default function NewVendor() {
                   required
                 />
                 <InputWrapper
-                  control={vendorForm.control}
+                  control={vendorForm.control} required
                   name="vendor_number"
                   label="Vendor #"
                   type="text"
@@ -155,19 +190,12 @@ export default function NewVendor() {
 
                 <InputWrapper
                   control={vendorForm.control}
-                  name="street1"
+                  name="address"
                   label="Address"
                   type="text"
                 />
 
-                <InputWrapper
-                  className="pt-0"
-                  control={vendorForm.control}
-                  name="street2"
-                  placeholder=" "
-                  label=""
-                  type="text"
-                />
+                 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="col-span-1">
                     <InputWrapper
@@ -179,7 +207,7 @@ export default function NewVendor() {
                   </div>
                   <div className="col-span-1">
                     <InputWrapper
-                      control={vendorForm.control}
+                      control={vendorForm.control} required
                       name="state"
                       label="State /Province"
                       type="text"
@@ -190,7 +218,7 @@ export default function NewVendor() {
                       control={vendorForm.control}
                       name="postal_code"
                       label="Postal Code"
-                      type="text"
+                      type="text" required
                     />
                   </div>
                   <div className="col-span-1">
@@ -208,7 +236,7 @@ export default function NewVendor() {
                   name="location_id"
                   label="Location "
                   required
-                  options={categoryOptions}
+                  options={locationOptionsList}
                 />
 
                 <SelectWrapper
@@ -231,7 +259,7 @@ export default function NewVendor() {
                   name="term_id"
                   label="Term "
                   required
-                  options={vendorTypeOptions}
+                  options={termsOptionsList ?? []}
                 />
                 <InputWrapper
                   control={vendorForm.control}
@@ -249,7 +277,7 @@ export default function NewVendor() {
                 </div>
                 <CustomFieldsWrapper
                   control={vendorForm.control}
-                  name="Custom"
+                  name="others"
                   label="Custom Fields"
                 />
               </div>
@@ -258,14 +286,14 @@ export default function NewVendor() {
               <div className="flex flex-col gap-1">
                 <InputWrapper
                   control={vendorForm.control}
-                  name="phone_1"
+                  name="phone_one"
                   label="Phone 1:"
                   type="text"
                   required
                 />
                 <InputWrapper
                   control={vendorForm.control}
-                  name="phone_2"
+                  name="phone_two"
                   label="Phone 2:"
                   type="text"
                 />
@@ -300,7 +328,7 @@ export default function NewVendor() {
           </Tabs>
 
           <div className="flex justify-between gap-x-4 my-8 w-full">
-            <Button className=" w-full">
+            <Button className=" w-full" disabled={isPending}>
               <GitPullRequestArrow className="mr-2" /> Save
             </Button>
           </div>

@@ -8,14 +8,8 @@ import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { GitPullRequestArrow } from "lucide-react";
 import { toast } from "sonner";
-import { categoryOptions, statusOptions } from "@/lib/equipment-schema";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { vendorTypeOptions } from "@/lib/option-list";
 import InputWrapper from "@/components/forms/wrappers/InputWrapper";
 import SelectWrapper from "@/components/forms/wrappers/SelectWrapper";
-import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
-import CustomFieldsWrapper from "@/components/forms/wrappers/CustomFieldsWrapper";
-import FileUploadWrapper from "@/components/forms/wrappers/FileUploadWrapper";
 import {
   Sheet,
   SheetContent,
@@ -24,7 +18,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
- import { ScrollArea } from "@/components/ui/scroll-area";
 import Fieldset from "@/components/customUI/fieldset";
 import { invoiceOptionsList, invoicePaymentMethodOptionsList } from "@/lib/Invoice/invoices-page-data";
 import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";

@@ -469,7 +469,7 @@ export default function RepairRequestFormButton({ variant }: triggerVariant) {
                                 />
                                 <CustomFieldsWrapper
                                   control={form.control}
-                                  name="custom"
+                                   name="others"
                                   label={"Custom"}
                                 />
                               </>

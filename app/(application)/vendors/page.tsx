@@ -11,23 +11,23 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { useSheet } from "@/lib/sheet-providers";
- 
+
 import VendorDataTable from "./components/vendorTable";
 import NewVendor from "@/components/forms/actualForms/new-vendor-form";
 import { useGetLocations, useGetVendorTypes } from "@/services/setups/vendor";
 
 export default function VendorsPage() {
-const { 
-data: vendorTypeOptions, 
-isLoading, 
-error: vendorTypesError
-} = useGetVendorTypes<Array<{ id: string, name: string }>>();
-    const { 
-    data: locationOptionsList, 
-    isLoading:locationOptionsListLoading, 
-    error: locationOptionsListError
-  } = useGetLocations<Array<{ id: string, name: string }>>();
-  console.log("vendorTypeOptions",vendorTypeOptions)
+  const {
+    data: vendorTypeOptions,
+    isLoading,
+    error: vendorTypesError,
+  } = useGetVendorTypes<Array<{ id: string; name: string }>>();
+  const {
+    data: locationOptionsList,
+    isLoading: locationOptionsListLoading,
+    error: locationOptionsListError,
+  } = useGetLocations<Array<{ id: string; name: string }>>();
+  console.log("vendorTypeOptions", vendorTypeOptions);
   const [filters, setFilters] = useState({
     equipment: "",
     location: "",
@@ -62,7 +62,7 @@ error: vendorTypesError
   };
 
   const handleSelectChange = (
-    key: "equipment" | "location" | "custom"| "search",
+    key: "equipment" | "location" | "custom" | "search",
     value: string
   ) => {
     if (value === "new") {
@@ -87,12 +87,11 @@ error: vendorTypesError
     buildURL({ ...filters, search: debouncedSearch });
   }, [debouncedSearch]);
 
-
   const createEquipment = () => {
     console.log("ïn the function");
     openSheet({
       title: "Create Vendor",
-      description: "Fill out the form below to create a new Vendor." ,
+      description: "Fill out the form below to create a new Vendor.",
       content: <NewVendor />,
     });
   };
@@ -106,7 +105,7 @@ error: vendorTypesError
 
       <div className="flex justify-between items-center space-x-4">
         {/* Equipment Filter */}
-        <div className="flex flex-row space-x-0.5"> 
+        <div className="flex flex-row space-x-0.5">
           {/* Location Filter */}
           <Select onValueChange={(val) => handleSelectChange("location", val)}>
             <SelectTrigger className="w-[180px]">
@@ -140,7 +139,7 @@ error: vendorTypesError
         </div>
       </div>
       <div>
-        <VendorDataTable/>
+        <VendorDataTable />
       </div>
     </div>
   );

@@ -8,7 +8,7 @@ import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { GitPullRequestArrow } from "lucide-react";
 import { toast } from "sonner";
-import { categoryOptions, statusOptions } from "@/lib/equipment-schema";
+import { categoryOptions } from "@/lib/equipment-schema";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { vendorTypeOptions } from "@/lib/option-list";
 import InputWrapper from "@/components/forms/wrappers/InputWrapper";
@@ -23,24 +23,29 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { VendorInterface, VendorSchema } from "@/lib/vendor-data";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useGetStatusOnes } from "@/services/setups/vendor";
+import { VendorFormValues,vendorSchema } from "@/components/forms/actualForms/new-vendor-form";
 
 export default function EditVendor({
   children,
   data,
 }: {
   children: React.ReactNode;
-  data: VendorInterface;
+  data: VendorFormValues;
 }) {
   const [open, setOpen] = useState(false);
- 
-  const vendorForm = useForm<z.infer<typeof VendorSchema>>({
-    resolver: zodResolver(VendorSchema),
+ const { 
+    data: statusOptions, 
+    isLoading:statusOptionsLoading, 
+    error: statusOptionsError
+  } = useGetStatusOnes<Array<{ id: string, name: string }>>();
+  const vendorForm = useForm<z.infer<typeof vendorSchema>>({
+    resolver: zodResolver(vendorSchema),
     defaultValues: { ...data },
   });
 
-  async function handleSubmit(data: z.infer<typeof VendorSchema>) {
+  async function handleSubmit(data: z.infer<typeof vendorSchema>) {
     console.log(data);
     // Here you would typically send the data to your API
     toast.success("Edited  successfully!");
@@ -187,7 +192,7 @@ export default function EditVendor({
                     </div>
                     <CustomFieldsWrapper
                       control={vendorForm.control}
-                      name="Custom"
+                       name="others"
                       label="Custom Fields"
                     />
                   </div>

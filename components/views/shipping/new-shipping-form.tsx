@@ -218,7 +218,7 @@ export default function NewShipToForm() {
                     </div>
                     <CustomFieldsWrapper
                       control={vendorForm.control}
-                      name="Custom"
+                       name="others"
                       label="Custom Fields"
                     />
                   </div>

@@ -263,7 +263,7 @@ export default function EditWorkOrderForm({
                           />
                           <CustomFieldsWrapper
                             control={workOrderForm.control}
-                            name="custom"
+                             name="others"
                             label={"Custom Fields"}
                           />
                         </>

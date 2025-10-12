@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { GitPullRequestArrow } from "lucide-react";
 import { toast } from "sonner";
 import InputWrapper from "@/components/forms/wrappers/InputWrapper";
-import { categoryOptions, statusOptions } from "@/lib/equipment-schema";
+import { categoryOptions } from "@/lib/equipment-schema";
 import SelectWrapper from "@/components/forms/wrappers/SelectWrapper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { locationOptionsList, vendorTypeOptions } from "@/lib/option-list";
@@ -38,6 +38,12 @@ export default function EditCustomer({
     defaultValues: { ...data },
   });
 
+  const { 
+    data: statusOptions, 
+    isLoading:statusOptionsLoading, 
+    error: statusOptionsError
+  } = useGetStatusOnes<Array<{ id: string, name: string }>>();
+  
   async function handleSubmit(data: CustomerInterface) {
     console.log(data);
     // Here you would typically send the data to your API

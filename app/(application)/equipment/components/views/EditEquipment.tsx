@@ -89,7 +89,7 @@ export const equipmentSchema = z.object({
   btu: z.string().optional(),
   inputVolts: z.string().optional(),
   installDate: z.string().optional(),
-  custom: z.any().optional(),
+  others: z.any().optional(),
 
   // Specifications
   color: z.string().optional(),
@@ -113,7 +113,7 @@ export const equipmentSchema = z.object({
   purchaseDate: z.string().optional(),
   meter: z.coerce.number().optional(),
   price: z.coerce.number().optional(),
-  purchaseOrderCustom: z.any().optional(),
+  purchaseOrderothers: z.any().optional(),
   note: z.string().optional(),
 
   // Depreciation
@@ -599,7 +599,7 @@ export default function EditEquipment({
                                   />
                                   <CustomFieldsWrapper
                                     control={form.control}
-                                    name="custom"
+                                     name="others"
                                     label={"Custom"}
                                   />
                                 </>

@@ -10,7 +10,7 @@ import { GitPullRequestArrow } from "lucide-react";
 import TextareaWrapper from "../wrappers/TextareaWrapper";
 import { toast } from "sonner";
 import InputWrapper from "../wrappers/InputWrapper";
-import { categoryOptions, statusOptions } from "@/lib/equipment-schema";
+import { categoryOptions } from "@/lib/equipment-schema";
 import SelectWrapper from "../wrappers/SelectWrapper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { locationOptionsList, vendorTypeOptions } from "@/lib/option-list";
@@ -19,9 +19,16 @@ import FormSubheader from "../ui/formSubheader";
 import { ComboboxFieldWrapper } from "../wrappers/ComboboxWrapper";
 import { discountTypesOptions } from "@/lib/Invoice/invoices-page-data";
 import { customerSchema,CustomerInterface} from "@/lib/Customer/customer-data";
+import { useGetStatusOnes } from "@/services/setups/vendor";
 
  
 export default function NewCustomer() {
+  const { 
+    data: statusOptions, 
+    isLoading:statusOptionsLoading, 
+    error: statusOptionsError
+  } = useGetStatusOnes<Array<{ id: string, name: string }>>();
+
   const CustomerForm = useForm<z.infer<typeof customerSchema>>({
     resolver: zodResolver(customerSchema),
     defaultValues: {},
@@ -136,7 +143,7 @@ export default function NewCustomer() {
                   control={CustomerForm.control}
                   name="location"
                   label="Location "
-                  required
+                  
                   options={categoryOptions}
                 />
 

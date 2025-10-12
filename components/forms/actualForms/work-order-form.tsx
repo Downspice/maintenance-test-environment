@@ -239,7 +239,7 @@ export function ActualWorkOrderForm() {
                   />
                   <CustomFieldsWrapper
                     control={workOrderForm.control}
-                    name="custom"
+                     name="others"
                     label={"Custom Fields"}
                   />
                 </>
@@ -635,7 +635,7 @@ export function EditActualWorkOrderForm({
                         />
                         <CustomFieldsWrapper
                           control={workOrderForm.control}
-                          name="custom"
+                           name="others"
                           label={"Custom Fields"}
                         />
                       </>
