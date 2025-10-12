@@ -307,7 +307,7 @@ export default function AssignEquipmentForm() {
                     <>
                       <ComboboxFieldWrapper
                         control={form.control}
-                        name="type"
+                        name="type_id"
                         label="Type"
                         options={typeOptions}
                       />
@@ -343,7 +343,7 @@ export default function AssignEquipmentForm() {
                     <>
                       <ComboboxFieldWrapper
                         control={form.control}
-                        name="type"
+                        name="type_id"
                         label="Type"
                         options={typeOptions}
                       />
@@ -385,7 +385,7 @@ export default function AssignEquipmentForm() {
                       />
                       <ComboboxFieldWrapper
                         control={form.control}
-                        name="type"
+                        name="type_id"
                         label="Type"
                         options={typeOptions}
                       />
@@ -759,7 +759,7 @@ export function EditAssignEquipmentForm({
                             <>
                               <ComboboxFieldWrapper
                                 control={form.control}
-                                name="type"
+                                name="type_id"
                                 label="Type"
                                 options={typeOptions}
                               />
@@ -795,7 +795,7 @@ export function EditAssignEquipmentForm({
                             <>
                               <ComboboxFieldWrapper
                                 control={form.control}
-                                name="type"
+                                name="type_id"
                                 label="Type"
                                 options={typeOptions}
                               />
@@ -837,7 +837,7 @@ export function EditAssignEquipmentForm({
                               />
                               <ComboboxFieldWrapper
                                 control={form.control}
-                                name="type"
+                                name="type_id"
                                 label="Type"
                                 options={typeOptions}
                               />

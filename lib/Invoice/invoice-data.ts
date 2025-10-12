@@ -24,9 +24,9 @@ export const InvoiceSchema = z
     location: z.string().optional(),
 
     // Totals Section
-    discountType: z.enum(["none", "percent", "amount"]),
-    discountpercent: z.string().optional(), // Conditionally required
-    discountAmount: z.string().optional(), // Conditionally required
+    discount_type: z.enum(["none", "percent", "amount"]),
+    discount_percent: z.string().optional(), // Conditionally required
+    discount_amount: z.string().optional(), // Conditionally required
 
     tax1: z.string().optional(),
     tax2: z.string().optional(),
@@ -71,17 +71,17 @@ export const InvoiceSchema = z
   })
   .refine(
     (data) => {
-      if (data.discountType === "percent") {
-        return !!data.discountpercent;
+      if (data.discount_type === "percent") {
+        return !!data.discount_percent;
       }
-      if (data.discountType === "amount") {
-        return !!data.discountAmount;
+      if (data.discount_type === "amount") {
+        return !!data.discount_amount;
       }
       return true;
     },
     {
       message: "Discount value is required",
-      path: ["discountpercent"], // Or dynamic logic here
+      path: ["discount_percent"], // Or dynamic logic here
     }
   );
 
@@ -101,9 +101,9 @@ export const InvoiceData: InvoiceInterface[] = [
     terms: "Net 14",
     poNumber: "PO-1001",
     location: "HQ",
-    discountType: "percent",
-    discountpercent: "5",
-    discountAmount: undefined,
+    discount_type: "percent",
+    discount_percent: "5",
+    discount_amount: undefined,
     tax1: "5",
     tax2: "0",
     total: "210.00",
@@ -149,9 +149,9 @@ export const InvoiceData: InvoiceInterface[] = [
     terms: "Due on receipt",
     poNumber: "PO-1002",
     location: "Branch A",
-    discountType: "amount",
-    discountpercent: undefined,
-    discountAmount: "20",
+    discount_type: "amount",
+    discount_percent: undefined,
+    discount_amount: "20",
     tax1: "8",
     tax2: "2",
     total: "300.00",
@@ -186,9 +186,9 @@ export const InvoiceData: InvoiceInterface[] = [
     terms: "Net 7",
     poNumber: "PO-1003",
     location: "Ghana Office",
-    discountType: "none",
-    discountpercent: undefined,
-    discountAmount: undefined,
+    discount_type: "none",
+    discount_percent: undefined,
+    discount_amount: undefined,
     tax1: "0",
     tax2: "0",
     total: "150.00",
@@ -225,9 +225,9 @@ export const InvoiceData: InvoiceInterface[] = [
     terms: "Net 30",
     poNumber: "PO-1004",
     location: "Texas Depot",
-    discountType: "percent",
-    discountpercent: "10",
-    discountAmount: undefined,
+    discount_type: "percent",
+    discount_percent: "10",
+    discount_amount: undefined,
     tax1: "6",
     tax2: "0",
     total: "180.00",
@@ -264,9 +264,9 @@ export const InvoiceData: InvoiceInterface[] = [
     terms: "Net 14",
     poNumber: "PO-1005",
     location: "West Coast HQ",
-    discountType: "none",
-    discountpercent: undefined,
-    discountAmount: undefined,
+    discount_type: "none",
+    discount_percent: undefined,
+    discount_amount: undefined,
     tax1: "5",
     tax2: "2",
     total: "275.00",
@@ -312,9 +312,9 @@ export const InvoiceData: InvoiceInterface[] = [
     terms: "Net 30",
     poNumber: "PO-1006",
     location: "East Hub",
-    discountType: "amount",
-    discountAmount: "15",
-    discountpercent: undefined,
+    discount_type: "amount",
+    discount_amount: "15",
+    discount_percent: undefined,
     tax1: "3",
     tax2: "0",
     total: "115.00",
@@ -343,9 +343,9 @@ export const InvoiceData: InvoiceInterface[] = [
     terms: "Net 10",
     poNumber: "PO-1007",
     location: "Northwest Hub",
-    discountType: "none",
-    discountAmount: undefined,
-    discountpercent: undefined,
+    discount_type: "none",
+    discount_amount: undefined,
+    discount_percent: undefined,
     tax1: "4",
     tax2: "1",
     total: "320.00",
@@ -388,9 +388,9 @@ export const InvoiceData: InvoiceInterface[] = [
     terms: "Net 7",
     poNumber: "PO-1008",
     location: "Ghana Branch",
-    discountType: "percent",
-    discountpercent: "7",
-    discountAmount: undefined,
+    discount_type: "percent",
+    discount_percent: "7",
+    discount_amount: undefined,
     tax1: "6",
     tax2: "0",
     total: "200.00",
@@ -419,9 +419,9 @@ export const InvoiceData: InvoiceInterface[] = [
     terms: "Net 15",
     poNumber: "PO-1009",
     location: "West Coast HQ",
-    discountType: "none",
-    discountAmount: undefined,
-    discountpercent: undefined,
+    discount_type: "none",
+    discount_amount: undefined,
+    discount_percent: undefined,
     tax1: "9",
     tax2: "1",
     total: "480.00",
@@ -450,9 +450,9 @@ export const InvoiceData: InvoiceInterface[] = [
     terms: "Net 14",
     poNumber: "PO-1010",
     location: "Nigeria Office",
-    discountType: "amount",
-    discountAmount: "10",
-    discountpercent: undefined,
+    discount_type: "amount",
+    discount_amount: "10",
+    discount_percent: undefined,
     tax1: "5",
     tax2: "0",
     total: "140.00",

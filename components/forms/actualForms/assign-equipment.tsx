@@ -229,7 +229,7 @@ export default function EquipmentAssignment({ variant }: triggerVariant) {
                       <ComboboxFieldWrapper
                         className="cols-span-1"
                         control={form.control}
-                        name="type"
+                        name="type_id"
                         label="Type"
                         options={vendorTypeOptions}
                       />

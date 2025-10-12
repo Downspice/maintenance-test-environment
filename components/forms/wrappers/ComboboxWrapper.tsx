@@ -28,8 +28,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 
 export interface ComboboxOption {
-  value: string;
-  label: string;
+  id: string;
+  name: string;
 }
 
 interface BaseFieldProps {
@@ -71,8 +71,8 @@ export function ComboboxFieldWrapper({
     if (!search) return options;
     return options.filter(
       (option) =>
-        option.label.toLowerCase().includes(search.toLowerCase()) ||
-        option.value.toLowerCase().includes(search.toLowerCase())
+        option.name.toLowerCase().includes(search.toLowerCase()) ||
+        option.id.toLowerCase().includes(search.toLowerCase())
     );
   }, [options, search]);
 
@@ -82,9 +82,9 @@ export function ComboboxFieldWrapper({
       name={name}
       render={({ field }) => {
         const handleSelect = (value: string) => {
-          const option = options.find((opt) => opt.value === value);
+          const option = options.find((opt) => opt.id === value);
           if (option) {
-            field.onChange(option.value);
+            field.onChange(option.id);
             setOpen(false);
             setSearch("");
           }
@@ -131,7 +131,7 @@ export function ComboboxFieldWrapper({
                       )}
                     >
                       {field.value
-                        ? options.find((o) => o.value === field.value)?.label
+                        ? options.find((o) => o.id === field.value)?.name
                         : placeholder || `Select ${label.toLowerCase()}`}
                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
@@ -153,19 +153,19 @@ export function ComboboxFieldWrapper({
                       <CommandGroup>
                         {filteredOptions.map((option) => (
                           <CommandItem
-                            key={option.value}
-                            value={option.label}
-                            onSelect={() => handleSelect(option.value)}
+                            key={option.id}
+                            value={option.name}
+                            onSelect={() => handleSelect(option.id)}
                           >
                             <Check
                               className={cn(
                                 "mr-2 h-4 w-4",
-                                option.value === field.value
+                                option.id === field.value
                                   ? "opacity-100"
                                   : "opacity-0"
                               )}
                             />
-                            {option.label}
+                            {option.name}
                           </CommandItem>
                         ))}
                       </CommandGroup>
@@ -214,8 +214,8 @@ export function MultiComboboxWrapper({
     if (!search) return options;
     return options.filter(
       (option) =>
-        option.label.toLowerCase().includes(search.toLowerCase()) ||
-        option.value.toLowerCase().includes(search.toLowerCase())
+        option.name.toLowerCase().includes(search.toLowerCase()) ||
+        option.id.toLowerCase().includes(search.toLowerCase())
     );
   }, [options, search]);
 
@@ -226,7 +226,7 @@ export function MultiComboboxWrapper({
       render={({ field }) => {
         const selectedValues = field.value || [];
         const selectedOptions = options.filter((o) =>
-          selectedValues.includes(o.value)
+          selectedValues.includes(o.id)
         );
 
         const handleSelect = (value: string) => {
@@ -281,14 +281,14 @@ export function MultiComboboxWrapper({
                 <div className="flex flex-wrap gap-2 p-2 border rounded-md bg-muted/50">
                   {selectedOptions.map((option) => (
                     <Badge
-                      key={option.value}
+                      key={option.id}
                       variant="secondary"
                       className="text-xs"
                     >
-                      {option.label}
+                      {option.name}
                       <button
                         type="button"
-                        onClick={() => handleRemove(option.value)}
+                        onClick={() => handleRemove(option.id)}
                         className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
                         disabled={disabled}
                       >
@@ -343,7 +343,7 @@ export function MultiComboboxWrapper({
                       <CommandGroup>
                         {filteredOptions.map((option) => {
                           const isSelected = selectedValues.includes(
-                            option.value
+                            option.id
                           );
                           const isDisabled =
                             !isSelected &&
@@ -351,9 +351,9 @@ export function MultiComboboxWrapper({
                             selectedValues.length >= maxSelections;
                           return (
                             <CommandItem
-                              key={option.value}
-                              value={option.label}
-                              onSelect={() => handleSelect(option.value)}
+                              key={option.id}
+                              value={option.name}
+                              onSelect={() => handleSelect(option.id)}
                               className={cn(
                                 isDisabled && "opacity-50 cursor-not-allowed"
                               )}
@@ -364,7 +364,7 @@ export function MultiComboboxWrapper({
                                   isSelected ? "opacity-100" : "opacity-0"
                                 )}
                               />
-                              {option.label}
+                              {option.name}
                               {isDisabled && (
                                 <span className="ml-auto text-xs text-muted-foreground">
                                   Max reached

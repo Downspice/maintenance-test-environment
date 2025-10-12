@@ -12,11 +12,11 @@ import InputWrapper from "@/components/forms/wrappers/InputWrapper";
 import { categoryOptions } from "@/lib/equipment-schema";
 import SelectWrapper from "@/components/forms/wrappers/SelectWrapper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { locationOptionsList, vendorTypeOptions } from "@/lib/option-list";
+import {  vendorTypeOptions } from "@/lib/option-list";
 import FileUploadWrapper from "@/components/forms/wrappers/FileUploadWrapper";
 import FormSubheader from "@/components/forms/ui/formSubheader";
 import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
-import { discountTypesOptions } from "@/lib/Invoice/invoices-page-data";
+import { discount_typesOptions } from "@/lib/Invoice/invoices-page-data";
 import {
   customerSchema,
   CustomerInterface,
@@ -24,6 +24,7 @@ import {
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
+import { useGetLocations, useGetStatusOnes } from "@/services/setups/vendor";
 
 export default function EditCustomer({
   children,
@@ -38,6 +39,11 @@ export default function EditCustomer({
     defaultValues: { ...data },
   });
 
+    const {
+      data: locationOptionsList,
+      isLoading: locationOptionsListLoading,
+      error: locationOptionsListError,
+    } = useGetLocations<Array<{ id: string; name: string }>>();
   const { 
     data: statusOptions, 
     isLoading:statusOptionsLoading, 
@@ -50,7 +56,7 @@ export default function EditCustomer({
     toast.success("Work Order submitted successfully!");
   }
 
-  const watchDiscountType = CustomerForm.watch("discountType");
+  const watchdiscount_type = CustomerForm.watch("discount_type");
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -161,10 +167,10 @@ export default function EditCustomer({
                       </div>
                       <SelectWrapper
                         control={CustomerForm.control}
-                        name="location"
-                        label="Location "
+                        name="location_id"
+                        label="Location"
                         required
-                        options={categoryOptions}
+                        options={locationOptionsList??[]}
                       />
 
                       <SelectWrapper
@@ -172,12 +178,12 @@ export default function EditCustomer({
                         name="status"
                         label="Status "
                         required
-                        options={statusOptions}
+                        options={statusOptions??[]}
                       />
 
                       <SelectWrapper
                         control={CustomerForm.control}
-                        name="type"
+                        name="type_id"
                         label="Type "
                         required
                         options={vendorTypeOptions}
@@ -187,7 +193,7 @@ export default function EditCustomer({
                         <div className="col-span-1">
                           <InputWrapper
                             control={CustomerForm.control}
-                            name="phone_1"
+                            name="phone_one"
                             label="Phone 1:"
                             type="text"
                             required
@@ -197,7 +203,7 @@ export default function EditCustomer({
                         <div className="col-span-1">
                           <InputWrapper
                             control={CustomerForm.control}
-                            name="phone_2"
+                            name="phone_two"
                             label="Phone 2:"
                             type="text"
                             value={""}
@@ -246,7 +252,7 @@ export default function EditCustomer({
                         <div className="col-span-1">
                           <InputWrapper
                             control={CustomerForm.control}
-                            name="termDays"
+                            name="term_days"
                             label="Term Days"
                             type="number"
                             value={""}
@@ -255,23 +261,23 @@ export default function EditCustomer({
                         <div className="col-span-1">
                           <ComboboxFieldWrapper
                             control={CustomerForm.control}
-                            name="discountType"
+                            name="discount_type"
                             label="Discount Type"
-                            options={discountTypesOptions}
+                            options={discount_typesOptions}
                           />
-                          {watchDiscountType === "percent" && (
+                          {watchdiscount_type === "percent" && (
                             <InputWrapper
                               control={CustomerForm.control}
-                              name={"discountpercent"}
+                              name={"discount_percent"}
                               label={"Discount"}
                               value={""}
                               type="text"
                             />
                           )}
-                          {watchDiscountType === "amount" && (
+                          {watchdiscount_type === "amount" && (
                             <InputWrapper
                               control={CustomerForm.control}
-                              name={"discountAmount"}
+                              name={"discount_amount"}
                               label={"Discount"}
                               value={""}
                               type="text"
@@ -290,7 +296,7 @@ export default function EditCustomer({
                         <div className="col-span-1">
                           <SelectWrapper
                             control={CustomerForm.control}
-                            name="type"
+                            name="type_id"
                             label="Type "
                             required
                             options={vendorTypeOptions}
@@ -299,7 +305,7 @@ export default function EditCustomer({
                         <div className="col-span-1">
                           <SelectWrapper
                             control={CustomerForm.control}
-                            name="location"
+                            name="location_id"
                             label="Location "
                             required
                             options={locationOptionsList}
@@ -351,7 +357,7 @@ export default function EditCustomer({
                         <div className="col-span-1">
                           <InputWrapper
                             control={CustomerForm.control}
-                            name="phone_1"
+                            name="phone_one"
                             label="Phone"
                             type="text"
                             required

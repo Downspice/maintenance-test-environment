@@ -278,7 +278,7 @@ export default function EditEmployee({
                       <div className="col-span-1">
                         <SelectWrapper
                           control={employeeForm.control}
-                          name="type"
+                          name="type_id"
                           label="Type "
                           required
                           options={employeeTypeOptions}
@@ -306,7 +306,7 @@ export default function EditEmployee({
                       <div className="col-span-1">
                         <SelectWrapper
                           control={employeeForm.control}
-                          name="location"
+                          name="location_id"
                           label="Location "
                           required
                           options={locationOptionsList}

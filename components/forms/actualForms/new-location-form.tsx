@@ -53,7 +53,7 @@ export default function NewLocation() {
               <InputWrapper
                 className="col-span-1"
                 control={vendorForm.control}
-                name="location"
+                name="location_id"
                 label="Location"
                 type="text"
                 value={""}

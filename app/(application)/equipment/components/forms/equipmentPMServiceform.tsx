@@ -212,7 +212,7 @@ export default function EquipmentPMServiceForm() {
         />
         <ComboboxFieldWrapper
           control={form.control}
-          name="type"
+          name="type_id"
           label="Type"
           options={typeOptions}
         />
@@ -729,7 +729,7 @@ export function UpdateEquipmentPMServiceForm({
         />
         <ComboboxFieldWrapper
           control={form.control}
-          name="type"
+          name="type_id"
           label="Type"
           options={typeOptions}
         />

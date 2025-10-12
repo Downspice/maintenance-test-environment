@@ -15,8 +15,14 @@ import NotCompleteMessage from "../workInprogress/working";
 import CustomerDataTable from "./table/customerDataTable";
  
 import NewCustomer from "@/components/forms/actualForms/new-customer-form";
+import { useGetLocations } from "@/services/setups/vendor";
 
 export default function EmployeesPage() {
+   const {
+      data: locationOptionsList,
+      isLoading: locationOptionsListLoading,
+      error: locationOptionsListError,
+    } = useGetLocations<Array<{ id: string; name: string }>>();
   const [filters, setFilters] = useState({
     equipment: "",
     location: "",
@@ -102,7 +108,7 @@ export default function EmployeesPage() {
               <SelectValue placeholder="All Warehouses" />
             </SelectTrigger>
             <SelectContent>
-              {locationOptionsList.map((item) => (
+              {locationOptionsList?.map((item) => (
                 <SelectItem value={item.id} key={item.id}>
                   {item.name}
                 </SelectItem>

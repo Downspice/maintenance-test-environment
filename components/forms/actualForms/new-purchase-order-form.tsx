@@ -40,7 +40,7 @@ import {
 } from "@/components/ui/dialog";
 import SelectWrapper from "../wrappers/SelectWrapper";
 import {
-  discountTypesOptions,
+  discount_typesOptions,
   invoiceOptionsList,
   itemTypeOptionsList,
   maintenanceItems,
@@ -169,7 +169,7 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
     });
   }
 
-  const watchDiscountType = form.watch("discountType");
+  const watchdiscount_type = form.watch("discount_type");
   const watchStatus = form.watch("status");
 
   useEffect(() => {
@@ -535,7 +535,7 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
                     />
                     <ComboboxFieldWrapper
                       control={form.control}
-                      name="location"
+                      name="location_id"
                       label="Location Filter"
                       options={locationOptionsList}
                     />
@@ -561,24 +561,24 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
 
                     <ComboboxFieldWrapper
                       control={form.control}
-                      name="discountType"
+                      name="discount_type"
                       label="Discount Type"
-                      options={discountTypesOptions}
+                      options={discount_typesOptions}
                     />
 
-                    {watchDiscountType === "percent" && (
+                    {watchdiscount_type === "percent" && (
                       <InputWrapper
                         control={form.control}
-                        name={"discountpercent"}
+                        name={"discount_percent"}
                         label={"Discount"}
                         value={""}
                         type="text"
                       />
                     )}
-                    {watchDiscountType === "amount" && (
+                    {watchdiscount_type === "amount" && (
                       <InputWrapper
                         control={form.control}
-                        name={"discountAmount"}
+                        name={"discount_amount"}
                         label={"Discount"}
                         value={""}
                         type="text"

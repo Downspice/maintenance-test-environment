@@ -177,7 +177,7 @@ export default function EditScheduledReportForm({
                   />
                   <ComboboxFieldWrapper
                     control={form.control}
-                    name="location"
+                    name="location_id"
                     label="Location Filter"
                     options={locationOptionsList}
                   />

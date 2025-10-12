@@ -13,41 +13,91 @@ import InputWrapper from "../wrappers/InputWrapper";
 import { categoryOptions } from "@/lib/equipment-schema";
 import SelectWrapper from "../wrappers/SelectWrapper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { locationOptionsList, vendorTypeOptions } from "@/lib/option-list";
 import FileUploadWrapper from "../wrappers/FileUploadWrapper";
 import FormSubheader from "../ui/formSubheader";
 import { ComboboxFieldWrapper } from "../wrappers/ComboboxWrapper";
-import { discountTypesOptions } from "@/lib/Invoice/invoices-page-data";
+import { discount_typesOptions } from "@/lib/Invoice/invoices-page-data";
 import { customerSchema,CustomerInterface} from "@/lib/Customer/customer-data";
-import { useGetStatusOnes } from "@/services/setups/vendor";
+import { useAddCustomer, useGetCustomerDiscounts, useGetLocations, useGetPurchaseOrderTerms, useGetStatusOnes, useGetVendorTypes } from "@/services/setups/vendor";
 
  
 export default function NewCustomer() {
+    const {
+      data: vendorTypeOptions,
+      isLoading,
+      error: vendorTypesError,
+    } = useGetVendorTypes<Array<{ id: string; name: string }>>();
+  const { 
+    data: discount_typesOptions, 
+    isLoading:discount_typesOptionsLoading, 
+    error: discount_typesOptionsError
+  } = useGetCustomerDiscounts<Array<{ id: string, name: string }>>();
+    const {
+      data: locationOptionsList,
+      isLoading: locationOptionsListLoading,
+      error: locationOptionsListError,
+    } = useGetLocations<Array<{ id: string; name: string }>>();
   const { 
     data: statusOptions, 
     isLoading:statusOptionsLoading, 
     error: statusOptionsError
   } = useGetStatusOnes<Array<{ id: string, name: string }>>();
-
+const {
+    data: termsOptionsList,
+    isLoading: termsOptionsListLoading,
+    error: termsOptionsListError,
+  } = useGetPurchaseOrderTerms<Array<{ id: string; name: string }>>();
   const CustomerForm = useForm<z.infer<typeof customerSchema>>({
     resolver: zodResolver(customerSchema),
     defaultValues: {},
   });
 
-  async function handleSubmit(data: CustomerInterface) {
-    console.log(data);
-    // Here you would typically send the data to your API
+ 
 
-    toast.success("Work Order submitted successfully!");
-  }
+  const watchdiscount_type = CustomerForm.watch("discount_type");
 
-  const watchDiscountType = CustomerForm.watch("discountType");
+    const { 
+      mutateAsync, 
+      isPending, 
+    } = useAddCustomer(); 
+  
+    // 3. Define the mutation handler that receives validated data
+    const handleSubmit = async (data: CustomerInterface) => {
+      console.log("Submitting data:", data);
+      
+      // try {
+        // 4. AWAIT the mutateAsync call, passing the validated 'data' object
+        const res = await mutateAsync(data); 
+  
+        // 5. Handle success and feedback
+        // Assuming 'res' contains a success message or the created object
+        toast.success(res?.messagee); 
+        CustomerForm.reset(); // Reset form state on success
+  
+        // In a real application, you would likely close the sheet/modal here
+  
+      // } catch (error: any) {
+      //   // 6. Handle error and feedback using the try/catch block
+      //   console.error("Mutation failed:", error);
+      //   const errorMessage = error?.response?.data?.message || 'Failed to create vendor.';
+      //   toast.error(errorMessage);
+      // }
+    };
 
   return (
     <div>
       <Form {...CustomerForm}>
         <form
-          onSubmit={CustomerForm.handleSubmit((data) => handleSubmit(data))}
+        onSubmit={CustomerForm.handleSubmit(handleSubmit, (errors) => {
+                    const firstErrorField = Object.values(errors)[0];
+                    const message = firstErrorField?.message;
+        
+                    if (message) {
+                      toast.error(message);
+                    } else {
+                      toast.error("Please check the form for errors.");
+                    }
+                  })} 
         >
           <Tabs defaultValue="Billing" className="w-full">
             <TabsList>
@@ -61,46 +111,30 @@ export default function NewCustomer() {
                 <FormSubheader header="Name/Address" />
                 <InputWrapper
                   control={CustomerForm.control}
-                  name="name"
-                  label="Name"
+                  name="company_name"
+                  label="Company"
                   type="text"
                   required
                   value={""}
                 />
                 <InputWrapper
                   control={CustomerForm.control}
-                  name="number"
-                  label="Vendor #"
+                  name="contact"
+                  label="Contact"
                   type="text"
                   value={""}
                 />
-
+ 
                 <InputWrapper
                   control={CustomerForm.control}
-                  name="ShippingNumber"
-                  label="Shipping"
-                  type="text"
-                  value={""}
-                />
-
-                <InputWrapper
-                  control={CustomerForm.control}
-                  name="street1"
+                  name="address"
                   label="Address"
                   type="text"
                   value={""}
                 />
 
-                <InputWrapper
-                  className="pt-0"
-                  control={CustomerForm.control}
-                  name="street2"
-                  placeholder=" "
-                  label=""
-                  type="text"
-                  value={""}
-                />
-                <div className="grid grid-cols-2 gap-4">
+               
+                <div className="grid grid-cols-2 gap-1">
                   <div className="col-span-1">
                     <InputWrapper
                       control={CustomerForm.control}
@@ -138,36 +172,13 @@ export default function NewCustomer() {
                     />
                   </div>
                   <div className="col-span-1"></div>
-                </div>
-                <SelectWrapper
-                  control={CustomerForm.control}
-                  name="location"
-                  label="Location "
-                  
-                  options={categoryOptions}
-                />
-
-                <SelectWrapper
-                  control={CustomerForm.control}
-                  name="status"
-                  label="Status "
-                  required
-                  options={statusOptions}
-                />
-
-                <SelectWrapper
-                  control={CustomerForm.control}
-                  name="type"
-                  label="Type "
-                  required
-                  options={vendorTypeOptions}
-                />
+                </div> 
                 <FormSubheader header="Contact" />
                 <div className="grid grid-cols-2 gap-1">
                   <div className="col-span-1">
                     <InputWrapper
                       control={CustomerForm.control}
-                      name="phone_1"
+                      name="phone_one"
                       label="Phone 1:"
                       type="text"
                       required
@@ -177,7 +188,7 @@ export default function NewCustomer() {
                   <div className="col-span-1">
                     <InputWrapper
                       control={CustomerForm.control}
-                      name="phone_2"
+                      name="phone_two"
                       label="Phone 2:"
                       type="text"
                       value={""}
@@ -217,16 +228,16 @@ export default function NewCustomer() {
                   <div className="col-span-1">
                     <SelectWrapper
                       control={CustomerForm.control}
-                      name="term"
+                      name="term_id"
                       label="Term "
                       required
-                      options={vendorTypeOptions}
+                      options={termsOptionsList ??[]}
                     />
                   </div>
                   <div className="col-span-1">
                     <InputWrapper
                       control={CustomerForm.control}
-                      name="termDays"
+                      name="term_days"
                       label="Term Days"
                       type="number"
                       value={""}
@@ -235,23 +246,23 @@ export default function NewCustomer() {
                   <div className="col-span-1">
                     <ComboboxFieldWrapper
                       control={CustomerForm.control}
-                      name="discountType"
+                      name="discount_type"
                       label="Discount Type"
-                      options={discountTypesOptions}
+                      options={discount_typesOptions??[]}
                     />
-                    {watchDiscountType === "percent" && (
+                    {watchdiscount_type === "1fcd0622-ebfa-477a-ba12-21cfcb070a62" && (
                       <InputWrapper
                         control={CustomerForm.control}
-                        name={"discountpercent"}
+                        name={"discount_percent"}
                         label={"Discount"}
                         value={""}
                         type="text"
                       />
                     )}
-                    {watchDiscountType === "amount" && (
+                    {watchdiscount_type === "af4850a7-a669-4898-9adc-83a7c27132b9" && (
                       <InputWrapper
                         control={CustomerForm.control}
-                        name={"discountAmount"}
+                        name={"discount_amount"}
                         label={"Discount"}
                         value={""}
                         type="text"
@@ -270,19 +281,19 @@ export default function NewCustomer() {
                   <div className="col-span-1">
                     <SelectWrapper
                       control={CustomerForm.control}
-                      name="type"
+                      name="type_id"
                       label="Type "
                       required
-                      options={vendorTypeOptions}
+                      options={vendorTypeOptions??[]}
                     />
                   </div>
                   <div className="col-span-1">
                     <SelectWrapper
                       control={CustomerForm.control}
-                      name="location"
+                      name="location_id"
                       label="Location "
                       required
-                      options={locationOptionsList}
+                      options={locationOptionsList??[]}
                     />
                   </div>
                 </div>
@@ -294,7 +305,7 @@ export default function NewCustomer() {
 
                 <InputWrapper
                   control={CustomerForm.control}
-                  name="name"
+                  name="shipping.company_name"
                   label="Name"
                   type="text"
                   required
@@ -303,7 +314,7 @@ export default function NewCustomer() {
 
                 <InputWrapper
                   control={CustomerForm.control}
-                  name="contact"
+                  name="shipping.contact"
                   label="Contact"
                   type="text"
                   required
@@ -312,26 +323,16 @@ export default function NewCustomer() {
 
                 <InputWrapper
                   control={CustomerForm.control}
-                  name="street1"
+                  name="shipping.address"
                   label="Address"
                   type="text"
                   value={""}
-                />
-
-                <InputWrapper
-                  className="pt-0"
-                  control={CustomerForm.control}
-                  name="street2"
-                  placeholder=" "
-                  label=""
-                  type="text"
-                  value={""}
-                />
+                /> 
                 <div className="grid grid-cols-2 gap-1">
                   <div className="col-span-1">
                     <InputWrapper
                       control={CustomerForm.control}
-                      name="phone_1"
+                      name="shipping.phone_one"
                       label="Phone"
                       type="text"
                       required
@@ -341,7 +342,7 @@ export default function NewCustomer() {
                   <div className="col-span-1">
                     <InputWrapper
                       control={CustomerForm.control}
-                      name="fax"
+                      name="shipping.fax"
                       label="Fax:"
                       type="text"
                       value={""}
@@ -350,7 +351,7 @@ export default function NewCustomer() {
                   <div className="col-span-1">
                     <InputWrapper
                       control={CustomerForm.control}
-                      name="email"
+                      name="shipping.email"
                       label="Email:"
                       type="text"
                       value={""}
@@ -362,7 +363,7 @@ export default function NewCustomer() {
                   <div className="col-span-1">
                     <InputWrapper
                       control={CustomerForm.control}
-                      name="city"
+                      name="shipping.city"
                       label="City"
                       type="text"
                       value={""}
@@ -371,7 +372,7 @@ export default function NewCustomer() {
                   <div className="col-span-1">
                     <InputWrapper
                       control={CustomerForm.control}
-                      name="state"
+                      name="shipping.state"
                       label="State /Province"
                       type="text"
                       value={""}
@@ -380,7 +381,7 @@ export default function NewCustomer() {
                   <div className="col-span-1">
                     <InputWrapper
                       control={CustomerForm.control}
-                      name="postal_code"
+                      name="shipping.postal_code"
                       label="Postal Code"
                       type="text"
                       value={""}
@@ -389,7 +390,7 @@ export default function NewCustomer() {
                   <div className="col-span-1">
                     <InputWrapper
                       control={CustomerForm.control}
-                      name="country"
+                      name="shipping.country"
                       label="Country"
                       type="text"
                       value={""}

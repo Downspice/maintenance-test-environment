@@ -14,7 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import InputWrapper from "@/components/forms/wrappers/InputWrapper";
 import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
 import {
-  discountTypesOptions,
+  discount_typesOptions,
   invoiceOptionsList,
   invoicePaymentMethodOptionsList,
 } from "@/lib/Invoice/invoices-page-data";
@@ -183,7 +183,7 @@ export default function EditInvoice({
     });
   }
 
-  const watchDiscountType = form.watch("discountType");
+  const watchdiscount_type = form.watch("discount_type");
 
   //paYMENT STUFF
   const PaymentsForm = useForm<PaymentFormValues>({
@@ -688,7 +688,7 @@ export default function EditInvoice({
                             />
                             <ComboboxFieldWrapper
                               control={form.control}
-                              name="location"
+                              name="location_id"
                               label="Location Filter"
                               options={locationOptionsList}
                             />
@@ -706,24 +706,24 @@ export default function EditInvoice({
                           <>
                             <ComboboxFieldWrapper
                               control={form.control}
-                              name="discountType"
+                              name="discount_type"
                               label="Discount Type"
-                              options={discountTypesOptions}
+                              options={discount_typesOptions}
                             />
 
-                            {watchDiscountType === "percent" && (
+                            {watchdiscount_type === "percent" && (
                               <InputWrapper
                                 control={form.control}
-                                name={"discountpercent"}
+                                name={"discount_percent"}
                                 label={"Discount"}
                                 value={""}
                                 type="text"
                               />
                             )}
-                            {watchDiscountType === "amount" && (
+                            {watchdiscount_type === "amount" && (
                               <InputWrapper
                                 control={form.control}
-                                name={"discountAmount"}
+                                name={"discount_amount"}
                                 label={"Discount"}
                                 value={""}
                                 type="text"

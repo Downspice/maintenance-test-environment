@@ -128,7 +128,7 @@ export default function ReceivePurchaseOrder({
     });
   }
 
-  const watchDiscountType = form.watch("discountType");
+  const watchdiscount_type = form.watch("discount_type");
   const watchStatus = form.watch("status");
 
   useEffect(() => {

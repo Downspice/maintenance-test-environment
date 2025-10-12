@@ -183,7 +183,7 @@ const laborForm = useForm<LaborAssociationFormValues>({
           >
             <RadioGroupWrapper
               control={laborForm.control}
-              name="type"
+              name="type_id"
               label="Type"
               options={[
                 { value: "preventive", label: "Preventive" },
@@ -317,7 +317,7 @@ const laborForm = useForm<LaborAssociationFormValues>({
 
             <RadioGroupWrapper
               control={partForm.control}
-              name="type"
+              name="type_id"
               label="Type"
               options={[
                 { value: "preventive", label: "Preventive" },

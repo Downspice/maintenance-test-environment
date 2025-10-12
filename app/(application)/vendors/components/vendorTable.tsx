@@ -15,47 +15,56 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 import React from "react";
-import { VendorData, VendorInterface } from "@/lib/vendor-data";
+import {  VendorInterface } from "@/lib/vendor-data";
 import ViewVendor from "../view/viewDetailsSheet";
 import EditVendor from "../view/editVendorSheet";
 import { matchesSearchAllFields } from "@/lib/utils";
-
-const getAllEmployees = (employees: VendorInterface[]): VendorInterface[] => {
-  const result: VendorInterface[] = [];
-  const traverse = (emps: VendorInterface[]) => {
-    emps.forEach((emp) => {
-      result.push(emp);
-      //   if (emp.tasks) {
-      //     console.log(emp.tasks);
-
-      //     // traverse(emp.tasks);
-      //   }
-    });
-  };
-  traverse(employees);
-  return result;
-};
-
-const flatEmployees = getAllEmployees(VendorData);
-const name = [...new Set(flatEmployees.map((emp) => emp.name))];
-const type = [...new Set(flatEmployees.map((emp) => emp.type))];
-const contact = [...new Set(flatEmployees.map((emp) => emp.contact))];
-const address1 = [...new Set(flatEmployees.map((emp) => emp.address1))];
-const city = [...new Set(flatEmployees.map((emp) => emp.city))];
-const state_prov = [...new Set(flatEmployees.map((emp) => emp.state_prov))];
-const postal_code = [...new Set(flatEmployees.map((emp) => emp.postal_code))];
-const email = [...new Set(flatEmployees.map((emp) => emp.email))];
+import { useGetVendors } from "@/services/setups/vendor";
 
 export default function VendorDataTable() {
+  const {
+    data: VendorData,
+    isLoading,
+    error: vendorTypesError,
+  } = useGetVendors();
+
+  return VendorData ? (
+    <VendorDataTable VendorData={VendorData} />
+  ) : (
+    <div>is loading.......</div>
+  );
+}
+export function VendorTableLoader({ VendorData }) {
   const [isServerMode, setIsServerMode] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(isLoading);
   const [currentData, setCurrentData] = useState(VendorData.slice(0, 5)); // Show first 5 for demo
   const [paginationInfo, setPaginationInfo] = useState({
     pageIndex: 0,
     pageSize: 5,
-    totalPages: Math.ceil(VendorData.length / 5),
-    totalRows: VendorData.length,
+    totalPages: Math.ceil(VendorData?.length / 5),
+    totalRows: VendorData?.length,
   });
+
+  const getAllEmployees = (employees: VendorInterface[]): VendorInterface[] => {
+    const result: VendorInterface[] = [];
+    const traverse = (emps: VendorInterface[]) => {
+      emps.forEach((emp) => {
+        result.push(emp);
+      });
+    };
+    traverse(employees);
+    return result;
+  };
+
+  const flatEmployees = getAllEmployees(VendorData);
+  const name = [...new Set(flatEmployees.map((emp) => emp.name))];
+  const type = [...new Set(flatEmployees.map((emp) => emp.type))];
+  const contact = [...new Set(flatEmployees.map((emp) => emp.contact))];
+  const address1 = [...new Set(flatEmployees.map((emp) => emp.address1))];
+  const city = [...new Set(flatEmployees.map((emp) => emp.city))];
+  const state_prov = [...new Set(flatEmployees.map((emp) => emp.state_prov))];
+  const postal_code = [...new Set(flatEmployees.map((emp) => emp.postal_code))];
+  const email = [...new Set(flatEmployees.map((emp) => emp.email))];
 
   const handleRowClick = (row: any) => {
     console.log("Row clicked:", row.original);
@@ -123,7 +132,7 @@ export default function VendorDataTable() {
   const handlePaginationChange = (action: "next" | "previous" | number) => {
     console.log(`🔄 Server Pagination Action: ${action}`);
 
-    setIsLoading(true);
+    // setIsLoading(true);
 
     // Simulate server delay
     setTimeout(() => {
@@ -151,7 +160,7 @@ export default function VendorDataTable() {
         pageIndex: newPageIndex,
       }));
 
-      setIsLoading(false);
+      // setIsLoading(false);
     }, 1000); // 1 second delay to simulate server response
   };
 
@@ -160,7 +169,7 @@ export default function VendorDataTable() {
     (searchValue: string) => {
       console.log(`🔍 Server Search: "${searchValue}"`);
 
-      setIsLoading(true);
+      // setIsLoading(true);
 
       // Simulate server delay
       setTimeout(() => {
@@ -182,7 +191,7 @@ export default function VendorDataTable() {
           totalRows: filteredData.length,
         }));
 
-        setIsLoading(false);
+        // setIsLoading(false);
       }, 800); // 800ms delay to simulate server response
     },
     [paginationInfo.pageSize]
@@ -393,7 +402,17 @@ export default function VendorDataTable() {
       <AdvancedDataTable
         columns={columns}
         data={isServerMode ? currentData : VendorData}
-        defaultVisibleColumns={["name", "type", "contact", "address1", "city", "state_prov", "postal_code","email", "actions"]}
+        defaultVisibleColumns={[
+          "name",
+          "type",
+          "contact",
+          "address1",
+          "city",
+          "state_prov",
+          "postal_code",
+          "email",
+          "actions",
+        ]}
         onRowClick={handleRowClick}
         onCellClick={handleCellClick}
         onPrintSelected={handlePrintSelected}

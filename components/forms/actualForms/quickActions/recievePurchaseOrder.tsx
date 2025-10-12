@@ -126,7 +126,7 @@ export default function QuickActionsReceivePurchaseOrder() {
     });
   }
 
-  const watchDiscountType = form.watch("discountType");
+  const watchdiscount_type = form.watch("discount_type");
   const watchStatus = form.watch("status");
 
   useEffect(() => {

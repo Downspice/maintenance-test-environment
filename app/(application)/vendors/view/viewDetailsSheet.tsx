@@ -40,7 +40,7 @@ export default function ViewVendor({
             <div className="col-span-1 font-semibold">Contact</div>
             <div className="col-span-5">{data.contact}</div>
             <div className="col-span-1 font-semibold">Home</div>
-            <div className="col-span-5">{data.phone_1}</div>
+            <div className="col-span-5">{data.phone_one}</div>
             <div className="col-span-1 font-semibold">Address</div>
             <div className="col-span-5">{data.address1}</div>
             <div className="col-span-1 font-semibold">City</div>

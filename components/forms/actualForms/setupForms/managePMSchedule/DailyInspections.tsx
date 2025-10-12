@@ -174,7 +174,7 @@ export default function DailyInspectionTable() {
             />
             <SelectWrapper
               control={control}
-              name="type"
+              name="type_id"
               label="Type"
               options={typeOptions}
             />

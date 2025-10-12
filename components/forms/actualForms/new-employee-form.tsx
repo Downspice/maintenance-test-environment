@@ -282,7 +282,7 @@ export default function NewEmployeeForm() {
                   <div className="col-span-1">
                     <SelectWrapper
                       control={vendorForm.control}
-                      name="type"
+                      name="type_id"
                       label="Type "
                       required
                       options={employeeTypeOptions}
@@ -312,7 +312,7 @@ export default function NewEmployeeForm() {
                   <div className="col-span-1">
                     <SelectWrapper
                       control={vendorForm.control}
-                      name="location"
+                      name="location_id"
                       label="Location "
                       required
                       options={locationOptionsList}

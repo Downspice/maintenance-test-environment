@@ -450,3 +450,186 @@ export function useUpdateVendorContact() {
         (payload) => [['vendor', payload.vendorId]] 
     );
 }
+
+// ------------------------------------------------
+// 6. CUSTOMER MODULE HOOKS
+// ------------------------------------------------
+
+type CustomerPayload = TParams & { id?: TId };
+type CustomerDiscountPayload = TParams & { id?: TId };
+type SettingPayload = TParams & { id?: TId };
+
+// --- Customer Queries ---
+
+/**
+ * Fetches the list of all Customers.
+ */
+export function useGetCustomers<TData = TEntity[]>(options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>) {
+    return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
+        queryKey: ["customers"],
+        queryFn: async () => {
+            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-customers"));
+            return response;
+        },
+        select: (response) => response.data as TData,
+        staleTime: Infinity,
+        ...options,
+    });
+}
+
+/**
+ * Fetches a single Customer by ID.
+ * @param id The ID of the customer to fetch.
+ */
+export function useGetCustomer<TData = TEntity>(id: TId, options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>) {
+    return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
+        queryKey: ["customer", id],
+        queryFn: async () => {
+            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl(`/api/get-customer/${id}`));
+            return response;
+        },
+        select: (response) => response.data as TData,
+        enabled: !!id,
+        ...options,
+    });
+}
+
+/**
+ * Fetches the list of Customer Discounts.
+ */
+export function useGetCustomerDiscounts<TData = TEntity[]>(options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>) {
+    return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
+        queryKey: ["customer-discounts"],
+        queryFn: async () => {
+            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-customer-discounts"));
+            return response;
+        },
+        select: (response) => response.data as TData,
+        staleTime: Infinity,
+        ...options,
+    });
+}
+
+/**
+ * Fetches the list of Settings.
+ */
+export function useGetSettings<TData = TEntity[]>(options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>) {
+    return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
+        queryKey: ["settings"],
+        queryFn: async () => {
+            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-settings"));
+            return response;
+        },
+        select: (response) => response.data as TData,
+        staleTime: Infinity,
+        ...options,
+    });
+}
+
+
+// --- Customer Mutations ---
+
+/**
+ * Adds a new Customer. Invalidates the 'customers' list.
+ */
+export function useAddCustomer() {
+    return useBaseMutation<TEntity, CustomerPayload>(
+        ["add-customer"],
+        () => "/api/add-customer",
+        'post',
+        () => [['customers']]
+    );
+}
+
+/**
+ * Updates an existing Customer. Invalidates the 'customers' list and the specific 'customer' detail query.
+ * Expects a payload with an 'id' field.
+ */
+export function useUpdateCustomer() {
+    return useBaseMutation<TEntity, CustomerPayload & { id: TId }>(
+        ["update-customer"],
+        (payload) => `/api/update-customer/${payload.id}`,
+        'put',
+        (payload) => [['customers'], ['customer', payload.id]]
+    );
+}
+
+/**
+ * Deletes a Customer. Invalidates the 'customers' list and the specific 'customer' detail query.
+ * Expects a payload with an 'id' field.
+ */
+export function useDeleteCustomer() {
+    return useBaseMutation<TEntity, { id: TId }>(
+        ["delete-customer"],
+        (payload) => `/api/delete-customer/${payload.id}`,
+        'delete',
+        (payload) => [['customers'], ['customer', payload.id]]
+    );
+}
+
+// --- Customer Discount Mutations ---
+
+/**
+ * Adds a new Customer Discount. Invalidates the 'customer-discounts' list.
+ */
+export function useAddCustomerDiscount() {
+    return useBaseMutation<TEntity, CustomerDiscountPayload>(
+        ["add-customer-discount"],
+        () => "/api/add-customer-discount",
+        'post',
+        () => [['customer-discounts']]
+    );
+}
+
+/**
+ * Updates an existing Customer Discount. Invalidates the 'customer-discounts' list.
+ * Expects a payload with an 'id' field.
+ */
+export function useUpdateCustomerDiscount() {
+    return useBaseMutation<TEntity, CustomerDiscountPayload & { id: TId }>(
+        ["update-customer-discount"],
+        (payload) => `/api/update-customer-discount/${payload.id}`,
+        'put',
+        () => [['customer-discounts']]
+    );
+}
+
+/**
+ * Deletes a Customer Discount. Invalidates the 'customer-discounts' list.
+ * Expects a payload with an 'id' field.
+ */
+export function useDeleteCustomerDiscount() {
+    return useBaseMutation<TEntity, { id: TId }>(
+        ["delete-customer-discount"],
+        (payload) => `/api/delete-customer-discount/${payload.id}`,
+        'delete',
+        () => [['customer-discounts']]
+    );
+}
+
+// --- Setting Mutations ---
+
+/**
+ * Adds a new Setting. Invalidates the 'settings' list.
+ */
+export function useAddSetting() {
+    return useBaseMutation<TEntity, SettingPayload>(
+        ["add-setting"],
+        () => "/api/add-setting",
+        'post',
+        () => [['settings']]
+    );
+}
+
+/**
+ * Deletes a Setting. Invalidates the 'settings' list.
+ * Expects a payload with an 'id' field.
+ */
+export function useDeleteSetting() {
+    return useBaseMutation<TEntity, { id: TId }>(
+        ["delete-setting"],
+        (payload) => `/api/delete-setting/${payload.id}`,
+        'delete',
+        () => [['settings']]
+    );
+}

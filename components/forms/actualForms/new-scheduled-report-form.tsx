@@ -138,7 +138,7 @@ export default function NewScheduledReportForm() {
           <ComboboxFieldWrapper control={form.control} name="report" label="Report" options={reportTypeOptionsList} />
           <ComboboxFieldWrapper control={form.control} name="frequency" label="Frequency" options={reportFrequencyTypeOptionsList} />
           <ComboboxFieldWrapper control={form.control} name="dateField" label="Date Field" options={dateFieldTypeOptionsList} />
-          <ComboboxFieldWrapper control={form.control} name="location" label="Location Filter" options={locationOptionsList} />
+          <ComboboxFieldWrapper control={form.control} name="location_id" label="Location Filter" options={locationOptionsList} />
           <ComboboxFieldWrapper control={form.control} name="category" label="Category Filter" options={reportCategoryTypeOptionsList} />
           <MultiComboboxWrapper control={form.control} name="equipmentFilter" label="Equipment Filter" options={equipmentOptionsList} />
           <ComboboxFieldWrapper control={form.control} name="dateInterval" label="Date Interval" options={dateIntervalOptionsList} />

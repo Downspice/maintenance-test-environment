@@ -148,7 +148,7 @@ export default function EditVendor({
                     </div>
                     <SelectWrapper
                       control={vendorForm.control}
-                      name="location"
+                      name="location_id"
                       label="Location "
                       required
                       options={categoryOptions}
@@ -164,7 +164,7 @@ export default function EditVendor({
 
                     <SelectWrapper
                       control={vendorForm.control}
-                      name="type"
+                      name="type_id"
                       label="Type "
                       required
                       options={vendorTypeOptions}
@@ -201,14 +201,14 @@ export default function EditVendor({
                   <div className="flex flex-col gap-1">
                     <InputWrapper
                       control={vendorForm.control}
-                      name="phone_1"
+                      name="phone_one"
                       label="Phone 1:"
                       type="text"
                       required
                     />
                     <InputWrapper
                       control={vendorForm.control}
-                      name="phone_2"
+                      name="phone_two"
                       label="Phone 2:"
                       type="text"
                     />

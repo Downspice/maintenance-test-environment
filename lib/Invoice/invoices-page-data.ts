@@ -93,7 +93,7 @@ export const payments = [
   },
 ];
 
-export const discountTypesOptions = [
+export const discount_typesOptions = [
   { value: "percent", label: "Percentage" },
   { value: "amount", label: "Amount" },
 ];
