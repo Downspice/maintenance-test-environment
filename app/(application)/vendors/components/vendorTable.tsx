@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 import React from "react";
-import {  VendorInterface } from "@/lib/vendor-data";
+import { VendorTableInterface } from "@/lib/vendor-data";
 import ViewVendor from "../view/viewDetailsSheet";
 import EditVendor from "../view/editVendorSheet";
 import { matchesSearchAllFields } from "@/lib/utils";
@@ -29,12 +29,12 @@ export default function VendorDataTable() {
   } = useGetVendors();
 
   return VendorData ? (
-    <VendorTableLoader VendorData={VendorData} isLoading={isLoading}/>
+    <VendorTableLoader VendorData={VendorData} isLoading={isLoading} />
   ) : (
     <div>is loading.......</div>
   );
 }
-export function VendorTableLoader({ VendorData,isLoading }) {
+export function VendorTableLoader({ VendorData, isLoading }) {
   const [isServerMode, setIsServerMode] = useState(false);
   // const [isLoading, setIsLoading] = useState(isLoading);
   const [currentData, setCurrentData] = useState(VendorData.slice(0, 5)); // Show first 5 for demo
@@ -45,9 +45,11 @@ export function VendorTableLoader({ VendorData,isLoading }) {
     totalRows: VendorData?.length,
   });
 
-  const getAllEmployees = (employees: VendorInterface[]): VendorInterface[] => {
-    const result: VendorInterface[] = [];
-    const traverse = (emps: VendorInterface[]) => {
+  const getAllEmployees = (
+    employees: VendorTableInterface[]
+  ): VendorTableInterface[] => {
+    const result: VendorTableInterface[] = [];
+    const traverse = (emps: VendorTableInterface[]) => {
       emps.forEach((emp) => {
         result.push(emp);
       });
@@ -58,13 +60,13 @@ export function VendorTableLoader({ VendorData,isLoading }) {
 
   const flatEmployees = getAllEmployees(VendorData);
   const name = [...new Set(flatEmployees.map((emp) => emp.name))];
-  const type = [...new Set(flatEmployees.map((emp) => emp.type))];
-  const contact = [...new Set(flatEmployees.map((emp) => emp.contact))];
-  const address1 = [...new Set(flatEmployees.map((emp) => emp.address1))];
+  const type = [...new Set(flatEmployees.map((emp) => emp.type.name))];
+  const contact = [...new Set(flatEmployees.map((emp) => emp.contact.phone_one))];
+  const address1 = [...new Set(flatEmployees.map((emp) => emp.address))];
   const city = [...new Set(flatEmployees.map((emp) => emp.city))];
-  const state_prov = [...new Set(flatEmployees.map((emp) => emp.state_prov))];
+  const state_prov = [...new Set(flatEmployees.map((emp) => emp.state))];
   const postal_code = [...new Set(flatEmployees.map((emp) => emp.postal_code))];
-  const email = [...new Set(flatEmployees.map((emp) => emp.email))];
+  const email = [...new Set(flatEmployees.map((emp) => emp.contact.email))];
 
   const handleRowClick = (row: any) => {
     console.log("Row clicked:", row.original);
@@ -198,7 +200,7 @@ export function VendorTableLoader({ VendorData,isLoading }) {
   ); // Add dependencies that actually matter
 
   // Column definitions
-  const columns: ColumnDef<VendorInterface>[] = [
+  const columns: ColumnDef<VendorTableInterface>[] = [
     {
       accessorKey: "name",
       header: ({ column }) => (
@@ -221,7 +223,7 @@ export function VendorTableLoader({ VendorData,isLoading }) {
       ),
     },
     {
-      accessorKey: "type",
+      accessorKey: "type.name",
       header: ({ column }) => (
         <SortableHeader
           column={column}
@@ -232,7 +234,7 @@ export function VendorTableLoader({ VendorData,isLoading }) {
       ),
     },
     {
-      accessorKey: "contact",
+      accessorKey: "contact.phone_one",
       header: ({ column }) => (
         <SortableHeader
           column={column}
@@ -246,16 +248,15 @@ export function VendorTableLoader({ VendorData,isLoading }) {
       },
     },
     {
-      accessorKey: "address1",
+      accessorKey: "address",
       header: ({ column }) => (
         <SortableHeader
           column={column}
-          title="Address #1"
+          title="Address"
           sortable={true}
           filterOptions={address1}
         />
       ),
-      cell: ({ row }) => <>{row.original.address1}</>,
       filterFn: (row, id, value) => {
         return value.length === 0 || value.includes(row.getValue(id));
       },
@@ -277,7 +278,7 @@ export function VendorTableLoader({ VendorData,isLoading }) {
       },
     },
     {
-      accessorKey: "state_prov",
+      accessorKey: "state",
       header: ({ column }) => (
         <SortableHeader
           column={column}
@@ -302,7 +303,7 @@ export function VendorTableLoader({ VendorData,isLoading }) {
       ),
     },
     {
-      accessorKey: "email",
+      accessorKey: "contact.email",
       header: ({ column }) => (
         <SortableHeader
           column={column}

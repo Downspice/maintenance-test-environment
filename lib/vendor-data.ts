@@ -35,6 +35,82 @@ export const VendorSchema = z.object({
 // Type inference (optional)
 export type VendorInterface = z.infer<typeof VendorSchema>
 
+export interface VendorTableInterface {
+  id: string
+  name: string
+  vendor_number: string
+  address: string
+  city: string
+  state: string
+  postal_code: string
+  country: string
+  location_id: string
+  status_id: string
+  type_id: string
+  term_id: string
+  billing_rate: string
+  notes: string
+  created_by: any
+  updated_by: any
+  created_at: string
+  updated_at: string
+  location: Location
+  status: Status
+  type: Type
+  term: Term
+  attachments: any[]
+  contact: Contact
+}
+
+export interface Location {
+  id: string
+  name: string
+  created_by: any
+  updated_by: any
+  created_at: string
+  updated_at: string
+}
+
+export interface Status {
+  id: string
+  name: string
+  created_by: any
+  updated_by: any
+  created_at: string
+  updated_at: string
+}
+
+export interface Type {
+  id: string
+  name: string
+  created_by: any
+  updated_by: any
+  created_at: string
+  updated_at: string
+}
+
+export interface Term {
+  id: string
+  name: string
+  created_by: any
+  updated_by: any
+  created_at: string
+  updated_at: string
+}
+
+export interface Contact {
+  id: string
+  vendor_id: string
+  phone_one: string
+  phone_two: any
+  fax: any
+  email: string
+  website: any
+  created_by: any
+  updated_by: any
+  created_at: string
+  updated_at: string
+}
 
 export const VendorData: VendorInterface[] = [
   {

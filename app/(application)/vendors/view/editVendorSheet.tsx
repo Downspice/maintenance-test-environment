@@ -24,31 +24,68 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useGetStatusOnes } from "@/services/setups/vendor";
-import { VendorFormValues,vendorSchema } from "@/components/forms/actualForms/new-vendor-form";
+import {
+  useGetLocations,
+  useGetPurchaseOrderTerms,
+  useGetStatusOnes,
+  useGetVendorTypes,
+  useUpdateVendor,
+} from "@/services/setups/vendor";
+import {
+  VendorFormValues,
+  vendorSchema,
+} from "@/components/forms/actualForms/new-vendor-form";
+import { VendorTableInterface } from "@/lib/vendor-data";
 
 export default function EditVendor({
   children,
   data,
 }: {
   children: React.ReactNode;
-  data: VendorFormValues;
+  data: VendorTableInterface;
 }) {
   const [open, setOpen] = useState(false);
- const { 
-    data: statusOptions, 
-    isLoading:statusOptionsLoading, 
-    error: statusOptionsError
-  } = useGetStatusOnes<Array<{ id: string, name: string }>>();
+  const {
+    data: termsOptionsList,
+    isLoading: termsOptionsListLoading,
+    error: termsOptionsListError,
+  } = useGetPurchaseOrderTerms<Array<{ id: string; name: string }>>();
+  const {
+    data: statusOptions,
+    isLoading: statusOptionsLoading,
+    error: statusOptionsError,
+  } = useGetStatusOnes<Array<{ id: string; name: string }>>();
+  const {
+    data: vendorTypeOptions,
+    isLoading,
+    error: vendorTypesError,
+  } = useGetVendorTypes<Array<{ id: string; name: string }>>();
+  const {
+    data: locationOptionsList,
+    isLoading: locationOptionsListLoading,
+    error: locationOptionsListError,
+  } = useGetLocations<Array<{ id: string; name: string }>>();
+
   const vendorForm = useForm<z.infer<typeof vendorSchema>>({
     resolver: zodResolver(vendorSchema),
-    defaultValues: { ...data },
+    defaultValues: {
+      ...data,
+      term_id: data.term.id,
+      phone_one: data.contact.phone_one ?? "",
+      phone_two: data.contact.phone_two ?? "",
+      fax: data.contact.fax ?? "",
+      email: data.contact.email ?? "",
+      website: data.contact.website ?? "",
+    },
   });
-
+  const { mutateAsync, isPending } = useUpdateVendor();
   async function handleSubmit(data: z.infer<typeof vendorSchema>) {
     console.log(data);
     // Here you would typically send the data to your API
     toast.success("Edited  successfully!");
+    const res = await mutateAsync(data);
+    toast.success(res?.messagee);
+    vendorForm.reset();
   }
 
   return (
@@ -98,20 +135,11 @@ export default function EditVendor({
 
                     <InputWrapper
                       control={vendorForm.control}
-                      name="address1"
+                      name="address"
                       label="Address"
                       type="text"
                     />
-
-                    <InputWrapper
-                      className="pt-0"
-                      control={vendorForm.control}
-                      name="address2"
-                      placeholder=" "
-                      label=""
-                      type="text"
-                    />
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-1">
                       <div className="col-span-1">
                         <InputWrapper
                           control={vendorForm.control}
@@ -123,7 +151,7 @@ export default function EditVendor({
                       <div className="col-span-1">
                         <InputWrapper
                           control={vendorForm.control}
-                          name="state_prov"
+                          name="state"
                           label="State /Province"
                           type="text"
                         />
@@ -151,12 +179,12 @@ export default function EditVendor({
                       name="location_id"
                       label="Location "
                       required
-                      options={categoryOptions}
+                      options={locationOptionsList}
                     />
 
                     <SelectWrapper
                       control={vendorForm.control}
-                      name="status"
+                      name="status_id"
                       label="Status "
                       required
                       options={statusOptions}
@@ -171,10 +199,10 @@ export default function EditVendor({
                     />
                     <SelectWrapper
                       control={vendorForm.control}
-                      name="term"
+                      name="term_id"
                       label="Term "
                       required
-                      options={vendorTypeOptions}
+                      options={termsOptionsList}
                     />
                     <InputWrapper
                       control={vendorForm.control}
@@ -192,7 +220,7 @@ export default function EditVendor({
                     </div>
                     <CustomFieldsWrapper
                       control={vendorForm.control}
-                       name="others"
+                      name="others"
                       label="Custom Fields"
                     />
                   </div>
