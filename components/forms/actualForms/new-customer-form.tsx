@@ -421,7 +421,7 @@ const {
           </Tabs>
 
           <div className="flex justify-between gap-x-4 my-8 w-full">
-            <Button className=" w-full">
+            <Button className=" w-full" disabled={isPending}>
               <GitPullRequestArrow className="mr-2" /> Save
             </Button>
           </div>
