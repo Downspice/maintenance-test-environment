@@ -23,15 +23,16 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 import React from "react";
-import { CustomerData, CustomerInterface } from "@/lib/Customer/customer-data";
+import {  CustomerInterface, CustomerTableDataInterface } from "@/lib/Customer/customer-data";
 import { matchesSearchAllFields } from "@/lib/utils";
 import EditCustomer from "../views/edit-customer";
+import { useGetCustomers } from "@/services/setups/vendor";
 
 const getAllEmployees = (
-  employees: CustomerInterface[]
-): CustomerInterface[] => {
-  const result: CustomerInterface[] = [];
-  const traverse = (emps: CustomerInterface[]) => {
+  employees: CustomerTableDataInterface[]
+): CustomerTableDataInterface[] => {
+  const result: CustomerTableDataInterface[] = [];
+  const traverse = (emps: CustomerTableDataInterface[]) => {
     emps.forEach((emp) => {
       result.push(emp);
     });
@@ -40,20 +41,23 @@ const getAllEmployees = (
   return result;
 };
 
-const flatEmployees = getAllEmployees(CustomerData);
-const name = [...new Set(flatEmployees.map((emp) => emp.name ?? ""))];
-const type = [...new Set(flatEmployees.map((emp) => emp.type ?? ""))];
-const address1 = [...new Set(flatEmployees.map((emp) => emp.street1 ?? ""))];
-const city = [...new Set(flatEmployees.map((emp) => emp.city ?? ""))];
-const state_prov = [...new Set(flatEmployees.map((emp) => emp.state ?? ""))];
-const postal_code = [
-  ...new Set(flatEmployees.map((emp) => emp.postal_code ?? "")),
-];
-const email = [...new Set(flatEmployees.map((emp) => emp.email ?? ""))];
-
 export default function CustomerDataTable() {
+  const {
+    data: CustomerData,
+    isLoading,
+    error: vendorTypesError,
+  } = useGetCustomers();
+
+  return CustomerData ? (
+    <CustomerTableLoader CustomerData={CustomerData} isLoading={isLoading} />
+  ) : (
+    <div>is loading.......</div>
+  );
+}
+
+export function CustomerTableLoader({CustomerData,isLoading}:{CustomerData:CustomerTableDataInterface[];isLoading:boolean}) {
   const [isServerMode, setIsServerMode] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   const [currentData, setCurrentData] = useState(CustomerData.slice(0, 5)); // Show first 5 for demo
   const [paginationInfo, setPaginationInfo] = useState({
     pageIndex: 0,
@@ -61,6 +65,18 @@ export default function CustomerDataTable() {
     totalPages: Math.ceil(CustomerData.length / 5),
     totalRows: CustomerData.length,
   });
+
+  const flatEmployees = getAllEmployees(CustomerData );
+const name = [...new Set(flatEmployees.map((emp) => emp.company_name ?? ""))];
+const type = [...new Set(flatEmployees.map((emp) => emp.type.name ?? ""))];
+const address1 = [...new Set(flatEmployees.map((emp) => emp.address ?? ""))];
+const city = [...new Set(flatEmployees.map((emp) => emp.city ?? ""))];
+const state_prov = [...new Set(flatEmployees.map((emp) => emp.state ?? ""))];
+const postal_code = [
+  ...new Set(flatEmployees.map((emp) => emp.postal_code ?? "")),
+];
+const email = [...new Set(flatEmployees.map((emp) => emp.email ?? ""))];
+
 
   const handleRowClick = (row: any) => {
     console.log("Row clicked:", row.original);
@@ -143,7 +159,7 @@ export default function CustomerDataTable() {
   const handlePaginationChange = (action: "next" | "previous" | number) => {
     console.log(`🔄 Server Pagination Action: ${action}`);
 
-    setIsLoading(true);
+    // setIsLoading(true);
 
     // Simulate server delay
     setTimeout(() => {
@@ -171,7 +187,7 @@ export default function CustomerDataTable() {
         pageIndex: newPageIndex,
       }));
 
-      setIsLoading(false);
+      // setIsLoading(false);
     }, 1000); // 1 second delay to simulate server response
   };
 
@@ -180,7 +196,7 @@ export default function CustomerDataTable() {
     (searchValue: string) => {
       console.log(`🔍 Server Search: "${searchValue}"`);
 
-      setIsLoading(true);
+      // setIsLoading(true);
 
       // Simulate server delay
       setTimeout(() => {
@@ -202,16 +218,16 @@ export default function CustomerDataTable() {
           totalRows: filteredData.length,
         }));
 
-        setIsLoading(false);
+        // setIsLoading(false);
       }, 800); // 800ms delay to simulate server response
     },
     [paginationInfo.pageSize]
   ); // Add dependencies that actually matter
 
   // Column definitions
-  const columns: ColumnDef<CustomerInterface>[] = [
+  const columns: ColumnDef<CustomerTableDataInterface>[] = [
     {
-      accessorKey: "name",
+      accessorKey: "company_name",
       header: ({ column }) => (
         <SortableHeader
           column={column}
@@ -223,12 +239,12 @@ export default function CustomerDataTable() {
       cell: ({ row }) => (
         <div className="font-medium text-primary flex flex-col">
           {" "}
-          {row.getValue("name")}
+          {row.getValue("company_name")}
         </div>
       ),
     },
     {
-      accessorKey: "type",
+      accessorKey: "type.name",
       header: ({ column }) => (
         <SortableHeader
           column={column}
@@ -239,7 +255,7 @@ export default function CustomerDataTable() {
       ),
     },
     {
-      accessorKey: "address1",
+      accessorKey: "address",
       header: ({ column }) => (
         <SortableHeader
           column={column}
@@ -248,7 +264,6 @@ export default function CustomerDataTable() {
           filterOptions={address1}
         />
       ),
-      cell: ({ row }) => <>{row.original.street1}</>,
       filterFn: (row, id, value) => {
         return value.length === 0 || value.includes(row.getValue(id));
       },

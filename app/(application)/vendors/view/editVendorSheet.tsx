@@ -84,7 +84,7 @@ export default function EditVendor({
     // Here you would typically send the data to your API
     toast.success("Edited  successfully!");
     const res = await mutateAsync(data);
-    toast.success(res?.messagee);
+    toast.success(res?.message);
     vendorForm.reset();
   }
 

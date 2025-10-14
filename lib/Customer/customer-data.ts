@@ -47,264 +47,64 @@ export const customerSchema = z.object({
 
 export type CustomerInterface = z.infer<typeof customerSchema>;
 
-export const CustomerData: CustomerInterface[] = [
-  {
-    id: "cust-001",
-    name: "Acme Supplies Ltd.",
-    number: "VND001",
-    ShippingNumber: "SHIP123",
-    street1: "123 Market Street",
-    street2: "Suite 400",
-    city: "Accra",
-    state: "Greater Accra",
-    postal_code: "GA-123-4567",
-    country: "Ghana",
-    location: "Warehouse A",
-    status: "Active",
-    type: "Dealer",
-    phone_one: "+233501234567",
-    phone_two: "+233541234567",
-    fax: "+233302123456",
-    website: "https://acmesupplies.com",
-    email: "info@acmesupplies.com",
-    term: "Dealer",
-    term_days: 30,
-    discount_type: "percent",
-    discount_percent: "5",
-    billing_rate: 100,
-    contact: "John Doe",
-    shippingphone_one: "+233501234567",
-    shippingFax: "+233302123456",
-    shippingEmail: "shipping@acmesupplies.com",
-    shippingStreet1: "456 Shipping Lane",
-    shippingStreet2: "",
-    shippingCity: "Tema",
-    shippingState: "Greater Accra",
-    shippingpostal_code: "TM-987-6543",
-    shippingCountry: "Ghana",
-    notes: "Preferred vendor. Always delivers on time.",
-    Attachments: [],
-  },
-  {
-    id: "cust-002",
-    name: "Beta Tools Co.",
-    number: "VND002",
-    ShippingNumber: "SHIP456",
-    street1: "789 Industrial Road",
-    street2: "",
-    city: "Kumasi",
-    state: "Ashanti",
-    postal_code: "AS-456-7890",
-    country: "Ghana",
-    location: "Warehouse B",
-    status: "Inactive",
-    type: "Fuel",
-    phone_one: "+233201112223",
-    phone_two: "",
-    fax: "",
-    website: "https://betatools.com",
-    email: "contact@betatools.com",
-    term: "Fuel",
-    term_days: 15,
-    discount_type: "amount",
-    discount_amount: "50",
-    billing_rate: 80,
-    contact: "Jane Smith",
-    shippingphone_one: "+233207654321",
-    shippingFax: "",
-    shippingEmail: "delivery@betatools.com",
-    shippingStreet1: "101 Beta Avenue",
-    shippingStreet2: "Block 2",
-    shippingCity: "Takoradi",
-    shippingState: "Western Region",
-    shippingpostal_code: "WR-321-0000",
-    shippingCountry: "Ghana",
-    notes: "Requires follow-up before delivery.",
-    Attachments: [],
-  },
-  {
-    id: "cust-003",
-    name: "Express Rentals",
-    number: "VND003",
-    ShippingNumber: "SHIP789",
-    street1: "5 Castle Road",
-    street2: "",
-    city: "Cape Coast",
-    state: "Central",
-    postal_code: "CC-555-8888",
-    country: "Ghana",
-    location: "Depot 2",
-    status: "Active",
-    type: "Rentals",
-    phone_one: "+233209876543",
-    phone_two: "+233509876543",
-    fax: "",
-    website: "https://expressrentals.com",
-    email: "support@expressrentals.com",
-    term: "Rentals",
-    term_days: 10,
-    discount_type: "percent",
-    discount_percent: "10",
-    billing_rate: 65,
-    contact: "Amma Tandoh",
-    shippingphone_one: "+233209876543",
-    shippingFax: "",
-    shippingEmail: "ship@expressrentals.com",
-    shippingStreet1: "Warehouse 12",
-    shippingStreet2: "Ground Floor",
-    shippingCity: "Cape Coast",
-    shippingState: "Central",
-    shippingpostal_code: "CC-222-0000",
-    shippingCountry: "Ghana",
-    notes: "Offers good rates for bulk leasing.",
-    Attachments: [],
-  },
-  {
-    id: "cust-004",
-    name: "GHL Maintenance Services",
-    number: "VND004",
-    ShippingNumber: "SHIP334",
-    street1: "15 Lagoon Road",
-    street2: "",
-    city: "Ho",
-    state: "Volta",
-    postal_code: "VT-666-0001",
-    country: "Ghana",
-    location: "HQ",
-    status: "Pending",
-    type: "Maintenance",
-    phone_one: "+233208123456",
-    phone_two: "",
-    fax: "+233302000111",
-    website: "https://ghlmaint.com",
-    email: "repairs@ghlmaint.com",
-    term: "Maintenance",
-    term_days: 20,
-    discount_type: "amount",
-    discount_amount: "100",
-    billing_rate: 150,
-    contact: "Kwame Mensah",
-    shippingphone_one: "+233208123456",
-    shippingFax: "",
-    shippingEmail: "shipping@ghlmaint.com",
-    shippingStreet1: "Plot 45",
-    shippingStreet2: "Opposite GCB",
-    shippingCity: "Ho",
-    shippingState: "Volta",
-    shippingpostal_code: "VT-666-0001",
-    shippingCountry: "Ghana",
-    notes: "High quality parts but slow delivery.",
-    Attachments: [],
-  },
-  {
-    id: "cust-005",
-    name: "Tractor Wholesale Ltd.",
-    number: "VND005",
-    ShippingNumber: "SHIP111",
-    street1: "88 Ridge Road",
-    street2: "",
-    city: "Sunyani",
-    state: "Bono",
-    postal_code: "BN-888-9999",
-    country: "Ghana",
-    location: "Outlet A",
-    status: "Active",
-    type: "Wholesale",
-    phone_one: "+233203332221",
-    phone_two: "+233543332221",
-    fax: "",
-    website: "https://tractors.com",
-    email: "sales@tractors.com",
-    term: "Wholesale",
-    term_days: 5,
-    discount_type: "percent",
-    discount_percent: "8",
-    billing_rate: 90,
-    contact: "Sarah Opoku",
-    shippingphone_one: "+233543332221",
-    shippingFax: "",
-    shippingEmail: "ship@tractors.com",
-    shippingStreet1: "Export Yard",
-    shippingStreet2: "Section C",
-    shippingCity: "Sunyani",
-    shippingState: "Bono",
-    shippingpostal_code: "BN-888-9999",
-    shippingCountry: "Ghana",
-    notes: "Competitive prices, payment on delivery.",
-    Attachments: [],
-  },
-  {
-    id: "cust-006",
-    name: "Allianz Insurance Ghana",
-    number: "VND006",
-    ShippingNumber: "SHIP222",
-    street1: "21 Airport Road",
-    street2: "Floor 3",
-    city: "Accra",
-    state: "Greater Accra",
-    postal_code: "GA-456-7891",
-    country: "Ghana",
-    location: "Head Office",
-    status: "Active",
-    type: "Insurance",
-    phone_one: "+233505551111",
-    phone_two: "",
-    fax: "+233302555555",
-    website: "https://allianz.com.gh",
-    email: "info@allianz.com.gh",
-    term: "Insurance",
-    term_days: 25,
-    discount_type: "amount",
-    discount_amount: "200",
-    billing_rate: 120,
-    contact: "Yaw Dapaah",
-    shippingphone_one: "+233505551111",
-    shippingFax: "",
-    shippingEmail: "ship@allianz.com.gh",
-    shippingStreet1: "Airport Commercial Area",
-    shippingStreet2: "",
-    shippingCity: "Accra",
-    shippingState: "Greater Accra",
-    shippingpostal_code: "GA-456-7891",
-    shippingCountry: "Ghana",
-    notes: "Policy renewal required every 6 months.",
-    Attachments: [],
-  },
-  {
-    id: "cust-007",
-    name: "LeaseOne Ghana",
-    number: "VND007",
-    ShippingNumber: "SHIP900",
-    street1: "99 Independence Ave",
-    street2: "",
-    city: "Accra",
-    state: "Greater Accra",
-    postal_code: "GA-101-2020",
-    country: "Ghana",
-    location: "Lease Dept",
-    status: "Pending",
-    type: "Loan/Lease",
-    phone_one: "+233552002233",
-    phone_two: "",
-    fax: "",
-    website: "https://leaseone.com.gh",
-    email: "leasing@leaseone.com.gh",
-    term: "Loan/Lease",
-    term_days: 60,
-    discount_type: "percent",
-    discount_percent: "3",
-    billing_rate: 110,
-    contact: "Nana Konadu",
-    shippingphone_one: "+233552002233",
-    shippingFax: "",
-    shippingEmail: "shipping@leaseone.com.gh",
-    shippingStreet1: "Annex Hall, Ringway",
-    shippingStreet2: "",
-    shippingCity: "Accra",
-    shippingState: "Greater Accra",
-    shippingpostal_code: "GA-101-2020",
-    shippingCountry: "Ghana",
-    notes: "Usually late on payments. Add reminders.",
-    Attachments: [],
-  },
-];
+export interface CustomerTableDataInterface {
+  id: string
+  company_name: string
+  contact: string
+  address: string
+  city: string
+  state: string
+  postal_code: string
+  country: string
+  phone_one: string
+  phone_two: string
+  fax: any
+  email: string
+  website: any
+  term_id: string
+  term_days: number
+  discount_id: any
+  discount_percent: string
+  currency: string
+  billing_rate: string
+  type_id: string
+  location_id: string
+  notes: string
+  created_by: any
+  updated_by: any
+  created_at: string
+  updated_at: string
+  customer_shipping: any
+  customer_attachments: any[]
+  term: Term
+  discount: any
+  type: Type
+  location: Location
+}
+
+export interface Term {
+  id: string
+  name: string
+  created_by: any
+  updated_by: any
+  created_at: string
+  updated_at: string
+}
+
+export interface Type {
+  id: string
+  name: string
+  created_by: any
+  updated_by: any
+  created_at: string
+  updated_at: string
+}
+
+export interface Location {
+  id: string
+  name: string
+  created_by: any
+  updated_by: any
+  created_at: string
+  updated_at: string
+}
