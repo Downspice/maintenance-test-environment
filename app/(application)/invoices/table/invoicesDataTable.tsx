@@ -27,17 +27,38 @@ import { matchesSearchAllFields } from "@/lib/utils";
 import EditInvoice from "../view/edit-invoice";
  import { ScrollArea } from "@/components/ui/scroll-area";
 import { ActualRecordPaymentForm } from "@/components/forms/actualForms/record-payment-form";
+import { useGetInvoices } from "@/services/setups/invoice";
 
-const getAllEmployees = (employees: InvoiceInterface[]): InvoiceInterface[] => {
+export default function InvoicesDataTable() {
+  const {
+    data: InvoiceData,
+    isLoading,
+    error: InvoiceDataError,
+  } = useGetInvoices();
+
+  return InvoiceData ? (
+    <InvoicesTableLoader InvoiceData={InvoiceData} isLoading={isLoading} />
+  ) : (
+    <div>is loading.......</div>
+  );
+}
+
+export function InvoicesTableLoader({InvoiceData,isLoading}) {
+  const [isServerMode, setIsServerMode] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
+  const [currentData, setCurrentData] = useState(InvoiceData.slice(0, 5)); // Show first 5 for demo
+  const [paginationInfo, setPaginationInfo] = useState({
+    pageIndex: 0,
+    pageSize: 5,
+    totalPages: Math.ceil(InvoiceData.length / 5),
+    totalRows: InvoiceData.length,
+  });
+
+  const getAllEmployees = (employees: InvoiceInterface[]): InvoiceInterface[] => {
   const result: InvoiceInterface[] = [];
   const traverse = (emps: InvoiceInterface[]) => {
     emps.forEach((emp) => {
       result.push(emp);
-      //   if (emp.tasks) {
-      //     console.log(emp.tasks);
-
-      //     // traverse(emp.tasks);
-      //   }
     });
   };
   traverse(employees);
@@ -56,17 +77,6 @@ const total = [...new Set(flatEmployees.map((emp) => emp.total?.toString()))];
 const payment = [
   ...new Set(flatEmployees.map((emp) => emp.payments?.toString())),
 ];
-
-export default function InvoicesDataTable() {
-  const [isServerMode, setIsServerMode] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [currentData, setCurrentData] = useState(InvoiceData.slice(0, 5)); // Show first 5 for demo
-  const [paginationInfo, setPaginationInfo] = useState({
-    pageIndex: 0,
-    pageSize: 5,
-    totalPages: Math.ceil(InvoiceData.length / 5),
-    totalRows: InvoiceData.length,
-  });
 
   const handleRowClick = (row: any) => {
     console.log("Row clicked:", row.original);
@@ -149,7 +159,7 @@ export default function InvoicesDataTable() {
   const handlePaginationChange = (action: "next" | "previous" | number) => {
     console.log(`🔄 Server Pagination Action: ${action}`);
 
-    setIsLoading(true);
+    // setIsLoading(true);
 
     // Simulate server delay
     setTimeout(() => {
@@ -177,7 +187,7 @@ export default function InvoicesDataTable() {
         pageIndex: newPageIndex,
       }));
 
-      setIsLoading(false);
+      // setIsLoading(false);
     }, 1000); // 1 second delay to simulate server response
   };
 
@@ -186,7 +196,7 @@ export default function InvoicesDataTable() {
     (searchValue: string) => {
       console.log(`🔍 Server Search: "${searchValue}"`);
 
-      setIsLoading(true);
+      // setIsLoading(true);
 
       // Simulate server delay
       setTimeout(() => {
@@ -208,7 +218,7 @@ export default function InvoicesDataTable() {
           totalRows: filteredData.length,
         }));
 
-        setIsLoading(false);
+        // setIsLoading(false);
       }, 800); // 800ms delay to simulate server response
     },
     [paginationInfo.pageSize]

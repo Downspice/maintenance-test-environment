@@ -17,47 +17,30 @@ import {
 import { useState } from "react";
 import React from "react";
 import {
-  EmployeeInterface,
-  EmployeeData,
+  EmployeeTableInterface,
   RenewalInterface,
 } from "@/lib/Employee/employee-data";
 import EditEmployee from "../views/editEmployeeSheet";
 import { matchesSearchAllFields } from "@/lib/utils";
-
-// Get unique values for filter options (including sub-rows)
-const getAllEmployees = (
-  employees: EmployeeInterface[]
-): EmployeeInterface[] => {
-  const result: EmployeeInterface[] = [];
-  const traverse = (emps: EmployeeInterface[]) => {
-    emps.forEach((emp) => {
-      result.push(emp);
-      //   if (emp.tasks) {
-      //     console.log(emp.tasks);
-
-      //     // traverse(emp.tasks);
-      //   }
-    });
-  };
-  traverse(employees);
-  return result;
-};
-
-const flatEmployees = getAllEmployees(EmployeeData);
-const employeeId = [...new Set(flatEmployees.map((emp) => emp.id?.toString()))];
-const name = [
-  ...new Set(flatEmployees.map((emp) => emp.first + " " + emp.last)),
-];
-const location = [...new Set(flatEmployees.map((emp) => emp.location))];
-const type = [...new Set(flatEmployees.map((emp) => emp.type))];
-const drivers_license_number = [
-  ...new Set(flatEmployees.map((emp) => emp.driverNumber)),
-];
-const contact = [...new Set(flatEmployees.map((emp) => emp.altPhone))];
+import { useGetEmployees } from "@/services/setups/employee";
 
 export default function EmployeeDataTable() {
+  const {
+    data: EmployeeData,
+    isLoading,
+    error: EmployeeDataError,
+  } = useGetEmployees();
+
+  return EmployeeData ? (
+    <EmployeeTableLoader EmployeeData={EmployeeData} isLoading={isLoading} />
+  ) : (
+    <div>is loading.......</div>
+  );
+}
+
+export function EmployeeTableLoader({ EmployeeData, isLoading }) {
   const [isServerMode, setIsServerMode] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   const [currentData, setCurrentData] = useState(EmployeeData.slice(0, 5)); // Show first 5 for demo
   const [paginationInfo, setPaginationInfo] = useState({
     pageIndex: 0,
@@ -65,6 +48,39 @@ export default function EmployeeDataTable() {
     totalPages: Math.ceil(EmployeeData.length / 5),
     totalRows: EmployeeData.length,
   });
+
+  // Get unique values for filter options (including sub-rows)
+  const getAllEmployees = (
+    employees: EmployeeTableInterface[]
+  ): EmployeeTableInterface[] => {
+    const result: EmployeeTableInterface[] = [];
+    const traverse = (emps: EmployeeTableInterface[]) => {
+      emps.forEach((emp) => {
+        result.push(emp);
+      });
+    };
+    traverse(employees);
+    return result;
+  };
+
+  const flatEmployees = getAllEmployees(EmployeeData);
+  const employeeId = [
+    ...new Set(flatEmployees.map((emp) => emp.id?.toString())),
+  ];
+  const name = [
+    ...new Set(
+      flatEmployees.map(
+        (emp) =>
+          emp.last_name + " " + emp.first_name + " " + (emp.middle_name ?? "")
+      )
+    ),
+  ];
+  const location = [...new Set(flatEmployees.map((emp) => emp.location_id))];
+  const type = [...new Set(flatEmployees.map((emp) => emp.type_id))];
+  const drivers_license_number = [
+    ...new Set(flatEmployees.map((emp) => emp.driver_license_number)),
+  ];
+  const contact = [...new Set(flatEmployees.map((emp) => emp.cell))];
 
   const handleRowClick = (row: any) => {
     console.log("Row clicked:", row.original);
@@ -148,7 +164,7 @@ export default function EmployeeDataTable() {
   const handlePaginationChange = (action: "next" | "previous" | number) => {
     console.log(`🔄 Server Pagination Action: ${action}`);
 
-    setIsLoading(true);
+    // setIsLoading(true);
 
     // Simulate server delay
     setTimeout(() => {
@@ -176,7 +192,7 @@ export default function EmployeeDataTable() {
         pageIndex: newPageIndex,
       }));
 
-      setIsLoading(false);
+      // setIsLoading(false);
     }, 1000); // 1 second delay to simulate server response
   };
 
@@ -185,7 +201,7 @@ export default function EmployeeDataTable() {
     (searchValue: string) => {
       console.log(`🔍 Server Search: "${searchValue}"`);
 
-      setIsLoading(true);
+      // setIsLoading(true);
 
       // Simulate server delay
       setTimeout(() => {
@@ -207,13 +223,13 @@ export default function EmployeeDataTable() {
           totalRows: filteredData.length,
         }));
 
-        setIsLoading(false);
+        // setIsLoading(false);
       }, 800); // 800ms delay to simulate server response
     },
     [paginationInfo.pageSize]
   ); // Add dependencies that actually matter
 
-  const getSubRows = (originalRow: EmployeeInterface) => {
+  const getSubRows = (originalRow: EmployeeTableInterface) => {
     return originalRow.renewals;
   };
 
@@ -248,7 +264,7 @@ export default function EmployeeDataTable() {
   };
 
   // Column definitions
-  const columns: ColumnDef<EmployeeInterface>[] = [
+  const columns: ColumnDef<EmployeeTableInterface>[] = [
     {
       accessorKey: "id",
       header: ({ column }) => (
@@ -262,7 +278,7 @@ export default function EmployeeDataTable() {
       cell: ({ row }) => (
         <div className="font-medium flex flex-col text-primary">
           {" "}
-          {row.original.id}
+          {row.original.ssn}
         </div>
       ),
     },
@@ -278,16 +294,16 @@ export default function EmployeeDataTable() {
       ),
       cell: ({ row }) => (
         <div className="font-medium flex flex-row">
-          {row.original.last +
+          {row.original.last_name +
             " " +
-            row.original.first +
+            row.original.first_name +
             " " +
-            row.original.middle}
+            (row.original.middle_name ?? "")}
         </div>
       ),
     },
     {
-      accessorKey: "type",
+      accessorKey: "type_id",
       header: ({ column }) => (
         <SortableHeader
           column={column}
@@ -301,7 +317,7 @@ export default function EmployeeDataTable() {
       },
     },
     {
-      accessorKey: "driverNumber",
+      accessorKey: "driver_license_number",
       header: ({ column }) => (
         <SortableHeader
           column={column}
@@ -315,7 +331,7 @@ export default function EmployeeDataTable() {
       },
     },
     {
-      accessorKey: "contact",
+      accessorKey: "cell",
       header: ({ column }) => (
         <SortableHeader
           column={column}
@@ -415,7 +431,14 @@ export default function EmployeeDataTable() {
       <AdvancedDataTable
         columns={columns}
         data={isServerMode ? currentData : EmployeeData}
-        defaultVisibleColumns={["id","name","type","driverNumber","contact", "actions"]}
+        defaultVisibleColumns={[
+          "id",
+          "name",
+          "type",
+          "driverNumber",
+          "contact",
+          "actions",
+        ]}
         onRowClick={handleRowClick}
         onCellClick={handleCellClick}
         onPrintSelected={handlePrintSelected}

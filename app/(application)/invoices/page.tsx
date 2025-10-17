@@ -12,29 +12,29 @@ import {
 import { Button } from "@/components/ui/button";
 import { useSheet } from "@/lib/sheet-providers";
 import InvoicesDataTable from "./table/invoicesDataTable";
- 
+
 import NewInvoiceForm from "@/components/forms/actualForms/new-invoice-form";
-import PaymentReceivedTable from "./view/payments-received-dataTable"; 
+import PaymentReceivedTable from "./view/payments-received-dataTable";
 import { useGetLocations } from "@/services/setups/vendor";
 
 const ActiveDropdown = [
   {
-    label: "Outstanding",
-    value: "Out of Stock",
+    name: "Outstanding",
+    id: "Out of Stock",
   },
   {
-    label: "Paid in Full",
-    value: "PO Assigned",
+    name: "Paid in Full",
+    id: "PO Assigned",
   },
 ];
 
 export default function EmployeesPage() {
-      const { 
-    data: locationOptionsList, 
-    isLoading:locationOptionsListLoading, 
-    error: locationOptionsListError
-  } = useGetLocations<Array<{ id: string, name: string }>>();
-  
+  const {
+    data: locationOptionsList,
+    isLoading: locationOptionsListLoading,
+    error: locationOptionsListError,
+  } = useGetLocations<Array<{ id: string; name: string }>>();
+
   const [filters, setFilters] = useState({
     equipment: "",
     location: "",
@@ -145,7 +145,7 @@ export default function EmployeesPage() {
               <SelectValue placeholder="All Warehouses" />
             </SelectTrigger>
             <SelectContent>
-              {locationOptionsList.map((item) => (
+              {locationOptionsList?.map((item) => (
                 <SelectItem value={item.id} key={item.id}>
                   {item.name}
                 </SelectItem>

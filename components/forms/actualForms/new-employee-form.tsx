@@ -10,18 +10,12 @@ import { GitPullRequestArrow, Pen, Plus, Trash2 } from "lucide-react";
 import TextareaWrapper from "../wrappers/TextareaWrapper";
 import { toast } from "sonner";
 import InputWrapper from "../wrappers/InputWrapper";
-import {
-  categoryOptions,
-  employeeTypeOptions,
-  statusOptions,
-} from "@/lib/equipment-schema";
+import { categoryOptions } from "@/lib/equipment-schema";
 import SelectWrapper from "../wrappers/SelectWrapper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   EmployeeCheckboxOptions,
-  equipmentCheckboxOptions,
   equipmentOptionsList,
-  locationOptionsList,
 } from "@/lib/option-list";
 import FormSubheader from "../ui/formSubheader";
 import CustomFieldsWrapper from "../wrappers/CustomFieldsWrapper";
@@ -55,14 +49,49 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  useAddEmployee,
+  useGetEmployeeCategories,
+  useGetEmployeeStatuses,
+  useGetEmployeeTypes,
+  useUpdateEmployeeCategory,
+} from "@/services/setups/employee";
+import { useGetLocations } from "@/services/setups/vendor";
 
 // Define the form schema with Zod
-export const vendorSchema = z.object({
-  equipmentId: z.string({
-    required_error: "Equipment is required",
-  }),
-  date: z.date().optional(),
+export const employeeSchema = z.object({
+  id: z.string().optional(),
+  last_name: z.string().optional(),
+  first_name: z.string().optional(),
+  middle_name: z.string().optional(),
+  address_one: z.string().optional(),
+  address_two: z.string().optional(),
+  city: z.string().optional(),
+  state: z.string(),
+  postal_code: z.string().optional(),
+  home_contact: z.string(),
+  alt_phone: z.string().optional(),
+  cell: z.string(),
+  email: z.string().optional(),
+  status_id: z.string(),
+  hire_date: z.date(),
+  leave_date: z.date(),
+  dob: z.date(),
+  ssn: z.string().optional(),
+  type_id: z.string().optional(),
+  labor_rate: z.string(),
+  billing_rate: z.string(),
+  currency: z.string().optional(),
+  location_id: z.string(),
+  category_id: z.string(),
+  driver_license_number: z.string().optional(),
+  driver_license_class: z.string().optional(),
+  driver_license_state: z.string().optional(),
   notes: z.string().optional(),
+  created_by: z.string().optional(),
+  updated_by: z.string().optional(),
+  created_at: z.string().optional(),
+  updated_at: z.string().optional(),
 });
 
 export default function NewEmployeeForm() {
@@ -72,23 +101,61 @@ export default function NewEmployeeForm() {
 
   const [open, setOpen] = useState(false);
 
-  const vendorForm = useForm<z.infer<typeof vendorSchema>>({
-    resolver: zodResolver(vendorSchema),
+  const employeeForm = useForm<z.infer<typeof employeeSchema>>({
+    resolver: zodResolver(employeeSchema),
     defaultValues: {},
   });
 
-  async function handleSubmit(data: z.infer<typeof vendorSchema>) {
+  const {
+    data: statusOptions,
+    isLoading: statusOptionsLoading,
+    error: statusOptionsError,
+  } = useGetEmployeeStatuses<Array<{ id: string; name: string }>>();
+
+  const {
+    data: employeeTypeOptions,
+    isLoading: employeeTypeOptionsLoading,
+    error: employeeTypeOptionsError,
+  } = useGetEmployeeTypes<Array<{ id: string; name: string }>>();
+
+  const {
+    data: locationOptionsList,
+    isLoading: locationOptionsListLoading,
+    error: locationOptionsListError,
+  } = useGetLocations<Array<{ id: string; name: string }>>();
+
+  const {
+    data: categoryOptions,
+    isLoading: categoryOptionsLoading,
+    error: categoryOptionsError,
+  } = useGetEmployeeCategories<Array<{ id: string; name: string }>>();
+  const { mutateAsync, isPending } = useAddEmployee();
+
+  async function handleSubmit(data: z.infer<typeof employeeSchema>) {
+    // console.log(data);
     console.log(data);
     // Here you would typically send the data to your API
-
-    toast.success("Work Order submitted successfully!");
+    toast.success("Edited  successfully!");
+    const res = await mutateAsync(data);
+    toast.success(res?.message);
+    employeeForm.reset();
   }
 
   return (
     <div className="w-full">
-      <Form {...vendorForm}>
+      <Form {...employeeForm}>
         <form
-          onSubmit={vendorForm.handleSubmit((data) => handleSubmit(data))}
+          onSubmit={employeeForm.handleSubmit(handleSubmit, (errors) => {
+            console.log(errors);
+            const firstErrorField = Object.values(errors)[0];
+            const message = firstErrorField?.message;
+
+            if (message) {
+              toast.error(message);
+            } else {
+              toast.error("Please check the form for errors.");
+            }
+          })}
           className="w-full"
         >
           <Tabs defaultValue="general" className="w-full">
@@ -105,22 +172,22 @@ export default function NewEmployeeForm() {
                 <FormSubheader header={"Employment"} />
                 <div className="flex flex-row">
                   <InputWrapper
-                    control={vendorForm.control}
-                    name="last"
+                    control={employeeForm.control}
+                    name="last_name"
                     label="Last Name"
                     type="text"
                     value={""}
                   />
                   <InputWrapper
-                    control={vendorForm.control}
-                    name="first"
+                    control={employeeForm.control}
+                    name="first_name"
                     label="First Name"
                     type="text"
                     value={""}
                   />
                   <InputWrapper
-                    control={vendorForm.control}
-                    name="middle"
+                    control={employeeForm.control}
+                    name="middle_name"
                     label="Middle name"
                     type="text"
                     value={""}
@@ -128,26 +195,16 @@ export default function NewEmployeeForm() {
                 </div>
 
                 <InputWrapper
-                  control={vendorForm.control}
-                  name="street1"
+                  control={employeeForm.control}
+                  name="address_one"
                   label="Address 1"
                   type="text"
                   value={""}
-                />
-
-                <InputWrapper
-                  className="pt-0"
-                  control={vendorForm.control}
-                  name="street2"
-                  placeholder="Address 2 "
-                  label=""
-                  type="text"
-                  value={""}
-                />
+                /> 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="col-span-1">
                     <InputWrapper
-                      control={vendorForm.control}
+                      control={employeeForm.control}
                       name="city"
                       label="City"
                       type="text"
@@ -156,7 +213,7 @@ export default function NewEmployeeForm() {
                   </div>
                   <div className="col-span-1">
                     <InputWrapper
-                      control={vendorForm.control}
+                      control={employeeForm.control}
                       name="state"
                       label="State /Province"
                       type="text"
@@ -165,7 +222,7 @@ export default function NewEmployeeForm() {
                   </div>
                   <div className="col-span-1">
                     <InputWrapper
-                      control={vendorForm.control}
+                      control={employeeForm.control}
                       name="postal_code"
                       label="Postal Code"
                       type="text"
@@ -180,8 +237,8 @@ export default function NewEmployeeForm() {
                   <div className="col-span-1">
                     {" "}
                     <InputWrapper
-                      control={vendorForm.control}
-                      name="home"
+                      control={employeeForm.control}
+                      name="home_contact"
                       label="Home "
                       type="number"
                       value={" "}
@@ -191,7 +248,7 @@ export default function NewEmployeeForm() {
                   <div className="col-span-1">
                     {" "}
                     <InputWrapper
-                      control={vendorForm.control}
+                      control={employeeForm.control}
                       name="altPhone"
                       label="Alt. Phone "
                       type="number"
@@ -202,7 +259,7 @@ export default function NewEmployeeForm() {
                   <div className="col-span-1">
                     {" "}
                     <InputWrapper
-                      control={vendorForm.control}
+                      control={employeeForm.control}
                       name="cell"
                       label="Cell"
                       type="number"
@@ -211,7 +268,7 @@ export default function NewEmployeeForm() {
                   </div>
                 </div>
                 <InputWrapper
-                  control={vendorForm.control}
+                  control={employeeForm.control}
                   name="email"
                   label="Email"
                   type="text"
@@ -219,7 +276,7 @@ export default function NewEmployeeForm() {
                 />
                 <div className="flex flex-col gap-4">
                   <TextareaWrapper
-                    control={vendorForm.control}
+                    control={employeeForm.control}
                     name="notes"
                     label="Notes"
                     rows={4}
@@ -228,7 +285,7 @@ export default function NewEmployeeForm() {
                 </div>
                 <FormSubheader header={"Miscellaneous"} />
                 <CustomFieldsWrapper
-                  control={vendorForm.control}
+                  control={employeeForm.control}
                   name="customFields"
                   label="Custom Fields"
                   maxFields={4}
@@ -239,40 +296,40 @@ export default function NewEmployeeForm() {
               <div className="flex flex-col gap-1">
                 <FormSubheader header={"Employment"} />
                 <SelectWrapper
-                  control={vendorForm.control}
-                  name="status"
+                  control={employeeForm.control}
+                  name="status_id"
                   label="Status "
                   required
-                  options={statusOptions}
+                  options={statusOptions??[]}
                 />
                 <div className="grid grid-cols-2 gap-1">
                   <div className="col-span-1">
                     {" "}
                     <DatePickerWrapper
-                      control={vendorForm.control}
-                      name="date"
+                      control={employeeForm.control}
+                      name="hire_date"
                       label="Date"
                     />{" "}
                   </div>
                   <div className="col-span-1">
                     {" "}
                     <DatePickerWrapper
-                      control={vendorForm.control}
-                      name="leaveDate"
+                      control={employeeForm.control}
+                      name="leave_date"
                       label="Leave Date"
                     />{" "}
                   </div>
                   <div className="col-span-1">
                     {" "}
                     <DatePickerWrapper
-                      control={vendorForm.control}
+                      control={employeeForm.control}
                       name="dob"
                       label="DOB"
                     />{" "}
                   </div>
                   <div className="col-span-1">
                     <InputWrapper
-                      control={vendorForm.control}
+                      control={employeeForm.control}
                       name="ssn"
                       label="SSN"
                       type="text"
@@ -281,20 +338,20 @@ export default function NewEmployeeForm() {
                   </div>
                   <div className="col-span-1">
                     <SelectWrapper
-                      control={vendorForm.control}
+                      control={employeeForm.control}
                       name="type_id"
                       label="Type "
                       required
-                      options={employeeTypeOptions}
+                      options={employeeTypeOptions ?? []}
                     />
                   </div>
                   <div className="col-span-1"></div>
                   <div className="col-span-1">
                     {" "}
                     <InputWrapper
-                      control={vendorForm.control}
-                      name="laborRate"
-                      label="Last Rate"
+                      control={employeeForm.control}
+                      name="labor_rate"
+                      label="Labour Rate"
                       type="number"
                       value={""}
                     />
@@ -302,7 +359,7 @@ export default function NewEmployeeForm() {
                   <div className="col-span-1">
                     {" "}
                     <InputWrapper
-                      control={vendorForm.control}
+                      control={employeeForm.control}
                       name="billing_rate"
                       label="Billing Rate"
                       type="number"
@@ -311,49 +368,49 @@ export default function NewEmployeeForm() {
                   </div>
                   <div className="col-span-1">
                     <SelectWrapper
-                      control={vendorForm.control}
+                      control={employeeForm.control}
                       name="location_id"
                       label="Location "
                       required
-                      options={locationOptionsList}
+                      options={locationOptionsList??[]}
                     />
                   </div>
 
                   <div className="col-span-1">
                     <SelectWrapper
-                      control={vendorForm.control}
-                      name="category"
+                      control={employeeForm.control}
+                      name="category_id"
                       label="Category "
                       required
-                      options={categoryOptions}
+                      options={categoryOptions ?? []}
                     />
                   </div>
                 </div>
                 <FormSubheader header={"Driver's License "} />
 
                 <InputWrapper
-                  control={vendorForm.control}
+                  control={employeeForm.control}
                   name="driverNumber"
                   label="Number"
                   type="text"
                   value={""}
                 />
                 <InputWrapper
-                  control={vendorForm.control}
+                  control={employeeForm.control}
                   name="driverClass"
                   label="Class"
                   type="text"
                   value={""}
                 />
                 <InputWrapper
-                  control={vendorForm.control}
+                  control={employeeForm.control}
                   name="state"
                   label="State/Province"
                   type="text"
                   value={""}
                 />
                 <TextareaWrapper
-                  control={vendorForm.control}
+                  control={employeeForm.control}
                   name="notes"
                   label="Notes"
                   rows={4}
@@ -459,7 +516,7 @@ export default function NewEmployeeForm() {
                       </div>
                       <div className="col-span-3">
                         <CheckboxWrapper
-                          control={vendorForm.control}
+                          control={employeeForm.control}
                           name={"tracker"}
                           label={""}
                           options={EmployeeCheckboxOptions}
@@ -472,14 +529,14 @@ export default function NewEmployeeForm() {
             </TabsContent>
             <TabsContent value="photos">
               <FileUploadWrapper
-                control={vendorForm.control}
+                control={employeeForm.control}
                 name="Photos"
                 label="Photos"
               />
             </TabsContent>
             <TabsContent value="attachments">
               <FileUploadWrapper
-                control={vendorForm.control}
+                control={employeeForm.control}
                 name="Attachments"
                 label="Attachments"
               />

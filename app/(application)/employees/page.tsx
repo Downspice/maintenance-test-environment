@@ -17,14 +17,14 @@ import EmployeeDataTable from "./components/employeeDataTable";
 import { useGetLocations } from "@/services/setups/vendor";
 
 const ActiveDropdown = [
-  { label: "All Employees", value: "all" },
-  { label: "Active", value: "active" },
-  { label: "Inactive", value: "inactive" },
-  { label: "Renewals Due", value: "requestors" },
-  { label: "Renewals Soon Due", value: "users" },
-  { label: "Driver", value: "full_users" },
-  { label: "Manager", value: "operator_users" },
-  { label: "Technician", value: "deleted" },
+  { name: "All Employees", id: "all" },
+  { name: "Active", id: "active" },
+  { name: "Inactive", id: "inactive" },
+  { name: "Renewals Due", id: "requestors" },
+  { name: "Renewals Soon Due", id: "users" },
+  { name: "Driver", id: "full_users" },
+  { name: "Manager", id: "operator_users" },
+  { name: "Technician", id: "deleted" },
 ];
 
 export default function EmployeesPage() {
@@ -132,7 +132,7 @@ export default function EmployeesPage() {
               <SelectValue placeholder="All Locations" />
             </SelectTrigger>
             <SelectContent>
-              {locationOptionsList.map((item) => (
+              {locationOptionsList?.map((item) => (
                 <SelectItem value={item.id} key={item.id}>
                   {item.name}
                 </SelectItem>
