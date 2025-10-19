@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { GitPullRequestArrow } from "lucide-react";
 import { toast } from "sonner";
 import InputWrapper from "@/components/forms/wrappers/InputWrapper";
-import { categoryOptions } from "@/lib/equipment-schema";
 import SelectWrapper from "@/components/forms/wrappers/SelectWrapper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import FileUploadWrapper from "@/components/forms/wrappers/FileUploadWrapper";
@@ -26,6 +25,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
 import { useGetLocations, useGetPurchaseOrderTerms, useGetStatusOnes, useGetVendorTypes, useUpdateCustomer } from "@/services/setups/vendor";
 import {deepCleanNulls} from "@/lib/utils"
+import { useGetInventoryCategories } from "@/services/setups/inventory";
 export default function EditCustomer({
   children,
   data,
@@ -33,6 +33,8 @@ export default function EditCustomer({
   children: React.ReactNode;
   data: CustomerTableDataInterface;
 }) {
+    const { data: categoryOptions } = useGetInventoryCategories();
+  
   const [open, setOpen] = useState(false);
   const CustomerForm = useForm<z.infer<typeof customerSchema>>({
     resolver: zodResolver(customerSchema),

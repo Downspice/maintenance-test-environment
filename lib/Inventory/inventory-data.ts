@@ -6,8 +6,8 @@ export const InventorySchema = z.object({
   description: z.string().min(1, "Description is required"),
   manufacturer: z.string().optional(),
   category: z.string().optional(),
-  unitCost: z.string().min(1, "Unit cost is required"),
-  unit: z.string().optional(),
+  unit_cost: z.string().min(1, "Unit cost is required"),
+  unit_of_measure: z.string().optional(),
   upc: z.string().min(1, "UPC is required"),
   customFields: z
     .array(
@@ -95,197 +95,156 @@ export const InventorySchema = z.object({
   // ).optional(),
 });
 
-export type InventoryInterface = z.infer<typeof InventorySchema>;
+export interface InventoryByIdInterface {
+  id: string
+  part_number: string
+  name: string
+  description: string
+  manufacturer_id: string
+  category_id: string
+  currency: string
+  unit_cost: string
+  unit_of_measure: string
+  upc: string
+  markup_type_id: string
+  markup_value: string
+  days: number
+  primary: number
+  secondary: number
+  notes: string
+  created_by: any
+  updated_by: any
+  created_at: string
+  updated_at: string
+  category: Category
+  unit_type: UnitType
+  manufacturer: Manufacturer
+  inventory_trackings: InventoryTracking[]
+  others: Other[]
+  markup_type: MarkupType
+  inventory_substitutions: InventorySubstitution[]
+  upc_codes: UpcCode[]
+  attachments: any[]
+}
 
-export const InventoryData:InventoryInterface[] = [
-  {
-    number: "PRT-00234",
-    name: "Compressor Valve",
-    description: "Valve for compressor regulation",
-    manufacturer: "GE",
-    category: "Compressors",
-    unitCost: "320.00",
-    unit: "unit",
-    upc: "111111111111",
-    customFields: [
-      { key: "Weight", value: "12kg" },
-      { key: "Material", value: "Steel" },
-    ],
-    enableTracking: true,
-    warehouses: [
-      {
-        warehouse: "Warehouse-A",
-        aisle: "A1",
-        row: "3",
-        bin: "12B",
-        vendor: "Universal Supplies",
-        costCenter: "Ops",
-        quantity: 100,
-        reorderPoint: 30,
-        reorderQty: 50,
-        maxQty: 200,
-        leadTime: 7,
-        movementType: "FIFO",
-      },
-      {
-        warehouse: "Warehouse-B",
-        aisle: "B2",
-        row: "4",
-        bin: "8C",
-        vendor: "MegaVendor Inc.",
-        costCenter: "Maintenance",
-        quantity: 75,
-        reorderPoint: 20,
-        reorderQty: 40,
-        maxQty: 150,
-        leadTime: 10,
-        movementType: "LIFO",
-      },
-    ],
-    markUp: "percent",
-    percentMarkup: 10,
-  },
-  {
-    number: "PRT-00345",
-    name: "Engine Filter",
-    description: "Air filter for diesel engines",
-    manufacturer: "Bosch",
-    category: "Filters",
-    unitCost: "45.50",
-    unit: "box",
-    upc: "222222222222",
-    enableTracking: false,
-    markUp: "none",
-  },
-  {
-    number: "PRT-00456",
-    name: "Pump Kit",
-    description: "Pump repair kit including seals",
-    manufacturer: "Karcher",
-    category: "Pumps",
-    unitCost: "89.00",
-    unit: "kit",
-    upc: "333333333333",
-    customFields: [{ key: "Kit Size", value: "Medium" }],
-    enableTracking: true,
-    warehouses: [
-      {
-        warehouse: "Warehouse-B",
-        aisle: "B2",
-        row: "4",
-        bin: "8C",
-        vendor: "MegaVendor Inc.",
-        costCenter: "Maintenance",
-        quantity: 75,
-        reorderPoint: 20,
-        reorderQty: 40,
-        maxQty: 150,
-        leadTime: 10,
-        movementType: "LIFO",
-      },
-    ],
-    markUp: "value",
-    markupValue: 12,
-  },
-  {
-    number: "PRT-00567",
-    name: "Drive Belt",
-    description: "Belt used in high-performance motors",
-    manufacturer: "Continental",
-    category: "Belts",
-    unitCost: "22.00",
-    unit: "piece",
-    upc: "444444444444",
-    enableTracking: false,
-    markUp: "manual",
-    markupPrice: 30,
-  },
-  {
-    number: "PRT-00678",
-    name: "Sensor Module",
-    description: "Temperature sensor with housing",
-    manufacturer: "Honeywell",
-    category: "Sensors",
-    unitCost: "55.00",
-    unit: "module",
-    upc: "555555555555",
-    enableTracking: true,
-    warehouses: [
-      {
-        warehouse: "Warehouse-A",
-        aisle: "A1",
-        row: "3",
-        bin: "12B",
-        vendor: "Universal Supplies",
-        costCenter: "Ops",
-        quantity: 100,
-        reorderPoint: 30,
-        reorderQty: 50,
-        maxQty: 200,
-        leadTime: 7,
-        movementType: "FIFO",
-      },
-      {
-        warehouse: "Warehouse-B",
-        aisle: "B2",
-        row: "4",
-        bin: "8C",
-        vendor: "MegaVendor Inc.",
-        costCenter: "Maintenance",
-        quantity: 75,
-        reorderPoint: 20,
-        reorderQty: 40,
-        maxQty: 150,
-        leadTime: 10,
-        movementType: "LIFO",
-      },
-    ],
-    markUp: "percent",
-    percentMarkup: 8,
-  },
-  {
-    number: "PRT-00789",
-    name: "Control Relay",
-    description: "Relay for industrial control panels",
-    manufacturer: "ABB",
-    category: "Relays",
-    unitCost: "60.00",
-    unit: "pack",
-    upc: "666666666666",
-    customFields: [{ key: "Voltage", value: "24V" }],
-    markUp: "value",
-    markupValue: 5,
-  },
-  {
-    number: "PRT-00890",
-    name: "LED Indicator",
-    description: "Panel-mount green LED indicator",
-    manufacturer: "Philips",
-    category: "Electronics",
-    unitCost: "7.50",
-    unit: "unit",
-    upc: "777777777777",
-    enableTracking: true,
-    warehouses: [
-      {
-        warehouse: "Warehouse-A",
-        aisle: "A1",
-        row: "3",
-        bin: "12B",
-        vendor: "Universal Supplies",
-        costCenter: "Ops",
-        quantity: 100,
-        reorderPoint: 30,
-        reorderQty: 50,
-        maxQty: 200,
-        leadTime: 7,
-        movementType: "FIFO",
-      },
-    ],
-    markUp: "manual",
-    markupPrice: 10.5,
-  },
-];
+export interface Category {
+  id: string
+  name: string
+  created_by: any
+  updated_by: any
+  created_at: string
+  updated_at: string
+}
+
+export interface UnitType {
+  id: string
+  name: string
+  created_by: any
+  updated_by: any
+  created_at: string
+  updated_at: string
+}
+
+export interface Manufacturer {
+  id: string
+  name: string
+  created_by: any
+  updated_by: any
+  created_at: string
+  updated_at: string
+}
+
+export interface InventoryTracking {
+  id: string
+  inventory_id: string
+  warehouse_id: string
+  is_enabled: boolean
+  aisle: string
+  row: string
+  bin: string
+  vendor_id: string
+  cost_center_id: string
+  quantity: string
+  recorder_point: string
+  recorder_quantity: string
+  max_quantity: string
+  lead_time: string
+  tracking_type_id: string
+  created_by: any
+  updated_by: any
+  created_at: string
+  updated_at: string
+}
+
+export interface Other {
+  id: string
+  inventory_id: string
+  name: string
+  value: string
+  created_by: any
+  updated_by: any
+  created_at: string
+  updated_at: string
+}
+
+export interface MarkupType {
+  id: string
+  name: string
+  created_by: any
+  updated_by: any
+  created_at: string
+  updated_at: string
+}
+
+export interface InventorySubstitution {
+  id: string
+  inventory_id: string
+  part_number: string
+  name: string
+  manufacturer_id: any
+  description: string
+  created_by: any
+  updated_by: any
+  created_at: string
+  updated_at: string
+}
+
+export interface UpcCode {
+  id: string
+  inventory_id: string
+  manufacturer_id: string
+  vendor_id: string
+  upc: string
+  created_by: any
+  updated_by: any
+  created_at: string
+  updated_at: string
+}
+
+export interface InventoryInterface {
+  id: string
+  part_number: string
+  name: string
+  description: string
+  manufacturer_id: string
+  category_id: string
+  currency: string
+  unit_cost: string
+  unit_of_measure: string
+  upc: string
+  markup_type_id: string
+  markup_value: string
+  days: number
+  primary: number
+  secondary: number
+  notes: string
+  created_by: any
+  updated_by: any
+  created_at: string
+  updated_at: string
+}
+
+ 
 
 export const StockAdjustmentHistory = [
   {

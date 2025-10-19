@@ -134,7 +134,7 @@ export default function EditPurchaseOrderForm({
       warranty: " ",
       orderQuantity: 0,
       receivedQuantity: 0,
-      unitCost: 0,
+      unit_cost: 0,
       extendedCost: 0,
       notes: " ",
     });
@@ -347,7 +347,7 @@ export default function EditPurchaseOrderForm({
                                     warranty: " ",
                                     orderQuantity: 0,
                                     receivedQuantity: 0,
-                                    unitCost: 0,
+                                    unit_cost: 0,
                                     extendedCost: 0,
                                     notes: " ",
                                   }); // ensure blank form for create
@@ -411,7 +411,7 @@ export default function EditPurchaseOrderForm({
                                     />
                                     <InputWrapper
                                       control={Itemsform.control}
-                                      name="unitCost"
+                                      name="unit_cost"
                                       label="Unit Cost"
                                       type="number"
                                       value="0"
@@ -478,7 +478,7 @@ export default function EditPurchaseOrderForm({
                                   <TableCell>{item.orderQuantity}</TableCell>
                                   <TableCell>{item.receivedQuantity}</TableCell>
                                   <TableCell>{item.description}</TableCell>
-                                  <TableCell>{item.unitCost}</TableCell>
+                                  <TableCell>{item.unit_cost}</TableCell>
                                   <TableCell>{item.extendedCost}</TableCell>
                                   <TableCell>{item.notes}</TableCell>
                                   <TableCell>

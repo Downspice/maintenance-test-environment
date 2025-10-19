@@ -25,7 +25,6 @@ import {
   statusOptions,
   meterUnitsOptions,
   assigneeOptions,
-  categoryOptions,
   vendorOptions,
   ownershipOptions,
   expenseOptions,
@@ -69,6 +68,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import SingleCheckboxWrapper from "@/components/forms/wrappers/SingleCheckboxWrapper";
 import z from "zod";
+import { useGetInventoryCategories } from "@/services/setups/inventory";
 
 interface triggerVariant {
   variant?: "icon" | "default";
@@ -196,6 +196,7 @@ export function ActualEquipmentForm() {
     purchase: false,
     additionalDetails: false,
   });
+  const { data: categoryOptions } = useGetInventoryCategories();
 
   const form = useForm<EquipmentFormValues>({
     resolver: zodResolver(equipmentSchema),

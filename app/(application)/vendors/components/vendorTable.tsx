@@ -19,7 +19,8 @@ import { VendorTableInterface } from "@/lib/vendor-data";
 import ViewVendor from "../view/viewDetailsSheet";
 import EditVendor from "../view/editVendorSheet";
 import { matchesSearchAllFields } from "@/lib/utils";
-import { useGetVendors } from "@/services/setups/vendor";
+import { useDeleteVendor, useGetVendors } from "@/services/setups/vendor";
+import { toast } from "sonner";
 
 export default function VendorDataTable() {
   const {
@@ -36,7 +37,7 @@ export default function VendorDataTable() {
 }
 export function VendorTableLoader({ VendorData, isLoading }) {
   const [isServerMode, setIsServerMode] = useState(false);
-  // const [isLoading, setIsLoading] = useState(isLoading);
+  const deleteApi =useDeleteVendor();
   const [currentData, setCurrentData] = useState(VendorData.slice(0, 5)); // Show first 5 for demo
   const [paginationInfo, setPaginationInfo] = useState({
     pageIndex: 0,
@@ -325,7 +326,8 @@ export function VendorTableLoader({ VendorData, isLoading }) {
           if (
             confirm(`Are you sure you want to delete ${row.original.name}?`)
           ) {
-            alert(`Deleted ${row.original.name}`);
+            deleteApi.mutateAsync(row.original)
+            if(deleteApi){toast.info(`Deleted Successfully`)};
             // Here you would typically call your delete API
           }
         };

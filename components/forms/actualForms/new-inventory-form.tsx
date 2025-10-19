@@ -9,13 +9,11 @@ import { GitPullRequestArrow } from "lucide-react";
 import { toast } from "sonner";
 import InputWrapper from "../wrappers/InputWrapper";
 import SelectWrapper from "../wrappers/SelectWrapper";
-import { categoryOptions, vendorOptions } from "@/lib/equipment-schema";
+import { vendorOptions } from "@/lib/equipment-schema";
 import CustomFieldsWrapper from "../wrappers/CustomFieldsWrapper";
 import { ComboboxFieldWrapper } from "../wrappers/ComboboxWrapper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  equipmentManufacturerOptions,
-  unitOptions,
   inventoryMovement,
   markupTypeOptions,
   partOptions,
@@ -29,8 +27,16 @@ import AlternateUpcCodesTable from "@/app/(application)/inventory/component/inve
 import { InventorySchema } from "@/lib/Inventory/inventory-data";
 import { useState } from "react";
 import WarehouseTabs from "@/app/(application)/inventory/component/inventory.warehouse";
+import {
+  useGetInventoryCategories,
+  useGetInventoryManufacturers,
+  useGetInventoryUnitTypes,
+} from "@/services/setups/inventory";
 
 export default function NewInventory() {
+  const { data: equipmentManufacturerOptions } = useGetInventoryManufacturers();
+  const { data: unitOptions } = useGetInventoryUnitTypes();
+
   const inventoryForm = useForm<z.infer<typeof InventorySchema>>({
     resolver: zodResolver(InventorySchema),
     defaultValues: {},
@@ -38,6 +44,7 @@ export default function NewInventory() {
   const [warehouses, setWarehouses] = useState<string[]>([]);
   const enableTrackingWatch = inventoryForm.watch("enableTracking");
   const partSubs = inventoryForm.watch("partSubstitutions") || [];
+  const { data: categoryOptions } = useGetInventoryCategories();
 
   async function handleSubmit(data: z.infer<typeof InventorySchema>) {
     console.log(data);
@@ -102,7 +109,7 @@ export default function NewInventory() {
                   <div className="col-span-1">
                     <InputWrapper
                       control={inventoryForm.control}
-                      name="unitCost"
+                      name="unit_cost"
                       label="Unit Cost (Base)"
                       type="text"
                       required

@@ -10,7 +10,6 @@ import { GitPullRequestArrow } from "lucide-react";
 import TextareaWrapper from "../wrappers/TextareaWrapper";
 import { toast } from "sonner";
 import InputWrapper from "../wrappers/InputWrapper";
-import { categoryOptions } from "@/lib/equipment-schema";
 import SelectWrapper from "../wrappers/SelectWrapper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CustomFieldsWrapper from "../wrappers/CustomFieldsWrapper";

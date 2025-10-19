@@ -7,11 +7,9 @@ import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { GitPullRequestArrow } from "lucide-react";
 import { toast } from "sonner";
-import { categoryOptions, vendorOptions } from "@/lib/equipment-schema";
+import {  vendorOptions } from "@/lib/equipment-schema";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  equipmentManufacturerOptions,
-  unitOptions,
   inventoryMovement,
   markupTypeOptions,
   partOptions,
@@ -29,8 +27,12 @@ import FileUploadWrapper from "../../wrappers/FileUploadWrapper";
 import SelectWrapper from "../../wrappers/SelectWrapper";
 import SingleCheckboxWrapper from "../../wrappers/SingleCheckboxWrapper";
 import CustomFieldsWrapper from "../../wrappers/CustomFieldsWrapper";
+import { useGetInventoryCategories, useGetInventoryManufacturers, useGetInventoryUnitTypes } from "@/services/setups/inventory";
 
 export default function NewPart() {
+    const { data: equipmentManufacturerOptions } = useGetInventoryManufacturers();
+    const { data:   unitOptions } = useGetInventoryUnitTypes();
+
   const inventoryForm = useForm<z.infer<typeof InventorySchema>>({
     resolver: zodResolver(InventorySchema),
     defaultValues: {},
@@ -38,6 +40,7 @@ export default function NewPart() {
   const [warehouses, setWarehouses] = useState<string[]>([]);
   const enableTrackingWatch = inventoryForm.watch("enableTracking");
   const partSubs = inventoryForm.watch("partSubstitutions") || [];
+  const { data: categoryOptions } = useGetInventoryCategories();
 
   async function handleSubmit(data: z.infer<typeof InventorySchema>) {
     console.log(data);
@@ -102,7 +105,7 @@ export default function NewPart() {
                   <div className="col-span-1">
                     <InputWrapper
                       control={inventoryForm.control}
-                      name="unitCost"
+                      name="unit_cost"
                       label="Unit Cost (Base)"
                       type="text"
                       required

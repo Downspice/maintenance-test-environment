@@ -13,9 +13,7 @@ import { ComboboxFieldWrapper } from "../wrappers/ComboboxWrapper";
 import { renewalOptionsList } from "@/lib/option-list";
 // Define the form schema with Zod
 export const updateEmployeeSchema = z.object({
-  // employeeId: z.string({
-  //   required_error: "Equipment is required",
-  // }),
+
   issued_on: z.date({
     required_error: "Date is required",
   }),

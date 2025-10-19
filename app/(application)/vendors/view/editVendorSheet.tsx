@@ -8,9 +8,7 @@ import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { GitPullRequestArrow } from "lucide-react";
 import { toast } from "sonner";
-import { categoryOptions } from "@/lib/equipment-schema";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { vendorTypeOptions } from "@/lib/option-list";
 import InputWrapper from "@/components/forms/wrappers/InputWrapper";
 import SelectWrapper from "@/components/forms/wrappers/SelectWrapper";
 import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
@@ -32,7 +30,6 @@ import {
   useUpdateVendor,
 } from "@/services/setups/vendor";
 import {
-  VendorFormValues,
   vendorSchema,
 } from "@/components/forms/actualForms/new-vendor-form";
 import { VendorTableInterface } from "@/lib/vendor-data";

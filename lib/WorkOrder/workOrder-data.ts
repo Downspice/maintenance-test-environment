@@ -13,14 +13,14 @@ export const AddLaborSchema = z
     technicianName: z.string().min(1, "Technician is required"),
     workPerformed: z.string().min(1, "Work performed is required"),
     costCenter: z.string().min(1, "Cost center is required"),
-    laborRate: z.coerce.number().nonnegative("Labor rate must be ≥ 0"),
+    labor_rate: z.coerce.number().nonnegative("Labor rate must be ≥ 0"),
     hours: z.coerce.number().nonnegative("Hours must be ≥ 0"),
     totalCost: z.coerce.number().nonnegative("Total cost must be ≥ 0"),
     usage: z.string().optional(),
   })
   .transform((data) => ({
     ...data,
-    totalCost: parseFloat((data.laborRate * data.hours).toFixed(2)),
+    totalCost: parseFloat((data.labor_rate * data.hours).toFixed(2)),
   }));
 
 export type AddLaborFormValues = z.infer<typeof AddLaborSchema>;
@@ -30,7 +30,7 @@ export const PartSchema = z.object({
   partName: z.string().optional(),
   name: z.string(),
   quantityUsed: z.coerce.number().nonnegative(),
-  unitCost: z.coerce.number().nonnegative(),
+  unit_cost: z.coerce.number().nonnegative(),
   totalCost: z.coerce.number().nonnegative(),
 });
 
@@ -127,7 +127,7 @@ export const mockWorkOrders: z.infer<typeof WorkOrderSchema>[] = [
         partNumber: "PRT-1001",
         name: "Air Filter",
         quantityUsed: 2,
-        unitCost: 15.0,
+        unit_cost: 15.0,
         totalCost: 30.0,
       },
     ],
@@ -135,7 +135,7 @@ export const mockWorkOrders: z.infer<typeof WorkOrderSchema>[] = [
       {
         technicianName: "User-246964",
         hours: 1.5,
-        laborRate: 30,
+        labor_rate: 30,
         totalCost: 45.0,
         laborType: "",
         workPerformed: "",
@@ -185,7 +185,7 @@ export const mockWorkOrders: z.infer<typeof WorkOrderSchema>[] = [
         partNumber: "PRT-2002",
         partName: "Brake Pad Set",
         quantityUsed: 1,
-        unitCost: 80,
+        unit_cost: 80,
         totalCost: 80,
         name: "",
       },
@@ -194,7 +194,7 @@ export const mockWorkOrders: z.infer<typeof WorkOrderSchema>[] = [
       {
         technicianName: "Vendor-324051",
         hours: 2,
-        laborRate: 30,
+        labor_rate: 30,
         totalCost: 60,
         laborType: "",
         workPerformed: "",
@@ -265,7 +265,7 @@ export const mockWorkOrders: z.infer<typeof WorkOrderSchema>[] = [
         partNumber: "PRT-3011",
         name: "Coolant Hose",
         quantityUsed: 1,
-        unitCost: 40,
+        unit_cost: 40,
         totalCost: 40,
       },
     ],
@@ -273,7 +273,7 @@ export const mockWorkOrders: z.infer<typeof WorkOrderSchema>[] = [
       {
         technicianName: "Vendor-324050",
         hours: 3,
-        laborRate: 30,
+        labor_rate: 30,
         totalCost: 90,
         laborType: "",
         workPerformed: "",
@@ -320,7 +320,7 @@ export const mockWorkOrders: z.infer<typeof WorkOrderSchema>[] = [
       {
         technicianName: "User-246964",
         hours: 2,
-        laborRate: 25,
+        labor_rate: 25,
         totalCost: 50,
         laborType: "",
         workPerformed: "",

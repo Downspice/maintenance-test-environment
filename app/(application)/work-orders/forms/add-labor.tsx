@@ -32,7 +32,7 @@ export default function AddLabor({ onSave, initialValues }: AddLaborProps) {
   const form = useForm<AddLaborFormValues>({
     resolver: zodResolver(AddLaborSchema),
     defaultValues: {
-      laborRate: initialValues?.laborRate ?? 0,
+      labor_rate: initialValues?.labor_rate ?? 0,
       hours: initialValues?.hours ?? 0,
       totalCost: initialValues?.totalCost ?? 0,
       usage: "Active",
@@ -40,18 +40,18 @@ export default function AddLabor({ onSave, initialValues }: AddLaborProps) {
     },
   });
 
-  const laborRate = form.watch("laborRate");
+  const labor_rate = form.watch("labor_rate");
   const hours = form.watch("hours");
 
   useEffect(() => {
-    const rate = parseFloat(laborRate) || 0;
+    const rate = parseFloat(labor_rate) || 0;
     const hrs = parseFloat(hours) || 0;
     const total = rate * hrs;
     form.setValue("totalCost", total);
-  }, [laborRate, hours, form]);
+  }, [labor_rate, hours, form]);
 
   function onSubmit(data: AddLaborFormValues) {
-    const calculatedCost = Number(data.laborRate) * Number(data.hours);
+    const calculatedCost = Number(data.labor_rate) * Number(data.hours);
     form.setValue("totalCost", calculatedCost);
     onSave(data); // send cost back to AddMaintenance
     toast.success("Labor saved.");
@@ -119,7 +119,7 @@ export default function AddLabor({ onSave, initialValues }: AddLaborProps) {
             />
             <InputWrapper
               control={form.control}
-              name="laborRate"
+              name="labor_rate"
               label="Last Rate"
               type="number"
               value={""}

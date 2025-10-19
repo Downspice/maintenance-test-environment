@@ -22,8 +22,9 @@ import { useState } from "react";
 import React from "react";
 import {
   PurchaseOrderData,
-  PurchaseOrderInterface,
+  PurchaseOrderTableInterface,
   PurchaseOrderItemInterface,
+  PurchaseOrderItem,
 } from "@/lib/PurchaseOrder/purchaseOrder-data";
 import {
   SheetContent,
@@ -37,34 +38,29 @@ import EditPurchaseOrderForm from "../views/edit-purchaseOrder";
 import ReceivePurchaseOrder from "../views/receive-purchase";
 import RepairRequestForm from "@/components/forms/actualForms/repair-request-form";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useGetPurchaseOrders } from "@/services/setups/purchaseOrder";
 
 // Get unique values for filter options (including sub-rows)
-const getAllEmployees = (
-  employees: PurchaseOrderInterface[]
-): PurchaseOrderInterface[] => {
-  const result: PurchaseOrderInterface[] = [];
-  const traverse = (emps: PurchaseOrderInterface[]) => {
-    emps.forEach((emp) => {
-      result.push(emp);
-    });
-  };
-  traverse(employees);
-  return result;
-};
-
-const flatEmployees = getAllEmployees(PurchaseOrderData);
-const sequential_id = [
-  ...new Set(flatEmployees.map((emp) => emp.purchaseOrderNumber)),
-];
-const status = [...new Set(flatEmployees.map((emp) => emp.status))];
-const created_on = [...new Set(flatEmployees.map((emp) => emp.date))];
-const vendor_name = [...new Set(flatEmployees.map((emp) => emp.vendor))];
-const required_on = [...new Set(flatEmployees.map((emp) => emp.dueDate))];
-const buyer_name = [...new Set(flatEmployees.map((emp) => emp.customer))];
-
 export default function PurchaseOrderDataTable() {
+  const {
+    data: PurchaseOrderData,
+    isLoading,
+    error: EmployeeDataError,
+  } = useGetPurchaseOrders();
+
+  return PurchaseOrderData ? (
+    <PurchaseOrderDataLoader
+      PurchaseOrderData={PurchaseOrderData}
+      isLoading={isLoading}
+    />
+  ) : (
+    <div>is loading.......</div>
+  );
+}
+
+export function PurchaseOrderDataLoader({ PurchaseOrderData, isLoading }) {
   const [isServerMode, setIsServerMode] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   const [currentData, setCurrentData] = useState(PurchaseOrderData.slice(0, 5)); // Show first 5 for demo
   const [paginationInfo, setPaginationInfo] = useState({
     pageIndex: 0,
@@ -72,6 +68,38 @@ export default function PurchaseOrderDataTable() {
     totalPages: Math.ceil(PurchaseOrderData.length / 5),
     totalRows: PurchaseOrderData.length,
   });
+
+  const getAllEmployees = (
+    employees: PurchaseOrderTableInterface[]
+  ): PurchaseOrderTableInterface[] => {
+    const result: PurchaseOrderTableInterface[] = [];
+    const traverse = (emps: PurchaseOrderTableInterface[]) => {
+      emps.forEach((emp) => {
+        result.push(emp);
+      });
+    };
+    traverse(employees);
+    return result;
+  };
+
+  const flatEmployees = getAllEmployees(PurchaseOrderData);
+  const sequential_id = [...new Set(flatEmployees.map((emp) => emp.po_number))];
+  const status = [...new Set(flatEmployees.map((emp) => emp.status.name))];
+  const created_on = [...new Set(flatEmployees.map((emp) => emp.issued_date))];
+  const vendor_name = [...new Set(flatEmployees.map((emp) => emp.vendor))];
+  const required_on = [...new Set(flatEmployees.map((emp) => emp.due_date))];
+  const buyer_name = [
+    ...new Set(
+      flatEmployees.map(
+        (emp) =>
+          emp.buyer.last_name +
+          " " +
+          emp.buyer.first_name +
+          " " +
+          (emp.buyer.middle_name ?? "")
+      )
+    ),
+  ];
 
   const handleRowClick = (row: any) => {
     console.log("Row clicked:", row.original);
@@ -155,7 +183,7 @@ export default function PurchaseOrderDataTable() {
   const handlePaginationChange = (action: "next" | "previous" | number) => {
     console.log(`🔄 Server Pagination Action: ${action}`);
 
-    setIsLoading(true);
+    // setIsLoading(true);
 
     // Simulate server delay
     setTimeout(() => {
@@ -183,7 +211,7 @@ export default function PurchaseOrderDataTable() {
         pageIndex: newPageIndex,
       }));
 
-      setIsLoading(false);
+      // setIsLoading(false);
     }, 1000); // 1 second delay to simulate server response
   };
 
@@ -192,7 +220,7 @@ export default function PurchaseOrderDataTable() {
     (searchValue: string) => {
       console.log(`🔍 Server Search: "${searchValue}"`);
 
-      setIsLoading(true);
+      // setIsLoading(true);
 
       // Simulate server delay
       setTimeout(() => {
@@ -214,22 +242,23 @@ export default function PurchaseOrderDataTable() {
           totalRows: filteredData.length,
         }));
 
-        setIsLoading(false);
+        // setIsLoading(false);
       }, 800); // 800ms delay to simulate server response
     },
     [paginationInfo.pageSize]
   ); // Add dependencies that actually matter
 
-  const getSubRows = (originalRow: PurchaseOrderInterface) => {
+  const getSubRows = (originalRow: PurchaseOrderTableInterface) => {
     return originalRow.items;
   };
 
   // Custom sub-row renderer
   const renderSubRow = (
-    subRowData: PurchaseOrderItemInterface,
+    subRowData: PurchaseOrderItem,
     parentRow: any,
     depth: number
   ) => {
+    console.log("subRowData", subRowData);
     return (
       <div className="space-y-4">
         <div className="grid grid-cols-1  gap-4">
@@ -239,37 +268,30 @@ export default function PurchaseOrderDataTable() {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm">Items Information</CardTitle>{" "}
             </CardHeader>{" "}
-            <CardContent className=" grid grid-cols-7 space-y-2 text-sm">
+            <CardContent className=" grid grid-cols-6 space-y-2 text-sm">
               {" "}
               <div className="col-span-1 ">
-                <span className="ml-2">{subRowData.description}</span>{" "}
+                <span className="ml-2">{subRowData.item}</span>{" "}
               </div>{" "}
               <div className="col-span-1 ">
                 {" "}
-                <span className="ml-2 text-destructive">
-                  {subRowData.orderQuantity}{" "}
-                </span>{" "}
+                <span className="ml-2  ">Qty: {subRowData.quantity} </span>{" "}
               </div>{" "}
               <div className="col-span-1 ">
                 <div className="ml-2 font-bold text-primary underline cursor-pointer">
-                  #{subRowData.receivedQuantity}
+                  Amount #{subRowData.amount}
                 </div>{" "}
               </div>{" "}
               <div className="col-span-1 ">
                 <div className="ml-2 font-bold text-primary underline cursor-pointer">
-                  #{subRowData.unitCost}
+                  Unit Cost :{subRowData.cost}
                 </div>{" "}
               </div>{" "}
               <div className="col-span-1 ">
                 <div className="ml-2 font-bold text-primary underline cursor-pointer">
-                  #{subRowData.extendedCost}
+                  Extended Cost :{subRowData.extended_cost}
                 </div>{" "}
-              </div>{" "}
-              <div className="col-span-1 ">
-                <div className="ml-2 font-bold text-primary underline cursor-pointer">
-                  #{subRowData.partNumber}
-                </div>{" "}
-              </div>{" "}
+              </div> 
               <div className="col-span-1 ">
                 <div className="ml-2 font-bold text-primary underline cursor-pointer">
                   #{subRowData.notes}
@@ -283,9 +305,9 @@ export default function PurchaseOrderDataTable() {
   };
 
   // Column definitions
-  const columns: ColumnDef<PurchaseOrderInterface>[] = [
+  const columns: ColumnDef<PurchaseOrderTableInterface>[] = [
     {
-      accessorKey: "id",
+      accessorKey: "po_number",
       header: ({ column }) => (
         <SortableHeader
           column={column}
@@ -299,12 +321,12 @@ export default function PurchaseOrderDataTable() {
           className="font-bold text-primary flex flex-col"
           style={{ paddingLeft: `${row.depth * 20}px` }}
         >
-          <div>{row.original.purchaseOrderNumber}</div>
+          <div>{row.original.po_number}</div>
         </div>
       ),
     },
     {
-      accessorKey: "status",
+      accessorKey: "status.name",
       header: ({ column }) => (
         <SortableHeader
           column={column}
@@ -315,7 +337,7 @@ export default function PurchaseOrderDataTable() {
       ),
     },
     {
-      accessorKey: "created_on",
+      accessorKey: "issued_date",
       header: ({ column }) => (
         <SortableHeader
           column={column}
@@ -324,13 +346,13 @@ export default function PurchaseOrderDataTable() {
           filterOptions={created_on}
         />
       ),
-      cell: ({ row }) => <>{row.original.date?.toDateString()}</>,
+      cell: ({ row }) => <>{row.original.issued_date}</>,
       filterFn: (row, id, value) => {
         return value.length === 0 || value.includes(row.getValue(id));
       },
     },
     {
-      accessorKey: "required_on",
+      accessorKey: "due_date",
       header: ({ column }) => (
         <SortableHeader
           column={column}
@@ -342,10 +364,10 @@ export default function PurchaseOrderDataTable() {
       filterFn: (row, id, value) => {
         return value.length === 0 || value.includes(row.getValue(id));
       },
-      cell: ({ row }) => <>{row.original.dueDate?.toDateString()}</>,
+      cell: ({ row }) => <>{row.original.due_date}</>,
     },
     {
-      accessorKey: "vendor_name",
+      accessorKey: "vendor",
       header: ({ column }) => (
         <SortableHeader
           column={column}
@@ -369,7 +391,16 @@ export default function PurchaseOrderDataTable() {
           filterOptions={buyer_name}
         />
       ),
-      cell: ({ row }) => <>{row.original.customer}</>,
+      cell: ({ row }) => (
+        <>
+          {" "}
+          {row.original.buyer.last_name +
+            " " +
+            row.original.buyer.first_name +
+            " " +
+            (row.original.buyer.middle_name ?? "")}
+        </>
+      ),
     },
     {
       id: "actions",
@@ -532,7 +563,15 @@ export default function PurchaseOrderDataTable() {
       <AdvancedDataTable
         columns={columns}
         data={isServerMode ? currentData : PurchaseOrderData}
-        defaultVisibleColumns={["id","status","created_on","required_on","vendor_name", "buyer_name", "actions"]}
+        defaultVisibleColumns={[
+          "id",
+          "status",
+          "created_on",
+          "required_on",
+          "vendor_name",
+          "buyer_name",
+          "actions",
+        ]}
         onRowClick={handleRowClick}
         onCellClick={handleCellClick}
         onPrintSelected={handlePrintSelected}

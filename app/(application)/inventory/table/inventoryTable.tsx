@@ -20,7 +20,6 @@ import {
 import { useState } from "react";
 import React from "react";
 import {
-  InventoryData,
   InventoryInterface,
 } from "@/lib/Inventory/inventory-data";
 import { matchesSearchAllFields } from "@/lib/utils";
@@ -39,8 +38,23 @@ import EnableTrackingForm from "../form/enableTracking";
 import ChangeMarkUpForm from "../form/changeMarkUp";
 import HistoryTable from "../view/history-inventory";
 import TransferInventoryForm from "../form/transferInventory";
+import { useDeleteInventory, useGetInventories } from "@/services/setups/inventory";
+import { toast } from "sonner";
 
-const getAllEmployees = (
+
+
+export  function InventoryDataLoader({ InventoryData, isLoading }) {
+  const [isServerMode, setIsServerMode] = useState(false);
+   const deleteApi =useDeleteInventory();
+  const [currentData, setCurrentData] = useState(InventoryData.slice(0, 5)); // Show first 5 for demo
+  const [paginationInfo, setPaginationInfo] = useState({
+    pageIndex: 0,
+    pageSize: 5,
+    totalPages: Math.ceil(InventoryData.length / 5),
+    totalRows: InventoryData.length,
+  });
+
+  const getAllEmployees = (
   employees: InventoryInterface[]
 ): InventoryInterface[] => {
   const result: InventoryInterface[] = [];
@@ -56,12 +70,12 @@ const getAllEmployees = (
 const flatEmployees = getAllEmployees(InventoryData);
 
 const unit_cost = [
-  ...new Set(flatEmployees.map((emp) => emp.unitCost.toString())),
+  ...new Set(flatEmployees.map((emp) => emp.unit_cost.toString())),
 ];
-const number = [...new Set(flatEmployees.map((emp) => emp.number))];
+const number = [...new Set(flatEmployees.map((emp) => emp.part_number))];
 const name = [...new Set(flatEmployees.map((emp) => emp.name))];
 const category = [
-  ...new Set(flatEmployees.map((emp) => emp.category?.toString())),
+  ...new Set(flatEmployees.map((emp) => emp.category_id?.toString())),
 ];
 const vendor_names = [
   ...new Set(flatEmployees.map((emp) => emp?.warehouses?.[0]?.vendor ?? "")),
@@ -69,17 +83,6 @@ const vendor_names = [
 const quantity = [
   ...new Set(flatEmployees.map((emp) => emp?.warehouses?.[0]?.quantity ?? "")),
 ];
-
-export default function InventoryDataTable() {
-  const [isServerMode, setIsServerMode] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [currentData, setCurrentData] = useState(InventoryData.slice(0, 5)); // Show first 5 for demo
-  const [paginationInfo, setPaginationInfo] = useState({
-    pageIndex: 0,
-    pageSize: 5,
-    totalPages: Math.ceil(InventoryData.length / 5),
-    totalRows: InventoryData.length,
-  });
 
   const handleRowClick = (row: any) => {
     console.log("Row clicked:", row.original);
@@ -162,7 +165,7 @@ export default function InventoryDataTable() {
   const handlePaginationChange = (action: "next" | "previous" | number) => {
     console.log(`🔄 Server Pagination Action: ${action}`);
 
-    setIsLoading(true);
+    // setIsLoading(true);
 
     // Simulate server delay
     setTimeout(() => {
@@ -190,7 +193,7 @@ export default function InventoryDataTable() {
         pageIndex: newPageIndex,
       }));
 
-      setIsLoading(false);
+      // setIsLoading(false);
     }, 1000); // 1 second delay to simulate server response
   };
 
@@ -199,7 +202,7 @@ export default function InventoryDataTable() {
     (searchValue: string) => {
       console.log(`🔍 Server Search: "${searchValue}"`);
 
-      setIsLoading(true);
+      // setIsLoading(true);
 
       // Simulate server delay
       setTimeout(() => {
@@ -221,7 +224,7 @@ export default function InventoryDataTable() {
           totalRows: filteredData.length,
         }));
 
-        setIsLoading(false);
+        // setIsLoading(false);
       }, 800); // 800ms delay to simulate server response
     },
     [paginationInfo.pageSize]
@@ -230,7 +233,7 @@ export default function InventoryDataTable() {
   // Column definitions
   const columns: ColumnDef<InventoryInterface>[] = [
     {
-      accessorKey: "number",
+      accessorKey: "part_number",
       header: ({ column }) => (
         <SortableHeader
           column={column}
@@ -242,7 +245,7 @@ export default function InventoryDataTable() {
       cell: ({ row }) => (
         <div className="font-medium text-primary flex flex-col">
           {" "}
-          {row.getValue("number")}
+          {row.getValue("part_number")}
         </div>
       ),
     },
@@ -337,7 +340,7 @@ export default function InventoryDataTable() {
         />
       ),
       cell: ({ row }) => {
-        return <> ${row.original.unitCost}</>;
+        return <> ${row.original.unit_cost}</>;
       },
     },
     {
@@ -353,7 +356,7 @@ export default function InventoryDataTable() {
       cell: ({ row }) => (
         <>
           <div className="flex  items-end gap-1 text-primary cursor-pointer">
-            {row.original.number}
+            {row.original.part_number}
           </div>
         </>
       ),
@@ -368,10 +371,12 @@ export default function InventoryDataTable() {
       cell: ({ row }) => {
         const handleDeleteRow = (row: any) => {
           console.log("Delete row:", row.original);
+          
           if (
             confirm(`Are you sure you want to delete ${row.original.name}?`)
           ) {
-            alert(`Deleted ${row.original.name}`);
+            deleteApi.mutateAsync(row.original)
+            if(deleteApi){toast.info(`Deleted Successfully`)};
             // Here you would typically call your delete API
           }
         };
@@ -425,7 +430,7 @@ export default function InventoryDataTable() {
                   <FilePenIcon />
                 </Button>
               }
-              data={row.original}
+              pageId={row.original.id}
             />
 
             <DropdownMenu>
@@ -560,5 +565,19 @@ export default function InventoryDataTable() {
         isLoading={isLoading}
       />
     </div>
+  );
+}
+
+export default function InventoryDataTable() {
+  const {
+    data: InventoryData,
+    isLoading,
+    error: EmployeeDataError,
+  } = useGetInventories();
+
+  return InventoryData ? (
+    <InventoryDataLoader InventoryData={InventoryData} isLoading={isLoading} />
+  ) : (
+    <div>is loading.......</div>
   );
 }

@@ -33,7 +33,7 @@ export const AdjustInventorySchema = z.object({
   quantity: z.coerce.number().min(1, "Quantity is required"),
   tax1: z.coerce.number().optional(),
   tax2: z.coerce.number().optional(),
-  unitCost: z.coerce.number().optional(),
+  unit_cost: z.coerce.number().optional(),
   extendedCost: z.coerce.number().optional(),
   warehouse: z.string().min(1, "Warehouse is required"),
   invoiceNumber: z.string().optional(), // assuming Invoice # is alphanumeric
@@ -123,7 +123,7 @@ export type AdjustInventoryInterface =z.infer<typeof AdjustInventorySchema>
             <InputWrapper
               className="col-span-1"
               control={AdjustInventoryForm.control}
-              name="unitCost"
+              name="unit_cost"
               label="Unit Cost"
               type="number"
               value={""}

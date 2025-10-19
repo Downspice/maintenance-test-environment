@@ -32,7 +32,7 @@ export const fluidConsumedSchema = z.object({
   fluid: z.string().min(1, "Fluid is required"),
   part: z.string().min(1, "Part is required"),
   quantity: z.coerce.number().min(0.01, "Quantity required"),
-  unitCost: z.coerce.number().min(0, "Unit cost required"),
+  unit_cost: z.coerce.number().min(0, "Unit cost required"),
   fluidUnits: z.string().min(1, "Fluid units required"),
   costCentre: z.string().min(1, "Cost centre required"),
   notes: z.string().optional(),
@@ -55,27 +55,27 @@ export default function FluidConsumedForm(  {onCreate}: {
       fluid: "",
       part: "",
       quantity: 0,
-      unitCost: 0,
+      unit_cost: 0,
       fluidUnits: "",
       costCentre: "",
       notes: "",
     },
   });
 
-  // Watch for quantity and unitCost changes to update total
+  // Watch for quantity and unit_cost changes to update total
   const watchQuantity = form.watch("quantity");
-  const watchUnitCost = form.watch("unitCost");
+  const watchunit_cost = form.watch("unit_cost");
 
-  // Update total when quantity or unitCost changes
+  // Update total when quantity or unit_cost changes
   useState(() => {
-    setTotal(Number(watchQuantity) * Number(watchUnitCost));
-  }, [watchQuantity, watchUnitCost]);
+    setTotal(Number(watchQuantity) * Number(watchunit_cost));
+  }, [watchQuantity, watchunit_cost]);
 
   function onSubmit(data: FluidConsumedFormValues) {
     // You may want to include total in your submission
     const submission = {
       ...data,
-      total: Number(watchQuantity) * Number(watchUnitCost),
+      total: Number(watchQuantity) * Number(watchunit_cost),
     };
     console.log(submission);
     onCreate?.(submission); // Call the optional callback if provided
@@ -118,7 +118,7 @@ export default function FluidConsumedForm(  {onCreate}: {
         />
         <InputWrapper
           control={form.control}
-          name="unitCost"
+          name="unit_cost"
           label="Unit Cost"
           type="number"
         />
@@ -166,20 +166,20 @@ export function EditFluidConsumption({
     defaultValues: data,
   });
 
-  // Watch for quantity and unitCost changes to update total
+  // Watch for quantity and unit_cost changes to update total
   const watchQuantity = form.watch("quantity");
-  const watchUnitCost = form.watch("unitCost");
+  const watchunit_cost = form.watch("unit_cost");
 
-  // Update total when quantity or unitCost changes
+  // Update total when quantity or unit_cost changes
   useState(() => {
-    setTotal(Number(watchQuantity) * Number(watchUnitCost));
-  }, [watchQuantity, watchUnitCost]);
+    setTotal(Number(watchQuantity) * Number(watchunit_cost));
+  }, [watchQuantity, watchunit_cost]);
 
   function onSubmit(data: FluidConsumedFormValues) {
     // You may want to include total in your submission
     const submission = {
       ...data,
-      total: Number(watchQuantity) * Number(watchUnitCost),
+      total: Number(watchQuantity) * Number(watchunit_cost),
     };
     console.log(submission);
     if (onEdit) {
@@ -243,7 +243,7 @@ export function EditFluidConsumption({
                 />
                 <InputWrapper
                   control={form.control}
-                  name="unitCost"
+                  name="unit_cost"
                   label="Unit Cost"
                   type="number"
                 />

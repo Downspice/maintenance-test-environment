@@ -13,7 +13,7 @@ const NewFluidConsumedForm: React.FC = () => {
             fluid: '',
             part: '',
             quantity: 0,
-            unitCost: 0,
+            unit_cost: 0,
             fluidUnits: '',
             costCentre: '',
             notes: ''
@@ -27,16 +27,16 @@ const NewFluidConsumedForm: React.FC = () => {
 
     const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const quantity = parseFloat(e.target.value);
-        const unitCost = parseFloat(formik.values.unitCost);
-        setTotal(quantity * unitCost);
+        const unit_cost = parseFloat(formik.values.unit_cost);
+        setTotal(quantity * unit_cost);
         formik.setFieldValue('quantity', quantity);
     };
 
-    const handleUnitCostChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const unitCost = parseFloat(e.target.value);
+    const handleunit_costChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const unit_cost = parseFloat(e.target.value);
         const quantity = parseFloat(formik.values.quantity);
-        setTotal(quantity * unitCost);
-        formik.setFieldValue('unitCost', unitCost);
+        setTotal(quantity * unit_cost);
+        formik.setFieldValue('unit_cost', unit_cost);
     };
 
     return (
@@ -105,13 +105,13 @@ const NewFluidConsumedForm: React.FC = () => {
                 />
             </div>
             <div>
-                <label htmlFor="unitCost">Unit Cost</label>
+                <label htmlFor="unit_cost">Unit Cost</label>
                 <input
                     type="number"
-                    id="unitCost"
-                    name="unitCost"
-                    onChange={handleUnitCostChange}
-                    value={formik.values.unitCost}
+                    id="unit_cost"
+                    name="unit_cost"
+                    onChange={handleunit_costChange}
+                    value={formik.values.unit_cost}
                 />
             </div>
             <div>

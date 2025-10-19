@@ -116,7 +116,7 @@ export default function LaborTab({
                 >
                   <TableCell className="p-2">{labor?.technicianName}</TableCell>
                   <TableCell className="p-2">{labor.hours}</TableCell>
-                  <TableCell className="p-2">${labor.laborRate}</TableCell>
+                  <TableCell className="p-2">${labor.labor_rate}</TableCell>
                   <TableCell className="p-2">${labor.totalCost}</TableCell>
                   <TableCell className="p-2 text-right space-x-2">
                     {isEditable && (

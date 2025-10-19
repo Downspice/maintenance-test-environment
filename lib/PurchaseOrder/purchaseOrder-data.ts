@@ -8,7 +8,7 @@ export const PurchaseOrderItemSchema = z.object({
   orderQuantity: z.coerce.number().min(1, "Order quantity is required"),
   receivedQuantity: z.coerce.number().optional(),
   newReceivedQuantity: z.coerce.number().optional(),
-  unitCost: z.coerce.number().min(0, "Unit cost is required"),
+  unit_cost: z.coerce.number().min(0, "Unit cost is required"),
   extendedCost: z.coerce.number().min(0, "Extended cost is required"),
   description: z.string().optional(),
   notes: z.string().optional(),
@@ -62,6 +62,7 @@ export const PurchaseOrderSchema = z.object({
 });
 export type PurchaseOrderInterface = z.infer<typeof PurchaseOrderSchema>;
 
+
 export const purchaseOrderItems = [
   {
     itemType: "Part",
@@ -70,7 +71,7 @@ export const purchaseOrderItems = [
     warranty: "12 months",
     orderQuantity: 5,
     receivedQuantity: 0,
-    unitCost: 100,
+    unit_cost: 100,
     extendedCost: 500,
     notes: "Urgent replacement part",
   },
@@ -81,7 +82,7 @@ export const purchaseOrderItems = [
     warranty: "6 months",
     orderQuantity: 2,
     receivedQuantity: 0,
-    unitCost: 150,
+    unit_cost: 150,
     extendedCost: 300,
     notes: "Includes installation",
   },
@@ -93,180 +94,147 @@ export type PurchaseOrderStatusType =
   | "Partial"
   | "Closed";
 
-export const PurchaseOrderData: PurchaseOrderInterface[] = [
-  {
-    equipmentId: "EQP-003",
-    date: new Date("2025-06-28"),
-    dueDate: new Date("2025-07-10"),
-    closedDate: undefined,
-    status: "Partial",
-    notes: "First batch received, second pending.",
-    items: [
-      {
-        itemType: "Tires",
-        partNumber: "TIRE-XL-500",
-        warehouse: "Warehouse A",
-        warranty: "12 months",
-        orderQuantity: 8,
-        receivedQuantity: 4,
-        unitCost: 300,
-        extendedCost: 2400,
-        description: "Heavy-duty tires for dump trucks",
-        notes: "Only 4 delivered so far",
-      },
-      {
-        itemType: "Grease",
-        partNumber: "GREASE-77",
-        warehouse: "Depot X",
-        warranty: "",
-        orderQuantity: 20,
-        receivedQuantity: 20,
-        unitCost: 15,
-        extendedCost: 300,
-        description: "Grease tubes for axle maintenance",
-        notes: "All delivered",
-      },
-    ],
-    purchaseOrderNumber: "PO-2025-0003",
-    customer: "BuildGhana Co.",
-    vendor: "Equipment Supplies Ghana",
-    shipVia: "FedEx Freight",
-    billing: "BuildGhana Co.\nRing Road, Accra",
-    shipping: "Project Yard, Tema Port",
-    terms: "COD",
-    invoiceNumber: "INV-1003",
-    orderNumber: "ORD-2233",
-    woNumber: "WO-5551",
-    location: "Tema Port",
-    discount_type: "percent",
-    discount_percent: "10",
-    tax1: "180.00",
-    tax2: "75.00",
-    Credit: "30.00",
-    freight: "220.00",
-    subTotal: "2700.00",
-    totalCost: "2925.00",
-  },
-  {
-    equipmentId: "EQP-002",
-    date: new Date("2025-07-03"),
-    dueDate: new Date("2025-07-20"),
-    closedDate: undefined,
-    status: "Ordered",
-    notes: "Order placed. Awaiting delivery confirmation.",
-    items: [
-      {
-        itemType: "Parts",
-        partNumber: "PART-789",
-        warehouse: "Storage B",
-        warranty: "6 months",
-        orderQuantity: 10,
-        receivedQuantity: 0,
-        unitCost: 85.5,
-        extendedCost: 855,
-        description: "Hydraulic hoses for excavator arms",
-        notes: "Order placed to central store",
-      },
-      {
-        itemType: "Oil",
-        partNumber: "OIL-321",
-        warehouse: "Depot C",
-        warranty: "",
-        orderQuantity: 50,
-        receivedQuantity: 0,
-        unitCost: 20,
-        extendedCost: 1000,
-        description: "Engine oil 10W-40 full synthetic",
-        notes: "Bulk order for Q3 servicing",
-      },
-    ],
-    purchaseOrderNumber: "PO-2025-0002",
-    customer: "RoadConstruct Ltd.",
-    vendor: "AutoParts Wholesale",
-    shipVia: "DHL Express",
-    billing: "RoadConstruct Ltd.\nP.O. Box 112\nKumasi",
-    shipping: "Site Yard - Kumasi Central",
-    terms: "15 Days",
-    invoiceNumber: "INV-1002",
-    orderNumber: "ORD-5544",
-    woNumber: "WO-8899",
-    location: "Kumasi Central",
-    discount_type: "amount",
-    discount_amount: "100.00",
-    tax1: "120.00",
-    tax2: "60.00",
-    Credit: "50.00",
-    freight: "180.00",
-    subTotal: "1855.00",
-    totalCost: "2065.00",
-  },
-  {
-    equipmentId: "EQP-001",
-    date: new Date("2025-07-01"),
-    dueDate: new Date("2025-07-15"),
-    closedDate: new Date("2025-07-18"),
-    status: "Closed",
-    notes: "Finalized and invoiced. Paid in full.",
+export interface PurchaseOrderTableInterface {
+  id: string
+  po_number: string
+  issued_date: string
+  due_date: string
+  buyer_id: string
+  status_id: string
+  closed_date: any
+  vendor: string
+  shipping: string
+  term_id: string
+  ship_via_id: string
+  invoice_number: string
+  order_number: string
+  wo_number: string
+  location_id: string
+  currency: string
+  subtotal: string
+  is_discount: boolean
+  discount_type: string
+  discount: string
+  discount_amount: string
+  tax_one: string
+  tax_one_amount: string
+  tax_two: string
+  tax_two_amount: string
+  credit: string
+  freight: string
+  total_cost: string
+  notes: string
+  created_by: any
+  updated_by: any
+  created_at: string
+  updated_at: string
+  status: Status
+  items: PurchaseOrderItem[]
+  others: Other[]
+  location: Location
+  buyer: Buyer
+  term: Term
+  ship_via: ShipVia
+}
 
-    // Optional fields used in your form but not strictly validated in the schema (you can extend schema if needed)
-    purchaseOrderNumber: "PO-2025-0001",
-    customer: "TechFleet Inc.",
-    vendor: "FuelMasters Ltd.",
-    shipVia: "Freight Logistics",
-    billing: "1234 Road Lane\nAccra, Ghana",
-    shipping: "Fleet Yard, Industrial Area",
-    terms: "30 Days Net",
-    invoiceNumber: "INV-789456",
-    orderNumber: "ORD-456987",
-    woNumber: "WO-33221",
-    location: "Central Depot",
+export interface Status {
+  id: string
+  name: string
+  created_by: any
+  updated_by: any
+  created_at: string
+  updated_at: string
+}
 
-    discount_type: "percent",
-    discount_percent: "5",
-    tax1: "150.00",
-    tax2: "50.00",
-    Credit: "100.00",
-    freight: "200.00",
-    subTotal: "5000.00",
-    totalCost: "5350.00",
+export interface PurchaseOrderItem {
+  id: string
+  purchase_order_id: string
+  item_type_id: string
+  item: string
+  notes: string
+  cost: string
+  amount: string
+  quantity: number
+  extended_cost: string
+  warehouse_id: string
+  tax_one: boolean
+  tax_two: boolean
+  discount: boolean
+  created_by: any
+  updated_by: any
+  created_at: string
+  updated_at: string
+}
 
-    items: [
-      {
-        itemType: "Fuel",
-        partNumber: "FUEL-2025",
-        warehouse: "Tank Yard A",
-        warranty: "",
-        orderQuantity: 2000,
-        receivedQuantity: 2000,
-        unitCost: 2.0,
-        extendedCost: 4000.0,
-        description: "Bulk diesel purchase for July operations.",
-        notes: "Refueled all units by 5th July.",
-      },
-      {
-        itemType: "Maintenance",
-        partNumber: "MT-2025-002",
-        warehouse: "Service Center",
-        warranty: "3 months",
-        orderQuantity: 5,
-        receivedQuantity: 5,
-        unitCost: 150,
-        extendedCost: 750,
-        description: "Oil & air filters replacement kits",
-        notes: "Serviced excavators and bulldozers.",
-      },
-      {
-        itemType: "Insurance",
-        partNumber: "INS-PL-500",
-        warehouse: "—",
-        warranty: "12 months",
-        orderQuantity: 1,
-        receivedQuantity: 1,
-        unitCost: 250,
-        extendedCost: 250,
-        description: "Public liability insurance policy premium",
-        notes: "Valid till July 2026",
-      },
-    ],
-  },
-];
+export interface Other {
+  id: string
+  purchase_order_id: string
+  name: string
+  value: string
+  created_by: any
+  updated_by: any
+  created_at: string
+  updated_at: string
+}
+
+export interface Location {
+  id: string
+  name: string
+  created_by: any
+  updated_by: any
+  created_at: string
+  updated_at: string
+}
+
+export interface Buyer {
+  id: string
+  last_name: string
+  first_name: string
+  middle_name: string
+  address_one: string
+  address_two: any
+  city: string
+  state: string
+  postal_code: string
+  home_contact: string
+  alt_phone: string
+  cell: string
+  email: string
+  status_id: string
+  hire_date: string
+  leave_date: string
+  dob: string
+  ssn: string
+  type_id: string
+  labor_rate: string
+  billing_rate: string
+  currency: string
+  location_id: string
+  category_id: string
+  driver_license_number: string
+  driver_license_class: any
+  driver_license_state: string
+  notes: string
+  created_by: any
+  updated_by: any
+  created_at: string
+  updated_at: string
+}
+
+export interface Term {
+  id: string
+  name: string
+  created_by: any
+  updated_by: any
+  created_at: string
+  updated_at: string
+}
+
+export interface ShipVia {
+  id: string
+  name: string
+  created_by: any
+  updated_by: any
+  created_at: string
+  updated_at: string
+}

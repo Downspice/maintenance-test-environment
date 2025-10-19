@@ -75,7 +75,7 @@ export default function QuickActionsReceivePurchaseOrder() {
       warranty: " ",
       orderQuantity: 0,
       receivedQuantity: 0,
-      unitCost: 0,
+      unit_cost: 0,
       extendedCost: 0,
       notes: " ",
     });

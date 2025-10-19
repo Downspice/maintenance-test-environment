@@ -35,7 +35,7 @@ export const EmployeeSchema = z.object({
   ssn: z.string().optional(),
   type: z.string(),
 
-  laborRate: z.number().optional(),
+  labor_rate: z.number().optional(),
   billing_rate: z.number(),
 
   location: z.string(),
@@ -66,14 +66,14 @@ export interface EmployeeTableInterface {
   id: string
   last_name: string
   first_name: string
-  middle_name: any
+  middle_name: string
   address_one: string
   address_two: any
   city: string
   state: string
   postal_code: string
   home_contact: string
-  alt_phone: any
+  alt_phone: string
   cell: string
   email: string
   status_id: string
@@ -91,6 +91,46 @@ export interface EmployeeTableInterface {
   driver_license_class: any
   driver_license_state: string
   notes: string
+  created_by: any
+  updated_by: any
+  created_at: string
+  updated_at: string
+  type: Type
+  status: Status
+  location: Location
+  category: Category
+}
+
+export interface Type {
+  id: string
+  name: string
+  created_by: any
+  updated_by: any
+  created_at: string
+  updated_at: string
+}
+
+export interface Status {
+  id: string
+  name: string
+  created_by: any
+  updated_by: any
+  created_at: string
+  updated_at: string
+}
+
+export interface Location {
+  id: string
+  name: string
+  created_by: any
+  updated_by: any
+  created_at: string
+  updated_at: string
+}
+
+export interface Category {
+  id: string
+  name: string
   created_by: any
   updated_by: any
   created_at: string

@@ -25,7 +25,6 @@ import {
   statusOptions,
   meterUnitsOptions,
   assigneeOptions,
-  categoryOptions,
   vendorOptions,
   ownershipOptions,
 } from "@/lib/equipment-schema";
@@ -52,6 +51,7 @@ import {
 } from "@/components/forms/wrappers/ComboboxWrapper";
 import { Input } from "@/components/ui/input";
 import CheckboxWrapper from "@/components/forms/wrappers/CheckboxWrapper";
+import { useGetInventoryCategories } from "@/services/setups/inventory";
 
 interface triggerVariant {
   variant?: "icon" | "default";
@@ -66,6 +66,8 @@ export default function RepairRequestFormButton({ variant }: triggerVariant) {
     purchase: false,
     additionalDetails: false,
   });
+    const { data: categoryOptions } = useGetInventoryCategories();
+  
 
   const form = useForm<EquipmentFormValues>({
     resolver: zodResolver(equipmentSchema),

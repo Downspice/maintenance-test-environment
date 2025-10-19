@@ -327,7 +327,7 @@ const sampleFluids = [
     partNumber: "EO-1001",
     qty: 5,
     meter1: 12500,
-    unitCost: 12.5,
+    unit_cost: 12.5,
     total: 62.5,
   },
   {
@@ -336,7 +336,7 @@ const sampleFluids = [
     partNumber: "TF-2030",
     qty: 3,
     meter1: 12300,
-    unitCost: 15.0,
+    unit_cost: 15.0,
     total: 45.0,
   },
   {
@@ -345,7 +345,7 @@ const sampleFluids = [
     partNumber: "CL-4578",
     qty: 2,
     meter1: 12050,
-    unitCost: 10.0,
+    unit_cost: 10.0,
     total: 20.0,
   },
   {
@@ -354,7 +354,7 @@ const sampleFluids = [
     partNumber: "BF-8870",
     qty: 1,
     meter1: 11800,
-    unitCost: 8.0,
+    unit_cost: 8.0,
     total: 8.0,
   },
 ];
@@ -412,7 +412,7 @@ function FluidsTab() {
               <TableCell>{item.partNumber}</TableCell>
               <TableCell>{item.qty}</TableCell>
               <TableCell>{item.meter1}</TableCell>
-              <TableCell>${item.unitCost.toFixed(2)}</TableCell>
+              <TableCell>${item.unit_cost.toFixed(2)}</TableCell>
               <TableCell>${item.total.toFixed(2)}</TableCell>{" "}
               <TableCell className="text-right space-x-2">
                 <EditFluidConsumption
@@ -1333,7 +1333,7 @@ const workOrders = [
         name: "Brake Pads",
         description: "Front brake pads",
         quantity: 1,
-        unitCost: 50,
+        unit_cost: 50,
         extendedCost: 50,
       },
     ],
@@ -1371,7 +1371,7 @@ const workOrders = [
         name: "AC Filter",
         description: "Cabin air filter",
         quantity: 1,
-        unitCost: 30,
+        unit_cost: 30,
         extendedCost: 30,
       },
     ],

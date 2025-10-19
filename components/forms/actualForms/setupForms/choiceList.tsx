@@ -43,7 +43,18 @@ import {
   useUpdateEmployeeType,
   useDeleteEmployeeType,
 } from "@/services/setups/employee";
-import { useAddPurchaseOrderTerm, useAddVendorType, useDeletePurchaseOrderTerm, useDeleteVendorType, useGetPurchaseOrderTerms, useGetVendorTypes, useUpdatePurchaseOrderTerm, useUpdateVendorType } from "@/services/setups/vendor";
+import {
+  useAddPurchaseOrderTerm,
+  useAddVendorType,
+  useDeletePurchaseOrderTerm,
+  useDeleteVendorType,
+  useGetPurchaseOrderTerms,
+  useGetVendorTypes,
+  useUpdatePurchaseOrderTerm,
+  useUpdateVendorType,
+} from "@/services/setups/vendor";
+import { useAddCostCenter, useAddInventoryCategory, useAddInventoryManufacturer, useAddInventoryUnitType, useDeleteCostCenter, useDeleteInventoryCategory, useDeleteInventoryManufacturer, useDeleteInventoryUnitType, useGetCostCenters, useGetInventoryCategories, useGetInventoryManufacturers, useGetInventoryUnitTypes, useUpdateCostCenter, useUpdateInventoryCategory, useUpdateInventoryManufacturer, useUpdateInventoryUnitType } from "@/services/setups/inventory";
+import { useAddPurchaseOrderShipVia, useDeletePurchaseOrderShipVia, useGetPurchaseOrderShipVias, useUpdatePurchaseOrderShipVia } from "@/services/setups/purchaseOrder";
 
 // ==============================
 // CONTENTS OBJECT WITH SERVICES
@@ -72,7 +83,7 @@ const tabData = [
     ],
   },
   { id: "costCentres", name: "Cost Centres" },
-   {
+  {
     id: "employee",
     name: "Employees",
     subs: [
@@ -141,7 +152,7 @@ const tabData = [
   },
 ];
 export const contents = {
-   "purchaseOrders:terms": {
+  "purchaseOrders:terms": {
     label: "Terms",
     component: () => (
       <GenericTab
@@ -153,7 +164,7 @@ export const contents = {
       />
     ),
   },
-  "vendorTypes":{
+  vendorTypes: {
     label: "Vendor Types",
     component: () => (
       <GenericTab
@@ -213,7 +224,68 @@ export const contents = {
       />
     ),
   },
-};
+  costCentres: {
+    label: "Cost Centres",
+    component: () => (
+      <GenericTab
+        label="Cost Centres "
+        useGet={useGetCostCenters}
+        useAdd={useAddCostCenter}
+        useUpdate={useUpdateCostCenter}
+        useDelete={useDeleteCostCenter}
+      />
+    ),
+  },
+
+   "purchaseOrders:shippingMethods" :{
+    label: "Shipping Methods",
+    component: () => (
+      <GenericTab
+        label="Shipping Methods"
+        useGet={useGetPurchaseOrderShipVias}
+        useAdd={useAddPurchaseOrderShipVia}
+        useUpdate={useUpdatePurchaseOrderShipVia}
+        useDelete={useDeletePurchaseOrderShipVia}
+      />
+    ),
+  },
+    "inventory:manufacturers" :{
+    label: "Manufacturers",
+    component: () => (
+      <GenericTab
+        label="Manufacturers"
+        useGet={useGetInventoryManufacturers}
+        useAdd={useAddInventoryManufacturer}
+        useUpdate={useUpdateInventoryManufacturer}
+        useDelete={useDeleteInventoryManufacturer}
+      />
+    ),
+  },
+     "inventory:categories" :{
+    label: "Category",
+    component: () => (
+      <GenericTab
+        label="Category"
+        useGet={useGetInventoryCategories}
+        useAdd={useAddInventoryCategory}
+        useUpdate={useUpdateInventoryCategory}
+        useDelete={useDeleteInventoryCategory}
+      />
+    ),
+  },
+       "inventory:unitTypes" :{
+    label: "Unit Types",
+    component: () => (
+      <GenericTab
+        label="Unit Types"
+        useGet={useGetInventoryUnitTypes}
+        useAdd={useAddInventoryUnitType}
+        useUpdate={useUpdateInventoryUnitType}
+        useDelete={useDeleteInventoryUnitType}
+      />
+    ),
+  },
+}
 
 // ==============================
 // TYPES

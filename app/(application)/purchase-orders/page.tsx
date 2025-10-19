@@ -16,12 +16,12 @@ import { dateFilterOptionsList, locationOptionsList } from "@/lib/option-list";
 import NewPurchaseOrderForm from "@/components/forms/actualForms/new-purchase-order-form";
 
 const ActiveDropdown = [
-  { label: "Open", value: "my_open" },
-  { label: "Requisition", value: "my_requisition" },
-  { label: "Ordered", value: "open" },
-  { label: "Received Partial", value: "approval" },
-  { label: "Closed", value: "closed" },
-  { label: "All", value: "all" },
+  { name: "Open", id: "my_open" },
+  { name: "Requisition", id: "my_requisition" },
+  { name: "Ordered", id: "open" },
+  { name: "Received Partial", id: "approval" },
+  { name: "Closed", id: "closed" },
+  { name: "All", id: "all" },
 ];
 
 export default function EmployeesPage() {
@@ -94,7 +94,7 @@ export default function EmployeesPage() {
   };
 
   return (
-    <div className="flex flex-col container mx-auto py-10 space-y-4">
+    <div className="flex flex-col p-4 mx-auto py-10 space-y-4">
       <div className="flex flex-row items-center space-x-2">
         <h1 className="text-xl font-semibold">Purchase Orders</h1>
         <Badge>8</Badge>
@@ -138,8 +138,8 @@ export default function EmployeesPage() {
             </SelectTrigger>
             <SelectContent>
               {dateFilterOptionsList.map((option) => (
-                <SelectItem value={option.value} key={option.value}>
-                  {option.label}
+                <SelectItem value={option.id} key={option.id}>
+                  {option.name}
                 </SelectItem>
               ))}
             </SelectContent>

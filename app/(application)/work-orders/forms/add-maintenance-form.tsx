@@ -253,7 +253,7 @@ export default function AddMaintenance({
                           <td className="px-2 py-1">{part.name}</td>
                           <td className="px-2 py-1">{part.quantityUsed}</td>
                           <td className="px-2 py-1">
-                            {part.unitCost.toFixed(2)}
+                            {part.unit_cost.toFixed(2)}
                           </td>
                           <td className="px-2 py-1">
                             {part.totalCost.toFixed(2)}

@@ -22,7 +22,8 @@ import {
 } from "@/lib/Employee/employee-data";
 import EditEmployee from "../views/editEmployeeSheet";
 import { matchesSearchAllFields } from "@/lib/utils";
-import { useGetEmployees } from "@/services/setups/employee";
+import { useDeleteEmployee, useGetEmployees } from "@/services/setups/employee";
+import { toast } from "sonner";
 
 export default function EmployeeDataTable() {
   const {
@@ -41,6 +42,7 @@ export default function EmployeeDataTable() {
 export function EmployeeTableLoader({ EmployeeData, isLoading }) {
   const [isServerMode, setIsServerMode] = useState(false);
   // const [isLoading, setIsLoading] = useState(false);
+   const deleteApi =useDeleteEmployee();
   const [currentData, setCurrentData] = useState(EmployeeData.slice(0, 5)); // Show first 5 for demo
   const [paginationInfo, setPaginationInfo] = useState({
     pageIndex: 0,
@@ -75,8 +77,8 @@ export function EmployeeTableLoader({ EmployeeData, isLoading }) {
       )
     ),
   ];
-  const location = [...new Set(flatEmployees.map((emp) => emp.location_id))];
-  const type = [...new Set(flatEmployees.map((emp) => emp.type_id))];
+  const location = [...new Set(flatEmployees.map((emp) => emp.location.name))];
+  const type = [...new Set(flatEmployees.map((emp) => emp.type.name))];
   const drivers_license_number = [
     ...new Set(flatEmployees.map((emp) => emp.driver_license_number)),
   ];
@@ -303,7 +305,7 @@ export function EmployeeTableLoader({ EmployeeData, isLoading }) {
       ),
     },
     {
-      accessorKey: "type_id",
+      accessorKey: "type.name",
       header: ({ column }) => (
         <SortableHeader
           column={column}
@@ -348,13 +350,22 @@ export function EmployeeTableLoader({ EmployeeData, isLoading }) {
       id: "actions",
       header: "Actions",
       cell: ({ row }) => {
-        const handleDeleteRow = (row: any) => {
-          console.log("Delete row:", row.original);
+        const handleDeleteRow = (row) => {
+        
           if (
-            confirm(`Are you sure you want to delete ${row.original.name}?`)
+            confirm(`Are you sure you want to delete ${row.original.last_name +
+            " " +
+            row.original.first_name +
+            " " +
+            (row.original.middle_name ?? "")}?`)
           ) {
-            alert(`Deleted ${row.original.name}`);
-            // Here you would typically call your delete API
+             console.log("Delete row:", row.original);
+             deleteApi.mutateAsync(row.original)
+            if(deleteApi){toast.info(`Deleted ${row.original.last_name +
+            " " +
+            row.original.first_name +
+            " " +
+            (row.original.middle_name ?? "")}`)};
           }
         };
 
@@ -366,7 +377,7 @@ export function EmployeeTableLoader({ EmployeeData, isLoading }) {
                   <FilePenIcon />
                 </Button>
               }
-              data={row.original}
+              pageId={row.original.id}
             />
 
             <DropdownMenu>

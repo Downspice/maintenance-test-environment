@@ -25,9 +25,10 @@ import React from "react";
 import { InvoiceData, InvoiceInterface } from "@/lib/Invoice/invoice-data";
 import { matchesSearchAllFields } from "@/lib/utils";
 import EditInvoice from "../view/edit-invoice";
- import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { ActualRecordPaymentForm } from "@/components/forms/actualForms/record-payment-form";
-import { useGetInvoices } from "@/services/setups/invoice";
+import { useDeleteInvoice, useGetInvoices } from "@/services/setups/invoice";
+import { toast } from "sonner";
 
 export default function InvoicesDataTable() {
   const {
@@ -43,7 +44,8 @@ export default function InvoicesDataTable() {
   );
 }
 
-export function InvoicesTableLoader({InvoiceData,isLoading}) {
+export function InvoicesTableLoader({ InvoiceData, isLoading }) {
+  const deleteApi = useDeleteInvoice();
   const [isServerMode, setIsServerMode] = useState(false);
   // const [isLoading, setIsLoading] = useState(false);
   const [currentData, setCurrentData] = useState(InvoiceData.slice(0, 5)); // Show first 5 for demo
@@ -54,29 +56,31 @@ export function InvoicesTableLoader({InvoiceData,isLoading}) {
     totalRows: InvoiceData.length,
   });
 
-  const getAllEmployees = (employees: InvoiceInterface[]): InvoiceInterface[] => {
-  const result: InvoiceInterface[] = [];
-  const traverse = (emps: InvoiceInterface[]) => {
-    emps.forEach((emp) => {
-      result.push(emp);
-    });
+  const getAllEmployees = (
+    employees: InvoiceInterface[]
+  ): InvoiceInterface[] => {
+    const result: InvoiceInterface[] = [];
+    const traverse = (emps: InvoiceInterface[]) => {
+      emps.forEach((emp) => {
+        result.push(emp);
+      });
+    };
+    traverse(employees);
+    return result;
   };
-  traverse(employees);
-  return result;
-};
 
-const flatEmployees = getAllEmployees(InvoiceData);
-const invoice_number = [
-  ...new Set(flatEmployees.map((emp) => emp.invoiceNumber)),
-];
-const status = [...new Set(flatEmployees.map((emp) => emp.status))];
-const issued_date = [...new Set(flatEmployees.map((emp) => emp.date))];
-const due_date = [...new Set(flatEmployees.map((emp) => emp.dueDate))];
-const customer_name = [...new Set(flatEmployees.map((emp) => emp.customer))];
-const total = [...new Set(flatEmployees.map((emp) => emp.total?.toString()))];
-const payment = [
-  ...new Set(flatEmployees.map((emp) => emp.payments?.toString())),
-];
+  const flatEmployees = getAllEmployees(InvoiceData);
+  const invoice_number = [
+    ...new Set(flatEmployees.map((emp) => emp.invoiceNumber)),
+  ];
+  const status = [...new Set(flatEmployees.map((emp) => emp.status))];
+  const issued_date = [...new Set(flatEmployees.map((emp) => emp.invoice_date))];
+  const due_date = [...new Set(flatEmployees.map((emp) => emp.due_date))];
+  const customer_name = [...new Set(flatEmployees.map((emp) => emp.customer))];
+  const total = [...new Set(flatEmployees.map((emp) => emp.total?.toString()))];
+  const payment = [
+    ...new Set(flatEmployees.map((emp) => emp.payments?.toString())),
+  ];
 
   const handleRowClick = (row: any) => {
     console.log("Row clicked:", row.original);
@@ -227,7 +231,7 @@ const payment = [
   // Column definitions
   const columns: ColumnDef<InvoiceInterface>[] = [
     {
-      accessorKey: "invoiceNumber",
+      accessorKey: "invoice_number",
       header: ({ column }) => (
         <SortableHeader
           column={column}
@@ -239,7 +243,7 @@ const payment = [
       cell: ({ row }) => (
         <div className="font-medium text-primary flex flex-col">
           {" "}
-          {row.getValue("invoiceNumber")}
+          {row.getValue("invoice_number")}
         </div>
       ),
     },
@@ -258,7 +262,7 @@ const payment = [
       ),
     },
     {
-      accessorKey: "date",
+      accessorKey: "invoice_date",
       header: ({ column }) => (
         <SortableHeader
           column={column}
@@ -267,13 +271,13 @@ const payment = [
           filterOptions={issued_date}
         />
       ),
-      cell: ({ row }) => <>{row.original.date}</>,
+      cell: ({ row }) => <>{row.original.invoice_date}</>,
       filterFn: (row, id, value) => {
         return value.length === 0 || value.includes(row.getValue(id));
       },
     },
     {
-      accessorKey: "dueDate",
+      accessorKey: "due_date",
       header: ({ column }) => (
         <SortableHeader
           column={column}
@@ -282,7 +286,7 @@ const payment = [
           filterOptions={due_date}
         />
       ),
-      cell: ({ row }) => <>{row.original.dueDate}</>,
+      cell: ({ row }) => <>{row.original.due_date}</>,
 
       filterFn: (row, id, value) => {
         return value.length === 0 || value.includes(row.getValue(id));
@@ -348,11 +352,14 @@ const payment = [
         const handleDeleteRow = (row: any) => {
           console.log("Delete row:", row.original);
           if (
-            confirm(`Are you sure you want to delete ${row.original.name}?`)
+            confirm(`Are you sure you want to delete ${row.original.invoice_number}?`)
           ) {
-            alert(`Deleted ${row.original.name}`);
-            // Here you would typically call your delete API
-          }
+            alert(`Deleted ${row.original.invoice_number}`);
+            deleteApi.mutateAsync(row.original);
+            if (deleteApi) {
+              toast.info(`Deleted successfully`);
+            }
+           }
         };
 
         const [open, setOpen] = useState(false);
@@ -441,9 +448,7 @@ const payment = [
                     {selectedType?.label}
                     {/* Receive Purchase Order */}
                   </SheetTitle>
-                  <SheetDescription>
-
-                  </SheetDescription>
+                  <SheetDescription></SheetDescription>
                 </SheetHeader>
 
                 <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
@@ -486,7 +491,7 @@ const payment = [
           "invoiceNumber",
           "status",
           "date",
-          "dueDate",
+          "due_date",
           "customer",
           "total",
           "payments",

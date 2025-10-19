@@ -34,7 +34,7 @@ export default function AddPart({
       partNumber: "",
       name: "",
       quantityUsed: 1,
-      unitCost: 0,
+      unit_cost: 0,
     },
   });
 
@@ -45,9 +45,9 @@ export default function AddPart({
     }
   }, [initialValues, form]);
 
-  // Calculate total cost on quantity/unitCost change
+  // Calculate total cost on quantity/unit_cost change
   const watchQty = form.watch("quantityUsed");
-  const watchCost = form.watch("unitCost");
+  const watchCost = form.watch("unit_cost");
 
   useEffect(() => {
     const total = +(watchQty * watchCost).toFixed(2);
@@ -57,12 +57,12 @@ export default function AddPart({
   function onSubmit(data: Part) {
     onSave({
       ...data,
-      totalCost: +(data.quantityUsed * data.unitCost).toFixed(2),
+      totalCost: +(data.quantityUsed * data.unit_cost).toFixed(2),
     });
   }
 
   // const watchQuantity = form.watch("quantityUsed");
-  // const watchCost = form.watch("unitCost");
+  // const watchCost = form.watch("unit_cost");
 
   // useEffect(() => {
   //   const total = watchQuantity * watchCost;
@@ -152,7 +152,7 @@ export default function AddPart({
             <InputWrapper
               className="col-span-1"
               control={form.control}
-              name="unitCost"
+              name="unit_cost"
               label="Unit Cost"
               type="number"
             />

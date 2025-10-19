@@ -3,22 +3,15 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { GitPullRequestArrow, Pen, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import {
-  categoryOptions,
-  employeeTypeOptions,
-  statusOptions,
-} from "@/lib/equipment-schema";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   EmployeeCheckboxOptions,
   equipmentOptionsList,
-  locationOptionsList,
-  vendorTypeOptions,
 } from "@/lib/option-list";
 import InputWrapper from "@/components/forms/wrappers/InputWrapper";
 import SelectWrapper from "@/components/forms/wrappers/SelectWrapper";
@@ -44,7 +37,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import UpdateEmployeeRenewalForm from "@/components/forms/actualForms/update-employee";
 import {
   Select,
   SelectContent,
@@ -58,28 +50,114 @@ import {
   EmployeeInterface,
   EmployeeSchema,
 } from "@/lib/Employee/employee-data";
+import { useGetInventoryCategories } from "@/services/setups/inventory";
+import { useGetEmployee, useGetEmployeeCategories, useGetEmployeeRenewals, useGetEmployeeStatuses, useGetEmployeeTypes, useUpdateEmployee } from "@/services/setups/employee";
+import { useGetLocations } from "@/services/setups/vendor";
+import { employeeSchema } from "@/components/forms/actualForms/new-employee-form";
+import {deepCleanNulls} from "@/lib/utils"
+
+// Renewal data type
+export interface RenewalData {
+  id: string;
+  renewal_id: string;
+  issued_date: Date;
+  expiry_date: Date;
+  notes: string;
+}
 
 export default function EditEmployee({
   children,
-  data,
+  pageId,
 }: {
   children: React.ReactNode;
-  data: EmployeeInterface;
+  pageId: string;
 }) {
+  const { data, isLoading } = useGetEmployee<EmployeeByIdInterface>(pageId);
+
   const [open, setOpen] = useState(false);
   const [openRenewal, setOpenRenewal] = useState(false);
- 
-  const employeeForm = useForm<z.infer<typeof EmployeeSchema>>({
-    resolver: zodResolver(EmployeeSchema),
-    defaultValues: { ...data },
+  const [renewals, setRenewals] = useState<RenewalData[]>([]);
+  const [editingRenewalId, setEditingRenewalId] = useState<string | null>(null);
+  const {
+    data: statusOptions,
+    isLoading: statusOptionsLoading,
+    error: statusOptionsError,
+  } = useGetEmployeeStatuses<Array<{ id: string; name: string }>>();
+
+  const {
+    data: employeeTypeOptions,
+    isLoading: employeeTypeOptionsLoading,
+    error: employeeTypeOptionsError,
+  } = useGetEmployeeTypes<Array<{ id: string; name: string }>>();
+
+  const {
+    data: locationOptionsList,
+    isLoading: locationOptionsListLoading,
+    error: locationOptionsListError,
+  } = useGetLocations<Array<{ id: string; name: string }>>();
+
+  const {
+    data: categoryOptions,
+    isLoading: categoryOptionsLoading,
+    error: categoryOptionsError,
+  } = useGetEmployeeCategories<Array<{ id: string; name: string }>>();
+  const { mutateAsync, isPending } = useUpdateEmployee();
+
+
+  const employeeForm = useForm<z.infer<typeof employeeSchema>>({
+    resolver: zodResolver(employeeSchema)
   });
+
+  useEffect(() => {
+    if (data) {
+      employeeForm.reset(
+        deepCleanNulls({
+        ...data,
+        renewals: data.renewals || [],
+      }));
+      setRenewals(data.renewals || []);
+      console.log(data);
+    }
+  }, [data, employeeForm]);
+
+  const handleAddRenewal = (newRenewal: RenewalData) => {
+    if (editingRenewalId) {
+      const updated = renewals.map((r) =>
+        r.id === editingRenewalId ? newRenewal : r
+      );
+      setRenewals(updated);
+      employeeForm.setValue("renewals", updated);
+      setEditingRenewalId(null);
+      toast.success("Renewal updated");
+    } else {
+      const updated = [...renewals, newRenewal];
+      setRenewals(updated);
+      employeeForm.setValue("renewals", updated);
+      toast.success("Renewal added");
+    }
+    setOpenRenewal(false);
+  };
+
+  const handleDeleteRenewal = (id: string) => {
+    const updated = renewals.filter((r) => r.id !== id);
+    setRenewals(updated);
+    employeeForm.setValue("renewals", updated);
+    toast.success("Renewal removed");
+  };
+
+  const handleEditRenewal = (id: string) => {
+    setEditingRenewalId(id);
+    setOpenRenewal(true);
+  };
 
   async function handleSubmit(data: z.infer<typeof EmployeeSchema>) {
     console.log(data);
-    // Here you would typically send the data to your API
-    toast.success("Edited  successfully!");
+    toast.success("Edited successfully!");
   }
-
+  if(isLoading){
+  return(<> Gathering all data</>)
+  }
+  if(data){
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>{children}</SheetTrigger>
@@ -88,8 +166,7 @@ export default function EditEmployee({
           <SheetTitle>
             <div className="flex justify-between">
               <div>
-                {" "}
-                Edit{data.first} {data.last} {data.middle}
+                Edit {data?.first} {data?.last} {data?.middle}
               </div>
             </div>
           </SheetTitle>
@@ -97,8 +174,18 @@ export default function EditEmployee({
         <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
           <Form {...employeeForm}>
             <form
-              onSubmit={employeeForm.handleSubmit((data) => handleSubmit(data))}
-              className="w-full"
+               onSubmit={employeeForm.handleSubmit(handleSubmit, (errors) => {
+            console.log(errors);
+            const firstErrorField = Object.values(errors)[0];
+            const message = firstErrorField?.message;
+
+            if (message) {
+              toast.error(message);
+            } else {
+              toast.error("Please check the form for errors.");
+            }
+          })}
+          className="w-full"
             >
               <Tabs defaultValue="general" className="w-full">
                 <TabsList>
@@ -115,19 +202,19 @@ export default function EditEmployee({
                     <div className="flex flex-row">
                       <InputWrapper
                         control={employeeForm.control}
-                        name="last"
+                        name="last_name"
                         label="Last Name"
                         type="text"
                       />
                       <InputWrapper
                         control={employeeForm.control}
-                        name="first"
+                        name="first_name"
                         label="First Name"
                         type="text"
                       />
                       <InputWrapper
                         control={employeeForm.control}
-                        name="middle"
+                        name="middle_name"
                         label="Middle name"
                         type="text"
                       />
@@ -135,19 +222,10 @@ export default function EditEmployee({
 
                     <InputWrapper
                       control={employeeForm.control}
-                      name="street1"
+                      name="address_one"
                       label="Address 1"
                       type="text"
-                    />
-
-                    <InputWrapper
-                      className="pt-0"
-                      control={employeeForm.control}
-                      name="street2"
-                      placeholder="Address 2 "
-                      label=""
-                      type="text"
-                    />
+                    /> 
                     <div className="grid grid-cols-2 gap-4">
                       <div className="col-span-1">
                         <InputWrapper
@@ -179,34 +257,31 @@ export default function EditEmployee({
                     <FormSubheader header={"Contact"} />
                     <div className="grid grid-cols-2 gap-2">
                       <div className="col-span-1">
-                        {" "}
                         <InputWrapper
                           control={employeeForm.control}
-                          name="home"
+                          name="home_contact"
                           label="Home "
                           type="number"
                           value={" "}
                           className="col-span-1"
-                        />{" "}
+                        />
                       </div>
                       <div className="col-span-1">
-                        {" "}
                         <InputWrapper
                           control={employeeForm.control}
-                          name="altPhone"
+                          name="alt_phone"
                           label="Alt. Phone "
                           type="number"
                           className="col-span-1"
-                        />{" "}
+                        />
                       </div>
                       <div className="col-span-1">
-                        {" "}
                         <InputWrapper
                           control={employeeForm.control}
                           name="cell"
                           label="Cell"
                           type="number"
-                        />{" "}
+                        />
                       </div>
                     </div>
                     <InputWrapper
@@ -226,7 +301,7 @@ export default function EditEmployee({
                     <FormSubheader header={"Miscellaneous"} />
                     <CustomFieldsWrapper
                       control={employeeForm.control}
-                      name="customFields"
+                      name="miscellaneous"
                       label="Custom Fields"
                       maxFields={4}
                     />
@@ -237,35 +312,32 @@ export default function EditEmployee({
                     <FormSubheader header={"Employment"} />
                     <SelectWrapper
                       control={employeeForm.control}
-                      name="status"
+                      name="status_id"
                       label="Status "
                       required
-                      options={statusOptions}
+                      options={statusOptions??[]}
                     />
                     <div className="grid grid-cols-2 gap-1">
                       <div className="col-span-1">
-                        {" "}
                         <DatePickerWrapper
                           control={employeeForm.control}
-                          name="date"
+                          name="hire_date"
                           label="Date"
-                        />{" "}
+                        />
                       </div>
                       <div className="col-span-1">
-                        {" "}
                         <DatePickerWrapper
                           control={employeeForm.control}
-                          name="leaveDate"
+                          name="leave_date"
                           label="Leave Date"
-                        />{" "}
+                        />
                       </div>
                       <div className="col-span-1">
-                        {" "}
                         <DatePickerWrapper
                           control={employeeForm.control}
                           name="dob"
                           label="DOB"
-                        />{" "}
+                        />
                       </div>
                       <div className="col-span-1">
                         <InputWrapper
@@ -281,21 +353,19 @@ export default function EditEmployee({
                           name="type_id"
                           label="Type "
                           required
-                          options={employeeTypeOptions}
+                          options={employeeTypeOptions??[]}
                         />
                       </div>
                       <div className="col-span-1"></div>
                       <div className="col-span-1">
-                        {" "}
                         <InputWrapper
                           control={employeeForm.control}
-                          name="laborRate"
+                          name="labor_rate"
                           label="Last Rate"
                           type="number"
                         />
                       </div>
                       <div className="col-span-1">
-                        {" "}
                         <InputWrapper
                           control={employeeForm.control}
                           name="billing_rate"
@@ -316,7 +386,7 @@ export default function EditEmployee({
                       <div className="col-span-1">
                         <SelectWrapper
                           control={employeeForm.control}
-                          name="category"
+                          name="category_id"
                           label="Category "
                           required
                           options={categoryOptions}
@@ -327,92 +397,110 @@ export default function EditEmployee({
 
                     <InputWrapper
                       control={employeeForm.control}
-                      name="driverNumber"
+                      name="driver_license_number"
                       label="Number"
                       type="text"
                     />
                     <InputWrapper
                       control={employeeForm.control}
-                      name="driverClass"
+                      name="driver_license_class"
                       label="Class"
                       type="text"
                     />
                     <InputWrapper
                       control={employeeForm.control}
-                      name="state"
+                      name="driver_license_state"
                       label="State/Province"
                       type="text"
-                    />
-                    <TextareaWrapper
-                      control={employeeForm.control}
-                      name="notes"
-                      label="Notes"
-                      rows={4}
                     />
                   </div>
                 </TabsContent>
                 <TabsContent value="renewals">
-                  <div className="flex items-end space-y-2 flex-col">
-                    <Sheet open={openRenewal} onOpenChange={setOpenRenewal}>
-                      <SheetTrigger asChild>
-                        <Button className="w-fit">
-                          <Plus />
-                          Create New
-                        </Button>
-                      </SheetTrigger>
-                      <SheetContent className="w-1/4">
-                        <SheetHeader>
-                          <SheetTitle>Create Renewal</SheetTitle>
-                          <SheetDescription>
-                            Fill out the form below to create a new Renewal.
-                          </SheetDescription>
-                        </SheetHeader>
-                        <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
-                          <UpdateEmployeeRenewalForm />
-                        </ScrollArea>
-                      </SheetContent>
-                    </Sheet>
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Renewal</TableHead>
-                          <TableHead>Issued</TableHead>
-                          <TableHead>Expired</TableHead>
-                          <TableHead>Notes</TableHead>
-                          <TableHead>Actions</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {renewalData.map((data) => (
-                          <TableRow key={data.id}>
-                            <TableCell>{data.renewalName}</TableCell>
-                            <TableCell>{data.dateIssued}</TableCell>
-                            <TableCell>{data.dateExpired}</TableCell>
-                            <TableCell>{data.notes}</TableCell>
-                            <TableCell>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() =>
-                                  handleDeleteContact(data.renewalName)
-                                }
-                              >
-                                <Trash2 className="h-4 w-4 text-destructive" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() =>
-                                  handleDeleteContact(data.renewalName)
-                                }
-                              >
-                                <Pen className="h-4 w-4 text-blue-400" />
-                              </Button>
-                            </TableCell>
+                  <div className="flex flex-col gap-4">
+                    <div className="flex justify-end">
+                      <Sheet open={openRenewal} onOpenChange={setOpenRenewal}>
+                        <SheetTrigger asChild>
+                          <Button
+                            onClick={() => setEditingRenewalId(null)}
+                            className="w-fit"
+                          >
+                            <Plus className="mr-2 h-4 w-4" />
+                            Add Renewal
+                          </Button>
+                        </SheetTrigger>
+                        <SheetContent className="w-1/4">
+                          <SheetHeader>
+                            <SheetTitle>
+                              {editingRenewalId
+                                ? "Edit Renewal"
+                                : "Create Renewal"}
+                            </SheetTitle>
+                            <SheetDescription>
+                              Fill out the form below to{" "}
+                              {editingRenewalId ? "edit" : "create"} a renewal.
+                            </SheetDescription>
+                          </SheetHeader>
+                          <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
+                            <RenewalFormContent
+                              onSubmit={handleAddRenewal}
+                              editingRenewal={
+                                editingRenewalId
+                                  ? renewals.find((r) => r.id === editingRenewalId)
+                                  : undefined
+                              }
+                            />
+                          </ScrollArea>
+                        </SheetContent>
+                      </Sheet>
+                    </div>
+
+                    {renewals.length > 0 ? (
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Renewal</TableHead>
+                            <TableHead>Issued</TableHead>
+                            <TableHead>Expired</TableHead>
+                            <TableHead>Notes</TableHead>
+                            <TableHead>Actions</TableHead>
                           </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
+                        </TableHeader>
+                        <TableBody>
+                          {renewals.map((data) => (
+                            <TableRow key={data.id}>
+                              <TableCell>{data?.renewal_id}</TableCell>
+                              <TableCell>
+                                {data?.issued_date}
+                              </TableCell>
+                              <TableCell>
+                                {data?.expiry_date}
+                              </TableCell>
+                              <TableCell>{data?.notes || "-"}</TableCell>
+                              <TableCell className="flex gap-2">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleEditRenewal(data.id)}
+                                >
+                                  <Pen className="h-4 w-4 text-blue-400" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleDeleteRenewal(data.id)}
+                                >
+                                  <Trash2 className="h-4 w-4 text-destructive" />
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    ) : (
+                      <div className="text-center py-8 text-muted-foreground">
+                        No renewals added yet
+                      </div>
+                    )}
                   </div>
                 </TabsContent>
                 <TabsContent value="notifications">
@@ -424,12 +512,12 @@ export default function EditEmployee({
                         </SelectTrigger>
                         <SelectContent>
                           <SelectGroup>
-                            {locationOptionsList.map((location) => (
+                            {locationOptionsList?.map((location) => (
                               <SelectItem
-                                key={location.value}
-                                value={location.value}
+                                key={location.id}
+                                value={location.id}
                               >
-                                {location.label}
+                                {location.name}
                               </SelectItem>
                             ))}
                           </SelectGroup>
@@ -477,7 +565,7 @@ export default function EditEmployee({
               </Tabs>
 
               <div className="flex justify-between gap-x-4 my-8 w-full">
-                <Button className=" w-full">
+                <Button className="w-full">
                   <GitPullRequestArrow className="mr-2" /> Save
                 </Button>
               </div>
@@ -486,53 +574,68 @@ export default function EditEmployee({
         </ScrollArea>
       </SheetContent>
     </Sheet>
+  );}
+}
+
+interface RenewalFormContentProps {
+  onSubmit: (data: RenewalData) => void;
+  editingRenewal?: RenewalData;
+}
+
+function RenewalFormContent({
+  onSubmit,
+  editingRenewal,
+}: RenewalFormContentProps) {
+  const{data:renewalOptionsList}=useGetEmployeeRenewals()
+  
+  const form = useForm({
+    defaultValues: editingRenewal || {
+      renewal_id: "",
+      issued_date: new Date(),
+      expiry_date: new Date(),
+      notes: "",
+    },
+  });
+
+  return (
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit((data) => {
+          if (data.renewal_id && data.issued_date && data.expiry_date) {
+            onSubmit(data as RenewalData);
+            form.reset();
+          } else {
+            toast.error("Please fill in all required fields");
+          }
+        })}
+        className="space-y-4"
+      >
+        <SelectWrapper
+          control={form.control}
+          name="renewalName"
+          label="Renewal Type"
+          options={renewalOptionsList??[]}
+        />
+        <DatePickerWrapper
+          control={form.control}
+          name="dateIssued"
+          label="Date Issued"
+        />
+        <DatePickerWrapper
+          control={form.control}
+          name="dateExpired"
+          label="Date Expired"
+        />
+        <InputWrapper
+          control={form.control}
+          name="notes"
+          label="Notes"
+          type="text"
+        />
+        <Button type="submit" className="w-full">
+          {editingRenewal ? "Update Renewal" : "Add Renewal"}
+        </Button>
+      </form>
+    </Form>
   );
 }
-
-const renewalData = [
-  {
-    id: 1,
-    renewalName: "Pesticide Applicator",
-    dateIssued: "2023-05-12",
-    dateExpired: "2026-05-11",
-    notes: "Renew before expiry for seamless operations",
-  },
-  {
-    id: 2,
-    renewalName: "Hazardous Materials",
-    dateIssued: "2022-08-20",
-    dateExpired: "2025-08-20",
-  },
-  {
-    id: 3,
-    renewalName: "Safety Materials",
-    dateIssued: "2024-01-15",
-    dateExpired: "2027-01-14",
-    notes: "Requires annual safety audit",
-  },
-  {
-    id: 4,
-    renewalName: "Pesticide Applicator",
-    dateIssued: "2021-11-30",
-    dateExpired: "2024-11-29",
-  },
-  {
-    id: 5,
-    renewalName: "Hazardous Materials",
-    dateIssued: "2023-03-10",
-    dateExpired: "2026-03-10",
-    notes: "Handled by environmental compliance team",
-  },
-];
-
-interface RenewalItem {
-  id: number;
-  renewalName: string;
-  dateIssued: string; // Format: YYYY-MM-DD
-  dateExpired: string; // Format: YYYY-MM-DD
-  notes?: string;
-}
-
-const handleDeleteContact = (contactId: string) => {
-  console.log("Delete contact:", contactId);
-};

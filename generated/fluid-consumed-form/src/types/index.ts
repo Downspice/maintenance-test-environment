@@ -5,7 +5,7 @@ export interface FluidConsumedFormValues {
   fluid: string;
   part: string;
   quantity: number;
-  unitCost: number;
+  unit_cost: number;
   fluidUnits: string;
   total: number;
   costCentre: string;

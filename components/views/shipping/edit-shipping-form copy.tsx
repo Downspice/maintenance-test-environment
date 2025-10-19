@@ -9,8 +9,6 @@ import { Button } from "@/components/ui/button";
 import { GitPullRequestArrow, Plus } from "lucide-react";
 import { toast } from "sonner";
 import {
-  categoryOptions,
-  countryOptions,
   statusOptions,
 } from "@/lib/equipment-schema";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -28,6 +26,7 @@ import InputWrapper from "@/components/forms/wrappers/InputWrapper";
 import SelectWrapper from "@/components/forms/wrappers/SelectWrapper";
 import CustomFieldsWrapper from "@/components/forms/wrappers/CustomFieldsWrapper";
 import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
+import { useGetInventoryCategories } from "@/services/setups/inventory";
 
 // Define the form schema with Zod
 export const vendorSchema = z.object({
@@ -45,6 +44,8 @@ export const vendorSchema = z.object({
     children: React.ReactNode;
     data: any;
   }) {
+      const { data: categoryOptions } = useGetInventoryCategories();
+    
   const [customFields, setCustomFields] = useState<
     { name: string; value: string }[]
   >([]);
@@ -115,7 +116,7 @@ export const vendorSchema = z.object({
 
                     <InputWrapper
                       control={vendorForm.control}
-                      name="street1"
+                      name="address_one"
                       label="Address"
                       type="text"
                       value={""}

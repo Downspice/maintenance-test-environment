@@ -33,7 +33,6 @@ const ActiveDropdown = [
   },
 ];
 
- 
 export default function EmployeesPage() {
   const [filters, setFilters] = useState({
     equipment: "",
@@ -69,7 +68,7 @@ export default function EmployeesPage() {
   };
 
   const handleSelectChange = (
-    key: "equipment" | "location" | "custom"| "search",
+    key: "equipment" | "location" | "custom" | "search",
     value: string
   ) => {
     if (value === "new") {
@@ -104,18 +103,15 @@ export default function EmployeesPage() {
   };
 
   return (
-    <div className="flex flex-col container mx-auto py-10 space-y-4">
+    <div className="flex flex-col p-4 mx-auto py-10 space-y-4">
       <div className="flex flex-row items-center space-x-2">
         <h1 className="text-xl font-semibold">Inventories</h1>
         <Badge>9</Badge>
       </div>
 
       <div className="flex justify-between items-center space-x-4">
-        {/* Equipment Filter */}
-
         <div className="flex flex-row space-x-0.5">
-          {/* Location Filter */}
-          <Select onValueChange={(val) => handleSelectChange("equipment", val)}>
+          {/* <Select onValueChange={(val) => handleSelectChange("equipment", val)}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="All Parts" />
             </SelectTrigger>
@@ -126,16 +122,13 @@ export default function EmployeesPage() {
                 </SelectItem>
               ))}
             </SelectContent>
-          </Select>
+          </Select> */}
         </div>
         <div className="flex flex-row space-x-0.5">
-          {/* Search Input */}
-
           <Button onClick={createEquipment}>New</Button>
         </div>
       </div>
       <div>
-        {/* <InventoryPageDataTable /> */}
         <InventoryDataTable />
       </div>
     </div>
