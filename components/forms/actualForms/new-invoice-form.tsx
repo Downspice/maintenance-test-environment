@@ -53,7 +53,7 @@ export const InvoiceItemSchema = z.object({
 export type InvoiceItemInterface = z.infer<typeof InvoiceItemSchema>;
 
 export const InvoicePaymentSchema = z.object({
-  invoiceNumber: z.string(),
+  invoice_number: z.string(),
   amount: z.string(),
   date: z.string(),
   paymentMethod: z.string(),
@@ -206,7 +206,7 @@ export default function NewInvoiceForm( ) {
           <div className="flex flex-row gap-x-3">
             <InputWrapper
               control={form.control}
-              name={"invoiceNumber"}
+              name={"invoice_number"}
               label={"Invoice #"}
               value={""}
               type="text"
@@ -409,7 +409,7 @@ export default function NewInvoiceForm( ) {
                           setEditPayment(null);
                           setEditPaymentIndex(null);
                           PaymentsForm.reset({
-                            invoiceNumber: "",
+                            invoice_number: "",
                             amount: 0,
                             date: "",
                             paymentMethod: "",
@@ -445,7 +445,7 @@ export default function NewInvoiceForm( ) {
                               <ComboboxFieldWrapper
                                 className="col-span-1"
                                 control={PaymentsForm.control}
-                                name="invoiceNumber"
+                                name="invoice_number"
                                 label="Invoice Number"
                                 options={invoiceOptionsList}
                               />

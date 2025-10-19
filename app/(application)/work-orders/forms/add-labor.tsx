@@ -10,13 +10,13 @@ import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrappe
 import { Form } from "@/components/ui/form";
 import { Save } from "lucide-react";
 import InputWrapper from "@/components/forms/wrappers/InputWrapper";
-import { costCenterOptions } from "@/components/forms/actualForms/work-order-form";
 import RadioGroupWrapper from "@/components/forms/wrappers/RadioGroupWrapper";
 import { performedOptionList } from "@/lib/work-orders-data";
 import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
 import { z } from "zod";
 import { vendorOptions } from "@/lib/equipment-schema";
 import { AddLaborFormValues ,AddLaborSchema} from "@/lib/WorkOrder/workOrder-data";
+import { useGetCostCenters } from "@/services/setups/inventory";
 
 
 
@@ -28,6 +28,7 @@ type AddLaborProps = {
 export default function AddLabor({ onSave, initialValues }: AddLaborProps) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { data: costCenterOptions } = useGetCostCenters();
 
   const form = useForm<AddLaborFormValues>({
     resolver: zodResolver(AddLaborSchema),

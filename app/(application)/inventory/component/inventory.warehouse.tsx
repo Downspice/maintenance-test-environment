@@ -27,7 +27,7 @@ export default function WarehouseTabs({
 }: {
   warehouses: any[];
   setWarehouses: (val: string[]) => void;
-  options: { label: string; value: string }[];
+  options: { name: string; id: string }[];
   control: any;
   enableTrackingWatch: boolean;
   vendorOptions: any[];
@@ -61,8 +61,8 @@ export default function WarehouseTabs({
               </SelectTrigger>
               <SelectContent>
                 {options.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
+                  <SelectItem key={opt.id} value={opt.id}>
+                    {opt.name}
                   </SelectItem>
                 ))}
               </SelectContent>

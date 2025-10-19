@@ -25,7 +25,7 @@ import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrappe
 
 
 const paymentSchema = z.object({
-  invoiceNumber: z.string(),
+  invoice_number: z.string(),
   amount: z.string(),
   date: z.string(),
   paymentMethod: z.string(),
@@ -85,7 +85,7 @@ export default function EditPaymentReceived({
                   <ComboboxFieldWrapper
                     className="col-span-1"
                     control={PaymentsForm.control}
-                    name="invoiceNumber"
+                    name="invoice_number"
                     label="InvoiceNumber"
                     options={invoiceOptionsList}
                   />

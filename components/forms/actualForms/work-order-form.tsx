@@ -49,6 +49,7 @@ import {
 import PartsTab from "@/app/(application)/work-orders/view/PartsTab";
 import LaborTab from "@/app/(application)/work-orders/view/LaborTab";
 import NotesTab from "@/app/(application)/work-orders/view/NotesTab";
+import { useGetCostCenters } from "@/services/setups/inventory";
 // Equipment options
 const equipmentOptions = [{ value: "1311827", label: "AC-001-07 Class 8" }];
 // Assignee options
@@ -88,16 +89,12 @@ export const workOrderTypeOptions = [
   { value: "other", label: "Other" },
 ];
 
-export const costCenterOptions = [
-  { value: "preventive", label: "Preventive Cost Center" },
-  { value: "corrective", label: "Corrective Cost Center" },
-  { value: "inspection", label: "Inspection Cost Center" },
-  { value: "other", label: "Other" },
-];
 
 export const WorkOrderStatuses = ["Open", "In Progress", "On Hold", "Complete"];
 
 export function ActualWorkOrderForm() {
+    const { data: costCenterOptions } = useGetCostCenters();
+  
   const [maintenanceTasks, setMaintenanceTasks] = useState<
     AddMaintenanceInWorkOrderInterface[]
   >([]);

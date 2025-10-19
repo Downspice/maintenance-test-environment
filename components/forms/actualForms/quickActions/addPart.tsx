@@ -22,16 +22,16 @@ import { useState } from "react";
 import WarehouseTabs from "@/app/(application)/inventory/component/inventory.warehouse";
 import InputWrapper from "../../wrappers/InputWrapper";
 import { ComboboxFieldWrapper } from "../../wrappers/ComboboxWrapper";
-import { costCenterOptions } from "../work-order-form";
 import FileUploadWrapper from "../../wrappers/FileUploadWrapper";
 import SelectWrapper from "../../wrappers/SelectWrapper";
 import SingleCheckboxWrapper from "../../wrappers/SingleCheckboxWrapper";
 import CustomFieldsWrapper from "../../wrappers/CustomFieldsWrapper";
-import { useGetInventoryCategories, useGetInventoryManufacturers, useGetInventoryUnitTypes } from "@/services/setups/inventory";
+import { useGetCostCenters, useGetInventoryCategories, useGetInventoryManufacturers, useGetInventoryUnitTypes } from "@/services/setups/inventory";
 
 export default function NewPart() {
     const { data: equipmentManufacturerOptions } = useGetInventoryManufacturers();
     const { data:   unitOptions } = useGetInventoryUnitTypes();
+  const { data: costCenterOptions } = useGetCostCenters();
 
   const inventoryForm = useForm<z.infer<typeof InventorySchema>>({
     resolver: zodResolver(InventorySchema),

@@ -2640,7 +2640,7 @@ export default function EquipmentProfile({
           <SheetHeader>
             <SheetTitle>
               <div className="flex justify-between">
-                <div>{data.invoiceNumber}</div>
+                <div>{data.invoice_number}</div>
               </div>
             </SheetTitle>
           </SheetHeader>

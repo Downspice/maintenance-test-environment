@@ -26,7 +26,7 @@ export const PurchaseOrderSchema = z.object({
   items: z.array(PurchaseOrderItemSchema),
 
   purchaseOrderNumber: z.string().optional(),
-  invoiceNumber: z.string().optional(),
+  invoice_number: z.string().optional(),
   orderNumber: z.string().optional(),
   woNumber: z.string().optional(),
   customer: z.string().optional(),

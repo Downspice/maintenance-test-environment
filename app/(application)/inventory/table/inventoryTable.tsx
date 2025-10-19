@@ -20,7 +20,7 @@ import {
 import { useState } from "react";
 import React from "react";
 import {
-  InventoryInterface,
+  InventoryTableInterface,
 } from "@/lib/Inventory/inventory-data";
 import { matchesSearchAllFields } from "@/lib/utils";
 import EditInventory from "../view/edit-inventory";
@@ -55,10 +55,10 @@ export  function InventoryDataLoader({ InventoryData, isLoading }) {
   });
 
   const getAllEmployees = (
-  employees: InventoryInterface[]
-): InventoryInterface[] => {
-  const result: InventoryInterface[] = [];
-  const traverse = (emps: InventoryInterface[]) => {
+  employees: InventoryTableInterface[]
+): InventoryTableInterface[] => {
+  const result: InventoryTableInterface[] = [];
+  const traverse = (emps: InventoryTableInterface[]) => {
     emps.forEach((emp) => {
       result.push(emp);
     });
@@ -75,13 +75,13 @@ const unit_cost = [
 const number = [...new Set(flatEmployees.map((emp) => emp.part_number))];
 const name = [...new Set(flatEmployees.map((emp) => emp.name))];
 const category = [
-  ...new Set(flatEmployees.map((emp) => emp.category_id?.toString())),
+  ...new Set(flatEmployees.map((emp) => emp.category.name)),
 ];
 const vendor_names = [
-  ...new Set(flatEmployees.map((emp) => emp?.warehouses?.[0]?.vendor ?? "")),
+  ...new Set(flatEmployees.map((emp) => emp?.inventory_trackings?.[0]?.vendor_id ?? "")),
 ];
 const quantity = [
-  ...new Set(flatEmployees.map((emp) => emp?.warehouses?.[0]?.quantity ?? "")),
+  ...new Set(flatEmployees.map((emp) => emp?.inventory_trackings?.[0]?.quantity ?? "")),
 ];
 
   const handleRowClick = (row: any) => {
@@ -231,7 +231,7 @@ const quantity = [
   ); // Add dependencies that actually matter
 
   // Column definitions
-  const columns: ColumnDef<InventoryInterface>[] = [
+  const columns: ColumnDef<InventoryTableInterface>[] = [
     {
       accessorKey: "part_number",
       header: ({ column }) => (
@@ -278,7 +278,7 @@ const quantity = [
           filterOptions={category as string[]}
         />
       ),
-      cell: ({ row }) => <>{row.original.category}</>,
+      cell: ({ row }) => <>{row.original.category.name}</>,
       filterFn: (row, id, value) => {
         return value.length === 0 || value.includes(row.getValue(id));
       },
@@ -293,7 +293,7 @@ const quantity = [
           filterOptions={vendor_names}
         />
       ),
-      cell: ({ row }) => <>{row.original.warehouses?.[0]?.vendor ?? ""}</>,
+      cell: ({ row }) => <>{row.original?.inventory_trackings?.[0]?.vendor_id  ?? ""}</>,
       filterFn: (row, id, value) => {
         return value.length === 0 || value.includes(row.getValue(id));
       },
@@ -311,7 +311,7 @@ const quantity = [
       cell: ({ row }) => {
         return (
           <div className="flex items-center gap-1 text-sm">
-            {row.original.warehouses?.[0]?.reorderPoint ??
+            {/* {row.original.warehouses?.[0]?.reorderPoint ??
             0 >= row.original.warehouses?.[0]?.quantity ??
             0 ? (
               <span className=" font-bold text-red-600">
@@ -321,7 +321,7 @@ const quantity = [
               <div className=" ">
                 {row.original.warehouses?.[0]?.quantity ?? ""}{" "}
               </div>
-            )}
+            )} */}
           </div>
         );
       },

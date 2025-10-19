@@ -183,19 +183,7 @@ export const fuelTypeOptions = [
   { value: "hybrid", label: "Hybrid" },
 ]
 
-export const shipViaOptions = [
-  { value: "Ground", label: "Ground" },
-  { value: "Air", label: "Air" },
-  { value: "UPS", label: "UPS" },
-  { value: "UPSA", label: "UPSA" },
-]
 
-export const warehouseOptions = [
-  { value: "house1", label: "Warehouse 1" },
-  { value: "house2", label: "Warehouse Abeka" },
-  { value: "electric", label: "Warehouse Ashaiman" },
-  { value: "hybrid", label: "Warehouse Kokomlemle" },
-]
 
 export const substituteOptions = [
   { "label": "10101 light bulb", "value": "3652869" },

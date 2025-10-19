@@ -9,13 +9,12 @@ import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { GitPullRequestArrow } from "lucide-react";
 import { toast } from "sonner";
-import { 
-  warehouseOptions,
-} from "@/lib/equipment-schema";
+ 
 import SingleCheckboxWrapper from "@/components/forms/wrappers/SingleCheckboxWrapper";
 import InputWrapper from "@/components/forms/wrappers/InputWrapper";
 import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
 import SelectWrapper from "@/components/forms/wrappers/SelectWrapper";
+import { useGetWarehouses } from "@/services/setups/inventory";
 
 // Define the form schema with Zod
 export const TransferInventorySchema = z.object({
@@ -33,6 +32,8 @@ export default function TransferInventoryForm({
 }: {
   data: TransferInventoryInterface;
 }) {
+    const { data: warehouseOptions } = useGetWarehouses();
+  
   const TransferInventoryForm = useForm<
     z.infer<typeof TransferInventorySchema>
   >({

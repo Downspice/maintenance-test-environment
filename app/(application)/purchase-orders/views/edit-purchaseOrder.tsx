@@ -13,7 +13,6 @@ import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";
 // Schema and types
 import {
   assigneeOptions,
-  shipViaOptions,
   substituteOptions,
   vendorOptions,
 } from "@/lib/equipment-schema";
@@ -62,6 +61,7 @@ import {
 } from "@/lib/PurchaseOrder/purchaseOrder-data";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useGetLocations } from "@/services/setups/vendor";
+import { useGetPurchaseOrderShipVias } from "@/services/setups/purchaseOrder";
 
 
 export type ItemFormValues = z.infer<typeof PurchaseOrderItemSchema>;
@@ -82,6 +82,7 @@ export default function EditPurchaseOrderForm({
     isLoading:locationOptionsListLoading, 
     error: locationOptionsListError
   } = useGetLocations<Array<{ id: string, name: string }>>();
+  const { data: shipViaOptions } = useGetPurchaseOrderShipVias();
   const [internalOpen, setInternalOpen] = useState(false);
   const open = externalOpen !== undefined ? externalOpen : internalOpen;
   const setOpen = onOpenChange ?? setInternalOpen;
@@ -550,7 +551,7 @@ export default function EditPurchaseOrderForm({
                           />
                           <InputWrapper
                             control={form.control}
-                            name={"invoiceNumber"}
+                            name={"invoice_number"}
                             label={"Invoice#"}
                             value={""}
                             type="text"

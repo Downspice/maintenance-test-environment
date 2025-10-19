@@ -101,7 +101,7 @@ export const discount_typesOptions = [
 export const paymentReceived: PaymentReceivedInterface[] = [
   {
     dateReceived: "2025-07-01",
-    invoiceNumber: "INV-1023",
+    invoice_number: "INV-1023",
     category: "Product Sales",
     customer: "Jane Doe",
     methodOfPayment: "Credit Card",
@@ -116,7 +116,7 @@ export const paymentReceived: PaymentReceivedInterface[] = [
   },
   {
     dateReceived: "2025-07-02",
-    invoiceNumber: "INV-1024",
+    invoice_number: "INV-1024",
     category: "Consulting Services",
     customer: "John Smith",
     methodOfPayment: "Cheque",
@@ -131,7 +131,7 @@ export const paymentReceived: PaymentReceivedInterface[] = [
   },
   {
     dateReceived: "2025-07-03",
-    invoiceNumber: "INV-1025",
+    invoice_number: "INV-1025",
     category: "Subscription",
     customer: "Acme Corp",
     methodOfPayment: "Other",
@@ -146,7 +146,7 @@ export const paymentReceived: PaymentReceivedInterface[] = [
   },
   {
     dateReceived: "2025-07-04",
-    invoiceNumber: "INV-1026",
+    invoice_number: "INV-1026",
     category: "Maintenance",
     customer: "Sarah Connor",
     methodOfPayment: "Credit Card",
@@ -161,7 +161,7 @@ export const paymentReceived: PaymentReceivedInterface[] = [
   },
   {
     dateReceived: "2025-07-05",
-    invoiceNumber: "INV-1027",
+    invoice_number: "INV-1027",
     category: "Installation",
     customer: "Mike Tyson",
     methodOfPayment: "Cheque",
@@ -176,7 +176,7 @@ export const paymentReceived: PaymentReceivedInterface[] = [
   },
   {
     dateReceived: "2025-07-06",
-    invoiceNumber: "INV-1028",
+    invoice_number: "INV-1028",
     category: "Product Sales",
     customer: "Emily Stone",
     methodOfPayment: "Other",
@@ -191,7 +191,7 @@ export const paymentReceived: PaymentReceivedInterface[] = [
   },
   {
     dateReceived: "2025-07-07",
-    invoiceNumber: "INV-1029",
+    invoice_number: "INV-1029",
     category: "Consulting Services",
     customer: "Tech Solutions Ltd.",
     methodOfPayment: "Credit Card",
@@ -206,7 +206,7 @@ export const paymentReceived: PaymentReceivedInterface[] = [
   },
   {
     dateReceived: "2025-07-08",
-    invoiceNumber: "INV-1030",
+    invoice_number: "INV-1030",
     category: "Subscription",
     customer: "StartUp Hub",
     methodOfPayment: "Other",
@@ -221,7 +221,7 @@ export const paymentReceived: PaymentReceivedInterface[] = [
   },
   {
     dateReceived: "2025-07-09",
-    invoiceNumber: "INV-1031",
+    invoice_number: "INV-1031",
     category: "Support",
     customer: "Robert Green",
     methodOfPayment: "Cheque",
@@ -236,7 +236,7 @@ export const paymentReceived: PaymentReceivedInterface[] = [
   },
   {
     dateReceived: "2025-07-10",
-    invoiceNumber: "INV-1032",
+    invoice_number: "INV-1032",
     category: "Product Sales",
     customer: "Lisa Monroe",
     methodOfPayment: "Other",
@@ -253,7 +253,7 @@ export const paymentReceived: PaymentReceivedInterface[] = [
 
 export interface PaymentReceivedInterface {
   dateReceived: string;
-  invoiceNumber: string;
+  invoice_number: string;
   category: string;
   customer: string;
   methodOfPayment: "Credit Card" | "Cheque" | "Other";

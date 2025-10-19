@@ -19,7 +19,6 @@ import {
   partOptions,
 } from "@/lib/inventory-data";
 import SingleCheckboxWrapper from "../wrappers/SingleCheckboxWrapper";
-import { costCenterOptions } from "./work-order-form";
 import Fieldset from "@/components/customUI/fieldset";
 import FileUploadWrapper from "../wrappers/FileUploadWrapper";
 import PartSubstitutionTable from "@/app/(application)/inventory/component/inventory.partSubstitutionTable";
@@ -28,21 +27,26 @@ import { InventorySchema } from "@/lib/Inventory/inventory-data";
 import { useState } from "react";
 import WarehouseTabs from "@/app/(application)/inventory/component/inventory.warehouse";
 import {
+  useGetCostCenters,
   useGetInventoryCategories,
   useGetInventoryManufacturers,
   useGetInventoryUnitTypes,
+  useGetWarehouses,
 } from "@/services/setups/inventory";
 
 export default function NewInventory() {
   const { data: equipmentManufacturerOptions } = useGetInventoryManufacturers();
   const { data: unitOptions } = useGetInventoryUnitTypes();
+    const { data: costCenterOptions } = useGetCostCenters();
+    const { data: warehouseOptions } = useGetWarehouses();
+    
 
   const inventoryForm = useForm<z.infer<typeof InventorySchema>>({
     resolver: zodResolver(InventorySchema),
     defaultValues: {},
   });
   const [warehouses, setWarehouses] = useState<string[]>([]);
-  const enableTrackingWatch = inventoryForm.watch("enableTracking");
+  const enableTrackingWatch = inventoryForm.watch("is_enabled");
   const partSubs = inventoryForm.watch("partSubstitutions") || [];
   const { data: categoryOptions } = useGetInventoryCategories();
 
@@ -142,17 +146,13 @@ export default function NewInventory() {
               </div>
               <SingleCheckboxWrapper
                 control={inventoryForm.control}
-                name="enableTracking"
+                name="is_enabled"
                 label="Enable inventory tracking"
               />
               <WarehouseTabs
                 warehouses={warehouses}
                 setWarehouses={setWarehouses}
-                options={[
-                  { label: "Warehouse A", value: "warehouseA" },
-                  { label: "Warehouse B", value: "warehouseB" },
-                  { label: "Warehouse C", value: "warehouseC" },
-                ]}
+                options={warehouseOptions}
                 control={inventoryForm.control}
                 enableTrackingWatch={
                   enableTrackingWatch ? enableTrackingWatch : false

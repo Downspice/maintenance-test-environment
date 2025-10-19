@@ -13,7 +13,6 @@ import InputWrapper from "../wrappers/InputWrapper";
 import {
   substituteOptions,
   vendorOptions,
-  warehouseOptions,
 } from "@/lib/equipment-schema";
 import SelectWrapper from "../wrappers/SelectWrapper";
 import {
@@ -23,6 +22,7 @@ import DatePickerWrapper from "../wrappers/DatePickerWrapper";
 import { ComboboxFieldWrapper } from "../wrappers/ComboboxWrapper";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useGetWarehouses } from "@/services/setups/inventory";
 
 // Define the form schema with Zod
 export const AdjustInventorySchema = z.object({ 
@@ -36,7 +36,7 @@ export const AdjustInventorySchema = z.object({
   unit_cost: z.coerce.number().optional(),
   extendedCost: z.coerce.number().optional(),
   warehouse: z.string().min(1, "Warehouse is required"),
-  invoiceNumber: z.string().optional(), // assuming Invoice # is alphanumeric
+  invoice_number: z.string().optional(), // assuming Invoice # is alphanumeric
   vendor: z.string().optional(),
   reason: z.string().optional(),
 });
@@ -49,6 +49,8 @@ export type AdjustInventoryInterface =z.infer<typeof AdjustInventorySchema>
    data: AdjustInventoryInterface;
  }) { 
 
+    const { data: warehouseOptions } = useGetWarehouses();
+  
   const AdjustInventoryForm = useForm<z.infer<typeof AdjustInventorySchema>>({
     resolver: zodResolver(AdjustInventorySchema),
     defaultValues: {...data},

@@ -13,7 +13,6 @@ import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";
 // Schema and types
 import {
   assigneeOptions,
-  shipViaOptions,
   substituteOptions,
   vendorOptions,
 } from "@/lib/equipment-schema";
@@ -55,6 +54,7 @@ import {
   PurchaseOrderStatusType,
 } from "@/lib/PurchaseOrder/purchaseOrder-data";
 import { useGetLocations } from "@/services/setups/vendor";
+import { useGetPurchaseOrderShipVias } from "@/services/setups/purchaseOrder";
 
 interface triggerVariant {
   variant?: "icon" | "default";
@@ -63,6 +63,7 @@ interface triggerVariant {
 type ItemFormValues = z.infer<typeof PurchaseOrderItemSchema>;
 
 export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
+    const { data: shipViaOptions } = useGetPurchaseOrderShipVias();
   
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -514,7 +515,7 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
                     />
                     <InputWrapper
                       control={form.control}
-                      name={"invoiceNumber"}
+                      name={"invoice_number"}
                       label={"Invoice#"}
                       value={""}
                       type="text"

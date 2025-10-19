@@ -38,13 +38,14 @@ import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrappe
 import SelectWrapper from "@/components/forms/wrappers/SelectWrapper";
 import SingleCheckboxWrapper from "@/components/forms/wrappers/SingleCheckboxWrapper";
 import CustomFieldsWrapper from "@/components/forms/wrappers/CustomFieldsWrapper";
-import { costCenterOptions } from "@/components/forms/actualForms/work-order-form";
 import FileUploadWrapper from "@/components/forms/wrappers/FileUploadWrapper";
 import {
+  useGetCostCenters,
   useGetInventory,
   useGetInventoryCategories,
   useGetInventoryManufacturers,
   useGetInventoryUnitTypes,
+  useGetWarehouses,
 } from "@/services/setups/inventory";
 
 export default function EditInventory({
@@ -58,10 +59,15 @@ export default function EditInventory({
   const { data: equipmentManufacturerOptions } = useGetInventoryManufacturers();
   const { data: unitOptions } = useGetInventoryUnitTypes();
   const { data: categoryOptions } = useGetInventoryCategories();
+  const { data: warehouseOptions } = useGetWarehouses();
+  const { data: costCenterOptions } = useGetCostCenters();
   const [open, setOpen] = useState(false);
   const inventoryForm = useForm<z.infer<typeof InventorySchema>>({
     resolver: zodResolver(InventorySchema),
   });
+  const warehouseTabs =
+    inventoryForm.watch("inventory_trackings")?.map((w) => w.warehouse) || [];
+  const [warehouses, setWarehouses] = useState<string[]>(warehouseTabs);
   useEffect(() => {
     inventoryForm.reset({
       ...data,
@@ -71,11 +77,8 @@ export default function EditInventory({
     });
     console.log(data);
   }, [data]);
-  const enableTrackingWatch = inventoryForm.watch("enableTracking");
+  const enableTrackingWatch = inventoryForm.watch("is_enabled");
   const partSubs = inventoryForm.watch("partSubstitutions") || [];
-  const warehouseTabs =
-    inventoryForm.watch("warehouses")?.map((w) => w.warehouse) || [];
-  const [warehouses, setWarehouses] = useState<string[]>(warehouseTabs);
 
   async function handleSubmit(data: z.infer<typeof InventorySchema>) {
     console.log(data);
@@ -191,17 +194,13 @@ export default function EditInventory({
                       </div>
                       <SingleCheckboxWrapper
                         control={inventoryForm.control}
-                        name="enableTracking"
+                        name="is_enabled"
                         label="Enable inventory tracking"
                       />
                       <WarehouseTabs
                         warehouses={warehouses}
                         setWarehouses={setWarehouses}
-                        options={[
-                          { label: "Warehouse A", value: "warehouseA" },
-                          { label: "Warehouse B", value: "warehouseB" },
-                          { label: "Warehouse C", value: "warehouseC" },
-                        ]}
+                        options={warehouseOptions??[]}
                         control={inventoryForm.control}
                         enableTrackingWatch={
                           enableTrackingWatch ? enableTrackingWatch : false

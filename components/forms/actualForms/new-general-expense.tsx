@@ -10,7 +10,6 @@ import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";
 import { toast } from "sonner";
 import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
 import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
-import { costCenterOptions } from "@/components/forms/actualForms/work-order-form";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -27,6 +26,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useGetCostCenters } from "@/services/setups/inventory";
 // Zod schema
 export const generalExpenseSchema = z.object({
   equipment: z.string().min(1, "Equipment is required"),
@@ -51,6 +51,8 @@ export default function GeneralExpense() {
     resolver: zodResolver(generalExpenseSchema),
     defaultValues: {},
   });
+  const { data: costCenterOptions } = useGetCostCenters();
+  
 
   // Use form.watch to track checkbox state
   const specifyPart = form.watch("specifyPart");

@@ -74,7 +74,7 @@ export default function RecordPaymentForm() {
                   <MultiComboboxWrapper
                     className="col-span-1"
                     control={vendorForm.control}
-                    name="invoiceNumber"
+                    name="invoice_number"
                     label="InvoiceNumber"
                     options={invoiceOptionsList}
                   />
@@ -207,7 +207,7 @@ export  function ActualRecordPaymentForm() {
                   <MultiComboboxWrapper
                     className="col-span-1"
                     control={vendorForm.control}
-                    name="invoiceNumber"
+                    name="invoice_number"
                     label="InvoiceNumber"
                     options={invoiceOptionsList}
                   />

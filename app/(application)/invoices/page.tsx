@@ -117,7 +117,7 @@ export default function EmployeesPage() {
   };
 
   return (
-    <div className="flex flex-col container mx-auto py-10 space-y-4">
+    <div className="flex flex-col  mx-auto py-10 space-y-4">
       <div className="flex flex-row items-center space-x-2">
         <h1 className="text-xl font-semibold">Invoices</h1>
         <Badge>10</Badge>

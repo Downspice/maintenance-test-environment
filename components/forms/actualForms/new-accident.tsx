@@ -18,7 +18,6 @@ import { equipmentOptionsList } from "@/lib/option-list";
 import { toast } from "sonner";
 import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
 import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
-import { costCenterOptions } from "@/components/forms/actualForms/work-order-form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   SheetContent,
@@ -29,6 +28,7 @@ import {
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { z } from "zod";
+import { useGetCostCenters } from "@/services/setups/inventory";
 
 export const accidentFormSchema = z.object({
   id: z.string().optional(),
@@ -67,6 +67,8 @@ interface triggerVariant {
 export default function NewAccident({ variant }: triggerVariant) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { data: costCenterOptions } = useGetCostCenters();
+  
 
   const form = useForm<AccidentFormValues>({
     resolver: zodResolver(accidentFormSchema),

@@ -34,8 +34,8 @@ const getAllEmployees = (
 const flatEmployees = getAllEmployees(paymentReceived);
 const name = [...new Set(flatEmployees.map((emp) => emp.name))];
 const dateReceived = [...new Set(flatEmployees.map((emp) => emp.dateReceived))];
-const invoiceNumber = [
-  ...new Set(flatEmployees.map((emp) => emp.invoiceNumber)),
+const invoice_number = [
+  ...new Set(flatEmployees.map((emp) => emp.invoice_number)),
 ];
 const category = [...new Set(flatEmployees.map((emp) => emp.category))];
 const customer = [...new Set(flatEmployees.map((emp) => emp.customer))];
@@ -233,13 +233,13 @@ export default function PaymentReceivedTable() {
       ),
     },
     {
-      accessorKey: "invoiceNumber",
+      accessorKey: "invoice_number",
       header: ({ column }) => (
         <SortableHeader
           column={column}
           title="Invoice#"
           sortable={true}
-          filterOptions={invoiceNumber}
+          filterOptions={invoice_number}
         />
       ),
     },
@@ -407,7 +407,7 @@ export default function PaymentReceivedTable() {
         data={isServerMode ? currentData : paymentReceived}
         defaultVisibleColumns={[
           "dateReceived",
-          "invoiceNumber",
+          "invoice_number",
           "category",
           "customer",
           "methodOfPayment",

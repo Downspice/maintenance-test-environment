@@ -52,6 +52,7 @@ import {
   MultiComboboxWrapper,
 } from "@/components/forms/wrappers/ComboboxWrapper";
 import { WorkOrderStatuses } from "@/components/forms/actualForms/work-order-form";
+import { useGetCostCenters } from "@/services/setups/inventory";
 // Equipment options
 const equipmentOptions = [{ value: "1311827", label: "AC-001-07 Class 8" }];
 // Assignee options
@@ -130,6 +131,7 @@ export default function EditWorkOrderForm({
     });
     setSelectedMaintenance(null);
   }
+  const { data: costCenterOptions } = useGetCostCenters();
 
   const workOrderForm = useForm<z.infer<typeof WorkOrderSchema>>({
     resolver: zodResolver(WorkOrderSchema),

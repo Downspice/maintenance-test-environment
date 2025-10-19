@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { GitPullRequestArrow } from "lucide-react";
 import { toast } from "sonner";
 import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
-import { costCenterOptions } from "../view/edit-work-order";
+import { useGetCostCenters } from "@/services/setups/inventory";
 
 // Define the form schema with Zod
 export const ChangeCostCenterSchema = z.object({
@@ -24,6 +24,8 @@ export default function ChangeCostCenterForm({
 }: {
   data: ChangeCostCenterInterface;
 }) {
+    const { data: costCenterOptions } = useGetCostCenters();
+  
   const ChangeCostCenterForm = useForm<z.infer<typeof ChangeCostCenterSchema>>({
     resolver: zodResolver(ChangeCostCenterSchema),
     defaultValues: { ...data },

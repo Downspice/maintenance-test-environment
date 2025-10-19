@@ -14,12 +14,12 @@ import { Form } from "@/components/ui/form";
 import { Save } from "lucide-react";
 import InputWrapper from "@/components/forms/wrappers/InputWrapper";
 import SingleCheckboxWrapper from "@/components/forms/wrappers/SingleCheckboxWrapper";
-import { costCenterOptions } from "@/components/forms/actualForms/work-order-form";
 import Fieldset from "@/components/customUI/fieldset";
 import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";
 import { invoiceOptionsList } from "@/lib/Invoice/invoices-page-data";
 import { Part, PartSchema } from "@/lib/WorkOrder/workOrder-data";
 import { equipmentOptionsList } from "@/lib/option-list";
+import { useGetCostCenters } from "@/services/setups/inventory";
 
 export default function AddPart({
   initialValues,
@@ -28,6 +28,8 @@ export default function AddPart({
   initialValues?: Part | null;
   onSave: (data: Part) => void;
 }) {
+    const { data: costCenterOptions } = useGetCostCenters();
+  
   const form = useForm<Part>({
     resolver: zodResolver(PartSchema),
     defaultValues: {

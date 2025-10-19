@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 import React from "react";
-import { InvoiceData, InvoiceInterface } from "@/lib/Invoice/invoice-data";
+import { InvoiceData, InvoiceTableInterface } from "@/lib/Invoice/invoice-data";
 import { matchesSearchAllFields } from "@/lib/utils";
 import EditInvoice from "../view/edit-invoice";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -36,6 +36,7 @@ export default function InvoicesDataTable() {
     isLoading,
     error: InvoiceDataError,
   } = useGetInvoices();
+  console.log("InvoiceData",InvoiceData)
 
   return InvoiceData ? (
     <InvoicesTableLoader InvoiceData={InvoiceData} isLoading={isLoading} />
@@ -57,10 +58,10 @@ export function InvoicesTableLoader({ InvoiceData, isLoading }) {
   });
 
   const getAllEmployees = (
-    employees: InvoiceInterface[]
-  ): InvoiceInterface[] => {
-    const result: InvoiceInterface[] = [];
-    const traverse = (emps: InvoiceInterface[]) => {
+    employees: InvoiceTableInterface[]
+  ): InvoiceTableInterface[] => {
+    const result: InvoiceTableInterface[] = [];
+    const traverse = (emps: InvoiceTableInterface[]) => {
       emps.forEach((emp) => {
         result.push(emp);
       });
@@ -71,12 +72,12 @@ export function InvoicesTableLoader({ InvoiceData, isLoading }) {
 
   const flatEmployees = getAllEmployees(InvoiceData);
   const invoice_number = [
-    ...new Set(flatEmployees.map((emp) => emp.invoiceNumber)),
+    ...new Set(flatEmployees.map((emp) => emp.invoice_number)),
   ];
   const status = [...new Set(flatEmployees.map((emp) => emp.status))];
   const issued_date = [...new Set(flatEmployees.map((emp) => emp.invoice_date))];
   const due_date = [...new Set(flatEmployees.map((emp) => emp.due_date))];
-  const customer_name = [...new Set(flatEmployees.map((emp) => emp.customer))];
+  const customer_name = [...new Set(flatEmployees.map((emp) => emp.customer.company_name))];
   const total = [...new Set(flatEmployees.map((emp) => emp.total?.toString()))];
   const payment = [
     ...new Set(flatEmployees.map((emp) => emp.payments?.toString())),
@@ -229,7 +230,7 @@ export function InvoicesTableLoader({ InvoiceData, isLoading }) {
   ); // Add dependencies that actually matter
 
   // Column definitions
-  const columns: ColumnDef<InvoiceInterface>[] = [
+  const columns: ColumnDef<InvoiceTableInterface>[] = [
     {
       accessorKey: "invoice_number",
       header: ({ column }) => (
@@ -306,7 +307,7 @@ export function InvoicesTableLoader({ InvoiceData, isLoading }) {
         return (
           <div className="flex items-center gap-1 text-primary">
             {" "}
-            {row.original.customer}
+            {row.original.customer.company_name}
           </div>
         );
       },
@@ -488,7 +489,7 @@ export function InvoicesTableLoader({ InvoiceData, isLoading }) {
         columns={columns}
         data={isServerMode ? currentData : InvoiceData}
         defaultVisibleColumns={[
-          "invoiceNumber",
+          "invoice_number",
           "status",
           "date",
           "due_date",
