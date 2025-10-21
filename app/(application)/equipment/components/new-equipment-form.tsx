@@ -25,7 +25,6 @@ import {
   statusOptions,
   meterUnitsOptions,
   assigneeOptions,
-  vendorOptions,
   ownershipOptions,
   expenseOptions,
   periodOptionList,
@@ -69,6 +68,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import SingleCheckboxWrapper from "@/components/forms/wrappers/SingleCheckboxWrapper";
 import z from "zod";
 import { useGetInventoryCategories } from "@/services/setups/inventory";
+import { useGetVendors } from "@/services/setups/vendor";
 
 interface triggerVariant {
   variant?: "icon" | "default";
@@ -189,6 +189,8 @@ export const equipmentSchema = z.object({
 });
 
 export function ActualEquipmentForm() {
+      const { data: vendorOptions } = useGetVendors();
+  
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [openSections, setOpenSections] = useState({
     identification: true,
@@ -1058,9 +1060,9 @@ export const emailColumns: ColumnDef<emailTableType>[] = [
           <SelectValue placeholder="" />
         </SelectTrigger>
         <SelectContent>
-          {vendorOptions.map((item) => (
-            <SelectItem value={item.value} key={item.value}>
-              {item.label}
+          {vendorOptions?.map((item) => (
+            <SelectItem value={item.id} key={item.id}>
+              {item.name}
             </SelectItem>
           ))}
         </SelectContent>
@@ -1171,8 +1173,8 @@ export const columns: ColumnDef<expenseTableType>[] = [
         </SelectTrigger>
         <SelectContent>
           {expenseOptions.map((item) => (
-            <SelectItem value={item.value} key={item.value}>
-              {item.label}
+            <SelectItem value={item.id} key={item.id}>
+              {item.name}
             </SelectItem>
           ))}
         </SelectContent>
@@ -1220,8 +1222,8 @@ export const columns: ColumnDef<expenseTableType>[] = [
         </SelectTrigger>
         <SelectContent>
           {periodOptionList.map((item) => (
-            <SelectItem value={item.value} key={item.value}>
-              {item.label}
+            <SelectItem value={item.id} key={item.id}>
+              {item.name}
             </SelectItem>
           ))}
         </SelectContent>

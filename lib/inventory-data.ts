@@ -337,12 +337,6 @@ export const inventoryMovement = [
   { label: "FIFO", value: "FIFO" },
 ]
 
-export const markupTypeOptions = [
-  { label: "None", value: "none" },
-  { label: "Percent", value: "percent" },
-  { label: "Value", value: "value" },
-  { label: "Manual", value: "manual" }
-];
 
 export interface EquipmentPartInterface {
   partNumber: string;

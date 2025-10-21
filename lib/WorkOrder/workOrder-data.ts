@@ -85,7 +85,7 @@ export const WorkOrderSchema = z.object({
   po: z.string().optional(),
   invoice: z.string().optional(),
   equipment: z.string().min(1, "Equipment is required"),
-  hours: z.union([z.string(), z.number()]).optional(),
+  hours: z.union([z.string(), z.coerce.number()]).optional(),
   workOrderTotal: z.coerce.number(),
   // If you're using dynamic fields
 });

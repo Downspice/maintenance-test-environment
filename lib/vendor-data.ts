@@ -27,7 +27,7 @@ export const VendorSchema = z.object({
   email: z.string().email(),
   website: z.string().url().optional(),
   term: z.string(),
-  billing_rate: z.number(),
+  billing_rate: z.coerce.number(),
   location: z.string(),
   notes: z.string().optional(),
 })

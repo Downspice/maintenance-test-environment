@@ -398,7 +398,7 @@ export function InvoicesTableLoader({ InvoiceData, isLoading }) {
                   <FilePenIcon />
                 </Button>
               }
-              data={row.original}
+              invoiceId={row.original.id}
             />
 
             <DropdownMenu>
@@ -412,10 +412,10 @@ export function InvoicesTableLoader({ InvoiceData, isLoading }) {
                 <DropdownMenuGroup>
                   {dropdownItems.map((item) => (
                     <DropdownMenuItem
-                      key={item.label}
-                      onClick={() => item.onSelect(item.label)}
+                      key={item.name}
+                      onClick={() => item.onSelect(item.name)}
                     >
-                      <span>{item.label}</span>
+                      <span>{item.name}</span>
                     </DropdownMenuItem>
                   ))}
                   <DropdownMenuSeparator />

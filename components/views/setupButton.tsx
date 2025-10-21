@@ -129,30 +129,30 @@ export default function HeaderSettingsButton() {
           <span className="font-bold">Company</span>
           {dropdownItemsSection1.map((item) => (
             <DropdownMenuItem
-              key={item.label}
-              onClick={() => item.onSelect(item.label)}
+              key={item.name}
+              onClick={() => item.onSelect(item.name)}
             >
-              <span>{item.label}</span>
+              <span>{item.name}</span>
             </DropdownMenuItem>
           ))}
           <span className="font-bold">Maintenance</span>
           <Separator className="text-red-900" orientation="horizontal" />
           {dropdownItemsSection2.map((item) => (
             <DropdownMenuItem
-              key={item.label}
-              onClick={() => item.onSelect(item.label)}
+              key={item.name}
+              onClick={() => item.onSelect(item.name)}
             >
-              <span>{item.label}</span>
+              <span>{item.name}</span>
             </DropdownMenuItem>
           ))}
           <span className="font-bold">Import</span>
           <Separator orientation="horizontal" />
           {dropdownItemsSection3.map((item) => (
             <DropdownMenuItem
-              key={item.label}
-              onClick={() => item.onSelect(item.label)}
+              key={item.name}
+              onClick={() => item.onSelect(item.name)}
             >
-              <span>{item.label}</span>
+              <span>{item.name}</span>
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>

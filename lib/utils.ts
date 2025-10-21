@@ -52,3 +52,17 @@ export const deepCleanNulls = <T,>(data: T): T => {
     // Cast to T as the object structure is preserved
     return cleanedObject as T;
 };
+
+export const convertToOptionList = <T>(
+  originalList: T[],
+  idKey: string,
+  nameKey: string
+) => {
+  console.log("originalList",originalList)
+  const optionList = originalList.map((originalItem) => ({
+    id: (originalItem as any)[idKey],
+    name: (originalItem as any)[nameKey],
+  }));
+
+  return optionList;
+};

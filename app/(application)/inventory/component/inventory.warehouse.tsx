@@ -133,7 +133,7 @@ export default function WarehouseTabs({
             </div>
             <SelectWrapper
               control={control}
-              name={`warehouses.${index}.vendor`}
+              name={`warehouses.${index}.vendor_id`}
               label="Vendor"
               options={vendorOptions}
             />

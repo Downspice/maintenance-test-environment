@@ -5,8 +5,8 @@ export const PartSchema = z.object({
   partNumber: z.string().min(1, "Part number is required"),
   name: z.string().min(1, "Name is required"),
   warehouse: z.string().min(1, "Warehouse is required"),
-  quantityUsed: z.number().min(1, "Quantity must be at least 1"),
-  onHandQuantity: z.number().nonnegative(),
+  quantityUsed: z.coerce.number().min(1, "Quantity must be at least 1"),
+  onHandQuantity: z.coerce.number().nonnegative(),
 });
 
 export const PartKitSchema = z.object({

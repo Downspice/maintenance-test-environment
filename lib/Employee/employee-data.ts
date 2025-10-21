@@ -15,9 +15,9 @@ export const EmployeeSchema = z.object({
   postal_code: z.string(),
 
   // Contact
-  home: z.number().or(z.string()).optional(),
-  altPhone: z.number().or(z.string()).optional(),
-  cell: z.number().or(z.string()).optional(),
+  home: z.coerce.number().or(z.string()).optional(),
+  altPhone: z.coerce.number().or(z.string()).optional(),
+  cell: z.coerce.number().or(z.string()).optional(),
   email: z.string().email(),
 
   // Notes
@@ -35,8 +35,8 @@ export const EmployeeSchema = z.object({
   ssn: z.string().optional(),
   type: z.string(),
 
-  labor_rate: z.number().optional(),
-  billing_rate: z.number(),
+  labor_rate: z.coerce.number().optional(),
+  billing_rate: z.coerce.number(),
 
   location: z.string(),
   category: z.string(),

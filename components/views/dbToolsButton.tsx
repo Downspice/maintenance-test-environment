@@ -45,14 +45,14 @@ export default function DBToolsButton() {
         // align={isMobile ? "end" : "start"}
       >
         {dropdownItemsSection1.map((item) => (
-          <DropdownMenuItem key={item.label} onSelect={item.onSelect}>
-            <span>{item.label}</span>
+          <DropdownMenuItem key={item.name} onSelect={item.onSelect}>
+            <span>{item.name}</span>
           </DropdownMenuItem>
         ))}
         <Separator orientation="horizontal" />
         {dropdownItemsSection2.map((item) => (
-          <DropdownMenuItem key={item.label} onSelect={item.onSelect}>
-            <span>{item.label}</span>
+          <DropdownMenuItem key={item.name} onSelect={item.onSelect}>
+            <span>{item.name}</span>
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

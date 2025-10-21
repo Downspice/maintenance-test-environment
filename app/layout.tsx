@@ -37,7 +37,7 @@ export default function RootLayout({
           <DialogProvider>
             <NuqsAdapter>
               {children}
-              <Toaster />
+              <Toaster richColors/>
             </NuqsAdapter>
           </DialogProvider>
         </SheetProvider></QueryProvider>

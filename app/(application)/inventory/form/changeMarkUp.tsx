@@ -9,14 +9,14 @@ import { GitPullRequestArrow } from "lucide-react";
 import { toast } from "sonner";
 import SelectWrapper from "@/components/forms/wrappers/SelectWrapper";
 import InputWrapper from "@/components/forms/wrappers/InputWrapper";
-import { markupTypeOptions } from "@/lib/inventory-data";
+import { useGetMarkupTypes } from "@/services/setups/inventory";
 
 // Define the form schema with Zod
 export const ChangeMarkUpSchema = z.object({
   markUp: z.enum(["none", "percent", "value", "manual"]),
-  percentMarkup: z.number().optional(),
-  markupValue: z.number().optional(),
-  markupPrice: z.number().optional(),
+  percentMarkup: z.coerce.number().optional(),
+  markupValue: z.coerce.number().optional(),
+  markupPrice: z.coerce.number().optional(),
 });
 
 export type ChangeMarkUpInterface = z.infer<typeof ChangeMarkUpSchema>;
@@ -26,6 +26,7 @@ export default function ChangeMarkUpForm({
 }: {
   data: ChangeMarkUpInterface;
 }) {
+  const{data:markupTypeOptions}=useGetMarkupTypes();
   const ChangeMarkUpForm = useForm<z.infer<typeof ChangeMarkUpSchema>>({
     resolver: zodResolver(ChangeMarkUpSchema),
     defaultValues: { ...data },

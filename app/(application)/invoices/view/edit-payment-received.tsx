@@ -19,10 +19,12 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import Fieldset from "@/components/customUI/fieldset";
-import { invoiceOptionsList, invoicePaymentMethodOptionsList } from "@/lib/Invoice/invoices-page-data";
+import {
+  invoiceOptionsList,
+} from "@/lib/Invoice/invoices-page-data";
 import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";
 import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
-
+import { useGetPaymentMethods } from "@/services/setups/invoice";
 
 const paymentSchema = z.object({
   invoice_number: z.string(),
@@ -40,7 +42,6 @@ const paymentSchema = z.object({
 
 type PaymentFormValues = z.infer<typeof paymentSchema>;
 
-
 export default function EditPaymentReceived({
   children,
   data,
@@ -49,7 +50,11 @@ export default function EditPaymentReceived({
   data: PaymentFormValues;
 }) {
   const [open, setOpen] = useState(false);
-  console.log("in payment edit  data new", data);
+  const {
+    data: invoicePaymentMethodOptionsList,
+    isLoading: invoicePaymentMethodListLoading,
+    error: invoicePaymentMethodListError,
+  } = useGetPaymentMethods<Array<{ id: string; name: string }>>();
   const PaymentsForm = useForm<z.infer<typeof paymentSchema>>({
     resolver: zodResolver(paymentSchema),
     defaultValues: { ...data },
@@ -64,9 +69,7 @@ export default function EditPaymentReceived({
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
-        {children}
-      </SheetTrigger>
+      <SheetTrigger asChild>{children}</SheetTrigger>
       <SheetContent className="w-3/4 ">
         <SheetHeader>
           <SheetTitle>Record Payment</SheetTitle>
@@ -88,6 +91,7 @@ export default function EditPaymentReceived({
                     name="invoice_number"
                     label="InvoiceNumber"
                     options={invoiceOptionsList}
+                    disabled
                   />
                   <InputWrapper
                     name="amount"
@@ -106,9 +110,9 @@ export default function EditPaymentReceived({
                       <>
                         <SelectWrapper
                           control={PaymentsForm.control}
-                          name="paymentMethod"
+                          name="payment_method_id"
                           label="Payment Method"
-                          options={invoicePaymentMethodOptionsList}
+                          options={invoicePaymentMethodOptionsList ?? []}
                         />
                         {paymentMethodWatch === "Cheque" && (
                           <InputWrapper

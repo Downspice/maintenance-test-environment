@@ -42,7 +42,7 @@ const SidebarLayout: React.FC<SidebarLayoutProps> = ({
             )}
           >
             {item.icon}
-            <span>{item.label}</span>
+            <span>{item.name}</span>
           </button>
         ))}
       </div>

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 
-export default function   AlternateUpcCodesTable({
+export default function AlternateUpcCodesTable({
   manufacturers,
   vendors,
   value,
@@ -17,6 +17,7 @@ export default function   AlternateUpcCodesTable({
   value: any[];
   onChange: (rows: any[]) => void;
 }) {
+  console.log("value",value)
   const handleAddRow = () => {
     const newRows = [...value, { manufacturer: "", vendor: "", upc: "" }];
     onChange(newRows);
@@ -53,8 +54,8 @@ export default function   AlternateUpcCodesTable({
             </SelectTrigger>
             <SelectContent>
               {manufacturers.map((item) => (
-                <SelectItem key={item.value} value={item.value}>
-                  {item.label}
+                <SelectItem key={item.id} value={item.id}>
+                  {item.name}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -69,8 +70,8 @@ export default function   AlternateUpcCodesTable({
             </SelectTrigger>
             <SelectContent>
               {vendors.map((item) => (
-                <SelectItem key={item.value} value={item.value}>
-                  {item.label}
+                <SelectItem key={item.id} value={item.id}>
+                  {item.name}
                 </SelectItem>
               ))}
             </SelectContent>

@@ -83,28 +83,28 @@ export default function HeaderMeterButton() {
           <span className="font-bold px-2 py-1">Common Reports</span>
           {dropdownItemsSection1.map((item) => (
             <DropdownMenuItem
-              key={item.label}
-              onSelect={() => handleDropdownSelect(item.label, item.content)}
+              key={item.name}
+              onSelect={() => handleDropdownSelect(item.name, item.content)}
             >
-              {item.label}
+              {item.name}
             </DropdownMenuItem>
           ))}
           <Separator />
           {dropdownItemsSection2.map((item) => (
             <DropdownMenuItem
-              key={item.label}
-              onSelect={() => handleDropdownSelect(item.label, item.content)}
+              key={item.name}
+              onSelect={() => handleDropdownSelect(item.name, item.content)}
             >
-              {item.label}
+              {item.name}
             </DropdownMenuItem>
           ))}
           <Separator />
           {dropdownItemsSection3.map((item) => (
             <DropdownMenuItem
-              key={item.label}
-              onSelect={() => handleDropdownSelect(item.label, item.content)}
+              key={item.name}
+              onSelect={() => handleDropdownSelect(item.name, item.content)}
             >
-              <span className="font-bold">{item.label}</span>
+              <span className="font-bold">{item.name}</span>
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>

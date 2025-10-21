@@ -54,7 +54,7 @@ export function ComboboxFieldWrapper({
   control,
   name,
   label,
-  options,
+  options=[],
   className,
   placeholder,
   disabled = false,

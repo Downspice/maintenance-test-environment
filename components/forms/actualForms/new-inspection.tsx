@@ -37,7 +37,7 @@ import { z } from "zod";
 
 // Editable table row type
 export const inspectionItemSchema = z.object({
-  id: z.number(),
+  id: z.coerce.number(),
   ok: z.string(),
   fault: z.string(),
   inspection: z.string(),

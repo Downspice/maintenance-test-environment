@@ -28,27 +28,27 @@ export const InventorySchema = z.object({
         bin: z.string().optional(),
         vendor: z.string().optional(),
         costCenter: z.string().optional(),
-        quantity: z.number().optional(),
-        reorderPoint: z.number().optional(),
-        reorderQty: z.number().optional(),
-        maxQty: z.number().optional(),
-        leadTime: z.number().optional(),
+        quantity: z.coerce.number().optional(),
+        reorderPoint: z.coerce.number().optional(),
+        reorderQty: z.coerce.number().optional(),
+        maxQty: z.coerce.number().optional(),
+        leadTime: z.coerce.number().optional(),
         movementType: z.enum(["FIFO", "LIFO"]),
       })
     )
     .optional(),
 
   markUp: z.enum(["none", "percent", "value", "manual"]),
-  percentMarkup: z.number().optional(),
-  markupValue: z.number().optional(),
-  markupPrice: z.number().optional(),
+  percentMarkup: z.coerce.number().optional(),
+  markupValue: z.coerce.number().optional(),
+  markupPrice: z.coerce.number().optional(),
 
   days: z.coerce.number().optional(),
   primary: z.coerce.number().optional(),
   secondary: z.coerce.number().optional(),
   notes: z.string().optional(),
 
-  partSubstitutions: z
+  inventory_substitutions: z
     .array(
       z.object({
         partNumber: z.string().min(1, "Part# is required"),
@@ -59,7 +59,7 @@ export const InventorySchema = z.object({
     )
     .optional(),
 
-  alternateUpcCodes: z
+  upc_codes: z
     .array(
       z.object({
         manufacturer: z.string().min(1, "Manufacturer is required"),
@@ -72,27 +72,7 @@ export const InventorySchema = z.object({
   Photos: z.any().optional(),
   Attachments: z.any().optional(),
 
-  // Optional vendor + warehouse array fields (commented in JSX)
-  // vendors: z.array(
-  //   z.object({
-  //     vendor: z.string().optional(),
-  //     manufacturer: z.string().optional(),
-  //     vendorNumber: z.string().optional(),
-  //     barcode: z.string().optional(),
-  //     warehouses: z.array(z.string()).optional(),
-  //   })
-  // ).optional(),
 
-  // warehouses: z.array(
-  //   z.object({
-  //     warehouse: z.string().optional(),
-  //     bin: z.string().optional(),
-  //     quantity: z.coerce.number().optional(),
-  //     lowStockLevel: z.coerce.number().optional(),
-  //     reorderQuantity: z.coerce.number().optional(),
-  //     maximumQuantity: z.coerce.number().optional(),
-  //   })
-  // ).optional(),
 });
 
 export interface InventoryByIdInterface {

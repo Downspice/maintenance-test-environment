@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import InputWrapper from "@/components/forms/wrappers/InputWrapper";
 import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
 import RadioGroupWrapper from "@/components/forms/wrappers/RadioGroupWrapper";
+import { useGetVendors } from "@/services/setups/vendor";
 
 const equipmentOptions = [
   { label: "Forklift", value: "forklift" },
@@ -21,10 +22,6 @@ const employeeOptions = [
   { label: "Jane Smith", value: "emp2" },
 ];
 
-const vendorOptions = [
-  { label: "Vendor A", value: "vend1" },
-  { label: "Vendor B", value: "vend2" },
-];
 
 const laborSchema = z.object({
   equipment: z.string().min(1, "Equipment is required"),
@@ -48,6 +45,7 @@ export default function ManageSchedulePMLaborTab({ serviceName }: Props) {
   const [labors, setLabors] = useState<LaborRecord[]>([]);
   const [open, setOpen] = useState(false);
   const [editingLabor, setEditingLabor] = useState<LaborRecord | null>(null);
+    const { data: vendorOptions } = useGetVendors();
 
   const form = useForm<LaborForm>({
     resolver: zodResolver(laborSchema),

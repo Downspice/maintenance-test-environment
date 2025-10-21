@@ -14,7 +14,6 @@ import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";
 import {
   assigneeOptions,
   substituteOptions,
-  vendorOptions,
 } from "@/lib/equipment-schema";
 import Fieldset from "@/components/customUI/fieldset";
  
@@ -53,7 +52,7 @@ import {
   PurchaseOrderSchema,
   PurchaseOrderStatusType,
 } from "@/lib/PurchaseOrder/purchaseOrder-data";
-import { useGetLocations } from "@/services/setups/vendor";
+import { useGetLocations, useGetVendors } from "@/services/setups/vendor";
 import { useGetPurchaseOrderShipVias } from "@/services/setups/purchaseOrder";
 
 interface triggerVariant {
@@ -68,6 +67,8 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editIndex, setEditIndex] = useState<number | null>(null);
+  const { data: vendorOptions } = useGetVendors();
+  
 
   const [items, setItems] = useState<ItemFormValues[]>([]);
   const [editItems, setEditItems] = useState<ItemFormValues | null>(null);

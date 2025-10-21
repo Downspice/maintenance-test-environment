@@ -676,10 +676,10 @@ export default function DataTableDemo() {
                 <DropdownMenuGroup>
                   {dropdownItems.map((item) => (
                     <DropdownMenuItem
-                      key={item.label}
-                      onClick={() => item.onSelect(item.label)}
+                      key={item.name}
+                      onClick={() => item.onSelect(item.name)}
                     >
-                      <span>{item.label}</span>
+                      <span>{item.name}</span>
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuGroup>
@@ -690,10 +690,10 @@ export default function DataTableDemo() {
                     <DropdownMenuSubContent>
                       {dropdownItemsSubMenu.map((item) => (
                         <DropdownMenuItem
-                          key={item.label}
-                          onClick={() => item.onSelect(item.label)}
+                          key={item.name}
+                          onClick={() => item.onSelect(item.name)}
                         >
-                          <span>{item.label}</span>
+                          <span>{item.name}</span>
                         </DropdownMenuItem>
                       ))}
                     </DropdownMenuSubContent>
@@ -702,10 +702,10 @@ export default function DataTableDemo() {
                 <DropdownMenuSeparator />
                 {secondDropdowns.map((item) => (
                   <DropdownMenuItem
-                    key={item.label}
-                    onClick={() => item.onSelect(item.label)}
+                    key={item.name}
+                    onClick={() => item.onSelect(item.name)}
                   >
-                    <span>{item.label}</span>
+                    <span>{item.name}</span>
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>

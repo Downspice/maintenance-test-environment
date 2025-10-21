@@ -443,10 +443,10 @@ const quantity = [
                 <DropdownMenuGroup>
                   {dropdownItems.map((item) => (
                     <DropdownMenuItem
-                      key={item.label}
-                      onClick={() => item.onSelect(item.label)}
+                      key={item.name}
+                      onClick={() => item.onSelect(item.name)}
                     >
-                      <span>{item.label}</span>
+                      <span>{item.name}</span>
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuGroup>
@@ -471,19 +471,19 @@ const quantity = [
                 <DropdownMenuSeparator />
                 {dropdownItems2.map((item) => (
                   <DropdownMenuItem
-                    key={item.label}
-                    onClick={() => item.onSelect(item.label)}
+                    key={item.name}
+                    onClick={() => item.onSelect(item.name)}
                   >
-                    <span>{item.label}</span>
+                    <span>{item.name}</span>
                   </DropdownMenuItem>
                 ))}
                 <DropdownMenuSeparator />
                 {dropdownItems3.map((item) => (
                   <DropdownMenuItem
-                    key={item.label}
-                    onClick={() => item.onSelect(item.label)}
+                    key={item.name}
+                    onClick={() => item.onSelect(item.name)}
                   >
-                    <span>{item.label}</span>
+                    <span>{item.name}</span>
                   </DropdownMenuItem>
                 ))}{" "}
                 <DropdownMenuSeparator />

@@ -75,19 +75,19 @@ export default function OrganizationHeaderButton() {
         >
           {dropdownItems1.map((item) => (
             <DropdownMenuItem
-              key={item.label}
-              onClick={() => item.onSelect(item.label)}
+              key={item.name}
+              onClick={() => item.onSelect(item.name)}
             >
-              <span>{item.label}</span>
+              <span>{item.name}</span>
             </DropdownMenuItem>
           ))}
           <Separator orientation="horizontal" />
           {dropdownItems2.map((item) => (
             <DropdownMenuItem
-              key={item.label}
-              onClick={() => item.onSelect(item.label)}
+              key={item.name}
+              onClick={() => item.onSelect(item.name)}
             >
-              <span>{item.label}</span>
+              <span>{item.name}</span>
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>

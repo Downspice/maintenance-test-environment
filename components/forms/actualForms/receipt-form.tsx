@@ -15,6 +15,7 @@ import InputWrapper from "../wrappers/InputWrapper";
 import CheckboxWrapper from "../wrappers/CheckboxWrapper";
 import { toast } from "sonner";
 import { ComboboxFieldWrapper } from "../wrappers/ComboboxWrapper";
+import { useGetVendors } from "@/services/setups/vendor";
  // Define the form schema with Zod
 export const workOrderSchema = z.object({
   partId: z.string({
@@ -35,21 +36,6 @@ export const workOrderSchema = z.object({
 // Equipment options
 const equipmentOptions = [{ value: "1311827", label: "AC-001-07 Class 8" }];
 
-// Assignee options
-export const vendorOptions = [
-  { value: "User-246964", label: "Joseph Awer", group: "Employees" },
-  { value: "Vendor-324052", label: "Cameron, Inc.", group: "Vendors" },
-  { value: "Vendor-324053", label: "Davis Plumbing", group: "Vendors" },
-  {
-    value: "Vendor-324047",
-    label: "International Belt Supply",
-    group: "Vendors",
-  },
-  { value: "Vendor-324051", label: "NAPA", group: "Vendors" },
-  { value: "Vendor-324048", label: "Neff Electrical Supply", group: "Vendors" },
-  { value: "Vendor-324050", label: "Rush Truck Centers", group: "Vendors" },
-  { value: "Vendor-324049", label: "The Instrument Group", group: "Vendors" },
-];
 
 // Priority options
 const priorityOptions = [
@@ -80,6 +66,8 @@ export default function  ReceiptForm() {
   const [customFields, setCustomFields] = useState<
     { name: string; value: string }[]
   >([]);
+  const { data: vendorOptions } = useGetVendors();
+  
 
   const  receiptForm = useForm<z.infer<typeof workOrderSchema>>({
     resolver: zodResolver(workOrderSchema),

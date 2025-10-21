@@ -54,11 +54,11 @@ import {
   meterUnitsOptions,
   assigneeOptions,
   categoryOptions,
-  vendorOptions,
   ownershipOptions,
   expenseOptions,
   periodOptionList,
 } from "@/lib/equipment-schema";
+import { useGetVendors } from "@/services/setups/vendor";
 
 export const equipmentSchema = z.object({
   // Identification
@@ -183,6 +183,7 @@ export default function EditEquipment({
 }) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+    const { data: vendorOptions } = useGetVendors();
 
   const form = useForm<EquipmentFormValues>({
     resolver: zodResolver(equipmentSchema),
@@ -1014,8 +1015,8 @@ export const emailColumns: ColumnDef<emailTableType>[] = [
         </SelectTrigger>
         <SelectContent>
           {vendorOptions.map((item) => (
-            <SelectItem value={item.value} key={item.value}>
-              {item.label}
+            <SelectItem value={item.id} key={item.id}>
+              {item.name}
             </SelectItem>
           ))}
         </SelectContent>
@@ -1120,8 +1121,8 @@ export const columns: ColumnDef<expenseTableType>[] = [
         </SelectTrigger>
         <SelectContent>
           {expenseOptions.map((item) => (
-            <SelectItem value={item.value} key={item.value}>
-              {item.label}
+            <SelectItem value={item.id} key={item.id}>
+              {item.name}
             </SelectItem>
           ))}
         </SelectContent>
@@ -1167,8 +1168,8 @@ export const columns: ColumnDef<expenseTableType>[] = [
         </SelectTrigger>
         <SelectContent>
           {periodOptionList.map((item) => (
-            <SelectItem value={item.value} key={item.value}>
-              {item.label}
+            <SelectItem value={item.id} key={item.id}>
+              {item.name}
             </SelectItem>
           ))}
         </SelectContent>

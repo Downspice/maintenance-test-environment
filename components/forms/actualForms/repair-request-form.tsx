@@ -25,7 +25,6 @@ import {
   statusOptions,
   meterUnitsOptions,
   assigneeOptions,
-  vendorOptions,
   ownershipOptions,
 } from "@/lib/equipment-schema";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -52,12 +51,14 @@ import {
 import { Input } from "@/components/ui/input";
 import CheckboxWrapper from "@/components/forms/wrappers/CheckboxWrapper";
 import { useGetInventoryCategories } from "@/services/setups/inventory";
+import { useGetVendors } from "@/services/setups/vendor";
 
 interface triggerVariant {
   variant?: "icon" | "default";
 }
 export default function RepairRequestFormButton({ variant }: triggerVariant) {
-  document.body.style.pointerEvents = 'auto';
+  document.body.style.pointerEvents = "auto";
+  const { data: vendorOptions } = useGetVendors();
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [openSections, setOpenSections] = useState({
@@ -66,8 +67,7 @@ export default function RepairRequestFormButton({ variant }: triggerVariant) {
     purchase: false,
     additionalDetails: false,
   });
-    const { data: categoryOptions } = useGetInventoryCategories();
-  
+  const { data: categoryOptions } = useGetInventoryCategories();
 
   const form = useForm<EquipmentFormValues>({
     resolver: zodResolver(equipmentSchema),
@@ -471,7 +471,7 @@ export default function RepairRequestFormButton({ variant }: triggerVariant) {
                                 />
                                 <CustomFieldsWrapper
                                   control={form.control}
-                                   name="others"
+                                  name="others"
                                   label={"Custom"}
                                 />
                               </>

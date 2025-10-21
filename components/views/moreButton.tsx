@@ -128,25 +128,25 @@ export default function HeaderUploadButton() {
 
           {dropdownItemsSection1.map((item) => (
             <DropdownMenuItem
-              key={item.label}
-              onClick={() => item.onSelect(item.label)}
+              key={item.name}
+              onClick={() => item.onSelect(item.name)}
             >
-              <span>{item.label}</span>
+              <span>{item.name}</span>
             </DropdownMenuItem>
           ))}
           <div className="text-md font-semibold">Bulk Actions</div>
 
           <Separator orientation="horizontal" />
           {dropdownItemsSection2.map((item) => (
-            <DropdownMenuItem key={item.label} onClick={() => item.onSelect(item.label)}>
-              <span>{item.label}</span>
+            <DropdownMenuItem key={item.name} onClick={() => item.onSelect(item.name)}>
+              <span>{item.name}</span>
             </DropdownMenuItem>
           ))}
           <div className="text-md font-semibold">Misc Logs</div>
           <Separator orientation="horizontal" />
           {dropdownItemsSection3.map((item) => (
-            <DropdownMenuItem key={item.label} onClick={() => item.onSelect(item.label)}>
-              <span>{item.label}</span>
+            <DropdownMenuItem key={item.name} onClick={() => item.onSelect(item.name)}>
+              <span>{item.name}</span>
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>

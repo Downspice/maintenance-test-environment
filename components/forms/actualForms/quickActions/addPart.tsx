@@ -7,11 +7,9 @@ import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { GitPullRequestArrow } from "lucide-react";
 import { toast } from "sonner";
-import {  vendorOptions } from "@/lib/equipment-schema";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   inventoryMovement,
-  markupTypeOptions,
   partOptions,
 } from "@/lib/inventory-data";
 import Fieldset from "@/components/customUI/fieldset";
@@ -26,12 +24,16 @@ import FileUploadWrapper from "../../wrappers/FileUploadWrapper";
 import SelectWrapper from "../../wrappers/SelectWrapper";
 import SingleCheckboxWrapper from "../../wrappers/SingleCheckboxWrapper";
 import CustomFieldsWrapper from "../../wrappers/CustomFieldsWrapper";
-import { useGetCostCenters, useGetInventoryCategories, useGetInventoryManufacturers, useGetInventoryUnitTypes } from "@/services/setups/inventory";
+import { useGetCostCenters, useGetInventoryCategories, useGetInventoryManufacturers, useGetInventoryUnitTypes, useGetMarkupTypes } from "@/services/setups/inventory";
+import { useGetVendors } from "@/services/setups/vendor";
 
 export default function NewPart() {
     const { data: equipmentManufacturerOptions } = useGetInventoryManufacturers();
     const { data:   unitOptions } = useGetInventoryUnitTypes();
   const { data: costCenterOptions } = useGetCostCenters();
+    const { data: vendorOptions } = useGetVendors();
+      const{data:markupTypeOptions}=useGetMarkupTypes();
+    
 
   const inventoryForm = useForm<z.infer<typeof InventorySchema>>({
     resolver: zodResolver(InventorySchema),
@@ -39,7 +41,7 @@ export default function NewPart() {
   });
   const [warehouses, setWarehouses] = useState<string[]>([]);
   const enableTrackingWatch = inventoryForm.watch("enableTracking");
-  const partSubs = inventoryForm.watch("partSubstitutions") || [];
+  const partSubs = inventoryForm.watch("inventory_substitutions") || [];
   const { data: categoryOptions } = useGetInventoryCategories();
 
   async function handleSubmit(data: z.infer<typeof InventorySchema>) {
@@ -263,7 +265,7 @@ export default function NewPart() {
                       parts={partOptions}
                       value={partSubs}
                       onChange={(rows) =>
-                        inventoryForm.setValue("partSubstitutions", rows)
+                        inventoryForm.setValue("inventory_substitutions", rows)
                       }
                     />
                   </TabsContent>
@@ -272,9 +274,9 @@ export default function NewPart() {
                     <AlternateUpcCodesTable
                       manufacturers={equipmentManufacturerOptions}
                       vendors={vendorOptions}
-                      value={inventoryForm.watch("alternateUpcCodes") || []}
+                      value={inventoryForm.watch("upc_codes") || []}
                       onChange={(val) =>
-                        inventoryForm.setValue("alternateUpcCodes", val)
+                        inventoryForm.setValue("upc_codes", val)
                       }
                     />
                   </TabsContent>

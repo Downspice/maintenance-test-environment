@@ -25,6 +25,7 @@ import {
   SheetTitle,
   SheetDescription,
 } from "@/components/ui/sheet";
+import { useGetPaymentMethods } from "@/services/setups/invoice";
 
 // Define the form schema with Zod
 export const vendorSchema = z.object({
@@ -38,7 +39,12 @@ export const vendorSchema = z.object({
 
 export default function RecordPaymentForm() {
   const [open, setOpen] = useState(false);
-
+  const {
+    data: invoicePaymentMethodOptionsList,
+    isLoading: invoicePaymentMethodListLoading,
+    error: invoicePaymentMethodListError,
+  } = useGetPaymentMethods<Array<{ id: string; name: string }>>();
+  
   const vendorForm = useForm<z.infer<typeof vendorSchema>>({
     resolver: zodResolver(vendorSchema),
     defaultValues: {},
@@ -95,9 +101,9 @@ export default function RecordPaymentForm() {
                       <>
                         <SelectWrapper
                           control={vendorForm.control}
-                          name="paymentMethod"
+                          name="payment_method_id"
                           label="Payment Method"
-                          options={invoicePaymentMethodOptionsList}
+                          options={invoicePaymentMethodOptionsList??[]}
                         />
                         {paymentMethodWatch === "Cheque" && (
                           <InputWrapper
@@ -228,9 +234,9 @@ export  function ActualRecordPaymentForm() {
                       <>
                         <SelectWrapper
                           control={vendorForm.control}
-                          name="paymentMethod"
+                          name="payment_method_id"
                           label="Payment Method"
-                          options={invoicePaymentMethodOptionsList}
+                          options={invoicePaymentMethodOptionsList??[]}
                         />
                         {paymentMethodWatch === "Cheque" && (
                           <InputWrapper

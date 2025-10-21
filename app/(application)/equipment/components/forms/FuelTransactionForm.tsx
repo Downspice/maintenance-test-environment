@@ -26,11 +26,11 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useGetVendors } from "@/services/setups/vendor";
 
 // Example options (replace with your actual options)
 const equipmentOptions = [{ label: "Excavator", value: "excavator" }];
 const fuelTypeOptions = [{ label: "Diesel", value: "diesel" }];
-const vendorOptions = [{ label: "Shell", value: "shell" }];
 const driverOptions = [{ label: "John Doe", value: "john" }];
 const costCentreOptions = [{ label: "Main", value: "main" }];
 const stockTankOptions = [{ label: "Tank 1", value: "tank1" }];
@@ -82,6 +82,7 @@ export default function FuelTransactionForm() {
   const [miscDialogOpen, setMiscDialogOpen] = useState(false);
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [specifyPart, setSpecifyPart] = useState(false);
+    const { data: vendorOptions } = useGetVendors();
 
   const form = useForm<FuelTransactionFormValues>({
     resolver: zodResolver(fuelTransactionSchema),

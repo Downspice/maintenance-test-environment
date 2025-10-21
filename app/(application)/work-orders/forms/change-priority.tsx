@@ -8,8 +8,6 @@ import { Button } from "@/components/ui/button";
 import { GitPullRequestArrow } from "lucide-react";
 import { toast } from "sonner";
 import SelectWrapper from "@/components/forms/wrappers/SelectWrapper";
-import InputWrapper from "@/components/forms/wrappers/InputWrapper";
-import { markupTypeOptions } from "@/lib/inventory-data";
 import { priorityOptions } from "./newWorkOrderFormSheet";
 
 // Define the form schema with Zod

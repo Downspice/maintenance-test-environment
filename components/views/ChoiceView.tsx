@@ -74,8 +74,8 @@ export default function TabbedMenuEditor({ tabs, contents }: Props) {
     setDialog({
       open: true,
       mode: "edit",
-      input: item.label,
-      editingId: item.value,
+      input: item.name,
+      editingId: item.id,
       loading: false,
     });
   }, []);
@@ -170,10 +170,10 @@ export default function TabbedMenuEditor({ tabs, contents }: Props) {
           {contents[currentTab]?.length ? (
             contents[currentTab].map((item) => (
               <li
-                key={item.value}
+                key={item.id}
                 className="flex justify-between items-center rounded-lg border border-border bg-card px-4 py-3 shadow-sm hover:shadow-md transition-shadow"
               >
-                <span className="font-medium">{item.label}</span>
+                <span className="font-medium">{item.name}</span>
                 <div className="flex gap-2">
                   <Button
                     size="icon"

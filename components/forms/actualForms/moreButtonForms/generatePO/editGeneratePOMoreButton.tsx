@@ -14,7 +14,6 @@ import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";
 import {
   assigneeOptions,
   substituteOptions,
-  vendorOptions,
 } from "@/lib/equipment-schema";
 import Fieldset from "@/components/customUI/fieldset";
  
@@ -60,7 +59,7 @@ import {
   PurchaseOrderStatusType,
 } from "@/lib/PurchaseOrder/purchaseOrder-data";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useGetLocations } from "@/services/setups/vendor";
+import { useGetLocations, useGetVendors } from "@/services/setups/vendor";
 import { useGetPurchaseOrderShipVias } from "@/services/setups/purchaseOrder";
 
 
@@ -77,6 +76,7 @@ export default function EditPurchaseOrderFormMoreButton({
   onOpenChange?: (open: boolean) => void;
 }) {
     const { data: shipViaOptions } = useGetPurchaseOrderShipVias();
+      const { data: vendorOptions } = useGetVendors();
   
   const [internalOpen, setInternalOpen] = useState(false);
   const open = externalOpen !== undefined ? externalOpen : internalOpen;

@@ -12,7 +12,6 @@ import { toast } from "sonner";
 import InputWrapper from "../wrappers/InputWrapper";
 import {
   substituteOptions,
-  vendorOptions,
 } from "@/lib/equipment-schema";
 import SelectWrapper from "../wrappers/SelectWrapper";
 import {
@@ -23,6 +22,7 @@ import { ComboboxFieldWrapper } from "../wrappers/ComboboxWrapper";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useGetWarehouses } from "@/services/setups/inventory";
+import { useGetVendors } from "@/services/setups/vendor";
 
 // Define the form schema with Zod
 export const AdjustInventorySchema = z.object({ 
@@ -50,6 +50,8 @@ export type AdjustInventoryInterface =z.infer<typeof AdjustInventorySchema>
  }) { 
 
     const { data: warehouseOptions } = useGetWarehouses();
+    const { data: vendorOptions } = useGetVendors();
+    
   
   const AdjustInventoryForm = useForm<z.infer<typeof AdjustInventorySchema>>({
     resolver: zodResolver(AdjustInventorySchema),

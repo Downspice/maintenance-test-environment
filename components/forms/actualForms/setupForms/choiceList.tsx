@@ -371,8 +371,8 @@ export function TabbedMenuEditor({ tabs, contents }: Props) {
     setDialog({
       open: true,
       mode: "edit",
-      input: item.label,
-      editingId: item.value,
+      input: item.name,
+      editingId: item.id,
       loading: false,
     });
   }, []);

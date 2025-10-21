@@ -69,7 +69,7 @@ export const repairRequestSchema = z.object({
   repairsNeeded: z
     .array(
       z.object({
-        id: z.number(),
+        id: z.coerce.number(),
         repair: z.string().min(1, "Repair is required"),
         type: z.string().min(1, "Type is required"),
         priority: z.string().min(1, "Priority is required"),
@@ -367,8 +367,8 @@ export const columns: ColumnDef<RepairRequestInterface>[] = [
         </SelectTrigger>
         <SelectContent>
           {locationOptionsList.map((item) => (
-            <SelectItem value={item.value} key={item.value}>
-              {item.label}
+            <SelectItem value={item.id} key={item.id}>
+              {item.name}
             </SelectItem>
           ))}
         </SelectContent>
@@ -390,8 +390,8 @@ export const columns: ColumnDef<RepairRequestInterface>[] = [
         </SelectTrigger>
         <SelectContent>
           {locationOptionsList.map((item) => (
-            <SelectItem value={item.value} key={item.value}>
-              {item.label}
+            <SelectItem value={item.id} key={item.id}>
+              {item.name}
             </SelectItem>
           ))}
         </SelectContent>
@@ -413,8 +413,8 @@ export const columns: ColumnDef<RepairRequestInterface>[] = [
         </SelectTrigger>
         <SelectContent>
           {priorityOptions.map((item) => (
-            <SelectItem value={item.value} key={item.value}>
-              {item.label}
+            <SelectItem value={item.id} key={item.id}>
+              {item.name}
             </SelectItem>
           ))}
         </SelectContent>

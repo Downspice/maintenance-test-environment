@@ -7,13 +7,8 @@ import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { GitPullRequestArrow, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { categoryOptions, vendorOptions } from "@/lib/equipment-schema";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  inventoryMovement,
-  markupTypeOptions,
-  partOptions,
-} from "@/lib/inventory-data";
+import { inventoryMovement, partOptions } from "@/lib/inventory-data";
 import Fieldset from "@/components/customUI/fieldset";
 import {
   Sheet,
@@ -45,8 +40,10 @@ import {
   useGetInventoryCategories,
   useGetInventoryManufacturers,
   useGetInventoryUnitTypes,
+  useGetMarkupTypes,
   useGetWarehouses,
 } from "@/services/setups/inventory";
+import { useGetVendors } from "@/services/setups/vendor";
 
 export default function EditInventory({
   children,
@@ -61,24 +58,100 @@ export default function EditInventory({
   const { data: categoryOptions } = useGetInventoryCategories();
   const { data: warehouseOptions } = useGetWarehouses();
   const { data: costCenterOptions } = useGetCostCenters();
+  const { data: vendorOptions } = useGetVendors();
+  const { data: markupTypeOptions } = useGetMarkupTypes();
+
   const [open, setOpen] = useState(false);
   const inventoryForm = useForm<z.infer<typeof InventorySchema>>({
     resolver: zodResolver(InventorySchema),
   });
-  const warehouseTabs =
-    inventoryForm.watch("inventory_trackings")?.map((w) => w.warehouse) || [];
-  const [warehouses, setWarehouses] = useState<string[]>(warehouseTabs);
+
+  const [warehouses, setWarehouses] = useState<string[]>();
+
   useEffect(() => {
+    if (!data) return;
+
+    // Map inventory_trackings to warehouses format
+    const mappedWarehouses =
+      data.inventory_trackings?.map((tracking: any) => ({
+        warehouse_id: tracking.warehouse_id,
+        aisle: tracking.aisle || "",
+        row: tracking.row || "",
+        bin: tracking.bin || "",
+        vendor_id: tracking.vendor_id,
+        cost_center_id: tracking.cost_center_id,
+        quantity: tracking.quantity || "0",
+        reorder_point: tracking.recorder_point || "",
+        reorder_quantity: tracking.recorder_quantity || "",
+        max_quantity: tracking.max_quantity || "0",
+        lead_time: tracking.lead_time || "0",
+        tracking_type_id: tracking.tracking_type_id,
+      })) || [];
+
+    // Map part substitutions
+    const mappedPartSubs =
+      data.inventory_substitutions?.map((sub: any) => ({
+        id: sub.id,
+        part_number: sub.part_number,
+        name: sub.name,
+        manufacturer_id: sub.manufacturer_id,
+        description: sub.description,
+      })) || [];
+
+    // Map alternate UPC codes
+    const mappedUpcCodes =
+      data.upc_codes?.map((upc: any) => ({
+        id: upc.id,
+        manufacturer_id: upc.manufacturer_id,
+        vendor_id: upc.vendor_id,
+        upc: upc.upc,
+      })) || [];
+
+    // Get warehouse IDs for tabs
+    const warehouseTabs = mappedWarehouses.map((w: any) => w.warehouse_id);
+
     inventoryForm.reset({
       ...data,
       manufacturer: data?.manufacturer?.id,
       category: data?.category?.id,
       unit_of_measure: data?.unit_of_measure,
+      warehouses: mappedWarehouses,
+      inventory_substitutions: mappedPartSubs,
+      upc_codes: mappedUpcCodes,
+      is_enabled: data?.is_enabled || false,
+      markUp:
+        data?.markup_type?.name?.toLowerCase() === "percent"
+          ? "percent"
+          : data?.markup_type?.name?.toLowerCase() === "value"
+          ? "value"
+          : "manual",
+      percentMarkup:
+        data?.markup_type?.name?.toLowerCase() === "percent"
+          ? data?.markup_value
+          : "",
+      markupValue:
+        data?.markup_type?.name?.toLowerCase() === "value"
+          ? data?.markup_value
+          : "",
+      markupPrice:
+        data?.markup_type?.name?.toLowerCase() === "manual"
+          ? data?.markup_value
+          : "",
+      days: data?.days || 0,
+      primary: data?.primary || 0,
+      secondary: data?.secondary || 0,
+      notes: data?.notes || "",
+      others:
+        data?.others?.map((o: any) => ({
+          name: o.name,
+          value: o.value,
+        })) || [],
     });
-    console.log(data);
-  }, [data]);
+
+    setWarehouses(warehouseTabs);
+  }, [data, inventoryForm]);
+
   const enableTrackingWatch = inventoryForm.watch("is_enabled");
-  const partSubs = inventoryForm.watch("partSubstitutions") || [];
 
   async function handleSubmit(data: z.infer<typeof InventorySchema>) {
     console.log(data);
@@ -200,7 +273,7 @@ export default function EditInventory({
                       <WarehouseTabs
                         warehouses={warehouses}
                         setWarehouses={setWarehouses}
-                        options={warehouseOptions??[]}
+                        options={warehouseOptions ?? []}
                         control={inventoryForm.control}
                         enableTrackingWatch={
                           enableTrackingWatch ? enableTrackingWatch : false
@@ -319,10 +392,10 @@ export default function EditInventory({
                             {/* A table that has button to add a new row and the headers are part#, name, manufacturer, description. */}
                             <PartSubstitutionTable
                               parts={partOptions}
-                              value={data.partSubstitutions ?? []}
+                              value={data.inventory_substitutions ?? []}
                               onChange={(rows) =>
                                 inventoryForm.setValue(
-                                  "partSubstitutions",
+                                  "inventory_substitutions",
                                   rows
                                 )
                               }
@@ -333,9 +406,9 @@ export default function EditInventory({
                             <AlternateUpcCodesTable
                               manufacturers={equipmentManufacturerOptions}
                               vendors={vendorOptions}
-                              value={data.alternateUpcCodes ?? []}
+                              value={data.upc_codes ?? []}
                               onChange={(val) =>
-                                inventoryForm.setValue("alternateUpcCodes", val)
+                                inventoryForm.setValue("upc_codes", val)
                               }
                             />
                           </TabsContent>
