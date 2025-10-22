@@ -12,10 +12,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import InputWrapper from "@/components/forms/wrappers/InputWrapper";
 import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
 import {
-  discount_typesOptions,
-  invoicePaymentMethodOptionsList,
-} from "@/lib/Invoice/invoices-page-data";
-import {
   Sheet,
   SheetContent,
   SheetHeader,

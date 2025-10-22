@@ -22,11 +22,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  discount_typesOptions,
-  invoiceOptionsList,
-  invoicePaymentMethodOptionsList,
-} from "@/lib/Invoice/invoices-page-data";
 import { z } from "zod";
 import {
   Dialog,

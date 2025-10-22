@@ -12,7 +12,6 @@ import InputWrapper from "../wrappers/InputWrapper";
 import { MultiComboboxWrapper } from "../wrappers/ComboboxWrapper";
 import {
   invoiceOptionsList,
-  invoicePaymentMethodOptionsList,
 } from "@/lib/Invoice/invoices-page-data";
 import DatePickerWrapper from "../wrappers/DatePickerWrapper";
 import Fieldset from "@/components/customUI/fieldset";

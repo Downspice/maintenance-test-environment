@@ -1,6 +1,4 @@
-
-
-export type InvoiceInterface = z.infer<typeof InvoiceSchema>;
+import z from "zod";
 
 export interface InvoiceTableInterface {
   id: string
