@@ -26,11 +26,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
-
-export interface ComboboxOption {
-  id: string;
-  name: string;
-}
+import { GenericObject } from "@/types/types";
 
 interface BaseFieldProps {
   control: Control<any>;
@@ -47,7 +43,7 @@ interface BaseFieldProps {
 }
 
 interface ComboboxFieldProps extends BaseFieldProps {
-  options: ComboboxOption[];
+  options: GenericObject[];
 }
 
 export function ComboboxFieldWrapper({
@@ -186,7 +182,7 @@ export function ComboboxFieldWrapper({
 }
 
 interface MultiComboboxFieldProps extends BaseFieldProps {
-  options: ComboboxOption[];
+  options: GenericObject[];
   minSelections?: number;
   maxSelections?: number;
 }

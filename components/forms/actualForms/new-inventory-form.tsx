@@ -18,10 +18,10 @@ import Fieldset from "@/components/customUI/fieldset";
 import FileUploadWrapper from "../wrappers/FileUploadWrapper";
 import PartSubstitutionTable from "@/app/(application)/inventory/component/inventory.partSubstitutionTable";
 import AlternateUpcCodesTable from "@/app/(application)/inventory/component/inventory.alternateUpcCodesTable";
-import { InventorySchema } from "@/lib/Inventory/inventory-data";
 import { useState } from "react";
 import WarehouseTabs from "@/app/(application)/inventory/component/inventory.warehouse";
 import {
+  useAddInventory,
   useGetCostCenters,
   useGetInventoryCategories,
   useGetInventoryManufacturers,
@@ -30,35 +30,152 @@ import {
   useGetWarehouses,
 } from "@/services/setups/inventory";
 import { useGetVendors } from "@/services/setups/vendor";
+import { GenericObject } from "@/types/types";
+
+// Updated schema to match backend structure
+export const InventorySchema = z.object({
+  id:z.string().optional(),
+  part_number: z.string().min(1, "Part Number is required"),
+  name: z.string().min(1, "Name is required"),
+  description: z.string().min(1, "Description is required"),
+  manufacturer: z.string().optional(),
+  category: z.string().optional(),
+  unit_cost: z.string().min(1, "Unit cost is required"),
+  unit_of_measure: z.string().optional(),
+  upc: z.string().min(1, "UPC is required"),
+  others: z
+    .array(
+      z.object({
+        name: z.string(),
+        value: z.string(),
+      })
+    )
+    .optional(),
+
+  enable_tracking: z.boolean().optional(),
+  inventory_trackings: z
+    .array(
+      z.object({
+        warehouse: z.string(),
+        aisle: z.string().optional(),
+        row: z.string().optional(),
+        bin: z.string().optional(),
+        vendor: z.string().optional(),
+        costCenter: z.string().optional(),
+        quantity: z.coerce.number().optional(),
+        reorderPoint: z.coerce.number().optional(),
+        reorderQty: z.coerce.number().optional(),
+        maxQty: z.coerce.number().optional(),
+        leadTime: z.coerce.number().optional(),
+        movementType: z.enum(["FIFO", "LIFO"]),
+      })
+    )
+    .optional(),
+
+  markUp: z.enum([
+    "none",
+    "1a6f57d9-e764-406e-9366-601e1fe4a1fd",
+    "1034cc78-6c2d-46cc-8f7f-210d08061d37",
+    "218ba36b-3919-4bf7-91d5-fb0ca90fab12",
+  ]),
+  percentMarkup: z.coerce.number().optional(),
+  markupValue: z.coerce.number().optional(),
+  markupPrice: z.coerce.number().optional(),
+
+  days: z.coerce.number().optional(),
+  primary: z.coerce.number().optional(),
+  secondary: z.coerce.number().optional(),
+  notes: z.string().optional(),
+
+  // Fixed: Match backend structure with manufacturer_id
+  inventory_substitutions: z
+    .array(
+      z.object({
+        part_number: z.string().min(1, "Part# is required"),
+        name: z.string(),
+        manufacturer_id: z.string(), // Changed from 'manufacturer' to 'manufacturer_id'
+        description: z.string(),
+      })
+    )
+    .optional(),
+
+  // Fixed: Use IDs instead of objects
+  upc_codes: z
+    .array(
+      z.object({
+        manufacturer_id: z.string().min(1, "Manufacturer is required"), // This is manufacturer ID
+        vendor_id: z.string().min(1, "Vendor is required"), // This is vendor ID
+        upc: z.string().min(1, "UPC is required"),
+      })
+    )
+    .optional(),
+
+  Photos: z.any().optional(),
+  Attachments: z.any().optional(),
+});
 
 export default function NewInventory() {
-  const { data: equipmentManufacturerOptions } = useGetInventoryManufacturers();
-  const { data: unitOptions } = useGetInventoryUnitTypes();
-  const { data: costCenterOptions } = useGetCostCenters();
-  const { data: warehouseOptions } = useGetWarehouses();
-  const { data: vendorOptions } = useGetVendors();
-  const { data: markupTypeOptions } = useGetMarkupTypes();
+  const { data: equipmentManufacturerOptions } =
+    useGetInventoryManufacturers<GenericObject[]>();
+  const { data: unitOptions } = useGetInventoryUnitTypes<GenericObject[]>();
+  const { data: costCenterOptions } = useGetCostCenters<GenericObject[]>();
+  const { data: warehouseOptions } = useGetWarehouses<GenericObject[]>();
+  const { data: vendorOptions } = useGetVendors<GenericObject[]>();
+  const { data: markupTypeOptions } = useGetMarkupTypes<GenericObject[]>();
+  const { data: categoryOptions } =
+    useGetInventoryCategories<GenericObject[]>();
+  const { mutateAsync: createInventory } = useAddInventory();
 
   const inventoryForm = useForm<z.infer<typeof InventorySchema>>({
     resolver: zodResolver(InventorySchema),
-    defaultValues: {},
+    defaultValues: {
+      markUp: "none",
+      inventory_substitutions: [],
+      upc_codes: [],
+    },
   });
+
   const [warehouses, setWarehouses] = useState<string[]>([]);
-  const enableTrackingWatch = inventoryForm.watch("is_enabled");
+  const enableTrackingWatch = inventoryForm.watch("enable_tracking");
   const partSubs = inventoryForm.watch("inventory_substitutions") || [];
-  const { data: categoryOptions } = useGetInventoryCategories();
+  const upcCodes = inventoryForm.watch("upc_codes") || [];
 
   async function handleSubmit(data: z.infer<typeof InventorySchema>) {
-    console.log(data);
-    // Here you would typically send the data to your API
+    console.log("Form submitted:", data);
 
-    toast.success("Work Order submitted successfully!");
+    // Transform data for backend if needed
+    const backendData = {
+      ...data,
+      // Ensure arrays are present even if empty
+      inventory_substitutions: data.inventory_substitutions || [],
+      upc_codes: data.upc_codes || [],
+    };
+
+    console.log("Backend payload:", backendData);
+    const response = createInventory(backendData);
+    if (response) {
+      toast.success(response.message);
+    }
   }
+
   return (
     <div>
       <Form {...inventoryForm}>
         <form
-          onSubmit={inventoryForm.handleSubmit((data) => handleSubmit(data))}
+          onSubmit={inventoryForm.handleSubmit(
+            (data) => handleSubmit(data),
+            (errors) => {
+              console.log(errors);
+              const firstErrorField = Object.values(errors)[0];
+              const message = firstErrorField?.message;
+
+              if (message) {
+                toast.error(message);
+              } else {
+                toast.error("Please check the form for errors.");
+              }
+            }
+          )}
           className="flex flex-col gap-2"
         >
           <Tabs defaultValue="Identification">
@@ -72,7 +189,7 @@ export default function NewInventory() {
               <div className="work-order-form-wrapper flex flex-col gap-0.5">
                 <InputWrapper
                   control={inventoryForm.control}
-                  name="number"
+                  name="part_number"
                   label="Part Number"
                   type="text"
                   required
@@ -98,14 +215,13 @@ export default function NewInventory() {
                   control={inventoryForm.control}
                   name="manufacturer"
                   label="Manufacturer"
-                  options={equipmentManufacturerOptions}
+                  options={equipmentManufacturerOptions ?? []}
                 />
-
                 <ComboboxFieldWrapper
                   control={inventoryForm.control}
                   name="category"
                   label="Category"
-                  options={categoryOptions}
+                  options={categoryOptions ?? []}
                 />
                 <div className="grid grid-cols-2 gap-x-2">
                   <div className="col-span-1">
@@ -121,9 +237,9 @@ export default function NewInventory() {
                   <div className="col-span-1">
                     <SelectWrapper
                       control={inventoryForm.control}
-                      name="unit"
+                      name="unit_of_measure"
                       label="Unit of Measure"
-                      options={unitOptions}
+                      options={unitOptions ?? []}
                     />
                   </div>
                 </div>
@@ -137,20 +253,20 @@ export default function NewInventory() {
                 />
                 <CustomFieldsWrapper
                   control={inventoryForm.control}
-                  name="customFields"
+                  name="others"
                   label="Custom Fields"
                   maxFields={2}
                 />
               </div>
               <SingleCheckboxWrapper
                 control={inventoryForm.control}
-                name="is_enabled"
+                name="enable_tracking"
                 label="Enable inventory tracking"
               />
               <WarehouseTabs
                 warehouses={warehouses}
                 setWarehouses={setWarehouses}
-                options={warehouseOptions}
+                options={warehouseOptions ?? []}
                 control={inventoryForm.control}
                 enableTrackingWatch={
                   enableTrackingWatch ? enableTrackingWatch : false
@@ -171,10 +287,11 @@ export default function NewInventory() {
                         control={inventoryForm.control}
                         name={`markUp`}
                         label="Markup Type"
-                        options={markupTypeOptions}
+                        options={[...markupTypeOptions,{id:"none",name:"none"}]}
                         required
                       />
-                      {inventoryForm.watch("markUp") === "percent" && (
+                      {inventoryForm.watch("markUp") ===
+                        "1a6f57d9-e764-406e-9366-601e1fe4a1fd" && (
                         <InputWrapper
                           control={inventoryForm.control}
                           name="percentMarkup"
@@ -184,20 +301,22 @@ export default function NewInventory() {
                           value=""
                         />
                       )}
-                      {inventoryForm.watch("markUp") === "value" && (
+                      {inventoryForm.watch("markUp") ===
+                        "1034cc78-6c2d-46cc-8f7f-210d08061d37" && (
                         <InputWrapper
                           control={inventoryForm.control}
-                          name="markupValue"
+                          name="markup_value"
                           label="Markup Value"
                           type="number"
                           required
                           value=""
                         />
                       )}
-                      {inventoryForm.watch("markUp") === "manual" && (
+                      {inventoryForm.watch("markUp") ===
+                        "218ba36b-3919-4bf7-91d5-fb0ca90fab12" && (
                         <InputWrapper
                           control={inventoryForm.control}
-                          name="markupPrice"
+                          name="markup_price"
                           label="Markup Price"
                           type="number"
                           required
@@ -260,9 +379,8 @@ export default function NewInventory() {
                     </TabsTrigger>
                   </TabsList>
                   <TabsContent value="Part Substitutions">
-                    {/* A table that has button to add a new row and the headers are part#, name, manufacturer, description. */}
                     <PartSubstitutionTable
-                      parts={partOptions}
+                      parts={partOptions ?? []}
                       value={partSubs}
                       onChange={(rows) =>
                         inventoryForm.setValue("inventory_substitutions", rows)
@@ -270,11 +388,10 @@ export default function NewInventory() {
                     />
                   </TabsContent>
                   <TabsContent value="Alternate UPC Codes">
-                    {/* A table that has button to add a new row and the headers are manufacturer, vendor, upc .When a new row is added the manufacturer and vendor becomes a select , and the ups becomes an input fields. */}
                     <AlternateUpcCodesTable
-                      manufacturers={equipmentManufacturerOptions}
-                      vendors={vendorOptions}
-                      value={inventoryForm.watch("upc_codes") || []}
+                      manufacturers={equipmentManufacturerOptions ?? []}
+                      vendors={vendorOptions ?? []}
+                      value={upcCodes}
                       onChange={(val) =>
                         inventoryForm.setValue("upc_codes", val)
                       }
@@ -298,126 +415,9 @@ export default function NewInventory() {
               />
             </TabsContent>
           </Tabs>
-
-          {/* <div className="flex flex-col gap-6">
-            {warehouseFields.map((field, index) => (
-              <div key={field.id} className="border p-4 rounded-md relative">
-                <SelectWrapper
-                  control={control}
-                  name={`warehouses.${index}.warehouse`}
-                  label="Warehouse"
-                  options={warehouseOptions}
-                  required
-                />
-                <InputWrapper
-                  control={control}
-                  name={`warehouses.${index}.bin`}
-                  label="Bin"
-                  type="text"
-                  value={""}
-                />
-                <InputWrapper
-                  control={control}
-                  name={`warehouses.${index}.quantity`}
-                  label="Quantity"
-                  type="number"
-                  value={""}
-                />
-                <InputWrapper
-                  control={control}
-                  name={`warehouses.${index}.lowStockLevel`}
-                  label="Low Stock Level"
-                  type="number"
-                  value={""}
-                />
-                <InputWrapper
-                  control={control}
-                  name={`warehouses.${index}.reorderQuantity`}
-                  label="Reorder Quantity"
-                  type="number"
-                  value={""}
-                />
-                <InputWrapper
-                  control={control}
-                  name={`warehouses.${index}.maximumQuantity`}
-                  label="Maximum Quantity"
-                  type="number"
-                  value={""}
-                />
-                <Button
-                  type="button"
-                  variant="destructive"
-                  onClick={() => removeWarehouse(index)}
-                  className="absolute top-2 right-2"
-                >
-                  Remove
-                </Button>
-              </div>
-            ))}
-
-            <Button type="button" onClick={() => appendWarehouse({})}>
-              + Add Warehouse Entry
-            </Button>
-          </div>
-
-          <div className="flex flex-col gap-6">
-            {fields.map((field, index) => (
-              <div key={field.id} className="border p-4 rounded-md relative">
-                <SelectWrapper
-                  control={control}
-                  name={`vendors.${index}.vendor`}
-                  label="Vendors"
-                  options={vendorOptions}
-                  required
-                />
-                <InputWrapper
-                  control={control}
-                  name={`vendors.${index}.manufacturer`}
-                  label="Manufacturer"
-                  type="text"
-                  value={""}
-                />
-                <InputWrapper
-                  control={control}
-                  name={`vendors.${index}.vendorNumber`}
-                  label="Vendor#"
-                  type="text"
-                  value={""}
-                />
-                <InputWrapper
-                  control={control}
-                  name={`vendors.${index}.barcode`}
-                  label="Barcode"
-                  type="text"
-                  value={""}
-                />
-                <MultiSelectWrapper
-                  control={control}
-                  name={`vendors.${index}.warehouses`}
-                  label="Warehouses"
-                  options={warehouseOptions}
-                  placeholder="Select Warehouse"
-                  searchPlaceholder="Search Warehouse..."
-                />
-                <Button
-                  type="button"
-                  variant="destructive"
-                  onClick={() => remove(index)}
-                  className="absolute top-2 right-2"
-                >
-                  Remove
-                </Button>
-              </div>
-            ))}
-
-            <Button type="button" onClick={() => append({})}>
-              + Add Vendor Info
-            </Button>
-          </div> */}
-
           <div className="flex justify-between gap-x-4 my-8 w-full">
-            <Button className=" w-full">
-              <GitPullRequestArrow className="mr-2" /> Create Inspection
+            <Button type="submit" className="w-full">
+              <GitPullRequestArrow className="mr-2" /> Create Inventory
             </Button>
           </div>
         </form>

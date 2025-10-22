@@ -310,99 +310,99 @@ export const InventoryData:InventoryDataInterface[]=[
 ]
 
 export  const equipmentManufacturerOptions = [
-  { label: "Caterpillar", value: "caterpillar" },
-  { label: "Cummins", value: "cummins" },
-  { label: "Schneider Electric", value: "schneider-electric" },
-  { label: "Siemens", value: "siemens" },
-  { label: "General Electric (GE)", value: "ge" },
-  { label: "Mikano", value: "mikano" },
-  { label: "ABB", value: "abb" },
-  { label: "LG", value: "lg" },
-  { label: "Samsung", value: "samsung" },
-  { label: "Huawei", value: "huawei" }
+  { name: "Caterpillar", id: "caterpillar" },
+  { name: "Cummins", id: "cummins" },
+  { name: "Schneider Electric", id: "schneider-electric" },
+  { name: "Siemens", id: "siemens" },
+  { name: "General Electric (GE)", id: "ge" },
+  { name: "Mikano", id: "mikano" },
+  { name: "ABB", id: "abb" },
+  { name: "LG", id: "lg" },
+  { name: "Samsung", id: "samsung" },
+  { name: "Huawei", id: "huawei" }
 ];
 
 export const unitOptions = [
-  { label: "Each", value: "each" },
-  { label: "Gallon", value: "gallon" },
-  { label: "Pair", value: "pair" },
-  { label: "Pint", value: "pint" },
-  { label: "Quart", value: "quart" },
-  { label: "Set", value: "set" },
-  { label: "Tube", value: "tube" }
+  { name: "Each", id: "each" },
+  { name: "Gallon", id: "gallon" },
+  { name: "Pair", id: "pair" },
+  { name: "Pint", id: "pint" },
+  { name: "Quart", id: "quart" },
+  { name: "Set", id: "set" },
+  { name: "Tube", id: "tube" }
 ];
 
 export const inventoryMovement = [
-  { label: "LIFO", value: "LIFO" },
-  { label: "FIFO", value: "FIFO" },
+  { name: "LIFO", id: "LIFO" },
+  { name: "FIFO", id: "FIFO" },
 ]
 
 
 export interface EquipmentPartInterface {
-  partNumber: string;
+  part_number: string;
   name: string;
-  manufacturer: string;
+  manufacturer_id: string;
   description: string;
 }
 export const partOptions=[
   {
-    "partNumber": "PRT-00123",
+    "part_number": "PRT-00123",
     "name": "Compressor Valve Kit",
-    "manufacturer": "Siemens",
+    "manufacturer_id": "Siemens",
     "description": "High-pressure valve kit suitable for industrial air compressors. Compatible with models X100-X300."
   },
   {
-    "partNumber": "PRT-00456",
+    "part_number": "PRT-00456",
     "name": "Hydraulic Filter",
-    "manufacturer": "Caterpillar",
+    "manufacturer_id": "Caterpillar",
     "description": "OEM replacement hydraulic oil filter for heavy-duty equipment."
   },
   {
-    "partNumber": "PRT-00789",
+    "part_number": "PRT-00789",
     "name": "Circuit Breaker 3P",
-    "manufacturer": "Schneider Electric",
+    "manufacturer_id": "Schneider Electric",
     "description": "3-pole thermal magnetic breaker, 400V, 32A, with overload protection."
   },
   {
-    "partNumber": "PRT-00987",
+    "part_number": "PRT-00987",
     "name": "Voltage Regulator",
-    "manufacturer": "ABB",
+    "manufacturer_id": "ABB",
     "description": "Compact automatic voltage regulator for small generators, 220V input."
   },
   {
-    "partNumber": "PRT-00234",
+    "part_number": "PRT-00234",
     "name": "Air Filter Element",
-    "manufacturer": "Cummins",
+    "manufacturer_id": "Cummins",
     "description": "Heavy-duty air intake filter for diesel generators, model AFE-500."
   },
   {
-    "partNumber": "PRT-00567",
+    "part_number": "PRT-00567",
     "name": "Cooling Fan Assembly",
-    "manufacturer": "GE",
+    "manufacturer_id": "GE",
     "description": "Industrial-grade axial cooling fan assembly for transformers."
   },
   {
-    "partNumber": "PRT-00876",
+    "part_number": "PRT-00876",
     "name": "Solar Inverter Board",
-    "manufacturer": "Huawei",
+    "manufacturer_id": "Huawei",
     "description": "Replacement board for 5kW solar inverters. Compatible with FusionSolar series."
   },
   {
-    "partNumber": "PRT-00321",
+    "part_number": "PRT-00321",
     "name": "Oil Pressure Sensor",
-    "manufacturer": "Mikano",
+    "manufacturer_id": "Mikano",
     "description": "Sensor for monitoring engine oil pressure, 0-100 PSI range."
   },
   {
-    "partNumber": "PRT-00654",
+    "part_number": "PRT-00654",
     "name": "Contactor Relay",
-    "manufacturer": "LG",
+    "manufacturer_id": "LG",
     "description": "AC contactor relay, 3-phase, 24V coil, suitable for HVAC systems."
   },
   {
-    "partNumber": "PRT-00911",
+    "part_number": "PRT-00911",
     "name": "Terminal Block",
-    "manufacturer": "Phoenix Contact",
+    "manufacturer_id": "Phoenix Contact",
     "description": "Modular terminal block for control panel wiring, 16A rated."
   }
 ]

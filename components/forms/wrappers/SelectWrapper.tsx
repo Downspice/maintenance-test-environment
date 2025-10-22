@@ -4,17 +4,13 @@ import { cn } from "@/lib/utils"
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import type { Control } from "react-hook-form"
-
-interface SelectOption {
-  id: string
-  name: string
-}
+import { GenericObject } from "@/types/types"
 
 interface SelectWrapperProps {
   control: Control<any>
   name: string
   label: string
-  options: SelectOption[]
+  options: GenericObject[]
   className?: string
   placeholder?: string
   disabled?: boolean

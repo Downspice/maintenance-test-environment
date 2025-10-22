@@ -1,10 +1,10 @@
 'use client'
-
 import { useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
+import { GenericObject } from "@/types/types";
 
 export default function AlternateUpcCodesTable({
   manufacturers,
@@ -12,14 +12,14 @@ export default function AlternateUpcCodesTable({
   value,
   onChange,
 }: {
-  manufacturers: { label: string; value: string }[];
-  vendors: { label: string; value: string }[];
+  manufacturers: GenericObject[];
+  vendors: GenericObject[];
   value: any[];
   onChange: (rows: any[]) => void;
 }) {
   console.log("value",value)
   const handleAddRow = () => {
-    const newRows = [...value, { manufacturer: "", vendor: "", upc: "" }];
+    const newRows = [...value, { manufacturer_id: "", vendor_id: "", upc: "" }];
     onChange(newRows);
   };
 
@@ -30,12 +30,16 @@ export default function AlternateUpcCodesTable({
   };
 
   const handleDelete = (index: number) => {
+    console.log('deleted index>>>>>>>',index)
     const updated = value.filter((_, i) => i !== index);
     onChange(updated);
   };
 
   return (
     <div className="space-y-2">
+        <Button type="button" onClick={handleAddRow} className="mt-2">
+        + Add UPC Code
+      </Button>
       <div className="grid grid-cols-4 gap-2 font-semibold text-sm">
         <span>Manufacturer</span>
         <span>Vendor</span>
@@ -46,15 +50,15 @@ export default function AlternateUpcCodesTable({
       {value.map((row, index) => (
         <div key={index} className="grid grid-cols-4 gap-2 items-center">
           <Select
-            value={row.manufacturer}
-            onValueChange={(val) => handleChange(index, "manufacturer", val)}
+            value={row.manufacturer_id}
+            onValueChange={(val) => handleChange(index, "manufacturer_id", val)}
           >
             <SelectTrigger>
               <SelectValue placeholder="Select Manufacturer" />
             </SelectTrigger>
             <SelectContent>
               {manufacturers.map((item) => (
-                <SelectItem key={item.id} value={item.id}>
+                <SelectItem key={item.id} value={item.id??""}>
                   {item.name}
                 </SelectItem>
               ))}
@@ -62,15 +66,15 @@ export default function AlternateUpcCodesTable({
           </Select>
 
           <Select
-            value={row.vendor}
-            onValueChange={(val) => handleChange(index, "vendor", val)}
+            value={row.vendor_id}
+            onValueChange={(val) => handleChange(index, "vendor_id", val)}
           >
             <SelectTrigger>
               <SelectValue placeholder="Select Vendor" />
             </SelectTrigger>
             <SelectContent>
               {vendors.map((item) => (
-                <SelectItem key={item.id} value={item.id}>
+                <SelectItem key={item.id} value={item.id??""}>
                   {item.name}
                 </SelectItem>
               ))}
@@ -95,10 +99,6 @@ export default function AlternateUpcCodesTable({
           </div>
         </div>
       ))}
-
-      <Button type="button" onClick={handleAddRow} className="mt-2">
-        + Add UPC Code
-      </Button>
     </div>
   );
 }

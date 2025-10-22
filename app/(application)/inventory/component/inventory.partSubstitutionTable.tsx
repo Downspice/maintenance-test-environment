@@ -11,7 +11,7 @@ export interface PartTableInterface {
   inventory_id: string
   part_number: string
   name: string
-  manufacturer_id_id: any
+  manufacturer_id: any
   description: string
   created_by: any
   updated_by: any
@@ -50,6 +50,8 @@ export default function PartSubstitutionTable({
   };
 
   const handleDelete = (index: number) => {
+    console.log('deleted index>>>>>>>',index)
+
     const updated = value.filter((_, i) => i !== index);
     onChange(updated);
   };
