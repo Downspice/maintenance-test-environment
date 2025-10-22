@@ -1,98 +1,180 @@
-import z from "zod";
+import { z } from "zod";
 
+// Purchase Order Item Schema
 export const PurchaseOrderItemSchema = z.object({
-  itemType: z.string().min(1, "Item type is required"),
-  partNumber: z.string().min(1, "Part number is required"),
-  warehouse: z.string().optional(),
-  warranty: z.string().optional(),
-  orderQuantity: z.coerce.number().min(1, "Order quantity is required"),
-  receivedQuantity: z.coerce.number().optional(),
-  newReceivedQuantity: z.coerce.number().optional(),
-  unit_cost: z.coerce.number().min(0, "Unit cost is required"),
-  extendedCost: z.coerce.number().min(0, "Extended cost is required"),
-  description: z.string().optional(),
-  notes: z.string().optional(),
+  item_type_id: z.string({
+    required_error: "Item type is required",
+    invalid_type_error: "Item type must be a valid selection"
+  }).min(1, "Please select an item type"),
+  
+  item: z.string({
+    required_error: "Item/Part number is required",
+    invalid_type_error: "Item must be a text value"
+  }).min(1, "Item/Part number cannot be empty"),
+  
+  warehouse_id: z.string({
+    required_error: "Warehouse is required",
+    invalid_type_error: "Warehouse must be a valid selection"
+  }).min(1, "Please select a warehouse"),
+  
+  quantity: z.coerce.number({
+    required_error: "Order quantity is required",
+    invalid_type_error: "Quantity must be a number"
+  }).min(1, "Quantity must be at least 1"),
+  
+  cost: z.coerce.number({
+    required_error: "Unit cost is required",
+    invalid_type_error: "Cost must be a number"
+  }).min(0, "Unit cost cannot be negative"),
+  
+  amount: z.coerce.number({
+    required_error: "Amount is required",
+    invalid_type_error: "Amount must be a number"
+  }).min(0, "Amount cannot be negative"),
+  
+  extended_cost: z.coerce.number({
+    required_error: "Extended cost is required",
+    invalid_type_error: "Extended cost must be a number"
+  }).min(0, "Extended cost cannot be negative"),
+  
+  notes: z.string().optional().default(""),
+  
+  tax_one: z.coerce.number().min(0).max(1).optional().default(0),
+  tax_two: z.coerce.number().min(0).max(1).optional().default(0),
+  discount: z.coerce.number().min(0).max(1).optional().default(0),
 });
-export type PurchaseOrderItemInterface = z.infer<
-  typeof PurchaseOrderItemSchema
->;
+
+// Custom Field Schema for dynamic fields
+export const CustomFieldSchema = z.object({
+  name: z.string().min(1, "Field name is required"),
+  value: z.string().min(1, "Field value is required")
+});
+
+// Attachment Schema
+export const AttachmentSchema = z.object({
+  file: z.any({
+    required_error: "File is required",
+  }),
+  name: z.string().min(1, "File name is required"),
+  description: z.string().optional().default("")
+});
+
+// Main Purchase Order Schema
 export const PurchaseOrderSchema = z.object({
-  equipmentId: z.string({ required_error: "Equipment is required" }),
-  date: z.date().optional(),
-  dueDate: z.date().optional(),
-  closedDate: z.date().optional(),
-  status: z.enum(["Requisition", "Ordered", "Partial", "Closed"]),
-  notes: z.string().optional(),
-  items: z.array(PurchaseOrderItemSchema),
-
-  purchaseOrderNumber: z.string().optional(),
-  invoice_number: z.string().optional(),
-  orderNumber: z.string().optional(),
-  woNumber: z.string().optional(),
-  customer: z.string().optional(),
-  vendor: z.string().optional(),
-  billing: z.string().optional(),
-  shipVia: z.string().optional(),
-  shipping: z.string().optional(),
-
-  terms: z.string().optional(),
-  location: z.string().optional(),
-
-  subTotal: z.string().optional(),
-
-  discount_type: z.enum(["none", "percent", "amount"]).optional(),
-  discount_percent: z.string().optional(),
-  discount_amount: z.string().optional(),
-
-  tax1: z.string().optional(),
-  tax2: z.string().optional(),
-  Credit: z.string().optional(),
-  freight: z.string().optional(),
-  totalCost: z.string().optional(),
-
-  // Items (handled separately in local state, not validated here)
-  // Notes and Attachments
-  Notes: z.string().optional(),
-  Attachments: z.array(z.any()).optional(),
-
-  // Tax toggles
-  primaryTaxRate: z.boolean().optional(),
-  secondaryTaxRate: z.boolean().optional(),
-  discount: z.boolean().optional(),
+  id:z.string().optional(),
+  po_number: z.string({
+    required_error: "Purchase order number is required",
+    invalid_type_error: "PO number must be text"
+  }).min(1, "PO number cannot be empty"),
+  
+  issued_date: z.date({
+    required_error: "Issue date is required",
+    invalid_type_error: "Please select a valid issue date"
+  }),
+  
+  due_date: z.date({
+    required_error: "Due date is required",
+    invalid_type_error: "Please select a valid due date"
+  }),
+  
+  buyer_id: z.string({
+    required_error: "Buyer is required",
+    invalid_type_error: "Buyer must be selected"
+  }).min(1, "Please select a buyer"),
+  
+  status_id: z.string({
+    required_error: "Status is required",
+    invalid_type_error: "Status must be selected"
+  }).min(1, "Please select a status"),
+  
+  closed_date: z.date().optional().nullable(),
+  
+  vendor: z.string({
+    required_error: "Vendor is required",
+    invalid_type_error: "Vendor must be text"
+  }).min(1, "Vendor name cannot be empty"),
+  
+  shipping: z.string({
+    required_error: "Shipping address is required",
+    invalid_type_error: "Shipping address must be text"
+  }).min(1, "Shipping address cannot be empty"),
+  
+  term_id: z.string({
+    required_error: "Payment terms are required",
+    invalid_type_error: "Terms must be selected"
+  }).min(1, "Please select payment terms"),
+  
+  ship_via_id: z.string({
+    required_error: "Ship via is required",
+    invalid_type_error: "Ship via must be selected"
+  }).min(1, "Please select shipping method"),
+  
+  invoice_number: z.string().optional().default(""),
+  
+  order_number: z.string().optional().default(""),
+  
+  wo_number: z.string().optional().default(""),
+  
+  location_id: z.string({
+    required_error: "Location is required",
+    invalid_type_error: "Location must be selected"
+  }).min(1, "Please select a location"),
+  
+  subtotal: z.coerce.number({
+    required_error: "Subtotal is required",
+    invalid_type_error: "Subtotal must be a number"
+  }).min(0, "Subtotal cannot be negative"),
+  
+  is_discount: z.coerce.number().min(0).max(1).default(0),
+  
+  discount_type: z.string( {
+    required_error: "Please select a discount type",
+    invalid_type_error: "Discount type must be either 'Fixed' or 'Percent'"
+  }).optional(),
+  
+  discount: z.coerce.number().min(0, "Discount cannot be negative").optional().default(0),
+  
+  discount_amount: z.coerce.number().min(0, "Discount amount cannot be negative").optional().default(0),
+  
+  tax_one: z.coerce.number().min(0, "Tax 1 cannot be negative").default(0),
+  
+  tax_one_amount: z.coerce.number().min(0, "Tax 1 amount cannot be negative").default(0),
+  
+  tax_two: z.coerce.number().min(0, "Tax 2 cannot be negative").default(0),
+  
+  tax_two_amount: z.coerce.number().min(0, "Tax 2 amount cannot be negative").default(0),
+  
+  credit: z.coerce.number().min(0, "Credit cannot be negative").default(0),
+  
+  freight: z.coerce.number().min(0, "Freight cannot be negative").default(0),
+  
+  total_cost: z.coerce.number({
+    required_error: "Total cost is required",
+    invalid_type_error: "Total cost must be a number"
+  }).min(0, "Total cost cannot be negative"),
+  
+  notes: z.string().optional().default(""),
+  
+  others: z.array(CustomFieldSchema).optional().default([]),
+  
+  items: z.array(PurchaseOrderItemSchema)
+    .min(1, "At least one item is required")
+    .refine(
+      (items) => items.length > 0,
+      { message: "Please add at least one item to the purchase order" }
+    ),
+  
+  attachments: z.array(AttachmentSchema).optional().default([])
 });
-export type PurchaseOrderInterface = z.infer<typeof PurchaseOrderSchema>;
 
+// TypeScript types
+export type PurchaseOrderItemType = z.infer<typeof PurchaseOrderItemSchema>;
+export type PurchaseOrderType = z.infer<typeof PurchaseOrderSchema>;
+export type CustomFieldType = z.infer<typeof CustomFieldSchema>;
+export type AttachmentType = z.infer<typeof AttachmentSchema>;
 
-export const purchaseOrderItems = [
-  {
-    itemType: "Part",
-    partNumber: "PN-001",
-    warehouse: "Main Warehouse",
-    warranty: "12 months",
-    orderQuantity: 5,
-    receivedQuantity: 0,
-    unit_cost: 100,
-    extendedCost: 500,
-    notes: "Urgent replacement part",
-  },
-  {
-    itemType: "Service",
-    partNumber: "SRV-002",
-    warehouse: "Service Bay",
-    warranty: "6 months",
-    orderQuantity: 2,
-    receivedQuantity: 0,
-    unit_cost: 150,
-    extendedCost: 300,
-    notes: "Includes installation",
-  },
-];
-
-export type PurchaseOrderStatusType =
-  | "Requisition"
-  | "Ordered"
-  | "Partial"
-  | "Closed";
+// Status type for UI
+export type PurchaseOrderStatusType = "Requisition" | "Ordered" | "Partial" | "Closed";
 
 export interface PurchaseOrderTableInterface {
   id: string

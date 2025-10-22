@@ -16,7 +16,6 @@ import {
   substituteOptions,
 } from "@/lib/equipment-schema";
 import Fieldset from "@/components/customUI/fieldset";
- 
 import { toast } from "sonner";
 import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
 import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
@@ -28,7 +27,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import z from "zod";
 import {
   Dialog,
   DialogContent,
@@ -43,59 +41,86 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import {
-  discount_typesOptions,
-  invoiceOptionsList,
-  itemTypeOptionsList,
-  maintenanceItems,
-} from "@/lib/Invoice/invoices-page-data";
+
 import FileUploadWrapper from "@/components/forms/wrappers/FileUploadWrapper";
 import SingleCheckboxWrapper from "@/components/forms/wrappers/SingleCheckboxWrapper";
 import {
-  PurchaseOrderInterface,
-  purchaseOrderItems,
   PurchaseOrderItemSchema,
   PurchaseOrderSchema,
   PurchaseOrderStatusType,
+  PurchaseOrderItemType,
+  PurchaseOrderType,
 } from "@/lib/PurchaseOrder/purchaseOrder-data";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useGetLocations, useGetVendors } from "@/services/setups/vendor";
-import { useGetPurchaseOrderShipVias } from "@/services/setups/purchaseOrder";
-
-
-export type ItemFormValues = z.infer<typeof PurchaseOrderItemSchema>;
+import { useGetCustomer, useGetCustomerDiscounts, useGetCustomers, useGetLocations, useGetPurchaseOrderTerms, useGetVendors } from "@/services/setups/vendor";
+import {
+  useGetPurchaseOrder,
+  useGetPurchaseOrderShipVias,
+  useUpdatePurchaseOrder,
+} from "@/services/setups/purchaseOrder";
+import { convertToOptionList } from "@/lib/utils";
+import { useGetWarehouses } from "@/services/setups/inventory";
+import { useGetItemTypes } from "@/services/setups/invoice";
 
 export default function EditPurchaseOrderForm({
   children,
-  data,
+  purchaseOrderId,
   open: externalOpen,
   onOpenChange,
 }: {
   children: React.ReactNode;
-  data: Partial<PurchaseOrderInterface>;
+  purchaseOrderId: string;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }) {
-    const { 
-    data: locationOptionsList, 
-    isLoading:locationOptionsListLoading, 
-    error: locationOptionsListError
-  } = useGetLocations<Array<{ id: string, name: string }>>();
+  const { data: pageData } = useGetPurchaseOrder(purchaseOrderId);
+  const {
+    data: locationOptionsList,
+    isLoading: locationOptionsListLoading,
+    error: locationOptionsListError,
+  } = useGetLocations<Array<{ id: string; name: string }>>();
   const { data: shipViaOptions } = useGetPurchaseOrderShipVias();
+  const { data: vendorOptions } = useGetVendors();
+  const { data: customersOptions } = useGetCustomers();
+      const {
+        data: termsOptionsList,
+        isLoading: termsOptionsListLoading,
+        error: termsOptionsListError,
+      } = useGetPurchaseOrderTerms<Array<{ id: string; name: string }>>();
+        const { 
+          data: discount_typesOptions, 
+          isLoading:discount_typesOptionsLoading, 
+          error: discount_typesOptionsError
+        } = useGetCustomerDiscounts<Array<{ id: string, name: string }>>();
+      const { data: warehouseOptionsList } = useGetWarehouses<Array<{ id: string; name: string }>>();
+
   const [internalOpen, setInternalOpen] = useState(false);
-      const { data: vendorOptions } = useGetVendors();
-  
   const open = externalOpen !== undefined ? externalOpen : internalOpen;
   const setOpen = onOpenChange ?? setInternalOpen;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editIndex, setEditIndex] = useState<number | null>(null);
 
-  const [items, setItems] = useState<ItemFormValues[]>(data.items ?? []);
-  const [editItems, setEditItems] = useState<ItemFormValues | null>(null);
+  const [items, setItems] = useState<PurchaseOrderItemType[]>([]);
+  const [editItems, setEditItems] = useState<PurchaseOrderItemType | null>(null);
   const [openItems, setOpenItems] = useState(false);
+  const { data: itemTypesOptionsList } = useGetItemTypes<Array<{ id: string; name: string }>>();
 
   const [status, setStatus] = useState<PurchaseOrderStatusType>("Requisition");
+
+  // Status ID to name mapping - adjust these IDs based on your backend
+  const statusIdMap: Record<string, PurchaseOrderStatusType> = {
+    "e15ec91b-4332-4dcc-94f8-b0a9da2238c0": "Requisition",
+    // Add your other status IDs here
+  };
+
+  // Status name to ID mapping
+  const statusNameToIdMap: Record<PurchaseOrderStatusType, string> = {
+    "Requisition": "e15ec91b-4332-4dcc-94f8-b0a9da2238c0",
+    "Ordered": "", // Add your status ID
+    "Partial": "", // Add your status ID
+    "Closed": "", // Add your status ID
+  };
 
   const PurchaseOrderStatuses: PurchaseOrderStatusType[] = [
     "Requisition",
@@ -103,24 +128,101 @@ export default function EditPurchaseOrderForm({
     "Partial",
     "Closed",
   ];
-  const handleDeleteItem = (itemName: string) => {
-    const filtered = items.filter((item) => item.partNumber !== itemName);
+
+  // Initialize form with data from API
+  useEffect(() => {
+    if (pageData) {
+      const mappedData: Partial<PurchaseOrderType> = {
+        id: pageData.id,
+        po_number: pageData.po_number,
+        issued_date: new Date(pageData.issued_date),
+        due_date: new Date(pageData.due_date),
+        buyer_id: pageData.buyer_id,
+        status_id: pageData.status_id,
+        closed_date: pageData.closed_date ? new Date(pageData.closed_date) : null,
+        vendor: pageData.vendor,
+        shipping: pageData.shipping,
+        term_id: pageData.term_id,
+        ship_via_id: pageData.ship_via_id,
+        invoice_number: pageData.invoice_number,
+        order_number: pageData.order_number,
+        wo_number: pageData.wo_number,
+        location_id: pageData.location_id,
+        subtotal: parseFloat(pageData.subtotal),
+        is_discount: pageData.is_discount ? 1 : 0,
+        discount_type: pageData.discount_type as "Fixed" | "Percent",
+        discount: parseFloat(pageData.discount),
+        discount_amount: parseFloat(pageData.discount_amount),
+        tax_one: parseFloat(pageData.tax_one),
+        tax_one_amount: parseFloat(pageData.tax_one_amount),
+        tax_two: parseFloat(pageData.tax_two),
+        tax_two_amount: parseFloat(pageData.tax_two_amount),
+        credit: parseFloat(pageData.credit),
+        freight: parseFloat(pageData.freight),
+        total_cost: parseFloat(pageData.total_cost),
+        notes: pageData.notes || "",
+        others: pageData.others || [],
+        items: pageData.items || [],
+        attachments: [],
+      };
+
+      form.reset(mappedData);
+
+      // Map items from API
+      if (pageData.items) {
+        const mappedItems = pageData.items.map((item: any) => ({
+          item_type_id: item.item_type_id,
+          item: item.item,
+          warehouse_id: item.warehouse_id,
+          quantity: item.quantity,
+          cost: parseFloat(item.cost),
+          amount: parseFloat(item.amount),
+          extended_cost: parseFloat(item.extended_cost),
+          notes: item.notes || "",
+          tax_one: item.tax_one ? 1 : 0,
+          tax_two: item.tax_two ? 1 : 0,
+          discount: item.discount ? 1 : 0,
+        }));
+        setItems(mappedItems);
+      }
+
+      // Set status
+      if (pageData.status) {
+        setStatus(pageData.status.name as PurchaseOrderStatusType);
+      }
+    }
+  }, [pageData]);
+
+  const handleDeleteItem = (index: number) => {
+    const filtered = items.filter((_, idx) => idx !== index);
     setItems(filtered);
   };
 
-  const handleEditItem = (item: ItemFormValues, index: number) => {
+  const handleEditItem = (item: PurchaseOrderItemType, index: number) => {
     setEditIndex(index);
     setEditItems(item);
-    Itemsform.reset(item); // Pre-fill
-    setOpenItems(true); // Open the dialog after setting the form
+    Itemsform.reset(item);
+    setOpenItems(true);
   };
 
-  const Itemsform = useForm<ItemFormValues>({
+  const Itemsform = useForm<PurchaseOrderItemType>({
     resolver: zodResolver(PurchaseOrderItemSchema),
-    defaultValues: {},
+    defaultValues: {
+      item_type_id: "",
+      item: "",
+      warehouse_id: "",
+      quantity: 1,
+      cost: 0,
+      amount: 0,
+      extended_cost: 0,
+      notes: "",
+      tax_one: 0,
+      tax_two: 0,
+      discount: 0,
+    },
   });
 
-  function onSubmitItems(data: ItemFormValues) {
+  function onSubmitItems(data: PurchaseOrderItemType) {
     if (editIndex !== null) {
       const updated = [...items];
       updated[editIndex] = data;
@@ -130,15 +232,17 @@ export default function EditPurchaseOrderForm({
     }
 
     Itemsform.reset({
-      itemType: " ",
-      partNumber: " ",
-      warehouse: " ",
-      warranty: " ",
-      orderQuantity: 0,
-      receivedQuantity: 0,
-      unit_cost: 0,
-      extendedCost: 0,
-      notes: " ",
+      item_type_id: "",
+      item: "",
+      warehouse_id: "",
+      quantity: 1,
+      cost: 0,
+      amount: 0,
+      extended_cost: 0,
+      notes: "",
+      tax_one: 0,
+      tax_two: 0,
+      discount: 0,
     });
 
     setEditItems(null);
@@ -146,30 +250,33 @@ export default function EditPurchaseOrderForm({
     setOpenItems(false);
   }
 
-  const form = useForm<z.infer<typeof PurchaseOrderSchema>>({
+  const form = useForm<PurchaseOrderType>({
     resolver: zodResolver(PurchaseOrderSchema),
-    defaultValues: { ...data },
+    defaultValues: {},
   });
+const {mutateAsync:updatePurchaseOrder}=useUpdatePurchaseOrder()
+  function onSubmit(data: PurchaseOrderType) {
+    // Add items to submission data
+    const submissionData = {
+      ...data,
+      items: items,
+    };
 
-  function onSubmit(data: PurchaseOrderInterface) {
-    console.log("Form submitted with VALUES:", data);
-    toast("Project created successfully!", {
+    console.log("Form submitted with VALUES:", submissionData);
+    const res=updatePurchaseOrder(data)
+    if(res){
+    toast.success(res.message, {
       duration: 10000,
-    });
+    });}
 
     setOpen(false);
-    form.reset();
   }
 
   function onError(errors: any) {
-    // Get all error messages
+    console.log(errors)
     const errorMessages = Object.entries(errors).map(
       ([field, error]: [string, any]) => {
-        const fieldLabels: Record<string, string> = {
-          unit: "Project Name",
-        };
-
-        return `${fieldLabels[field] || field}: ${error.message}`;
+        return `${field}: ${error.message}`;
       }
     );
 
@@ -188,24 +295,40 @@ export default function EditPurchaseOrderForm({
   }
 
   const watchdiscount_type = form.watch("discount_type");
-  const watchStatus = form.watch("status");
+  const watchStatus = form.watch("status_id");
 
   useEffect(() => {
-    if (watchStatus === "Closed") {
-      form.setValue("closedDate", new Date());
-    } else {
-      form.setValue("closedDate", undefined);
+    // Handle closed date logic based on status
+    const currentStatus = pageData?.status?.name;
+    if (currentStatus === "Closed") {
+      if (!form.getValues("closed_date")) {
+        form.setValue("closed_date", new Date());
+      }
     }
-  }, [watchStatus]);
+  }, [watchStatus, pageData]);
+
+  // Calculate extended cost when quantity or cost changes
+  const watchQuantity = Itemsform.watch("quantity");
+  const watchCost = Itemsform.watch("cost");
+
+  useEffect(() => {
+    const extended = watchQuantity * watchCost;
+    Itemsform.setValue("extended_cost", extended);
+    Itemsform.setValue("amount", extended);
+  }, [watchQuantity, watchCost]);
+
+  if (!pageData) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>{children}</SheetTrigger>
-      <SheetContent className="w-3/4 ">
+      <SheetContent className="w-3/4">
         <SheetHeader>
           <SheetTitle>
             <div className="flex justify-between">
-              <div>{data.purchaseOrderNumber}</div>
+              <div>Purchase Order: {pageData.po_number}</div>
             </div>
           </SheetTitle>
         </SheetHeader>
@@ -219,12 +342,11 @@ export default function EditPurchaseOrderForm({
                 <div className="flex flex-row gap-x-3">
                   <InputWrapper
                     control={form.control}
-                    name={"purchaseOrderNumber"}
+                    name={"po_number"}
                     label={"Purchase Order #"}
                     value={""}
                     type="text"
                   />
-                  {/* put status  that is requisition,ordered,received partial, closed */}
                   <div className="flex gap-2">
                     {PurchaseOrderStatuses.map((stat) => (
                       <button
@@ -242,7 +364,11 @@ export default function EditPurchaseOrderForm({
                             : "bg-white text-gray-700 border-gray-300"
                         }`}
                         onClick={() => {
-                          form.setValue("status", stat);
+                          // Update both status name and status_id
+                          const statusId = statusNameToIdMap[stat];
+                          if (statusId) {
+                            form.setValue("status_id", statusId);
+                          }
                           setStatus(stat);
                         }}
                       >
@@ -254,25 +380,25 @@ export default function EditPurchaseOrderForm({
                 <div className="flex flex-row gap-x-2">
                   <DatePickerWrapper
                     control={form.control}
-                    name="date"
+                    name="issued_date"
                     label="Issue Date"
                   />
                   <DatePickerWrapper
                     control={form.control}
-                    name="dueDate"
+                    name="due_date"
                     label="Due By"
                   />
                   <ComboboxFieldWrapper
                     control={form.control}
-                    name="customer"
+                    name="buyer_id"
                     label="Buyer"
-                    options={assigneeOptions}
+                    options={convertToOptionList(customersOptions??[],"id","company_name")}
                   />
                   <DatePickerWrapper
                     control={form.control}
-                    name="closedDate"
+                    name="closed_date"
                     label="Close"
-                    disabled={watchStatus !== "Closed"}
+                    disabled={status !== "Closed"}
                   />
                 </div>
                 <div className="grid grid-cols-8 gap-4">
@@ -282,17 +408,18 @@ export default function EditPurchaseOrderForm({
                         legend="Vendor"
                         content={
                           <>
-                            <ComboboxFieldWrapper
+                            <InputWrapper
                               control={form.control}
                               name="vendor"
-                              options={vendorOptions}
-                              label=""
+                              label="Vendor Name"
+                              type="text"
+                              value=""
                             />
 
                             <TextareaWrapper
                               control={form.control}
-                              name="billing"
-                              label=""
+                              name="shipping"
+                              label="Billing Address"
                               placeholder=" "
                               value={""}
                             />
@@ -307,14 +434,14 @@ export default function EditPurchaseOrderForm({
                           <>
                             <ComboboxFieldWrapper
                               control={form.control}
-                              name="shipVia"
-                              options={shipViaOptions}
-                              label=""
+                              name="ship_via_id"
+                              options={shipViaOptions??[]}
+                              label="Ship Via"
                             />
                             <TextareaWrapper
                               control={form.control}
                               name="shipping"
-                              label=""
+                              label="Shipping Address"
                               placeholder=" "
                               value={""}
                             />
@@ -332,98 +459,86 @@ export default function EditPurchaseOrderForm({
                           <TabsTrigger value="Notes">Notes</TabsTrigger>
                         </TabsList>
                         <TabsContent value="Items">
-                          <div className="flex justify-end">
-                            <Dialog
-                              open={openItems}
-                              onOpenChange={setOpenItems}
-                            >
-                              <DialogTrigger
-                                asChild
-                                onClick={() => {
-                                  setEditIndex(null);
-                                  setEditItems(null);
-                                  Itemsform.reset({
-                                    itemType: " ",
-                                    partNumber: " ",
-                                    warehouse: " ",
-                                    warranty: " ",
-                                    orderQuantity: 0,
-                                    receivedQuantity: 0,
-                                    unit_cost: 0,
-                                    extendedCost: 0,
-                                    notes: " ",
-                                  }); // ensure blank form for create
-                                  setOpenItems(true);
-                                }}
-                              >
-                                <Button variant="outline">Add Item</Button>
+                          <div className="flex justify-end mb-2">
+                            <Dialog open={openItems} onOpenChange={setOpenItems}>
+                              <DialogTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  type="button"
+                                  onClick={() => {
+                                    setEditIndex(null);
+                                    setEditItems(null);
+                                    Itemsform.reset({
+                                      item_type_id: "",
+                                      item: "",
+                                      warehouse_id: "",
+                                      quantity: 1,
+                                      cost: 0,
+                                      amount: 0,
+                                      extended_cost: 0,
+                                      notes: "",
+                                      tax_one: 0,
+                                      tax_two: 0,
+                                      discount: 0,
+                                    });
+                                  }}
+                                >
+                                  Add Item
+                                </Button>
                               </DialogTrigger>
                               <DialogContent>
                                 <DialogHeader>
                                   <DialogTitle>
                                     {editIndex !== null
-                                      ? "Edit PurchaseOrder Item"
-                                      : "Add PurchaseOrder Item"}
+                                      ? "Edit Purchase Order Item"
+                                      : "Add Purchase Order Item"}
                                   </DialogTitle>
                                 </DialogHeader>
-                                <form
-                                  onSubmit={Itemsform.handleSubmit(
-                                    onSubmitItems
-                                  )}
-                                  className="grid gap-4 mt-4"
+                                <div
+                                  
+                                   
                                 >
                                   <div className="grid grid-cols-2 gap-2">
                                     <ComboboxFieldWrapper
                                       control={Itemsform.control}
-                                      name="itemType"
+                                      name="item_type_id"
                                       label="Item Type"
-                                      options={itemTypeOptionsList}
+                                      options={itemTypesOptionsList??[]}
+                                    />
+                                    <InputWrapper
+                                      control={Itemsform.control}
+                                      name="item"
+                                      label="Part #"
+                                      type="text"
+                                      value=""
                                     />
                                     <ComboboxFieldWrapper
-                                      className="col-span-1"
                                       control={Itemsform.control}
-                                      name="partNumber"
-                                      label="Part #"
-                                      options={substituteOptions}
-                                    />
-                                    <InputWrapper
-                                      control={Itemsform.control}
-                                      name="warehouse"
+                                      name="warehouse_id"
                                       label="Warehouse"
-                                      type="text"
-                                      value=""
-                                      disabled
-                                      required={false}
+                                      options={warehouseOptionsList ?? []}
                                     />
                                     <InputWrapper
                                       control={Itemsform.control}
-                                      name="warranty"
-                                      label="Warranty"
-                                      type="text"
-                                      value=""
-                                      disabled
-                                      required={false}
-                                    />
-                                    <InputWrapper
-                                      control={Itemsform.control}
-                                      name="orderQuantity"
+                                      name="quantity"
                                       label="Order Quantity"
                                       type="number"
-                                      value="0"
+                                      value="1"
                                     />
                                     <InputWrapper
                                       control={Itemsform.control}
-                                      name="unit_cost"
+                                      name="cost"
                                       label="Unit Cost"
                                       type="number"
                                       value="0"
                                     />
                                     <InputWrapper
                                       control={Itemsform.control}
-                                      name="extendedCost"
+                                      name="extended_cost"
                                       label="Extended Cost"
                                       type="number"
                                       value="0"
+                                      disabled
                                     />
                                   </div>
                                   <TextareaWrapper
@@ -434,30 +549,25 @@ export default function EditPurchaseOrderForm({
                                   />
                                   <div className="grid grid-cols-2 gap-2">
                                     <SingleCheckboxWrapper
-                                      control={form.control}
-                                      name="primaryTaxRate"
+                                      control={Itemsform.control}
+                                      name="tax_one"
                                       label="Apply Primary Tax Rate"
                                     />
                                     <SingleCheckboxWrapper
-                                      control={form.control}
-                                      name="secondaryTaxRate"
+                                      control={Itemsform.control}
+                                      name="tax_two"
                                       label="Apply Secondary Tax Rate"
                                     />
                                     <SingleCheckboxWrapper
-                                      control={form.control}
+                                      control={Itemsform.control}
                                       name="discount"
                                       label="Apply Discount"
                                     />
                                   </div>
-                                  <Button
-                                    type="button"
-                                    onClick={Itemsform.handleSubmit(
-                                      onSubmitItems
-                                    )}
-                                  >
-                                    Save Item
+                                  <Button type="button" onClick={Itemsform.handleSubmit(onSubmitItems)}>
+                                    {editIndex !== null ? "Update Item" : "Add Item"}
                                   </Button>
-                                </form>
+                                </div>
                               </DialogContent>
                             </Dialog>
                           </div>
@@ -465,8 +575,7 @@ export default function EditPurchaseOrderForm({
                           <Table>
                             <TableHeader>
                               <TableRow>
-                                <TableHead>Ordered</TableHead>
-                                <TableHead>Received</TableHead>
+                                <TableHead>Quantity</TableHead>
                                 <TableHead>Description</TableHead>
                                 <TableHead>Unit Cost</TableHead>
                                 <TableHead>Amount</TableHead>
@@ -477,11 +586,10 @@ export default function EditPurchaseOrderForm({
                             <TableBody>
                               {items.map((item, idx) => (
                                 <TableRow key={idx}>
-                                  <TableCell>{item.orderQuantity}</TableCell>
-                                  <TableCell>{item.receivedQuantity}</TableCell>
-                                  <TableCell>{item.description}</TableCell>
-                                  <TableCell>{item.unit_cost}</TableCell>
-                                  <TableCell>{item.extendedCost}</TableCell>
+                                  <TableCell>{item.quantity}</TableCell>
+                                  <TableCell>{item.item}</TableCell>
+                                  <TableCell>${item.cost.toFixed(2)}</TableCell>
+                                  <TableCell>${item.amount.toFixed(2)}</TableCell>
                                   <TableCell>{item.notes}</TableCell>
                                   <TableCell>
                                     <div className="flex gap-2">
@@ -489,10 +597,7 @@ export default function EditPurchaseOrderForm({
                                         type="button"
                                         size="icon"
                                         variant="ghost"
-                                        onClick={() => {
-                                          setEditItems(item);
-                                          handleEditItem(item, idx); // Pass index
-                                        }}
+                                        onClick={() => handleEditItem(item, idx)}
                                       >
                                         <Pen className="w-4 h-4 text-blue-500" />
                                       </Button>
@@ -500,9 +605,7 @@ export default function EditPurchaseOrderForm({
                                         type="button"
                                         size="icon"
                                         variant="ghost"
-                                        onClick={() =>
-                                          handleDeleteItem(item.partNumber)
-                                        }
+                                        onClick={() => handleDeleteItem(idx)}
                                       >
                                         <Trash2 className="w-4 h-4 text-red-500" />
                                       </Button>
@@ -517,14 +620,14 @@ export default function EditPurchaseOrderForm({
                           <FileUploadWrapper
                             multiple={true}
                             control={form.control}
-                            name={"Attachments"}
+                            name={"attachments"}
                             label={"Attachments"}
                           />
                         </TabsContent>
                         <TabsContent value="Notes">
                           <TextareaWrapper
-                            label=" "
-                            name="Notes"
+                            label="Notes"
+                            name="notes"
                             control={form.control}
                             value={""}
                           />
@@ -532,21 +635,20 @@ export default function EditPurchaseOrderForm({
                       </Tabs>
                     </div>
                   </div>
-                  <div className="col-span-2 ">
-                    {" "}
+                  <div className="col-span-2">
                     <Fieldset
                       legend="Miscellaneous"
                       content={
                         <>
                           <ComboboxFieldWrapper
                             control={form.control}
-                            name="terms"
+                            name="term_id"
                             label="Terms"
-                            options={invoiceOptionsList}
+                            options={termsOptionsList??[]}
                           />
                           <ComboboxFieldWrapper
                             control={form.control}
-                            name="shipVia"
+                            name="ship_via_id"
                             label="Ship Via"
                             options={shipViaOptions}
                           />
@@ -559,14 +661,14 @@ export default function EditPurchaseOrderForm({
                           />
                           <InputWrapper
                             control={form.control}
-                            name={"orderNumber"}
+                            name={"order_number"}
                             label={"Order #"}
                             value={""}
                             type="text"
                           />
                           <InputWrapper
                             control={form.control}
-                            name={"woNumber"}
+                            name={"wo_number"}
                             label={"WO #"}
                             value={""}
                             type="text"
@@ -577,11 +679,6 @@ export default function EditPurchaseOrderForm({
                             label="Location Filter"
                             options={locationOptionsList}
                           />
-                          {/* <CustomFieldsWrapper
-                      control={form.control}
-                      name={"custom"}
-                      label={"Custom"}
-                    /> */}
                         </>
                       }
                     />
@@ -591,71 +688,69 @@ export default function EditPurchaseOrderForm({
                         <>
                           <InputWrapper
                             control={form.control}
-                            name={"subTotal"}
+                            name={"subtotal"}
                             label={"Sub total"}
                             value={""}
-                            type="text"
+                            type="number"
                           />
 
                           <ComboboxFieldWrapper
-                            control={form.control}
-                            name="discount_type"
-                            label="Discount Type"
-                            options={discount_typesOptions}
-                          />
-
-                          {watchdiscount_type === "percent" && (
-                            <InputWrapper
-                              control={form.control}
-                              name={"discount_percent"}
-                              label={"Discount"}
-                              value={""}
-                              type="text"
-                            />
-                          )}
-                          {watchdiscount_type === "amount" && (
-                            <InputWrapper
-                              control={form.control}
-                              name={"discount_amount"}
-                              label={"Discount"}
-                              value={""}
-                              type="text"
-                            />
-                          )}
-
+                                                control={form.control}
+                                                name="discount_type"
+                                                label="Discount Type"
+                                                options={discount_typesOptions??[]}
+                                              />
+                                              {watchdiscount_type === "1fcd0622-ebfa-477a-ba12-21cfcb070a62" && (
+                                                <InputWrapper
+                                                  control={form.control}
+                                                  name={"discount_percent"}
+                                                  label={"Discount"}
+                                                  value={""}
+                                                  type="text"
+                                                />
+                                              )}
+                                              {watchdiscount_type === "af4850a7-a669-4898-9adc-83a7c27132b9" && (
+                                                <InputWrapper
+                                                  control={form.control}
+                                                  name={"discount_amount"}
+                                                  label={"Discount"}
+                                                  value={""}
+                                                  type="text"
+                                                />
+                                              )}
                           <InputWrapper
                             control={form.control}
-                            name="tax1"
+                            name="tax_one"
                             label="Tax 1"
-                            type="text"
+                            type="number"
                             value={""}
                           />
                           <InputWrapper
                             control={form.control}
-                            name="tax2"
+                            name="tax_two"
                             label="Tax 2"
-                            type="text"
+                            type="number"
                             value={""}
                           />
                           <InputWrapper
                             control={form.control}
-                            name="Credit"
-                            label="credit"
-                            type="text"
+                            name="credit"
+                            label="Credit"
+                            type="number"
                             value={""}
                           />
                           <InputWrapper
                             control={form.control}
                             name="freight"
                             label="Freight"
-                            type="text"
+                            type="number"
                             value={""}
                           />
                           <InputWrapper
                             control={form.control}
-                            name="Total Cost"
-                            label="totalCost"
-                            type="text"
+                            name="total_cost"
+                            label="Total Cost"
+                            type="number"
                             value={""}
                           />
                         </>
@@ -671,7 +766,7 @@ export default function EditPurchaseOrderForm({
                   className="min-w-32 my-4 w-full"
                 >
                   {isSubmitting ? (
-                    "Creating..."
+                    "Saving..."
                   ) : (
                     <>
                       <Save className="mr-2 h-4 w-4" />

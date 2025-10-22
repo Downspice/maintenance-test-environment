@@ -46,21 +46,190 @@ import {
 import {
   discount_typesOptions,
   invoiceOptionsList,
-  itemTypeOptionsList,
   maintenanceItems,
 } from "@/lib/Invoice/invoices-page-data";
 import FileUploadWrapper from "@/components/forms/wrappers/FileUploadWrapper";
 import SingleCheckboxWrapper from "@/components/forms/wrappers/SingleCheckboxWrapper";
-import {
-  PurchaseOrderInterface,
-  purchaseOrderItems,
-  PurchaseOrderItemSchema,
-  PurchaseOrderSchema,
-  PurchaseOrderStatusType,
-} from "@/lib/PurchaseOrder/purchaseOrder-data";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useGetLocations, useGetVendors } from "@/services/setups/vendor";
 import { useGetPurchaseOrderShipVias } from "@/services/setups/purchaseOrder";
+import { useGetItemTypes } from "@/services/setups/invoice";
+
+// Purchase Order Item Schema
+export const PurchaseOrderItemSchema = z.object({
+  item_type_id: z.string({
+    required_error: "Item type is required",
+    invalid_type_error: "Item type must be a valid selection"
+  }).min(1, "Please select an item type"),
+  
+  item: z.string({
+    required_error: "Item/Part number is required",
+    invalid_type_error: "Item must be a text value"
+  }).min(1, "Item/Part number cannot be empty"),
+  
+  warehouse_id: z.string({
+    required_error: "Warehouse is required",
+    invalid_type_error: "Warehouse must be a valid selection"
+  }).min(1, "Please select a warehouse"),
+  
+  quantity: z.coerce.number({
+    required_error: "Order quantity is required",
+    invalid_type_error: "Quantity must be a number"
+  }).min(1, "Quantity must be at least 1"),
+  
+  cost: z.coerce.number({
+    required_error: "Unit cost is required",
+    invalid_type_error: "Cost must be a number"
+  }).min(0, "Unit cost cannot be negative"),
+  
+  amount: z.coerce.number({
+    required_error: "Amount is required",
+    invalid_type_error: "Amount must be a number"
+  }).min(0, "Amount cannot be negative"),
+  
+  extended_cost: z.coerce.number({
+    required_error: "Extended cost is required",
+    invalid_type_error: "Extended cost must be a number"
+  }).min(0, "Extended cost cannot be negative"),
+  
+  notes: z.string().optional().default(""),
+  
+  tax_one: z.coerce.number().min(0).max(1).optional().default(0),
+  tax_two: z.coerce.number().min(0).max(1).optional().default(0),
+  discount: z.coerce.number().min(0).max(1).optional().default(0),
+});
+
+// Custom Field Schema for dynamic fields
+export const CustomFieldSchema = z.object({
+  name: z.string().min(1, "Field name is required"),
+  value: z.string().min(1, "Field value is required")
+});
+
+// Attachment Schema
+export const AttachmentSchema = z.object({
+  file: z.any({
+    required_error: "File is required",
+  }),
+  name: z.string().min(1, "File name is required"),
+  description: z.string().optional().default("")
+});
+
+// Main Purchase Order Schema
+export const PurchaseOrderSchema = z.object({
+  id:z.string().optional(),
+  po_number: z.string({
+    required_error: "Purchase order number is required",
+    invalid_type_error: "PO number must be text"
+  }).min(1, "PO number cannot be empty"),
+  
+  issued_date: z.date({
+    required_error: "Issue date is required",
+    invalid_type_error: "Please select a valid issue date"
+  }),
+  
+  due_date: z.date({
+    required_error: "Due date is required",
+    invalid_type_error: "Please select a valid due date"
+  }),
+  
+  buyer_id: z.string({
+    required_error: "Buyer is required",
+    invalid_type_error: "Buyer must be selected"
+  }).min(1, "Please select a buyer"),
+  
+  status_id: z.string({
+    required_error: "Status is required",
+    invalid_type_error: "Status must be selected"
+  }).min(1, "Please select a status"),
+  
+  closed_date: z.date().optional().nullable(),
+  
+  vendor: z.string({
+    required_error: "Vendor is required",
+    invalid_type_error: "Vendor must be text"
+  }).min(1, "Vendor name cannot be empty"),
+  
+  shipping: z.string({
+    required_error: "Shipping address is required",
+    invalid_type_error: "Shipping address must be text"
+  }).min(1, "Shipping address cannot be empty"),
+  
+  term_id: z.string({
+    required_error: "Payment terms are required",
+    invalid_type_error: "Terms must be selected"
+  }).min(1, "Please select payment terms"),
+  
+  ship_via_id: z.string({
+    required_error: "Ship via is required",
+    invalid_type_error: "Ship via must be selected"
+  }).min(1, "Please select shipping method"),
+  
+  invoice_number: z.string().optional().default(""),
+  
+  order_number: z.string().optional().default(""),
+  
+  wo_number: z.string().optional().default(""),
+  
+  location_id: z.string({
+    required_error: "Location is required",
+    invalid_type_error: "Location must be selected"
+  }).min(1, "Please select a location"),
+  
+  subtotal: z.coerce.number({
+    required_error: "Subtotal is required",
+    invalid_type_error: "Subtotal must be a number"
+  }).min(0, "Subtotal cannot be negative"),
+  
+  is_discount: z.coerce.number().min(0).max(1).default(0),
+  
+  discount_type: z.string( {
+    required_error: "Please select a discount type",
+    invalid_type_error: "Discount type must be either 'Fixed' or 'Percent'"
+  }).optional(),
+  
+  discount: z.coerce.number().min(0, "Discount cannot be negative").optional().default(0),
+  
+  discount_amount: z.coerce.number().min(0, "Discount amount cannot be negative").optional().default(0),
+  
+  tax_one: z.coerce.number().min(0, "Tax 1 cannot be negative").default(0),
+  
+  tax_one_amount: z.coerce.number().min(0, "Tax 1 amount cannot be negative").default(0),
+  
+  tax_two: z.coerce.number().min(0, "Tax 2 cannot be negative").default(0),
+  
+  tax_two_amount: z.coerce.number().min(0, "Tax 2 amount cannot be negative").default(0),
+  
+  credit: z.coerce.number().min(0, "Credit cannot be negative").default(0),
+  
+  freight: z.coerce.number().min(0, "Freight cannot be negative").default(0),
+  
+  total_cost: z.coerce.number({
+    required_error: "Total cost is required",
+    invalid_type_error: "Total cost must be a number"
+  }).min(0, "Total cost cannot be negative"),
+  
+  notes: z.string().optional().default(""),
+  
+  others: z.array(CustomFieldSchema).optional().default([]),
+  
+  items: z.array(PurchaseOrderItemSchema)
+    .min(1, "At least one item is required")
+    .refine(
+      (items) => items.length > 0,
+      { message: "Please add at least one item to the purchase order" }
+    ),
+  
+  attachments: z.array(AttachmentSchema).optional().default([])
+});
+
+// TypeScript types
+export type PurchaseOrderItemType = z.infer<typeof PurchaseOrderItemSchema>;
+export type PurchaseOrderType = z.infer<typeof PurchaseOrderSchema>;
+export type CustomFieldType = z.infer<typeof CustomFieldSchema>;
+export type AttachmentType = z.infer<typeof AttachmentSchema>;
+
+// Status type for UI
+export type PurchaseOrderStatusType = "Requisition" | "Ordered" | "Partial" | "Closed";
 
 
 export type ItemFormValues = z.infer<typeof PurchaseOrderItemSchema>;
@@ -77,6 +246,7 @@ export default function EditPurchaseOrderFormMoreButton({
 }) {
     const { data: shipViaOptions } = useGetPurchaseOrderShipVias();
       const { data: vendorOptions } = useGetVendors();
+    const { data: itemTypesOptionsList } = useGetItemTypes<Array<{ id: string; name: string }>>();
   
   const [internalOpen, setInternalOpen] = useState(false);
   const open = externalOpen !== undefined ? externalOpen : internalOpen;
@@ -95,15 +265,18 @@ export default function EditPurchaseOrderFormMoreButton({
     isLoading:locationOptionsListLoading, 
     error: locationOptionsListError
   } = useGetLocations<Array<{ id: string, name: string }>>();
+  
   const PurchaseOrderStatuses: PurchaseOrderStatusType[] = [
     "Requisition",
     "Ordered",
     "Partial",
     "Closed",
   ];
+  
   const handleDeleteItem = (itemName: string) => {
     const filtered = items.filter((item) => item.partNumber !== itemName);
     setItems(filtered);
+    form.setValue('items', filtered); // Sync with form
   };
 
   const handleEditItem = (item: ItemFormValues, index: number) => {
@@ -119,13 +292,20 @@ export default function EditPurchaseOrderFormMoreButton({
   });
 
   function onSubmitItems(data: ItemFormValues) {
+    let updatedItems: ItemFormValues[];
+    
     if (editIndex !== null) {
       const updated = [...items];
       updated[editIndex] = data;
+      updatedItems = updated;
       setItems(updated);
     } else {
-      setItems((prev) => [...prev, data]);
+      updatedItems = [...items, data];
+      setItems(updatedItems);
     }
+
+    // Immediately update form's items field
+    form.setValue('items', updatedItems);
 
     Itemsform.reset({
       itemType: " ",
@@ -146,8 +326,16 @@ export default function EditPurchaseOrderFormMoreButton({
 
   const form = useForm<z.infer<typeof PurchaseOrderSchema>>({
     resolver: zodResolver(PurchaseOrderSchema),
-    defaultValues: { ...data },
+    defaultValues: { 
+      ...data,
+      items: data.items ?? [] // Ensure items is initialized
+    },
   });
+
+  // Sync items state with form whenever items change
+  useEffect(() => {
+    form.setValue('items', items);
+  }, [items, form]);
 
   function onSubmit(data: PurchaseOrderInterface) {
     console.log("Form submitted with VALUES:", data);
@@ -165,6 +353,7 @@ export default function EditPurchaseOrderFormMoreButton({
       ([field, error]: [string, any]) => {
         const fieldLabels: Record<string, string> = {
           unit: "Project Name",
+          items: "Items",
         };
 
         return `${fieldLabels[field] || field}: ${error.message}`;
@@ -194,7 +383,7 @@ export default function EditPurchaseOrderFormMoreButton({
     } else {
       form.setValue("closedDate", undefined);
     }
-  }, [watchStatus]);
+  }, [watchStatus, form]);
 
   return (
      
@@ -366,7 +555,7 @@ export default function EditPurchaseOrderFormMoreButton({
                                       control={Itemsform.control}
                                       name="itemType"
                                       label="Item Type"
-                                      options={itemTypeOptionsList}
+                                      options={itemTypesOptionsList}
                                     />
                                     <ComboboxFieldWrapper
                                       className="col-span-1"

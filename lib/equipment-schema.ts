@@ -73,114 +73,114 @@ export type EquipmentFormValues = z.infer<typeof equipmentSchema>
 
 // Mock data for dropdowns
 export const makeOptions = [
-  { value: "ford", label: "Ford" },
-  { value: "chevrolet", label: "Chevrolet" },
-  { value: "caterpillar", label: "Caterpillar" },
-  { value: "john-deere", label: "John Deere" },
-  { value: "freightliner", label: "Freightliner" },
+  { id: "ford", name: "Ford" },
+  { id: "chevrolet", name: "Chevrolet" },
+  { id: "caterpillar", name: "Caterpillar" },
+  { id: "john-deere", name: "John Deere" },
+  { id: "freightliner", name: "Freightliner" },
 ]
 
 export const modelOptions = [
-  { value: "f-150", label: "F-150" },
-  { value: "silverado", label: "Silverado" },
-  { value: "320d", label: "320D" },
-  { value: "cascadia", label: "Cascadia" },
+  { id: "f-150", name: "F-150" },
+  { id: "silverado", name: "Silverado" },
+  { id: "320d", name: "320D" },
+  { id: "cascadia", name: "Cascadia" },
 ]
 
 export const equipmentTypeOptions = [
-  { value: "truck", label: "Truck" },
-  { value: "excavator", label: "Excavator" },
-  { value: "generator", label: "Generator" },
-  { value: "trailer", label: "Trailer" },
+  { id: "truck", name: "Truck" },
+  { id: "excavator", name: "Excavator" },
+  { id: "generator", name: "Generator" },
+  { id: "trailer", name: "Trailer" },
 ]
 
 export const countryOptions = [
-  { value: "ghana", label: "Ghana" },
-  { value: "india", label: "India" },
-  { value: "saudi", label: "Saudi Arabia" },
-  { value: "togo", label: "Togo" },
+  { id: "ghana", name: "Ghana" },
+  { id: "india", name: "India" },
+  { id: "saudi", name: "Saudi Arabia" },
+  { id: "togo", name: "Togo" },
 ]
 
 export const colorOptions = [
-  { value: "white", label: "White" },
-  { value: "black", label: "Black" },
-  { value: "red", label: "Red" },
-  { value: "blue", label: "Blue" },
-  { value: "yellow", label: "Yellow" },
+  { id: "white", name: "White" },
+  { id: "black", name: "Black" },
+  { id: "red", name: "Red" },
+  { id: "blue", name: "Blue" },
+  { id: "yellow", name: "Yellow" },
 ]
 
 export const statusOptions = [
-  { value: "Active", label: "Active" },
-  { value: "Inactive", label: "Inactive" },
-  { value: "Sold", label: "Sold" },
-  { value: "Maintenance", label: "Maintenance" },
+  { id: "Active", name: "Active" },
+  { id: "Inactive", name: "Inactive" },
+  { id: "Sold", name: "Sold" },
+  { id: "Maintenance", name: "Maintenance" },
 ]
 
 export const employeeTypeOptions = [
-  { value: "Active", label: "Driver" },
-  { value: "Inactive", label: "Manager" },
-  { value: "Sold", label: "Supervisor" },
-  { value: "Maintenance", label: "Technician" },
+  { id: "Active", name: "Driver" },
+  { id: "Inactive", name: "Manager" },
+  { id: "Sold", name: "Supervisor" },
+  { id: "Maintenance", name: "Technician" },
 ]
 
 export const meterUnitsOptions = [
-  { value: "None", label: "None" },
-  { value: "Miles", label: "Miles" },
-  { value: "Kilometers", label: "Kilometers" },
-  { value: "Hours", label: "Hours" },
+  { id: "None", name: "None" },
+  { id: "Miles", name: "Miles" },
+  { id: "Kilometers", name: "Kilometers" },
+  { id: "Hours", name: "Hours" },
 ]
 
 export const assigneeOptions = [
-  { value: "user-1", label: "John Smith", group: "Employees" },
-  { value: "user-2", label: "Jane Doe", group: "Employees" },
-  { value: "vendor-1", label: "ABC Company", group: "Vendors" },
+  { id: "user-1", name: "John Smith", group: "Employees" },
+  { id: "user-2", name: "Jane Doe", group: "Employees" },
+  { id: "vendor-1", name: "ABC Company", group: "Vendors" },
 ]
 
 export const accidentOptions = [
-  { value: "user-1", label: "Car crash" },
-  { value: "user-2", label: "Over Heating" },
-  { value: "vendor-1", label: "Stolen" },
+  { id: "user-1", name: "Car crash" },
+  { id: "user-2", name: "Over Heating" },
+  { id: "vendor-1", name: "Stolen" },
 ]
 export const expenseOptions = [
-  { value: "130878", label: "Expense" },
-  { value: "130879", label: "Insurance Payment" },
-  { value: "130870", label: "Lease Payment" },
-  { value: "130873", label: "Loan Payment" },
+  { id: "130878", name: "Expense" },
+  { id: "130879", name: "Insurance Payment" },
+  { id: "130870", name: "Lease Payment" },
+  { id: "130873", name: "Loan Payment" },
 ]
 
 export const periodOptionList = [
-  { value: "week", label: "week" },
-  { value: "month", label: "month" },
-  { value: "year", label: "year" },
+  { id: "week", name: "week" },
+  { id: "month", name: "month" },
+  { id: "year", name: "year" },
 ]
 export const categoryOptions = [
-  { value: "130878", label: "Location #1 | Fleet Equipment" },
-  { value: "130879", label: "Location #2 | Construction Equipment" },
+  { id: "130878", name: "Location #1 | Fleet Equipment" },
+  { id: "130879", name: "Location #2 | Construction Equipment" },
 ]
 
 export const vendorOptions = [
-  { value: "vendor-1", label: "ABC Equipment Co." },
-  { value: "vendor-2", label: "XYZ Motors" },
+  { id: "vendor-1", name: "ABC Equipment Co." },
+  { id: "vendor-2", name: "XYZ Motors" },
 ]
 
 export const ownershipOptions = [
-  { value: "Owned", label: "Owned" },
-  { value: "Leased", label: "Leased" },
-  { value: "Rented", label: "Rented" },
-  { value: "Customer", label: "Customer" },
+  { id: "Owned", name: "Owned" },
+  { id: "Leased", name: "Leased" },
+  { id: "Rented", name: "Rented" },
+  { id: "Customer", name: "Customer" },
 ]
 
 export const fuelUnitsOptions = [
-  { value: "Gallons", label: "Gallons" },
-  { value: "Liters", label: "Liters" },
-  { value: "None", label: "None" },
+  { id: "Gallons", name: "Gallons" },
+  { id: "Liters", name: "Liters" },
+  { id: "None", name: "None" },
 ]
 
 export const fuelTypeOptions = [
-  { value: "diesel", label: "Diesel" },
-  { value: "gasoline", label: "Gasoline" },
-  { value: "electric", label: "Electric" },
-  { value: "hybrid", label: "Hybrid" },
+  { id: "diesel", name: "Diesel" },
+  { id: "gasoline", name: "Gasoline" },
+  { id: "electric", name: "Electric" },
+  { id: "hybrid", name: "Hybrid" },
 ]
 
 

@@ -16,7 +16,6 @@ import {
   substituteOptions,
 } from "@/lib/equipment-schema";
 import Fieldset from "@/components/customUI/fieldset";
- 
 import { toast } from "sonner";
 import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
 import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
@@ -28,7 +27,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import z from "zod";
 import {
   Dialog,
   DialogContent,
@@ -40,46 +38,47 @@ import SelectWrapper from "../wrappers/SelectWrapper";
 import {
   discount_typesOptions,
   invoiceOptionsList,
-  itemTypeOptionsList,
-  maintenanceItems,
 } from "@/lib/Invoice/invoices-page-data";
 import FileUploadWrapper from "../wrappers/FileUploadWrapper";
 import SingleCheckboxWrapper from "../wrappers/SingleCheckboxWrapper";
 import {
-  PurchaseOrderInterface,
-  purchaseOrderItems,
-  PurchaseOrderItemSchema,
   PurchaseOrderSchema,
+  PurchaseOrderItemSchema,
+  PurchaseOrderType,
+  PurchaseOrderItemType,
   PurchaseOrderStatusType,
 } from "@/lib/PurchaseOrder/purchaseOrder-data";
 import { useGetLocations, useGetVendors } from "@/services/setups/vendor";
 import { useGetPurchaseOrderShipVias } from "@/services/setups/purchaseOrder";
+import { useGetWarehouses } from "@/services/setups/inventory";
+import { useGetItemTypes } from "@/services/setups/invoice";
 
 interface triggerVariant {
   variant?: "icon" | "default";
 }
 
-type ItemFormValues = z.infer<typeof PurchaseOrderItemSchema>;
-
 export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
-    const { data: shipViaOptions } = useGetPurchaseOrderShipVias();
+  const { data: shipViaOptions } = useGetPurchaseOrderShipVias();
+  const { data: itemTypesOptionsList } = useGetItemTypes<Array<{ id: string; name: string }>>();
   
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const { data: vendorOptions } = useGetVendors();
   
-
-  const [items, setItems] = useState<ItemFormValues[]>([]);
-  const [editItems, setEditItems] = useState<ItemFormValues | null>(null);
+  const [items, setItems] = useState<PurchaseOrderItemType[]>([]);
+  const [editItems, setEditItems] = useState<PurchaseOrderItemType | null>(null);
   const [openItems, setOpenItems] = useState(false);
+  const { data: warehouseOptionsList } = useGetWarehouses<Array<{ id: string; name: string }>>();
 
   const [status, setStatus] = useState<PurchaseOrderStatusType>("Requisition");
-    const { 
+  
+  const { 
     data: locationOptionsList, 
-    isLoading:locationOptionsListLoading, 
+    isLoading: locationOptionsListLoading, 
     error: locationOptionsListError
   } = useGetLocations<Array<{ id: string, name: string }>>();
+  
   const PurchaseOrderStatuses: PurchaseOrderStatusType[] = [
     "Requisition",
     "Ordered",
@@ -87,24 +86,46 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
     "Closed",
   ];
   
-  const handleDeleteItem = (itemName: string) => {
-    const filtered = items.filter((item) => item.partNumber !== itemName);
+  const handleDeleteItem = (index: number) => {
+    const filtered = items.filter((_, idx) => idx !== index);
     setItems(filtered);
   };
 
-  const handleEditItem = (item: ItemFormValues, index: number) => {
+  const handleEditItem = (item: PurchaseOrderItemType, index: number) => {
     setEditIndex(index);
     setEditItems(item);
-    Itemsform.reset(item); // Pre-fill
-    setOpenItems(true); // Open the dialog after setting the form
+    Itemsform.reset(item);
+    setOpenItems(true);
   };
 
-  const Itemsform = useForm<ItemFormValues>({
+  const Itemsform = useForm<PurchaseOrderItemType>({
     resolver: zodResolver(PurchaseOrderItemSchema),
-    defaultValues: {},
+    defaultValues: {
+      item_type_id: "",
+      item: "",
+      warehouse_id: "",
+      quantity: 1,
+      cost: 0,
+      amount: 0,
+      extended_cost: 0,
+      notes: "",
+      tax_one: 0,
+      tax_two: 0,
+      discount: 0,
+    },
   });
 
-  function onSubmitItems(data: ItemFormValues) {
+  // Calculate amount and extended cost when quantity or cost changes
+  const watchQuantity = Itemsform.watch("quantity");
+  const watchCost = Itemsform.watch("cost");
+
+  useEffect(() => {
+    const amount = watchQuantity * watchCost;
+    Itemsform.setValue("amount", amount);
+    Itemsform.setValue("extended_cost", amount);
+  }, [watchQuantity, watchCost]);
+
+  function onSubmitItems(data: PurchaseOrderItemType) {
     if (editIndex !== null) {
       const updated = [...items];
       updated[editIndex] = data;
@@ -114,15 +135,17 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
     }
 
     Itemsform.reset({
-      itemType: " ",
-      partNumber: " ",
-      warehouse: " ",
-      warranty: " ",
-      orderQuantity: 0,
-      receivedQuantity: 0,
-      unit_cost: 0,
-      extendedCost: 0,
-      notes: " ",
+      item_type_id: "",
+      item: "",
+      warehouse_id: "",
+      quantity: 1,
+      cost: 0,
+      amount: 0,
+      extended_cost: 0,
+      notes: "",
+      tax_one: 0,
+      tax_two: 0,
+      discount: 0,
     });
 
     setEditItems(null);
@@ -130,27 +153,74 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
     setOpenItems(false);
   }
 
-  const form = useForm<z.infer<typeof PurchaseOrderSchema>>({
+  const form = useForm<PurchaseOrderType>({
     resolver: zodResolver(PurchaseOrderSchema),
-    defaultValues: { status: "Requisition" },
+    defaultValues: {
+      po_number: "",
+      issued_date: new Date(),
+      due_date: new Date(),
+      buyer_id: "",
+      status_id: "",
+      closed_date: null,
+      vendor: "",
+      shipping: "",
+      term_id: "",
+      ship_via_id: "",
+      invoice_number: "",
+      order_number: "",
+      wo_number: "",
+      location_id: "",
+      subtotal: 0,
+      is_discount: 0,
+      discount_type: "Fixed",
+      discount: 0,
+      discount_amount: 0,
+      tax_one: 0,
+      tax_one_amount: 0,
+      tax_two: 0,
+      tax_two_amount: 0,
+      credit: 0,
+      freight: 0,
+      total_cost: 0,
+      notes: "",
+      others: [],
+      items: [],
+      attachments: [],
+    },
   });
 
-  function onSubmit(data: PurchaseOrderInterface) {
-    console.log("Form submitted with VALUES:", data);
-    toast("Project created successfully!", {
-      duration: 10000,
+  function onSubmit(data: PurchaseOrderType) {
+    // Add items to the submission data
+    const submissionData = {
+      ...data,
+      items: items,
+    };
+
+    console.log("Form submitted with VALUES:", submissionData);
+    toast.success("Purchase Order created successfully!", {
+      duration: 3000,
     });
 
     setOpen(false);
     form.reset();
+    setItems([]);
   }
 
   function onError(errors: any) {
-    // Get all error messages
     const errorMessages = Object.entries(errors).map(
       ([field, error]: [string, any]) => {
         const fieldLabels: Record<string, string> = {
-          unit: "Project Name",
+          po_number: "Purchase Order Number",
+          issued_date: "Issue Date",
+          due_date: "Due Date",
+          buyer_id: "Buyer",
+          status_id: "Status",
+          vendor: "Vendor",
+          shipping: "Shipping Address",
+          term_id: "Payment Terms",
+          ship_via_id: "Ship Via",
+          location_id: "Location",
+          items: "Items",
         };
 
         return `${fieldLabels[field] || field}: ${error.message}`;
@@ -171,16 +241,30 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
     });
   }
 
-  const watchdiscount_type = form.watch("discount_type");
-  const watchStatus = form.watch("status");
+  const watchDiscountType = form.watch("discount_type");
+  const watchStatusId = form.watch("status_id");
 
+  // Calculate totals when items change
   useEffect(() => {
-    if (watchStatus === "Closed") {
-      form.setValue("closedDate", new Date());
+    const subtotal = items.reduce((sum, item) => sum + item.amount, 0);
+    form.setValue("subtotal", subtotal);
+    
+    // Calculate total cost (you can add tax and discount logic here)
+    const total = subtotal + form.getValues("freight") - form.getValues("credit");
+    form.setValue("total_cost", total);
+  }, [items]);
+
+  // Handle closed date based on status
+  useEffect(() => {
+    // You'll need to check if status_id corresponds to "Closed" status
+    // This is a placeholder - adjust based on your actual status IDs
+    const closedStatusId = "your-closed-status-id"; // Replace with actual ID
+    if (watchStatusId === closedStatusId) {
+      form.setValue("closed_date", new Date());
     } else {
-      form.setValue("closedDate", undefined);
+      form.setValue("closed_date", null);
     }
-  }, [watchStatus]);
+  }, [watchStatusId]);
 
   return (
     <Form {...form}>
@@ -192,12 +276,12 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
           <div className="flex flex-row gap-x-3">
             <InputWrapper
               control={form.control}
-              name={"purchaseOrderNumber"}
-              label={"Purchase Order #"}
-              value={""}
+              name="po_number"
+              label="Purchase Order #"
+              value=""
               type="text"
             />
-            {/* put status  that is requisition,ordered,received partial, closed */}
+            {/* Status buttons - you'll need to map these to status_ids */}
             <div className="flex gap-2">
               {PurchaseOrderStatuses.map((stat) => (
                 <button
@@ -215,7 +299,15 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
                       : "bg-white text-gray-700 border-gray-300"
                   }`}
                   onClick={() => {
-                    form.setValue("status", stat);
+                    // You need to map status to status_id here
+                    // This is a placeholder - replace with actual logic
+                    const statusIdMap: Record<PurchaseOrderStatusType, string> = {
+                      Requisition: "requisition-id",
+                      Ordered: "ordered-id",
+                      Partial: "partial-id",
+                      Closed: "closed-id",
+                    };
+                    form.setValue("status_id", statusIdMap[stat]);
                     setStatus(stat);
                   }}
                 >
@@ -227,47 +319,47 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
           <div className="flex flex-row gap-x-2">
             <DatePickerWrapper
               control={form.control}
-              name="date"
+              name="issued_date"
               label="Issue Date"
             />
             <DatePickerWrapper
               control={form.control}
-              name="dueDate"
+              name="due_date"
               label="Due By"
             />
             <ComboboxFieldWrapper
               control={form.control}
-              name="customer"
+              name="buyer_id"
               label="Buyer"
-              options={assigneeOptions}
+              options={assigneeOptions??[]}
             />
             <DatePickerWrapper
               control={form.control}
-              name="closedDate"
+              name="closed_date"
               label="Close"
-              disabled={watchStatus !== "Closed"}
+              disabled={status !== "Closed"}
             />
           </div>
           <div className="grid grid-cols-8 gap-4">
-            <div className="col-span-6 grid grid-cols-2 gap-2">
+            <div className="col-span-5 grid grid-cols-2 gap-2">
               <div className="col-span-1 h-fit">
                 <Fieldset
                   legend="Vendor"
                   content={
                     <>
-                      <ComboboxFieldWrapper
+                      <InputWrapper
                         control={form.control}
                         name="vendor"
-                        options={vendorOptions}
-                        label=""
+                        label="Vendor Name"
+                        type="text"
+                        value=""
                       />
-
                       <TextareaWrapper
                         control={form.control}
-                        name="billing"
-                        label=""
-                        placeholder=" "
-                        value={""}
+                        name="shipping"
+                        label="Shipping Address"
+                        placeholder="Enter shipping address"
+                        value=""
                       />
                     </>
                   }
@@ -280,16 +372,15 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
                     <>
                       <ComboboxFieldWrapper
                         control={form.control}
-                        name="shipVia"
-                        options={shipViaOptions}
-                        label=""
+                        name="ship_via_id"
+                        options={shipViaOptions??[]}
+                        label="Ship Via"
                       />
-                      <TextareaWrapper
+                      <ComboboxFieldWrapper
                         control={form.control}
-                        name="shipping"
-                        label=""
-                        placeholder=" "
-                        value={""}
+                        name="location_id"
+                        label="Location"
+                        options={locationOptionsList??[]}
                       />
                     </>
                   }
@@ -303,7 +394,7 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
                     <TabsTrigger value="Notes">Notes</TabsTrigger>
                   </TabsList>
                   <TabsContent value="Items">
-                    <div className="flex justify-end">
+                    <div className="flex justify-end mb-2">
                       <Dialog open={openItems} onOpenChange={setOpenItems}>
                         <DialogTrigger
                           asChild
@@ -311,27 +402,29 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
                             setEditIndex(null);
                             setEditItems(null);
                             Itemsform.reset({
-                              itemType: " ",
-                              partNumber: " ",
-                              warehouse: " ",
-                              warranty: " ",
-                              orderQuantity: 0,
-                              receivedQuantity: 0,
-                              unit_cost: 0,
-                              extendedCost: 0,
-                              notes: " ",
-                            }); // ensure blank form for create
+                              item_type_id: "",
+                              item: "",
+                              warehouse_id: "",
+                              quantity: 1,
+                              cost: 0,
+                              amount: 0,
+                              extended_cost: 0,
+                              notes: "",
+                              tax_one: 0,
+                              tax_two: 0,
+                              discount: 0,
+                            });
                             setOpenItems(true);
                           }}
                         >
                           <Button variant="outline">Add Item</Button>
                         </DialogTrigger>
-                        <DialogContent>
+                        <DialogContent className="max-w-2xl">
                           <DialogHeader>
                             <DialogTitle>
                               {editIndex !== null
-                                ? "Edit PurchaseOrder Item"
-                                : "Add PurchaseOrder Item"}
+                                ? "Edit Purchase Order Item"
+                                : "Add Purchase Order Item"}
                             </DialogTitle>
                           </DialogHeader>
                           <form
@@ -341,55 +434,52 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
                             <div className="grid grid-cols-2 gap-2">
                               <ComboboxFieldWrapper
                                 control={Itemsform.control}
-                                name="itemType"
+                                name="item_type_id"
                                 label="Item Type"
-                                options={itemTypeOptionsList}
+                                options={itemTypesOptionsList??[]}
+                              />
+                              <InputWrapper
+                                control={Itemsform.control}
+                                name="item"
+                                label="Part # / Item"
+                                type="text"
+                                value=""
                               />
                               <ComboboxFieldWrapper
-                                className="col-span-1"
                                 control={Itemsform.control}
-                                name="partNumber"
-                                label="Part #"
-                                options={substituteOptions}
-                              />
-                              <InputWrapper
-                                control={Itemsform.control}
-                                name="warehouse"
+                                name="warehouse_id"
                                 label="Warehouse"
-                                type="text"
-                                value=""
-                                disabled
-                                required={false}
+                                options={warehouseOptionsList??[]}
                               />
                               <InputWrapper
                                 control={Itemsform.control}
-                                name="warranty"
-                                label="Warranty"
-                                type="text"
-                                value=""
-                                disabled
-                                required={false}
-                              />
-                              <InputWrapper
-                                control={Itemsform.control}
-                                name="orderQuantity"
+                                name="quantity"
                                 label="Order Quantity"
                                 type="number"
-                                value="0"
+                                value="1"
                               />
                               <InputWrapper
                                 control={Itemsform.control}
-                                name="unit_cost"
+                                name="cost"
                                 label="Unit Cost"
                                 type="number"
                                 value="0"
                               />
                               <InputWrapper
                                 control={Itemsform.control}
-                                name="extendedCost"
+                                name="amount"
+                                label="Amount"
+                                type="number"
+                                value="0"
+                                disabled
+                              />
+                              <InputWrapper
+                                control={Itemsform.control}
+                                name="extended_cost"
                                 label="Extended Cost"
                                 type="number"
                                 value="0"
+                                disabled
                               />
                             </div>
                             <TextareaWrapper
@@ -398,28 +488,25 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
                               label="Notes"
                               value=""
                             />
-                            <div className="grid grid-cols-2 gap-2">
+                            <div className="grid grid-cols-3 gap-2">
                               <SingleCheckboxWrapper
-                                control={form.control}
-                                name="primaryTaxRate"
-                                label="Apply Primary Tax Rate"
+                                control={Itemsform.control}
+                                name="tax_one"
+                                label="Apply Tax 1"
                               />
                               <SingleCheckboxWrapper
-                                control={form.control}
-                                name="secondaryTaxRate"
-                                label="Apply Secondary Tax Rate"
+                                control={Itemsform.control}
+                                name="tax_two"
+                                label="Apply Tax 2"
                               />
                               <SingleCheckboxWrapper
-                                control={form.control}
+                                control={Itemsform.control}
                                 name="discount"
                                 label="Apply Discount"
                               />
                             </div>
-                            <Button
-                              type="button"
-                              onClick={Itemsform.handleSubmit(onSubmitItems)}
-                            >
-                              Save Item
+                            <Button type="submit">
+                              {editIndex !== null ? "Update Item" : "Save Item"}
                             </Button>
                           </form>
                         </DialogContent>
@@ -429,9 +516,8 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>Ordered</TableHead>
-                          <TableHead>Received</TableHead>
-                          <TableHead>Description</TableHead>
+                          <TableHead>Item</TableHead>
+                          <TableHead>Quantity</TableHead>
                           <TableHead>Unit Cost</TableHead>
                           <TableHead>Amount</TableHead>
                           <TableHead>Notes</TableHead>
@@ -441,11 +527,10 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
                       <TableBody>
                         {items.map((item, idx) => (
                           <TableRow key={idx}>
-                            <TableCell>{item.orderQuantity}</TableCell>
-                            <TableCell>{item.receivedQuantity}</TableCell>
-                            <TableCell>{item.description}</TableCell>
-                            <TableCell>{item.unit_cost}</TableCell>
-                            <TableCell>{item.extendedCost}</TableCell>
+                            <TableCell>{item.item}</TableCell>
+                            <TableCell>{item.quantity}</TableCell>
+                            <TableCell>${item.cost.toFixed(2)}</TableCell>
+                            <TableCell>${item.amount.toFixed(2)}</TableCell>
                             <TableCell>{item.notes}</TableCell>
                             <TableCell>
                               <div className="flex gap-2">
@@ -453,10 +538,7 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
                                   type="button"
                                   size="icon"
                                   variant="ghost"
-                                  onClick={() => {
-                                    setEditItems(item);
-                                    handleEditItem(item, idx); // Pass index
-                                  }}
+                                  onClick={() => handleEditItem(item, idx)}
                                 >
                                   <Pen className="w-4 h-4 text-blue-500" />
                                 </Button>
@@ -464,9 +546,7 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
                                   type="button"
                                   size="icon"
                                   variant="ghost"
-                                  onClick={() =>
-                                    handleDeleteItem(item.partNumber)
-                                  }
+                                  onClick={() => handleDeleteItem(idx)}
                                 >
                                   <Trash2 className="w-4 h-4 text-red-500" />
                                 </Button>
@@ -481,71 +561,53 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
                     <FileUploadWrapper
                       multiple={true}
                       control={form.control}
-                      name={"Attachments"}
-                      label={"Attachments"}
+                      name="attachments"
+                      label="Attachments"
                     />
                   </TabsContent>
                   <TabsContent value="Notes">
                     <TextareaWrapper
-                      label=" "
-                      name="Notes"
+                      label="Notes"
+                      name="notes"
                       control={form.control}
-                      value={""}
+                      value=""
                     />
                   </TabsContent>
                 </Tabs>
               </div>
             </div>
-            <div className="col-span-2 ">
-              {" "}
+            <div className="col-span-3">
               <Fieldset
                 legend="Miscellaneous"
                 content={
                   <>
                     <ComboboxFieldWrapper
                       control={form.control}
-                      name="terms"
+                      name="term_id"
                       label="Terms"
                       options={invoiceOptionsList}
                     />
-                    <ComboboxFieldWrapper
-                      control={form.control}
-                      name="shipVia"
-                      label="Ship Via"
-                      options={shipViaOptions}
-                    />
                     <InputWrapper
                       control={form.control}
-                      name={"invoice_number"}
-                      label={"Invoice#"}
-                      value={""}
+                      name="invoice_number"
+                      label="Invoice #"
+                      value=""
                       type="text"
                     />
                     <InputWrapper
                       control={form.control}
-                      name={"orderNumber"}
-                      label={"Order #"}
-                      value={""}
+                      name="order_number"
+                      label="Order #"
+                      value=""
                       type="text"
                     />
                     <InputWrapper
                       control={form.control}
-                      name={"woNumber"}
-                      label={"WO #"}
-                      value={""}
+                      name="wo_number"
+                      label="WO #"
+                      value=""
                       type="text"
                     />
-                    <ComboboxFieldWrapper
-                      control={form.control}
-                      name="location_id"
-                      label="Location Filter"
-                      options={locationOptionsList}
-                    />
-                    {/* <CustomFieldsWrapper
-                      control={form.control}
-                      name={"custom"}
-                      label={"Custom"}
-                    /> */}
                   </>
                 }
               />
@@ -555,72 +617,97 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
                   <>
                     <InputWrapper
                       control={form.control}
-                      name={"subTotal"}
-                      label={"Sub total"}
-                      value={""}
-                      type="text"
+                      name="subtotal"
+                      label="Subtotal"
+                      value=""
+                      type="number"
+                      disabled
                     />
 
-                    <ComboboxFieldWrapper
+                    <SingleCheckboxWrapper
+                      control={form.control}
+                      name="is_discount"
+                      label="Apply Discount"
+                    />
+
+                    <SelectWrapper
                       control={form.control}
                       name="discount_type"
                       label="Discount Type"
-                      options={discount_typesOptions}
+                      options={[
+                        { value: "Fixed", label: "Fixed Amount" },
+                        { value: "Percent", label: "Percentage" },
+                      ]}
                     />
 
-                    {watchdiscount_type === "percent" && (
+                    {watchDiscountType === "Percent" && (
                       <InputWrapper
                         control={form.control}
-                        name={"discount_percent"}
-                        label={"Discount"}
-                        value={""}
-                        type="text"
+                        name="discount"
+                        label="Discount %"
+                        value=""
+                        type="number"
                       />
                     )}
-                    {watchdiscount_type === "amount" && (
+                    {watchDiscountType === "Fixed" && (
                       <InputWrapper
                         control={form.control}
-                        name={"discount_amount"}
-                        label={"Discount"}
-                        value={""}
-                        type="text"
+                        name="discount_amount"
+                        label="Discount Amount"
+                        value=""
+                        type="number"
                       />
                     )}
 
                     <InputWrapper
                       control={form.control}
-                      name="tax1"
-                      label="Tax 1"
-                      type="text"
-                      value={""}
+                      name="tax_one"
+                      label="Tax 1 %"
+                      type="number"
+                      value=""
                     />
                     <InputWrapper
                       control={form.control}
-                      name="tax2"
-                      label="Tax 2"
-                      type="text"
-                      value={""}
+                      name="tax_one_amount"
+                      label="Tax 1 Amount"
+                      type="number"
+                      value=""
                     />
                     <InputWrapper
                       control={form.control}
-                      name="Credit"
-                      label="credit"
-                      type="text"
-                      value={""}
+                      name="tax_two"
+                      label="Tax 2 %"
+                      type="number"
+                      value=""
+                    />
+                    <InputWrapper
+                      control={form.control}
+                      name="tax_two_amount"
+                      label="Tax 2 Amount"
+                      type="number"
+                      value=""
+                    />
+                    <InputWrapper
+                      control={form.control}
+                      name="credit"
+                      label="Credit"
+                      type="number"
+                      value=""
                     />
                     <InputWrapper
                       control={form.control}
                       name="freight"
                       label="Freight"
-                      type="text"
-                      value={""}
+                      type="number"
+                      value=""
                     />
                     <InputWrapper
                       control={form.control}
-                      name="Total Cost"
-                      label="totalCost"
-                      type="text"
-                      value={""}
+                      name="total_cost"
+                      label="Total Cost"
+                      type="number"
+                      value=""
+                      disabled
                     />
                   </>
                 }
@@ -639,7 +726,7 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
             ) : (
               <>
                 <Save className="mr-2 h-4 w-4" />
-                Create Purcchase Order
+                Create Purchase Order
               </>
             )}
           </Button>

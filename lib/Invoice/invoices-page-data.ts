@@ -94,8 +94,8 @@ export const payments = [
 ];
 
 export const discount_typesOptions = [
-  { value: "percent", label: "Percentage" },
-  { value: "amount", label: "Amount" },
+  { id: "percent", name: "Percentage" },
+  { id: "amount", name: "Amount" },
 ];
 
 export const paymentReceived: PaymentReceivedInterface[] = [
@@ -268,31 +268,21 @@ export interface PaymentReceivedInterface {
 }
 
 export const invoiceOptionsList = [
-  { label: "INV-1023", value: "INV-1023" },
-  { label: "INV-1024", value: "INV-1024" },
-  { label: "INV-1025", value: "INV-1025" },
-  { label: "INV-1026", value: "INV-1026" },
-  { label: "INV-1027", value: "INV-1027" },
-  { label: "INV-1028", value: "INV-1028" },
-  { label: "INV-1029", value: "INV-1029" },
-  { label: "INV-1030", value: "INV-1030" },
-  { label: "INV-1031", value: "INV-1031" },
-  { label: "INV-1032", value: "INV-1032" },
+  { name: "INV-1023", id: "INV-1023" },
+  { name: "INV-1024", id: "INV-1024" },
+  { name: "INV-1025", id: "INV-1025" },
+  { name: "INV-1026", id: "INV-1026" },
+  { name: "INV-1027", id: "INV-1027" },
+  { name: "INV-1028", id: "INV-1028" },
+  { name: "INV-1029", id: "INV-1029" },
+  { name: "INV-1030", id: "INV-1030" },
+  { name: "INV-1031", id: "INV-1031" },
+  { name: "INV-1032", id: "INV-1032" },
 ];
 
 export const invoicePaymentMethodOptionsList = [
-  { label: "Cheque", value: "Cheque" },
-  { label: "Credit Card", value: "Credit Card" },
-  { label: "Electronic Transfer", value: "Electronic Transfer" },
-  { label: "Other", value: "Other" },
-];
-
-export const itemTypeOptionsList = [
-  { label: "Work Order", value: "Work Order" },
-  { label: "Inventory (Parts)", value: "Inventory (Parts)" },
-  { label: "Fuel", value: "Fuel" },
-  { label: "Transport", value: "Transport" },
-  { label: "Rental", value: "Rental" },
-  { label: "Miscellaneous", value: "Miscellaneous" },
-  { label: "Credit", value: "Credit" },
+  { name: "Cheque", id: "Cheque" },
+  { name: "Credit Card", id: "Credit Card" },
+  { name: "Electronic Transfer", id: "Electronic Transfer" },
+  { name: "Other", id: "Other" },
 ];

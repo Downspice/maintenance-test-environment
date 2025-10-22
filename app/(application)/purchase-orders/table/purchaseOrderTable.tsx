@@ -460,7 +460,7 @@ export function PurchaseOrderDataLoader({ PurchaseOrderData, isLoading }) {
                   <FilePenIcon />
                 </Button>
               }
-              data={row.original}
+              purchaseOrderId={row.original.id}
             />
 
             <DropdownMenu>
