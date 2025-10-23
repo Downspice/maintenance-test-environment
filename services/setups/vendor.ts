@@ -19,7 +19,8 @@ type TParams = Record<string, any>; // Replace with specific payload types
  * Builds the full API URL for an endpoint.
  * @param path The relative path (e.g., /api/get-vendors)
  */
-const buildUrl = (path: string) => `${BASEURL}${path}`;
+// // const buildUrl = (path: string) => `${BASEURL}${path}`;
+const buildUrl = (path: string) => path;
 
 /**
  * Base type for all mutation hooks.

@@ -13,7 +13,8 @@ type TEntity = unknown;
 type TParams = Record<string, any>;
 
 // --- Shared Helper Functions ---
-const buildUrl = (path: string) => `${BASEURL}${path}`;
+// const buildUrl = (path: string) => `${BASEURL}${path}`;
+const buildUrl = (path: string) => path;
 
 const useBaseMutation = <TResponse = TEntity, TPayload = TParams, TContext = unknown>(
   mutationKey: string[],
