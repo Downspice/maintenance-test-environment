@@ -17,18 +17,18 @@ import UpdateMeters from "./components/update-meters-form";
 import { useGetLocations } from "@/services/setups/vendor";
 
 export const equipmentActiveDropdown = [
-  { value: "my", label: "My" },
-  { value: "Active", label: "Active" },
-  { value: "due", label: "Due" },
-  { value: "work_order_assigned", label: "Work Order Assigned" },
-  { value: "parent_equipment", label: "Parent" },
-  { value: "In Shop", label: "In Shop" },
-  { value: "Inactive", label: "Inactive" },
-  { value: "Out of Service", label: "Out of Service" },
-  { value: "Sold", label: "Sold" },
-  { value: "Transferred", label: "Transferred" },
-  { value: "deleted", label: "Deleted" },
-  { value: "all", label: "All" },
+  { id: "my", name: "My" },
+  { id: "Active", name: "Active" },
+  { id: "due", name: "Due" },
+  { id: "work_order_assigned", name: "Work Order Assigned" },
+  { id: "parent_equipment", name: "Parent" },
+  { id: "In Shop", name: "In Shop" },
+  { id: "Inactive", name: "Inactive" },
+  { id: "Out of Service", name: "Out of Service" },
+  { id: "Sold", name: "Sold" },
+  { id: "Transferred", name: "Transferred" },
+  { id: "deleted", name: "Deleted" },
+  { id: "all", name: "All" },
 ];
 
 export default function EquipmentPage() {
@@ -73,7 +73,7 @@ export default function EquipmentPage() {
 
   const handleSelectChange = (
     key: "equipment" | "location" | "custom" | "search",
-    value: string
+    id: string
   ) => {
     if (value === "new") {
       console.log("Launching new location modal...");

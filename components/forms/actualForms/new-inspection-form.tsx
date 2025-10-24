@@ -22,7 +22,7 @@ export const workOrderSchema = z.object({
 });
 
 // Equipment options
-const equipmentOptions = [{ value: "1311827", label: "AC-001-07 Class 8" }];
+const equipmentOptions = [{ id: "1311827", name: "AC-001-07 Class 8" }];
  
 export default function NewInspection() {
 

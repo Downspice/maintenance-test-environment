@@ -17,66 +17,66 @@ import { ComboboxFieldWrapper, ComboboxOption, MultiComboboxWrapper } from "../w
  
 // Define your options
 const frameworks: ComboboxOption[] = [
-  { value: "next.js", label: "Next.js" },
-  { value: "sveltekit", label: "SvelteKit" },
-  { value: "nuxt.js", label: "Nuxt.js" },
-  { value: "remix", label: "Remix" },
-  { value: "astro", label: "Astro" },
-  { value: "react", label: "React" },
-  { value: "vue", label: "Vue.js" },
-  { value: "angular", label: "Angular" },
-  { value: "svelte", label: "Svelte" },
-  { value: "gatsby", label: "Gatsby" },
+  { id: "next.js", name: "Next.js" },
+  { id: "sveltekit", name: "SvelteKit" },
+  { id: "nuxt.js", name: "Nuxt.js" },
+  { id: "remix", name: "Remix" },
+  { id: "astro", name: "Astro" },
+  { id: "react", name: "React" },
+  { id: "vue", name: "Vue.js" },
+  { id: "angular", name: "Angular" },
+  { id: "svelte", name: "Svelte" },
+  { id: "gatsby", name: "Gatsby" },
 ]
 
 const languages: ComboboxOption[] = [
-  { value: "typescript", label: "TypeScript" },
-  { value: "javascript", label: "JavaScript" },
-  { value: "python", label: "Python" },
-  { value: "java", label: "Java" },
-  { value: "csharp", label: "C#" },
-  { value: "go", label: "Go" },
-  { value: "rust", label: "Rust" },
-  { value: "php", label: "PHP" },
+  { id: "typescript", name: "TypeScript" },
+  { id: "javascript", name: "JavaScript" },
+  { id: "python", name: "Python" },
+  { id: "java", name: "Java" },
+  { id: "csharp", name: "C#" },
+  { id: "go", name: "Go" },
+  { id: "rust", name: "Rust" },
+  { id: "php", name: "PHP" },
 ]
 
 const countries: ComboboxOption[] = [
-  { value: "us", label: "United States" },
-  { value: "uk", label: "United Kingdom" },
-  { value: "ca", label: "Canada" },
-  { value: "au", label: "Australia" },
-  { value: "de", label: "Germany" },
-  { value: "fr", label: "France" },
-  { value: "jp", label: "Japan" },
-  { value: "br", label: "Brazil" },
+  { id: "us", name: "United States" },
+  { id: "uk", name: "United Kingdom" },
+  { id: "ca", name: "Canada" },
+  { id: "au", name: "Australia" },
+  { id: "de", name: "Germany" },
+  { id: "fr", name: "France" },
+  { id: "jp", name: "Japan" },
+  { id: "br", name: "Brazil" },
 ]
 
 const skills: ComboboxOption[] = [
-  { value: "react", label: "React" },
-  { value: "vue", label: "Vue.js" },
-  { value: "angular", label: "Angular" },
-  { value: "svelte", label: "Svelte" },
-  { value: "typescript", label: "TypeScript" },
-  { value: "javascript", label: "JavaScript" },
-  { value: "python", label: "Python" },
-  { value: "java", label: "Java" },
-  { value: "csharp", label: "C#" },
-  { value: "go", label: "Go" },
-  { value: "rust", label: "Rust" },
-  { value: "php", label: "PHP" },
+  { id: "react", name: "React" },
+  { id: "vue", name: "Vue.js" },
+  { id: "angular", name: "Angular" },
+  { id: "svelte", name: "Svelte" },
+  { id: "typescript", name: "TypeScript" },
+  { id: "javascript", name: "JavaScript" },
+  { id: "python", name: "Python" },
+  { id: "java", name: "Java" },
+  { id: "csharp", name: "C#" },
+  { id: "go", name: "Go" },
+  { id: "rust", name: "Rust" },
+  { id: "php", name: "PHP" },
 ]
 
 const interests: ComboboxOption[] = [
-  { value: "web-dev", label: "Web Development" },
-  { value: "mobile-dev", label: "Mobile Development" },
-  { value: "ai-ml", label: "AI/Machine Learning" },
-  { value: "data-science", label: "Data Science" },
-  { value: "devops", label: "DevOps" },
-  { value: "cybersecurity", label: "Cybersecurity" },
-  { value: "blockchain", label: "Blockchain" },
-  { value: "game-dev", label: "Game Development" },
-  { value: "ui-ux", label: "UI/UX Design" },
-  { value: "cloud", label: "Cloud Computing" },
+  { id: "web-dev", name: "Web Development" },
+  { id: "mobile-dev", name: "Mobile Development" },
+  { id: "ai-ml", name: "AI/Machine Learning" },
+  { id: "data-science", name: "Data Science" },
+  { id: "devops", name: "DevOps" },
+  { id: "cybersecurity", name: "Cybersecurity" },
+  { id: "blockchain", name: "Blockchain" },
+  { id: "game-dev", name: "Game Development" },
+  { id: "ui-ux", name: "UI/UX Design" },
+  { id: "cloud", name: "Cloud Computing" },
 ]
 
 const FormSchema = z.object({
@@ -126,7 +126,7 @@ export default function NewEquipmentSheet() {
     console.log("Form submitted with VALUES:", data)
 
     // Helper function to get labels for display
-    const getLabel = (options: ComboboxOption[], value: string) =>
+    const getLabel = (options: ComboboxOption[], id: string) =>
       options.find((option) => option.value === value)?.label || value
 
     const getLabels = (options: ComboboxOption[], values: string[]) =>
@@ -144,7 +144,7 @@ export default function NewEquipmentSheet() {
             <div className="flex justify-between">
               <span className="font-medium">Framework:</span>
               <div className="text-right">
-                <p className="text-xs text-muted-foreground">Value: {data.framework}</p>
+                <p className="text-xs text-muted-foreground">id: {data.framework}</p>
                 <p>{getLabel(frameworks, data.framework)}</p>
               </div>
             </div>
@@ -152,7 +152,7 @@ export default function NewEquipmentSheet() {
             <div className="flex justify-between">
               <span className="font-medium">Language:</span>
               <div className="text-right">
-                <p className="text-xs text-muted-foreground">Value: {data.language}</p>
+                <p className="text-xs text-muted-foreground">id: {data.language}</p>
                 <p>{getLabel(languages, data.language)}</p>
               </div>
             </div>
@@ -160,7 +160,7 @@ export default function NewEquipmentSheet() {
             <div className="flex justify-between">
               <span className="font-medium">Country:</span>
               <div className="text-right">
-                <p className="text-xs text-muted-foreground">Value: {data.country}</p>
+                <p className="text-xs text-muted-foreground">id: {data.country}</p>
                 <p>{getLabel(countries, data.country)}</p>
               </div>
             </div>

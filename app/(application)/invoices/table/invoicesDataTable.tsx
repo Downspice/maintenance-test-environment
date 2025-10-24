@@ -198,7 +198,7 @@ export function InvoicesTableLoader({ InvoiceData, isLoading }) {
 
   // Server-side search handler
   const handleServerSearch = React.useCallback(
-    (searchValue: string) => {
+    (searchid: string) => {
       console.log(`🔍 Server Search: "${searchValue}"`);
 
       // setIsLoading(true);
@@ -374,7 +374,7 @@ export function InvoicesTableLoader({ InvoiceData, isLoading }) {
           setOpen(true);
         };
         const dropdownItems = [
-          { label: "Record Payment", onSelect: genericDropdown },
+          { name: "Record Payment", onSelect: genericDropdown },
         ];
 
         const formComponents = {

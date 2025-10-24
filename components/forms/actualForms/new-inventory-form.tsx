@@ -47,7 +47,7 @@ export const InventorySchema = z.object({
     .array(
       z.object({
         name: z.string(),
-        value: z.string(),
+        id: z.string(),
       })
     )
     .optional(),
@@ -79,7 +79,7 @@ export const InventorySchema = z.object({
     "218ba36b-3919-4bf7-91d5-fb0ca90fab12",
   ]),
   percentMarkup: z.coerce.number().optional(),
-  markupValue: z.coerce.number().optional(),
+  markupid: z.coerce.number().optional(),
   markupPrice: z.coerce.number().optional(),
 
   days: z.coerce.number().optional(),

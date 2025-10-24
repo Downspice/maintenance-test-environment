@@ -34,37 +34,37 @@ export const workOrderSchema = z.object({
 });
 
 // Equipment options
-const equipmentOptions = [{ value: "1311827", label: "AC-001-07 Class 8" }];
+const equipmentOptions = [{ id: "1311827", name: "AC-001-07 Class 8" }];
 
 
 // Priority options
 const priorityOptions = [
-  { value: "LOW", label: "LOW" },
-  { value: "NORMAL", label: "NORMAL" },
-  { value: "HIGH", label: "HIGH" },
-  { value: "URGENT", label: "URGENT" },
+  { id: "LOW", name: "LOW" },
+  { id: "NORMAL", name: "NORMAL" },
+  { id: "HIGH", name: "HIGH" },
+  { id: "URGENT", name: "URGENT" },
 ];
 
 // Work order type options
 const workOrderTypeOptions = [
-  { value: "preventive", label: "Preventive Maintenance" },
-  { value: "corrective", label: "Corrective Maintenance" },
-  { value: "inspection", label: "Inspection" },
-  { value: "other", label: "Other" },
+  { id: "preventive", name: "Preventive Maintenance" },
+  { id: "corrective", name: "Corrective Maintenance" },
+  { id: "inspection", name: "Inspection" },
+  { id: "other", name: "Other" },
 ];
 
 // Task options
 const taskOptions = [
   {
     id: "25417067",
-    label: "Oil Leaking",
+    name: "Oil Leaking",
     description: "Repair - due 6 Days ago",
   },
 ];
 
 export default function  ReceiptForm() {
   const [customFields, setCustomFields] = useState<
-    { name: string; value: string }[]
+    { name: string; id: string }[]
   >([]);
   const { data: vendorOptions } = useGetVendors();
   
@@ -87,7 +87,7 @@ export default function  ReceiptForm() {
   }
 
   const addCustomField = () => {
-    setCustomFields([...customFields, { name: "", value: "" }]);
+    setCustomFields([...customFields, { name: "", id: "" }]);
   };
 
   return (

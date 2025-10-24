@@ -23,39 +23,39 @@ import CheckboxWrapper from "@/components/forms/wrappers/CheckboxWrapper";
 import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";
 
 const equipmentOptionsList = [
-  { label: "Drill Press", value: "drill-press" },
-  { label: "Air Compressor", value: "air-compressor" },
+  { name: "Drill Press", id: "drill-press" },
+  { name: "Air Compressor", id: "air-compressor" },
 ];
 
 const EmployeeCheckboxOptions = [
-  { id: "lubrication", label: "Lubrication" },
-  { id: "inspection", label: "Inspection" },
-  { id: "calibration", label: "Calibration" },
-  { id: "testing", label: "Testing" },
+  { id: "lubrication", name: "Lubrication" },
+  { id: "inspection", name: "Inspection" },
+  { id: "calibration", name: "Calibration" },
+  { id: "testing", name: "Testing" },
 ];
 
 const workOrderCategoriesList = [
-  { label: "Blank work order", value: "Blank work order" },
+  { name: "Blank work order", id: "Blank work order" },
   {
-    label: "Include due and soon due tasks",
-    value: "Include due and soon due tasks",
+    name: "Include due and soon due tasks",
+    id: "Include due and soon due tasks",
   },
-  { label: "Include due tasks only", value: "Include due tasks only" },
+  { name: "Include due tasks only", id: "Include due tasks only" },
 ];
 
 const includeCategoriesList = [
-  { label: "All maintenance", value: "All maintenance" },
+  { name: "All maintenance", id: "All maintenance" },
   {
-    label: "Preventive maintenance only",
-    value: "Preventive maintenance only",
+    name: "Preventive maintenance only",
+    id: "Preventive maintenance only",
   },
-  { label: "Repairs only", value: "Repairs only" },
+  { name: "Repairs only", id: "Repairs only" },
 ];
 
 const dateMeterList = [
-  { label: "All", value: "All" },
-  { label: "Date Only", value: "Date Only" },
-  { label: "Meter Only", value: "Meter Only" },
+  { name: "All", id: "All" },
+  { name: "Date Only", id: "Date Only" },
+  { name: "Meter Only", id: "Meter Only" },
 ];
 
 export const GenerateOptionSchema = z.object({
@@ -306,7 +306,7 @@ export default function GenerateOptionTab() {
             control={form.control}
             name="selectedTasks"
             options={EmployeeCheckboxOptions.map((t) => ({
-              label: t.label,
+              name: t.label,
               id: t.id,
             }))}
           />

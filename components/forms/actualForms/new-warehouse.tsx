@@ -27,7 +27,7 @@ export const vendorSchema = z.object({
 
 export default function NewWarehouse() {
   const [customFields, setCustomFields] = useState<
-    { name: string; value: string }[]
+    { name: string; id: string }[]
   >([]);
 
   const vendorForm = useForm<z.infer<typeof vendorSchema>>({

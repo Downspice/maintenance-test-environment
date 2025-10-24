@@ -7,7 +7,7 @@ import type { Control } from "react-hook-form"
 interface SwitchWrapperProps {
   control: Control<any>
   name: string
-  label: string
+  name: string
   description?: string
   disabled?: boolean
 }

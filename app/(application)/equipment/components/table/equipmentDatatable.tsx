@@ -420,7 +420,7 @@ export default function DataTableDemo() {
 
   // Server-side search handler
   const handleServerSearch = React.useCallback(
-    (searchValue: string) => {
+    (searchid: string) => {
       console.log(`🔍 Server Search: "${searchValue}"`);
 
       setIsLoading(true);
@@ -607,25 +607,25 @@ export default function DataTableDemo() {
         };
 
         const dropdownItems = [
-          { label: "Issue WO", onSelect: genericDropdown },
-          { label: "Repair Request", onSelect: genericDropdown },
-          { label: "Inspection", onSelect: genericDropdown },
-          { label: "Record Fuel", onSelect: genericDropdown },
-          { label: "Record Expense", onSelect: genericDropdown },
-          { label: "Sign Out", onSelect: genericDropdown },
+          { name: "Issue WO", onSelect: genericDropdown },
+          { name: "Repair Request", onSelect: genericDropdown },
+          { name: "Inspection", onSelect: genericDropdown },
+          { name: "Record Fuel", onSelect: genericDropdown },
+          { name: "Record Expense", onSelect: genericDropdown },
+          { name: "Sign Out", onSelect: genericDropdown },
         ];
 
         const dropdownItemsSubMenu = [
-          { label: "Record Accident", onSelect: genericDropdown },
-          { label: "Record Fluid Usage", onSelect: genericDropdown },
-          { label: "Record Meter Replacement", onSelect: genericDropdown },
-          { label: "View Equipment Parts", onSelect: genericDropdown },
+          { name: "Record Accident", onSelect: genericDropdown },
+          { name: "Record Fluid Usage", onSelect: genericDropdown },
+          { name: "Record Meter Replacement", onSelect: genericDropdown },
+          { name: "View Equipment Parts", onSelect: genericDropdown },
         ];
 
         const secondDropdowns = [
-          { label: "History", onSelect: genericDropdown },
-          { label: "Task Setup", onSelect: genericDropdown },
-          { label: "New (Duplicate)", onSelect: genericDropdown },
+          { name: "History", onSelect: genericDropdown },
+          { name: "Task Setup", onSelect: genericDropdown },
+          { name: "New (Duplicate)", onSelect: genericDropdown },
         ];
 
         const formComponents = {

@@ -58,7 +58,7 @@ export default function EmployeesPage() {
 
   const handleSelectChange = (
     key: "equipment" | "location" | "custom",
-    value: string
+    id: string
   ) => {
     if (value === "new") {
       console.log("Launching new location modal...");

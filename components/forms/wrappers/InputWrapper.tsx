@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 interface InputWrapperProps {
   control: Control<any>;
   name: string;
-  label: string;
+  name: string;
   type: string;
   className?: string;
   value?: any;

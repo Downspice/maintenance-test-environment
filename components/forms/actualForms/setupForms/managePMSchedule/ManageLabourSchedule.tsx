@@ -13,13 +13,13 @@ import RadioGroupWrapper from "@/components/forms/wrappers/RadioGroupWrapper";
 import { useGetVendors } from "@/services/setups/vendor";
 
 const equipmentOptions = [
-  { label: "Forklift", value: "forklift" },
-  { label: "Light System", value: "lights" },
+  { name: "Forklift", id: "forklift" },
+  { name: "Light System", id: "lights" },
 ];
 
 const employeeOptions = [
-  { label: "John Doe", value: "emp1" },
-  { label: "Jane Smith", value: "emp2" },
+  { name: "John Doe", id: "emp1" },
+  { name: "Jane Smith", id: "emp2" },
 ];
 
 
@@ -185,8 +185,8 @@ export default function ManageSchedulePMLaborTab({ serviceName }: Props) {
               name="mode"
               label="Labor Type"
               options={[
-                { label: "Assigned Laborer", value: "assigned" },
-                { label: "Fixed Cost", value: "fixed" },
+                { name: "Assigned Laborer", id: "assigned" },
+                { name: "Fixed Cost", id: "fixed" },
               ]}
             />
 
@@ -205,8 +205,8 @@ export default function ManageSchedulePMLaborTab({ serviceName }: Props) {
                   name="laborType"
                   label="Performed By"
                   options={[
-                    { label: "Employee", value: "employee" },
-                    { label: "Vendor", value: "vendor" },
+                    { name: "Employee", id: "employee" },
+                    { name: "Vendor", id: "vendor" },
                   ]}
                 />
 

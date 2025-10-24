@@ -34,7 +34,7 @@ const chartData = [
 
 const chartConfig = {
   maintenanceCost: {
-    label: "Maintenance Cost",
+    name: "Maintenance Cost",
     color: "hsl(var(--chart-1))",
   },
 } satisfies ChartConfig;

@@ -32,13 +32,13 @@ import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
 
 const priorities = ["Low", "Medium", "High"];
 const typeOptions = [
-  { label: "Mechanical ", value: "Mechanical" },
-  { label: "Electrical ", value: "Electrical" },
+  { name: "Mechanical ", id: "Mechanical" },
+  { name: "Electrical ", id: "Electrical" },
 ];
 const repairOptions = [
-  { label: "Oil Leak", value: "oil-leak", priority: "High" },
-  { label: "Loose Belt", value: "loose-belt", priority: "Medium" },
-  { label: "Broken Screen", value: "broken-screen", priority: "Low" },
+  { name: "Oil Leak", id: "oil-leak", priority: "High" },
+  { name: "Loose Belt", id: "loose-belt", priority: "Medium" },
+  { name: "Broken Screen", id: "broken-screen", priority: "Low" },
 ];
 
 const repairsNeededSchema = z.object({
@@ -79,7 +79,7 @@ export default function NewRepairRequestForm() {
     name: "repairsNeeded",
   });
 
-  const handleRepairChange = (index: number, value: string) => {
+  const handleRepairChange = (index: number, id: string) => {
     const priority = "Medium";
     const laborTime = 0;
     update(index, { ...fields[index], repair: value, priority, laborTime });

@@ -49,27 +49,27 @@ export default function HeaderSettingsButton() {
   };
 
   const dropdownItemsSection1 = [
-    { label: "Settings", onSelect: genericDropdown },
-    { label: "Locations", onSelect: genericDropdown },
-    { label: "Warehouses", onSelect: genericDropdown },
-    { label: "Manage Users", onSelect: genericDropdown },
-    { label: "User Preferences", onSelect: genericDropdown },
-    { label: "PO Shipping Address", onSelect: genericDropdown },
+    { name: "Settings", onSelect: genericDropdown },
+    { name: "Locations", onSelect: genericDropdown },
+    { name: "Warehouses", onSelect: genericDropdown },
+    { name: "Manage Users", onSelect: genericDropdown },
+    { name: "User Preferences", onSelect: genericDropdown },
+    { name: "PO Shipping Address", onSelect: genericDropdown },
   ];
 
   const dropdownItemsSection2 = [
-    { label: "PM Schedule Templates", onSelect: genericDropdown },
-    { label: "Associations", onSelect: genericDropdown },
-    { label: "Part Kits", onSelect: genericDropdown },
-    { label: "Choice Lists", onSelect: genericDropdown },
-    { label: "Scheduled reports", onSelect: genericDropdown },
+    { name: "PM Schedule Templates", onSelect: genericDropdown },
+    { name: "Associations", onSelect: genericDropdown },
+    { name: "Part Kits", onSelect: genericDropdown },
+    { name: "Choice Lists", onSelect: genericDropdown },
+    { name: "Scheduled reports", onSelect: genericDropdown },
   ];
 
   const dropdownItemsSection3 = [
-    { label: "Equipment", onSelect: genericDropdown },
-    { label: "Employees", onSelect: genericDropdown },
-    { label: "Vendors", onSelect: genericDropdown },
-    { label: "Parts Inventory", onSelect: genericDropdown },
+    { name: "Equipment", onSelect: genericDropdown },
+    { name: "Employees", onSelect: genericDropdown },
+    { name: "Vendors", onSelect: genericDropdown },
+    { name: "Parts Inventory", onSelect: genericDropdown },
   ];
 
   const handleCloseSheet = () => {

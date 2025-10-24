@@ -136,8 +136,8 @@
 //     }
 
 //     const sortedLocations = [...data.locations].sort((a, b) => {
-//       let aValue: string | number;
-//       let bValue: string | number;
+//       let aid: string | number;
+//       let bid: string | number;
 
 //       switch (sortField) {
 //         case "name":
@@ -631,8 +631,8 @@ export default function HierarchicalTaxTable({
     if (!sortField || !sortDirection) return data;
 
     const sortedLocations = [...data.locations].sort((a, b) => {
-      let aValue: string | number;
-      let bValue: string | number;
+      let aid: string | number;
+      let bid: string | number;
 
       switch (sortField) {
         case "name":

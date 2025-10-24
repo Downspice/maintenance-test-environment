@@ -4,7 +4,7 @@ import clsx from "clsx";
 
 export type SidebarItem = {
   id: string;
-  label: string;
+  name: string;
   icon: React.ReactNode;
   content: React.ReactNode;
 };

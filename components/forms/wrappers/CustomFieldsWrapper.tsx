@@ -10,13 +10,13 @@ import { toast } from "@/components/ui/sonner-toast"
 
 interface CustomField {
   name: string
-  value: string
+  id: string
 }
 
 interface CustomFieldsWrapperProps {
   control: Control<any>
   name: string
-  label: string
+  name: string
   maxFields?: number
   disabled?: boolean
 }
@@ -44,7 +44,7 @@ export default function CustomFieldsWrapper({
       return
     }
 
-    append({ name: "", value: "" })
+    append({ name: "", id: "" })
 
     toast.info({
       title: "Custom Field Added",

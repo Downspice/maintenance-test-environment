@@ -83,7 +83,7 @@ export default function FuelReportGeneration() {
           label="Date Interval"
           options={[
             ...dateIntervalOptionsList,
-            { label: "Custom", value: "custom" },
+            { name: "Custom", id: "custom" },
           ]}
         />
 
@@ -116,8 +116,8 @@ export default function FuelReportGeneration() {
                 name={`sorting${index}Direction` as const}
                 label=""
                 options={[
-                  { label: "Ascending", value: "asc" },
-                  { label: "Descending", value: "desc" },
+                  { name: "Ascending", id: "asc" },
+                  { name: "Descending", id: "desc" },
                 ]}
               />
             </div>

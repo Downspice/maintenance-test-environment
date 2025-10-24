@@ -13,7 +13,7 @@ export const InventorySchema = z.object({
     .array(
       z.object({
         key: z.string(),
-        value: z.string(),
+        id: z.string(),
       })
     )
     .optional(),
@@ -40,7 +40,7 @@ export const InventorySchema = z.object({
 
   markUp: z.enum(["none", "percent", "value", "manual"]),
   percentMarkup: z.coerce.number().optional(),
-  markupValue: z.coerce.number().optional(),
+  markupid: z.coerce.number().optional(),
   markupPrice: z.coerce.number().optional(),
 
   days: z.coerce.number().optional(),
@@ -87,7 +87,7 @@ export interface InventoryByIdInterface {
   unit_of_measure: string
   upc: string
   markup_type_id: string
-  markup_value: string
+  markup_id: string
   days: number
   primary: number
   secondary: number
@@ -160,7 +160,7 @@ export interface Other {
   id: string
   inventory_id: string
   name: string
-  value: string
+  id: string
   created_by: any
   updated_by: any
   created_at: string
@@ -213,7 +213,7 @@ export interface InventoryInterface {
   unit_of_measure: string
   upc: string
   markup_type_id: string
-  markup_value: string
+  markup_id: string
   days: number
   primary: number
   secondary: number
@@ -325,7 +325,7 @@ id: string
   unit_of_measure: string
   upc: string
   markup_type_id: string
-  markup_value: string
+  markup_id: string
   days: number
   primary: number
   secondary: number
@@ -399,7 +399,7 @@ export interface Other {
   id: string
   inventory_id: string
   name: string
-  value: string
+  id: string
   created_by: any
   updated_by: any
   created_at: string

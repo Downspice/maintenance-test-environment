@@ -101,7 +101,7 @@ export default function NewVendor() {
   } = useGetLocations<Array<{ id: string; name: string }>>();
 
   const [customFields, setCustomFields] = useState<
-    { name: string; value: string }[]
+    { name: string; id: string }[]
   >([]);
 
   const vendorForm = useForm<z.infer<typeof vendorSchema>>({
@@ -140,7 +140,7 @@ export default function NewVendor() {
   };
 
   const addCustomField = () => {
-    setCustomFields([...customFields, { name: "", value: "" }]);
+    setCustomFields([...customFields, { name: "", id: "" }]);
   };
 
   return (
@@ -243,7 +243,7 @@ export default function NewVendor() {
                   name="status_id"
                   label="Status "
                   required
-                  options={statusOptions}
+                  options={statusOptions??[]}
                 />
 
                 <SelectWrapper
@@ -251,7 +251,7 @@ export default function NewVendor() {
                   name="type_id"
                   label="Type "
                   required
-                  options={vendorTypeOptions}
+                  options={vendorTypeOptions??[]}
                 />
                 <SelectWrapper
                   control={vendorForm.control}

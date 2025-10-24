@@ -44,7 +44,7 @@ export const generalExpenseSchema = z.object({
 });
 
 type GeneralExpenseFormValues = z.infer<typeof generalExpenseSchema>;
-const partOptions = [{ label: "Filter", value: "filter" }];
+const partOptions = [{ name: "Filter", id: "filter" }];
 
 export default function GeneralExpense() {
   const form = useForm<GeneralExpenseFormValues>({

@@ -22,13 +22,13 @@ const genericDropdown = () => {
 };
 
 const dropdownItemsSection1 = [
-  { label: "Backup", onSelect: genericDropdown },
-  { label: "Restore", onSelect: genericDropdown },
+  { name: "Backup", onSelect: genericDropdown },
+  { name: "Restore", onSelect: genericDropdown },
 ];
 
 const dropdownItemsSection2 = [
-  { label: "Optimize/Repair", onSelect: genericDropdown },
-  { label: "Purge", onSelect: genericDropdown },
+  { name: "Optimize/Repair", onSelect: genericDropdown },
+  { name: "Purge", onSelect: genericDropdown },
 ];
 
 export default function DBToolsButton() {

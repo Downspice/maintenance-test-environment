@@ -17,7 +17,7 @@ const catalog = [
   { partNumber: "P003", name: "Air Filter", warehouse: "Warehouse C", onHandQuantity: 75 },
 ];
 
-const options = catalog.map(c => ({ label: c.partNumber, value: c.partNumber }));
+const options = catalog.map(c => ({ name: c.partNumber, id: c.partNumber }));
 
 export default function PartKitPartsTable({
   parts,
@@ -88,8 +88,8 @@ export default function PartKitPartsTable({
 }
  
 const partOptions = catalog.map(c => ({
-  label: c.partNumber,
-  value: c.partNumber,
+  name: c.partNumber,
+  id: c.partNumber,
 }));
 
 const schema = z.object({

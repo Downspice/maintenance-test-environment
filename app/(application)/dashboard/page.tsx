@@ -19,7 +19,7 @@ import RepairRequestFormMoreButton from "@/components/forms/actualForms/moreButt
 const homeCardData = {
   name: "Equipment Due",
   description: "Statistics for Equipments Due",
-  value: "3",
+  id: "3",
   overdue: "2  ",
   soon: "1  ",
 };
@@ -27,7 +27,7 @@ const homeCardData = {
 const InventoryCardData = {
   name: "Inventory Due",
   description: "Statistics for Inventory Due",
-  value: "3",
+  id: "3",
   outOfStock: "2  ",
   soon: "1  ",
 };
@@ -35,7 +35,7 @@ const InventoryCardData = {
 const employeeCardData = {
   name: "Employees Due",
   description: "Statistics for Employees Due",
-  value: "2",
+  id: "2",
   overdue: "0  ",
   soon: "5  ",
 };
@@ -48,24 +48,24 @@ const data = [
   // { name: "Other", statistic: 190, fill: "var(--color-other)" },
 ];
 const config = {
-  statistic: { label: "Total" },
-  Chrome: { label: "Work Order", color: "#55B2C9" },
-  // Safari: { label: "Safari", color: "hsl(var(--chart-2))" },
-  // Firefox: { label: "Firefox", color: "hsl(var(--chart-3))" },
-  // Edge: { label: "Edge", color: "hsl(var(--chart-4))" },
-  // Other: { label: "Other", color: "hsl(var(--chart-5))" },
+  statistic: { name: "Total" },
+  Chrome: { name: "Work Order", color: "#55B2C9" },
+  // Safari: { name: "Safari", color: "hsl(var(--chart-2))" },
+  // Firefox: { name: "Firefox", color: "hsl(var(--chart-3))" },
+  // Edge: { name: "Edge", color: "hsl(var(--chart-4))" },
+  // Other: { name: "Other", color: "hsl(var(--chart-5))" },
 };
 
 const purchaseOrders = [
   { name: "Purchase Order", statistic: 27, fill: "#55B2C9" },
 ];
 const purchaseConfig = {
-  statistic: { label: "Total" },
-  Chrome: { label: "Work Order", color: "#55B2C9" },
-  // Safari: { label: "Safari", color: "hsl(var(--chart-2))" },
-  // Firefox: { label: "Firefox", color: "hsl(var(--chart-3))" },
-  // Edge: { label: "Edge", color: "hsl(var(--chart-4))" },
-  // Other: { label: "Other", color: "hsl(var(--chart-5))" },
+  statistic: { name: "Total" },
+  Chrome: { name: "Work Order", color: "#55B2C9" },
+  // Safari: { name: "Safari", color: "hsl(var(--chart-2))" },
+  // Firefox: { name: "Firefox", color: "hsl(var(--chart-3))" },
+  // Edge: { name: "Edge", color: "hsl(var(--chart-4))" },
+  // Other: { name: "Other", color: "hsl(var(--chart-5))" },
 };
 
 const options = ["All Locations", "Location 1", "Location 2", "Main Location"];

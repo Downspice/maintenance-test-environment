@@ -7,7 +7,7 @@ export function cn(...inputs: ClassValue[]) {
 
 export function matchesSearchAllFields<T extends Record<string, any>>(
   item: T,
-  searchValue: string
+  searchid: string
 ): boolean {
   const lowerSearch = searchValue.toLowerCase();
 

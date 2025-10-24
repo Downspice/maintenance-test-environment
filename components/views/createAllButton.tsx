@@ -50,25 +50,25 @@ export default function CreateAllButton() {
   };
 
   const dropdownItems1 = [
-    { label: "Equipment", onSelect: genericDropdown },
-    { label: "Repair Request", onSelect: genericDropdown },
-    { label: "Daily Inspection", onSelect: genericDropdown },
-    { label: "Work Order", onSelect: genericDropdown },
-    { label: "Expense", onSelect: genericDropdown },
-    { label: "Assignment", onSelect: genericDropdown },
-    { label: "Accident", onSelect: genericDropdown },
+    { name: "Equipment", onSelect: genericDropdown },
+    { name: "Repair Request", onSelect: genericDropdown },
+    { name: "Daily Inspection", onSelect: genericDropdown },
+    { name: "Work Order", onSelect: genericDropdown },
+    { name: "Expense", onSelect: genericDropdown },
+    { name: "Assignment", onSelect: genericDropdown },
+    { name: "Accident", onSelect: genericDropdown },
   ];
 
   const dropdownItems2 = [
-    { label: "Part", onSelect: genericDropdown },
-    { label: "Purchase Order", onSelect: genericDropdown },
-    { label: "Employee", onSelect: genericDropdown },
-    { label: "Vendor", onSelect: genericDropdown },
+    { name: "Part", onSelect: genericDropdown },
+    { name: "Purchase Order", onSelect: genericDropdown },
+    { name: "Employee", onSelect: genericDropdown },
+    { name: "Vendor", onSelect: genericDropdown },
   ];
 
   const dropdownItems3 = [
-    { label: "Receive | Adjust Inventory", onSelect: genericDropdown },
-    { label: "Receive Purchase Order", onSelect: genericDropdown },
+    { name: "Receive | Adjust Inventory", onSelect: genericDropdown },
+    { name: "Receive Purchase Order", onSelect: genericDropdown },
   ];
 
   const formComponents = {

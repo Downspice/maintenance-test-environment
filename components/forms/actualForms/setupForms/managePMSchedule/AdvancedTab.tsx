@@ -31,8 +31,8 @@ const advancedSchema = z.object({
 type AdvancedForm = z.infer<typeof advancedSchema>;
 
 const pmOptions = [
-  { label: "Quarterly Maintenance", value: "quarterly" },
-  { label: "Annual Checkup", value: "annual" },
+  { name: "Quarterly Maintenance", id: "quarterly" },
+  { name: "Annual Checkup", id: "annual" },
 ];
 
 export default function ManagePMAdvancedTab() {

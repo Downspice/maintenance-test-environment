@@ -4,7 +4,7 @@ import { useUrlState } from "./url-state";
 /**
  * Type for the setState function that might return a Promise
  */
-type SetStateWithPromise<T> = (value: T | ((prevValue: T) => T)) => Promise<URLSearchParams> | undefined;
+type SetStateWithPromise<T> = (id: T | ((previd: T) => T)) => Promise<URLSearchParams> | undefined;
 
 /**
  * Creates a state hook that can conditionally use URL state or regular React state
@@ -16,7 +16,7 @@ type SetStateWithPromise<T> = (value: T | ((prevValue: T) => T)) => Promise<URLS
 export function createConditionalStateHook(enableUrlState: boolean) {
   return function useConditionalState<T>(
     key: string, 
-    defaultValue: T, 
+    defaultid: T, 
     options = {}
   ): readonly [T, SetStateWithPromise<T>] {
     // Always call both hooks to satisfy React hooks rules
@@ -24,7 +24,7 @@ export function createConditionalStateHook(enableUrlState: boolean) {
     const [urlState, setUrlState] = useUrlState<T>(key, defaultValue, options);
     
     // Create a compatible setState function for regular state that matches the SetStateWithPromise signature
-    const setRegularStateWrapper = useCallback((valueOrUpdater: T | ((prevValue: T) => T)) => {
+    const setRegularStateWrapper = useCallback((valueOrUpdater: T | ((previd: T) => T)) => {
       setRegularState(valueOrUpdater);
       return undefined; // Return undefined instead of void to match the type
     }, []);

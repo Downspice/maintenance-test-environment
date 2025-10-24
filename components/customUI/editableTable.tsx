@@ -75,7 +75,7 @@ export function EditableDataTable<TData>({
     getPaginationRowModel: getPaginationRowModel(),
   })
 
-  const updateRow = (rowIndex: number, key: keyof TData, value: any) => {
+  const updateRow = (rowIndex: number, key: keyof TData, id: any) => {
     const updated = [...data]
     updated[rowIndex] = { ...updated[rowIndex], [key]: value }
     setData(updated)

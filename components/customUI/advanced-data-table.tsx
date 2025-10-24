@@ -63,7 +63,7 @@ interface DataTableProps<TData, TValue> {
   realServerPagination?: boolean
   paginationInfo?: PaginationInfo
   onPaginationChange?: (action: "next" | "previous" | number) => void
-  onServerSearch?: (searchValue: string) => void
+  onServerSearch?: (searchid: string) => void
   isLoading?: boolean
 }
 
@@ -105,7 +105,7 @@ export function AdvancedDataTable<TData, TValue>({
 
   // Memoize the server search function to prevent unnecessary re-renders
   const stableOnServerSearch = React.useCallback(
-    (value: string) => {
+    (id: string) => {
       if (onServerSearch && typeof onServerSearch === "function") {
         onServerSearch(value)
       }
@@ -115,7 +115,7 @@ export function AdvancedDataTable<TData, TValue>({
 
   // Handle server-side search with debounce
   const debouncedServerSearch = React.useCallback(
-    (value: string) => {
+    (id: string) => {
       // Clear any existing timeout
       if (searchTimeoutRef.current) {
         clearTimeout(searchTimeoutRef.current)
@@ -313,7 +313,7 @@ export function AdvancedDataTable<TData, TValue>({
   }
 
   // Handle search input change
-  const handleSearchChange = (value: string) => {
+  const handleSearchChange = (id: string) => {
     // Mark that user has interacted with search
     hasUserInteractedRef.current = true
 

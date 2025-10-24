@@ -199,7 +199,7 @@ const quantity = [
 
   // Server-side search handler
   const handleServerSearch = React.useCallback(
-    (searchValue: string) => {
+    (searchid: string) => {
       console.log(`🔍 Server Search: "${searchValue}"`);
 
       // setIsLoading(true);
@@ -391,18 +391,18 @@ const quantity = [
           setOpen(true);
         };
         const dropdownItems = [
-          { label: "Adjust", onSelect: genericDropdown },
-          { label: "Transfer", onSelect: genericDropdown },
-          { label: "History", onSelect: genericDropdown },
+          { name: "Adjust", onSelect: genericDropdown },
+          { name: "Transfer", onSelect: genericDropdown },
+          { name: "History", onSelect: genericDropdown },
         ];
 
         const dropdownItems2 = [
-          { label: "Change Category", onSelect: genericDropdown },
+          { name: "Change Category", onSelect: genericDropdown },
         ];
 
         const dropdownItems3 = [
-          { label: "Enable Tacking", onSelect: genericDropdown },
-          { label: "Change MarkUp", onSelect: genericDropdown },
+          { name: "Enable Tacking", onSelect: genericDropdown },
+          { name: "Change MarkUp", onSelect: genericDropdown },
         ];
         const formComponents = {
           Adjust: <AdjustInventoryForm data={row.original} />,

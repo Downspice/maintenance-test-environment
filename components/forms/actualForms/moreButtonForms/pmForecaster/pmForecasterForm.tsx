@@ -35,46 +35,46 @@ const PmForecasterSchema = z.object({
 });
 
 export const EmployeeCheckboxOptions = [
-  { id: "lubrication", label: "Lubrication" },
-  { id: "inspection", label: "Inspection" },
-  { id: "calibration", label: "Calibration" },
-  { id: "testing", label: "Testing" },
+  { id: "lubrication", name: "Lubrication" },
+  { id: "inspection", name: "Inspection" },
+  { id: "calibration", name: "Calibration" },
+  { id: "testing", name: "Testing" },
 ];
 
 type PmForecasterFormValues = z.infer<typeof PmForecasterSchema>;
 
 const intervalOptionsList = [
-  { value: "Date and unit intervals", label: "Date and unit intervals" },
-  { value: "Date intervals", label: "Date intervals" },
-  { value: "Unit intervals", label: "Unit intervals" },
+  { id: "Date and unit intervals", name: "Date and unit intervals" },
+  { id: "Date intervals", name: "Date intervals" },
+  { id: "Unit intervals", name: "Unit intervals" },
 ];
 
 const showMaintenanceOptionsList = [
-  { value: "Show required and Warning", label: "Date and unit intervals" },
-  { value: "Show required", label: "Show required" },
-  { value: "Show required (Soon Due)", label: "Show required (Soon Due)" },
+  { id: "Show required and Warning", name: "Date and unit intervals" },
+  { id: "Show required", name: "Show required" },
+  { id: "Show required (Soon Due)", name: "Show required (Soon Due)" },
 ];
 
 const servicesToCheck = [
-  { value: "All Maintenance services", label: "All Maintenance services" },
+  { id: "All Maintenance services", name: "All Maintenance services" },
   {
-    value: "Select Maintenance Service(s)",
-    label: "Select Maintenance Service(s)",
+    id: "Select Maintenance Service(s)",
+    name: "Select Maintenance Service(s)",
   },
 ];
 
 const maintenanceReportDisplay = [
   {
-    value: "Print maintenance detailed report",
-    label: "Print maintenance detailed report",
+    id: "Print maintenance detailed report",
+    name: "Print maintenance detailed report",
   },
   {
-    value: "Print maintenance overview report",
-    label: "Print maintenance overview report",
+    id: "Print maintenance overview report",
+    name: "Print maintenance overview report",
   },
   {
-    value: "Automatically generate work orders based on maintenance due",
-    label: "Automatically generate work orders based on maintenance due",
+    id: "Automatically generate work orders based on maintenance due",
+    name: "Automatically generate work orders based on maintenance due",
   },
 ];
 

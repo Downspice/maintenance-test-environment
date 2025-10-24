@@ -21,10 +21,10 @@ const lastUrlUpdate = {
  */
 export function useUrlState<T>(
   key: string,
-  defaultValue: T,
+  defaultid: T,
   options: {
-    serialize?: (value: T) => string;
-    deserialize?: (value: string) => T;
+    serialize?: (id: T) => string;
+    deserialize?: (id: string) => T;
   } = {}
 ) {
   const router = useRouter();
@@ -41,12 +41,12 @@ export function useUrlState<T>(
   // Custom serialization/deserialization functions
   const serialize =
     options.serialize ||
-    ((value: T) =>
+    ((id: T) =>
       typeof value === "object" ? JSON.stringify(value) : String(value));
 
   const deserialize =
     options.deserialize ||
-    ((value: string) => {
+    ((id: string) => {
       try {
         if (typeof defaultValue === "number") {
           const num = Number(value);
@@ -188,7 +188,7 @@ export function useUrlState<T>(
 
   // Update the URL when the state changes
   const updateValue = useCallback(
-    (newValue: T | ((prevValue: T) => T)) => {
+    (newid: T | ((previd: T) => T)) => {
       const resolvedValue =
         typeof newValue === "function"
           ? (newValue as (prev: T) => T)(value)

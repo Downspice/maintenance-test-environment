@@ -150,7 +150,7 @@ export function DataTable<TData, TValue>({
   const [sortBy, setSortBy] = useConditionalUrlState("sortBy", "created_at");
   const [sortOrder, setSortOrder] = useConditionalUrlState<"asc" | "desc">("sortOrder", "desc");
   const [columnVisibility, setColumnVisibility] = useConditionalUrlState<Record<string, boolean>>("columnVisibility", {});
-  const [columnFilters, setColumnFilters] = useConditionalUrlState<Array<{ id: string; value: unknown }>>("columnFilters", []);
+  const [columnFilters, setColumnFilters] = useConditionalUrlState<Array<{ id: string; id: unknown }>>("columnFilters", []);
 
   // Internal states
   const [isLoading, setIsLoading] = useState(true);
@@ -225,7 +225,7 @@ export function DataTable<TData, TValue>({
   }, []);
 
   // PERFORMANCE FIX: Optimized row selection handler
-  const handleRowSelectionChange = useCallback((updaterOrValue: RowSelectionUpdater | Record<string, boolean>) => {
+  const handleRowSelectionChange = useCallback((updaterOrid: RowSelectionUpdater | Record<string, boolean>) => {
     // Determine the new row selection value
     const newRowSelection = typeof updaterOrValue === 'function'
       ? updaterOrValue(rowSelection)
@@ -411,7 +411,7 @@ export function DataTable<TData, TValue>({
 
   // Create event handlers using utility functions
   const handleSortingChange = useCallback(
-    (updaterOrValue: SortingUpdater | { id: string; desc: boolean }[]) => {
+    (updaterOrid: SortingUpdater | { id: string; desc: boolean }[]) => {
       // Extract the new sorting state
       const newSorting = typeof updaterOrValue === 'function'
         ? updaterOrValue(sorting)
@@ -444,7 +444,7 @@ export function DataTable<TData, TValue>({
   );
 
   const handlePaginationChange = useCallback(
-    (updaterOrValue: PaginationUpdater<TData> | { pageIndex: number; pageSize: number }) => {
+    (updaterOrid: PaginationUpdater<TData> | { pageIndex: number; pageSize: number }) => {
       // Extract the new pagination state
       const newPagination = typeof updaterOrValue === 'function'
         ? updaterOrValue({ pageIndex: page - 1, pageSize })
@@ -478,7 +478,7 @@ export function DataTable<TData, TValue>({
   );
 
   const handleColumnSizingChange = useCallback(
-    (updaterOrValue: ColumnSizingState | ((prev: ColumnSizingState) => ColumnSizingState)) => {
+    (updaterOrid: ColumnSizingState | ((prev: ColumnSizingState) => ColumnSizingState)) => {
       if (typeof updaterOrValue === 'function') {
         setColumnSizing(current => updaterOrValue(current));
       } else {
@@ -489,7 +489,7 @@ export function DataTable<TData, TValue>({
   );
 
   // Column order change handler
-  const handleColumnOrderChange = useCallback((updaterOrValue: ColumnOrderUpdater | string[]) => {
+  const handleColumnOrderChange = useCallback((updaterOrid: ColumnOrderUpdater | string[]) => {
     const newColumnOrder = typeof updaterOrValue === 'function'
       ? updaterOrValue(columnOrder)
       : updaterOrValue;

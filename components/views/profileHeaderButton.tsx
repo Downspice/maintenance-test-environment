@@ -17,12 +17,12 @@ const genericDropdown = () => {
 };
 
 const dropdownItemsSection1 = [
-  { label: "User Preferences", onSelect: genericDropdown },
+  { name: "User Preferences", onSelect: genericDropdown },
 ];
 
 const dropdownItemsSection2 = [
-  { label: "Manage Users", onSelect: genericDropdown },
-  { label: "Change Password", onSelect: genericDropdown },
+  { name: "Manage Users", onSelect: genericDropdown },
+  { name: "Change Password", onSelect: genericDropdown },
 ];
 
 export default function HeaderProfileButton() {

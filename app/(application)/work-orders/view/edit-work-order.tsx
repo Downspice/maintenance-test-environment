@@ -51,52 +51,53 @@ import {
   ComboboxFieldWrapper,
   MultiComboboxWrapper,
 } from "@/components/forms/wrappers/ComboboxWrapper";
-import { WorkOrderStatuses } from "@/components/forms/actualForms/work-order-form";
 import { useGetCostCenters } from "@/services/setups/inventory";
+import { useGetWorkOrderStatuses } from "@/services/setups/workOrder";
+import { GenericObject } from "@/types/types";
 // Equipment options
-const equipmentOptions = [{ value: "1311827", label: "AC-001-07 Class 8" }];
+const equipmentOptions = [{ id: "1311827", name: "AC-001-07 Class 8" }];
 // Assignee options
 const assigneeOptions = [
-  { value: "User-246964", label: "Joseph Awer", group: "Employees" },
-  { value: "Vendor-324052", label: "Cameron, Inc.", group: "Vendors" },
-  { value: "Vendor-324053", label: "Davis Plumbing", group: "Vendors" },
+  { id: "User-246964", name: "Joseph Awer", group: "Employees" },
+  { id: "Vendor-324052", name: "Cameron, Inc.", group: "Vendors" },
+  { id: "Vendor-324053", name: "Davis Plumbing", group: "Vendors" },
   {
-    value: "Vendor-324047",
-    label: "International Belt Supply",
+    id: "Vendor-324047",
+    name: "International Belt Supply",
     group: "Vendors",
   },
-  { value: "Vendor-324051", label: "NAPA", group: "Vendors" },
-  { value: "Vendor-324048", label: "Neff Electrical Supply", group: "Vendors" },
-  { value: "Vendor-324050", label: "Rush Truck Centers", group: "Vendors" },
-  { value: "Vendor-324049", label: "The Instrument Group", group: "Vendors" },
+  { id: "Vendor-324051", name: "NAPA", group: "Vendors" },
+  { id: "Vendor-324048", name: "Neff Electrical Supply", group: "Vendors" },
+  { id: "Vendor-324050", name: "Rush Truck Centers", group: "Vendors" },
+  { id: "Vendor-324049", name: "The Instrument Group", group: "Vendors" },
 ];
 
 // Priority options
 const priorityOptions = [
-  { value: "LOW", label: "LOW" },
-  { value: "NORMAL", label: "NORMAL" },
-  { value: "HIGH", label: "HIGH" },
-  { value: "URGENT", label: "URGENT" },
+  { id: "LOW", name: "LOW" },
+  { id: "NORMAL", name: "NORMAL" },
+  { id: "HIGH", name: "HIGH" },
+  { id: "URGENT", name: "URGENT" },
 ];
 export const PurchaseOrderOptions = [
-  { value: "LOW", label: "P-00123" },
-  { value: "NORMAL", label: "P-00124" },
-  { value: "HIGH", label: "P-00128" },
-  { value: "URGENT", label: "P-001234" },
+  { id: "LOW", name: "P-00123" },
+  { id: "NORMAL", name: "P-00124" },
+  { id: "HIGH", name: "P-00128" },
+  { id: "URGENT", name: "P-001234" },
 ];
 // Work order type options
 export const workOrderTypeOptions = [
-  { value: "preventive", label: "Preventive Maintenance" },
-  { value: "corrective", label: "Corrective Maintenance" },
-  { value: "inspection", label: "Inspection" },
-  { value: "other", label: "Other" },
+  { id: "preventive", name: "Preventive Maintenance" },
+  { id: "corrective", name: "Corrective Maintenance" },
+  { id: "inspection", name: "Inspection" },
+  { id: "other", name: "Other" },
 ];
 
 export const costCenterOptions = [
-  { value: "preventive", label: "Preventive Cost Center" },
-  { value: "corrective", label: "Corrective Cost Center" },
-  { value: "inspection", label: "Inspection Cost Center" },
-  { value: "other", label: "Other" },
+  { id: "preventive", name: "Preventive Cost Center" },
+  { id: "corrective", name: "Corrective Cost Center" },
+  { id: "inspection", name: "Inspection Cost Center" },
+  { id: "other", name: "Other" },
 ];
 
 export default function EditWorkOrderForm({
@@ -106,6 +107,7 @@ export default function EditWorkOrderForm({
   children: React.ReactNode;
   data: WorkOrderInterface;
 }) {
+  const { data:WorkOrderStatuses } = useGetWorkOrderStatuses<GenericObject[]>();
   const [open, setOpen] = useState(false);
   const [maintenanceTasks, setMaintenanceTasks] = useState<
     AddMaintenanceInWorkOrderInterface[]
@@ -265,7 +267,7 @@ export default function EditWorkOrderForm({
                           />
                           <CustomFieldsWrapper
                             control={workOrderForm.control}
-                             name="others"
+                            name="others"
                             label={"Custom Fields"}
                           />
                         </>
@@ -274,31 +276,31 @@ export default function EditWorkOrderForm({
                   </div>
                   <div className="col-span-5 space-y-2">
                     <div className="flex justify-end space-x-1 border border-b-black/20">
-                      {WorkOrderStatuses.map((stat) => (
+                      {WorkOrderStatuses?.map((stat) => (
                         <button
-                          key={stat}
+                          key={stat?.id}
                           type="button"
                           className={`p-3 h-fit rounded-md border text-sm font-medium ${
-                            status === stat
-  ? stat === "Open"
-    ? "bg-green-500 text-white"          // Open = Fresh, ready to start
-    : stat === "In Progress"
-    ? "bg-blue-500 text-white"           // In Progress = Active, working
-    : stat === "On Hold"
-    ? "bg-yellow-400 text-white"         // On Hold = Caution, paused
-    : stat === "Complete"
-    ? "bg-purple-600 text-white"         // Complete = Done, celebratory
-    : stat === "Cancelled"
-    ? "bg-red-600 text-white"            // Cancelled = Error or terminated
-    : "bg-gray-400 text-white"           // Fallback for unexpected status
-  : "bg-white text-gray-700 border border-gray-300"
+                            status === stat.name
+                              ? stat.name.toLowerCase() === "open"
+                                ? "bg-green-500 text-white" // Open = Fresh, ready to start
+                                : stat.name.toLowerCase() === "progress"
+                                ? "bg-blue-500 text-white" // In Progress = Active, working
+                                : stat.name.toLowerCase() === "hold"
+                                ? "bg-yellow-400 text-white" // On Hold = Caution, paused
+                                : stat.name.toLowerCase() === "complete"
+                                ? "bg-purple-600 text-white" // Complete = Done, celebratory
+                                : stat.name.toLowerCase() === "cancelled"
+                                ? "bg-red-600 text-white" // Cancelled = Error or terminated
+                                : "bg-gray-400 text-white" // Fallback for unexpected status
+                              : "bg-white text-gray-700 border border-gray-300"
                           }`}
                           onClick={() => {
-                            workOrderForm.setValue("status", stat);
-                            setStatus(stat);
+                            workOrderForm.setValue("status", stat?.id ?? "");
+                            setStatus(stat.name);
                           }}
                         >
-                          {stat}
+                          {stat.name}
                         </button>
                       ))}
                     </div>

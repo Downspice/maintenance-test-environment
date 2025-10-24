@@ -12,7 +12,7 @@ import { Separator } from "../ui/separator";
 type HomeCardDataType = {
   name: string;
   description: string;
-  value: string;
+  id: string;
   overdue: string;
   soon: string;
 };

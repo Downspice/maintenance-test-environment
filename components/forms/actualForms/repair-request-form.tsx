@@ -104,7 +104,7 @@ export default function RepairRequestFormButton({ variant }: triggerVariant) {
   function onSubmit(data: EquipmentFormValues) {
     console.log("Form submitted with VALUES:", data);
 
-    const getLabel = (options: ComboboxOption[], value: string) =>
+    const getLabel = (options: ComboboxOption[], id: string) =>
       options.find((option) => option.value === value)?.label || value;
 
     const getLabels = (options: ComboboxOption[], values: string[]) =>

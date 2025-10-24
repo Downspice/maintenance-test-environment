@@ -42,22 +42,22 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 
 // Example options (replace with your actual options)
-const equipmentOptions = [{ label: "Excavator", value: "excavator" }];
+const equipmentOptions = [{ name: "Excavator", id: "excavator" }];
 const assignmentTypeOptions = [
-  { label: "Job Site", value: "jobSite" },
-  { label: "Employee", value: "employee" },
-  { label: "Customer", value: "customer" },
+  { name: "Job Site", id: "jobSite" },
+  { name: "Employee", id: "employee" },
+  { name: "Customer", id: "customer" },
 ];
-const employeeOptions = [{ label: "John Doe", value: "john" }];
-const jobOptions = [{ label: "Site A", value: "siteA" }];
-const customerOptions = [{ label: "Acme Corp", value: "acme" }];
-const destinationOptions = [{ label: "Yard", value: "yard" }];
-const typeOptions = [{ label: "Type 1", value: "type1" }];
-const stateOptions = [{ label: "CA", value: "CA" }];
+const employeeOptions = [{ name: "John Doe", id: "john" }];
+const jobOptions = [{ name: "Site A", id: "siteA" }];
+const customerOptions = [{ name: "Acme Corp", id: "acme" }];
+const destinationOptions = [{ name: "Yard", id: "yard" }];
+const typeOptions = [{ name: "Type 1", id: "type1" }];
+const stateOptions = [{ name: "CA", id: "CA" }];
 const perOptions = [
-  { label: "Hour", value: "hour" },
-  { label: "Day", value: "day" },
-  { label: "Week", value: "week" },
+  { name: "Hour", id: "hour" },
+  { name: "Day", id: "day" },
+  { name: "Week", id: "week" },
 ];
 
 // Fuel Table Schema

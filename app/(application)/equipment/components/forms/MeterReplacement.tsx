@@ -19,11 +19,11 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useState } from "react";
 
 // Example options (replace with your actual options)
-const equipmentOptions = [{ label: "Excavator", value: "excavator" }];
+const equipmentOptions = [{ name: "Excavator", id: "excavator" }];
 
 const meterTypeOptions = [
-  { label: "Primary", value: "primary" },
-  { label: "Secondary", value: "secondary" },
+  { name: "Primary", id: "primary" },
+  { name: "Secondary", id: "secondary" },
 ];
 
 // Zod schema

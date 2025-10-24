@@ -1,0 +1,602 @@
+'use client'
+import { useQuery, useMutation, useQueryClient, UseMutationOptions, UseQueryOptions } from "@tanstack/react-query";
+import { AxiosError } from "axios";
+
+import { dummyApiClient } from "@/lib/axios";
+import { ApiError, ApiResponse } from "@/types/types";
+
+const BASEURL = process.env.NEXT_PUBLIC_BASE_URL;
+
+// --- Shared Type Definitions ---
+type TId = string | number;
+type TEntity = unknown;
+type TParams = Record<string, any>;
+
+// --- Shared Helper Functions ---
+
+/**
+ * Builds the full API URL for an endpoint.
+ * @param path The relative path (e.g., /api/get-work-order-types)
+ */
+const buildUrl = (path: string) => path;
+
+/**
+ * Base type for all mutation hooks.
+ */
+const useBaseMutation = <TResponse = TEntity, TPayload = TParams, TContext = unknown>(
+    mutationKey: string[],
+    endpoint: (payload: TPayload) => string,
+    method: 'post' | 'put' | 'delete',
+    invalidateKeys: (payload: TPayload) => unknown[], 
+    options?: UseMutationOptions<TResponse, AxiosError<ApiError>, TPayload, TContext>
+) => {
+    const queryClient = useQueryClient();
+
+    const mutationFn = async (payload: TPayload) => {
+        const url = buildUrl(endpoint(payload));
+        
+        const response = await dummyApiClient<ApiResponse<TResponse>>(url, {
+            method: method,
+            data: (method === 'post' || method === 'put') ? payload : undefined, 
+        });
+        
+        return response.data as TResponse; 
+    };
+
+    return useMutation<TResponse, AxiosError<ApiError>, TPayload, TContext>({
+        mutationFn,
+        mutationKey,
+        onSuccess: (data, variables, context) => {
+            invalidateKeys(variables).forEach(key => {
+                queryClient.invalidateQueries({ queryKey: key as any });
+            });
+            options?.onSuccess?.(data, variables, context);
+        },
+        ...options,
+    });
+};
+
+
+// ------------------------------------------------
+// WORK ORDER MODULE HOOKS
+// ------------------------------------------------
+
+type WorkOrderSetupPayload = TParams & { id?: TId };
+type WorkOrderPayload = TParams & { id?: TId };
+type WorkOrderAttachmentPayload = { id: TId };
+
+
+// --- Work Order Type Setup Queries/Mutations ---
+
+/**
+ * Fetches the list of all Work Order Types.
+ */
+export function useGetWorkOrderTypes<TData = TEntity[]>(options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>) {
+    return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
+        queryKey: ["work-order-types"],
+        queryFn: async () => {
+            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-work-order-types"));
+            return response;
+        },
+        select: (response) => response.data as TData,
+        staleTime: Infinity,
+        ...options,
+    });
+}
+
+/**
+ * Adds a new Work Order Type. Invalidates the 'work-order-types' list.
+ */
+export function useAddWorkOrderType() {
+    return useBaseMutation<TEntity, WorkOrderSetupPayload>(
+        ["add-work-order-type"],
+        () => "/api/add-work-order-type",
+        'post',
+        () => [['work-order-types']]
+    );
+}
+
+/**
+ * Updates an existing Work Order Type. Invalidates the 'work-order-types' list.
+ */
+export function useUpdateWorkOrderType() {
+    return useBaseMutation<TEntity, WorkOrderSetupPayload & { id: TId }>(
+        ["update-work-order-type"],
+        (payload) => `/api/update-work-order-type/${payload.id}`,
+        'put',
+        () => [['work-order-types']]
+    );
+}
+
+/**
+ * Deletes a Work Order Type. Invalidates the 'work-order-types' list.
+ */
+export function useDeleteWorkOrderType() {
+    return useBaseMutation<TEntity, { id: TId }>(
+        ["delete-work-order-type"],
+        (payload) => `/api/delete-work-order-type/${payload.id}`,
+        'delete',
+        () => [['work-order-types']]
+    );
+}
+
+
+// --- Priority Setup Queries/Mutations ---
+
+/**
+ * Fetches the list of all Priorities.
+ */
+export function useGetPriorities<TData = TEntity[]>(options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>) {
+    return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
+        queryKey: ["priorities"],
+        queryFn: async () => {
+            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-priorities"));
+            return response;
+        },
+        select: (response) => response.data as TData,
+        staleTime: Infinity,
+        ...options,
+    });
+}
+
+/**
+ * Adds a new Priority. Invalidates the 'priorities' list.
+ */
+export function useAddPriority() {
+    return useBaseMutation<TEntity, WorkOrderSetupPayload>(
+        ["add-priority"],
+        () => "/api/add-priority",
+        'post',
+        () => [['priorities']]
+    );
+}
+
+/**
+ * Updates an existing Priority. Invalidates the 'priorities' list.
+ */
+export function useUpdatePriority() {
+    return useBaseMutation<TEntity, WorkOrderSetupPayload & { id: TId }>(
+        ["update-priority"],
+        (payload) => `/api/update-priority/${payload.id}`,
+        'put',
+        () => [['priorities']]
+    );
+}
+
+/**
+ * Deletes a Priority. Invalidates the 'priorities' list.
+ */
+export function useDeletePriority() {
+    return useBaseMutation<TEntity, { id: TId }>(
+        ["delete-priority"],
+        (payload) => `/api/delete-priority/${payload.id}`,
+        'delete',
+        () => [['priorities']]
+    );
+}
+
+
+// --- Work Order Status Setup Queries/Mutations ---
+
+/**
+ * Fetches the list of all Work Order Statuses.
+ */
+export function useGetWorkOrderStatuses<TData = TEntity[]>(options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>) {
+    return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
+        queryKey: ["work-order-statuses"],
+        queryFn: async () => {
+            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-work-order-statuses"));
+            return response;
+        },
+        select: (response) => response.data as TData,
+        staleTime: Infinity,
+        ...options,
+    });
+}
+
+/**
+ * Adds a new Work Order Status. Invalidates the 'work-order-statuses' list.
+ */
+export function useAddWorkOrderStatus() {
+    return useBaseMutation<TEntity, WorkOrderSetupPayload>(
+        ["add-work-order-status"],
+        () => "/api/add-work-order-status",
+        'post',
+        () => [['work-order-statuses']]
+    );
+}
+
+/**
+ * Updates an existing Work Order Status. Invalidates the 'work-order-statuses' list.
+ */
+export function useUpdateWorkOrderStatus() {
+    return useBaseMutation<TEntity, WorkOrderSetupPayload & { id: TId }>(
+        ["update-work-order-status"],
+        (payload) => `/api/update-work-order-status/${payload.id}`,
+        'put',
+        () => [['work-order-statuses']]
+    );
+}
+
+/**
+ * Deletes a Work Order Status. Invalidates the 'work-order-statuses' list.
+ */
+export function useDeleteWorkOrderStatus() {
+    return useBaseMutation<TEntity, { id: TId }>(
+        ["delete-work-order-status"],
+        (payload) => `/api/delete-work-order-status/${payload.id}`,
+        'delete',
+        () => [['work-order-statuses']]
+    );
+}
+
+
+// --- Preventive Maintenance Service Queries/Mutations ---
+
+/**
+ * Fetches the list of all PM Services.
+ */
+export function useGetPMServices<TData = TEntity[]>(options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>) {
+    return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
+        queryKey: ["pm-services"],
+        queryFn: async () => {
+            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-pm-services"));
+            return response;
+        },
+        select: (response) => response.data as TData,
+        staleTime: Infinity,
+        ...options,
+    });
+}
+
+/**
+ * Fetches a single PM Service by ID.
+ * @param id The ID of the PM service to fetch.
+ */
+export function useGetPMService<TData = TEntity>(id: TId, options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>) {
+    return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
+        queryKey: ["pm-service", id],
+        queryFn: async () => {
+            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl(`/api/get-pm-service/${id}`));
+            return response;
+        },
+        select: (response) => response.data as TData,
+        enabled: !!id,
+        ...options,
+    });
+}
+
+/**
+ * Adds a new PM Service. Invalidates the 'pm-services' list.
+ */
+export function useAddPMService() {
+    return useBaseMutation<TEntity, WorkOrderPayload>(
+        ["add-pm-service"],
+        () => "/api/add-pm-service",
+        'post',
+        () => [['pm-services']]
+    );
+}
+
+/**
+ * Updates an existing PM Service. Invalidates the 'pm-services' list and the specific 'pm-service' detail query.
+ */
+export function useUpdatePMService() {
+    return useBaseMutation<TEntity, WorkOrderPayload & { id: TId }>(
+        ["update-pm-service"],
+        (payload) => `/api/update-pm-service/${payload.id}`,
+        'put',
+        (payload) => [['pm-services'], ['pm-service', payload.id]]
+    );
+}
+
+/**
+ * Deletes a PM Service. Invalidates the 'pm-services' list and the specific 'pm-service' detail query.
+ */
+export function useDeletePMService() {
+    return useBaseMutation<TEntity, { id: TId }>(
+        ["delete-pm-service"],
+        (payload) => `/api/delete-pm-service/${payload.id}`,
+        'delete',
+        (payload) => [['pm-services'], ['pm-service', payload.id]]
+    );
+}
+
+/**
+ * Deletes a PM Service Part. Invalidates the 'pm-services' list.
+ */
+export function useDeletePMServicePart() {
+    return useBaseMutation<TEntity, WorkOrderAttachmentPayload>(
+        ["delete-pm-service-part"],
+        (payload) => `/api/delete-pm-service-part/${payload.id}`,
+        'delete',
+        () => [['pm-services']]
+    );
+}
+
+/**
+ * Deletes a PM Service Equipment. Invalidates the 'pm-services' list.
+ */
+export function useDeletePMServiceEquipment() {
+    return useBaseMutation<TEntity, WorkOrderAttachmentPayload>(
+        ["delete-pm-service-equipment"],
+        (payload) => `/api/delete-pm-service-equipment/${payload.id}`,
+        'delete',
+        () => [['pm-services']]
+    );
+}
+
+
+// --- Maintenance Repairs Queries/Mutations ---
+
+/**
+ * Fetches the list of all Maintenance Repairs.
+ */
+export function useGetMaintenanceRepairs<TData = TEntity[]>(options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>) {
+    return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
+        queryKey: ["maintenance-repairs"],
+        queryFn: async () => {
+            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-maintenance-repairs"));
+            return response;
+        },
+        select: (response) => response.data as TData,
+        staleTime: Infinity,
+        ...options,
+    });
+}
+
+/**
+ * Adds a new Maintenance Repair. Invalidates the 'maintenance-repairs' list.
+ */
+export function useAddMaintenanceRepair() {
+    return useBaseMutation<TEntity, WorkOrderPayload>(
+        ["add-maintenance-repair"],
+        () => "/api/add-maintenance-repair",
+        'post',
+        () => [['maintenance-repairs']]
+    );
+}
+
+/**
+ * Updates an existing Maintenance Repair. Invalidates the 'maintenance-repairs' list.
+ */
+export function useUpdateMaintenanceRepair() {
+    return useBaseMutation<TEntity, WorkOrderPayload & { id: TId }>(
+        ["update-maintenance-repair"],
+        (payload) => `/api/update-maintenance-repair/${payload.id}`,
+        'put',
+        () => [['maintenance-repairs']]
+    );
+}
+
+/**
+ * Deletes a Maintenance Repair. Invalidates the 'maintenance-repairs' list.
+ */
+export function useDeleteMaintenanceRepair() {
+    return useBaseMutation<TEntity, { id: TId }>(
+        ["delete-maintenance-repair"],
+        (payload) => `/api/delete-maintenance-repair/${payload.id}`,
+        'delete',
+        () => [['maintenance-repairs']]
+    );
+}
+
+
+// --- Maintenance Repair Types Queries/Mutations ---
+
+/**
+ * Fetches the list of all Maintenance Repair Types.
+ */
+export function useGetMaintenanceRepairTypes<TData = TEntity[]>(options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>) {
+    return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
+        queryKey: ["maintenance-repair-types"],
+        queryFn: async () => {
+            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-maintenance-repair-types"));
+            return response;
+        },
+        select: (response) => response.data as TData,
+        staleTime: Infinity,
+        ...options,
+    });
+}
+
+/**
+ * Adds a new Maintenance Repair Type. Invalidates the 'maintenance-repair-types' list.
+ */
+export function useAddMaintenanceRepairType() {
+    return useBaseMutation<TEntity, WorkOrderSetupPayload>(
+        ["add-maintenance-repair-type"],
+        () => "/api/add-maintenance-repair-type",
+        'post',
+        () => [['maintenance-repair-types']]
+    );
+}
+
+/**
+ * Updates an existing Maintenance Repair Type. Invalidates the 'maintenance-repair-types' list.
+ */
+export function useUpdateMaintenanceRepairType() {
+    return useBaseMutation<TEntity, WorkOrderSetupPayload & { id: TId }>(
+        ["update-maintenance-repair-type"],
+        (payload) => `/api/update-maintenance-repair-type/${payload.id}`,
+        'put',
+        () => [['maintenance-repair-types']]
+    );
+}
+
+/**
+ * Deletes a Maintenance Repair Type. Invalidates the 'maintenance-repair-types' list.
+ */
+export function useDeleteMaintenanceRepairType() {
+    return useBaseMutation<TEntity, { id: TId }>(
+        ["delete-maintenance-repair-type"],
+        (payload) => `/api/delete-maintenance-repair-type/${payload.id}`,
+        'delete',
+        () => [['maintenance-repair-types']]
+    );
+}
+
+
+// --- Maintenance Task Type Queries/Mutations ---
+
+/**
+ * Fetches the list of all Maintenance Task Types.
+ */
+export function useGetMaintenanceTaskTypes<TData = TEntity[]>(options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>) {
+    return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
+        queryKey: ["maintenance-task-types"],
+        queryFn: async () => {
+            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-maintenance-task-types"));
+            return response;
+        },
+        select: (response) => response.data as TData,
+        staleTime: Infinity,
+        ...options,
+    });
+}
+
+/**
+ * Adds a new Maintenance Task Type. Invalidates the 'maintenance-task-types' list.
+ */
+export function useAddMaintenanceTaskType() {
+    return useBaseMutation<TEntity, WorkOrderSetupPayload>(
+        ["add-maintenance-task-type"],
+        () => "/api/add-maintenance-task-type",
+        'post',
+        () => [['maintenance-task-types']]
+    );
+}
+
+/**
+ * Updates an existing Maintenance Task Type. Invalidates the 'maintenance-task-types' list.
+ */
+export function useUpdateMaintenanceTaskType() {
+    return useBaseMutation<TEntity, WorkOrderSetupPayload & { id: TId }>(
+        ["update-maintenance-task-type"],
+        (payload) => `/api/update-maintenance-task-type/${payload.id}`,
+        'put',
+        () => [['maintenance-task-types']]
+    );
+}
+
+/**
+ * Deletes a Maintenance Task Type. Invalidates the 'maintenance-task-types' list.
+ */
+export function useDeleteMaintenanceTaskType() {
+    return useBaseMutation<TEntity, { id: TId }>(
+        ["delete-maintenance-task-type"],
+        (payload) => `/api/delete-maintenance-task-type/${payload.id}`,
+        'delete',
+        () => [['maintenance-task-types']]
+    );
+}
+
+
+// --- Part Kits Queries/Mutations ---
+
+/**
+ * Fetches the list of all Part Kits.
+ */
+export function useGetPartKits<TData = TEntity[]>(options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>) {
+    return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
+        queryKey: ["part-kits"],
+        queryFn: async () => {
+            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-part-kits"));
+            return response;
+        },
+        select: (response) => response.data as TData,
+        staleTime: Infinity,
+        ...options,
+    });
+}
+
+/**
+ * Adds a new Part Kit. Invalidates the 'part-kits' list.
+ */
+export function useAddPartKit() {
+    return useBaseMutation<TEntity, WorkOrderPayload>(
+        ["add-part-kit"],
+        () => "/api/add-part-kit",
+        'post',
+        () => [['part-kits']]
+    );
+}
+
+/**
+ * Updates an existing Part Kit. Invalidates the 'part-kits' list.
+ */
+export function useUpdatePartKit() {
+    return useBaseMutation<TEntity, WorkOrderPayload & { id: TId }>(
+        ["update-part-kit"],
+        (payload) => `/api/update-part-kit/${payload.id}`,
+        'put',
+        () => [['part-kits']]
+    );
+}
+
+/**
+ * Deletes a Part Kit. Invalidates the 'part-kits' list.
+ */
+export function useDeletePartKit() {
+    return useBaseMutation<TEntity, { id: TId }>(
+        ["delete-part-kit"],
+        (payload) => `/api/delete-part-kit/${payload.id}`,
+        'delete',
+        () => [['part-kits']]
+    );
+}
+
+
+// --- Part Kit Parts Queries/Mutations ---
+
+/**
+ * Fetches the list of all Part Kit Parts.
+ */
+export function useGetPartKitParts<TData = TEntity[]>(options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>) {
+    return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
+        queryKey: ["part-kit-parts"],
+        queryFn: async () => {
+            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-part-kit-parts"));
+            return response;
+        },
+        select: (response) => response.data as TData,
+        staleTime: Infinity,
+        ...options,
+    });
+}
+
+/**
+ * Adds a new Part Kit Part. Invalidates the 'part-kit-parts' list.
+ */
+export function useAddPartKitPart() {
+    return useBaseMutation<TEntity, WorkOrderPayload>(
+        ["add-part-kit-part"],
+        () => "/api/add-part-kit-part",
+        'post',
+        () => [['part-kit-parts']]
+    );
+}
+
+/**
+ * Updates an existing Part Kit Part. Invalidates the 'part-kit-parts' list.
+ */
+export function useUpdatePartKitPart() {
+    return useBaseMutation<TEntity, WorkOrderPayload & { id: TId }>(
+        ["update-part-kit-part"],
+        (payload) => `/api/update-part-kit-part/${payload.id}`,
+        'put',
+        () => [['part-kit-parts']]
+    );
+}
+
+/**
+ * Deletes a Part Kit Part. Invalidates the 'part-kit-parts' list.
+ */
+export function useDeletePartKitPart() {
+    return useBaseMutation<TEntity, { id: TId }>(
+        ["delete-part-kit-part"],
+        (payload) => `/api/delete-part-kit-part/${payload.id}`,
+        'delete',
+        () => [['part-kit-parts']]
+    );
+}

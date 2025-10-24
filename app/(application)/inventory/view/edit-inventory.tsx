@@ -86,7 +86,7 @@ export default function EditInventory({
       const customFields =
         data.others?.map((item: any) => ({
           key: item.name,
-          value: item.value,
+          id: item.value,
         })) || [];
         console.log( data.others)
 
@@ -150,7 +150,7 @@ export default function EditInventory({
         inventory_trackings: trackings,
         markUp: markupType,
         percent_markup: parseFloat(data.markup_value) || undefined,
-        markup_value: parseFloat(data.markup_value) || undefined,
+        markup_id: parseFloat(data.markup_value) || undefined,
         markup_price: parseFloat(data.markup_value) || undefined,
         days: data.days || 0,
         primary: data.primary || 0,

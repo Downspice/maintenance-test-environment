@@ -19,9 +19,9 @@ const dummyTableData = [
 ];
 
 const generatePOOptions = [
-  { value: "Manual PO", label: "Manual PO" },
-  { value: "Automatic PO -Work Order Based", label: "Automatic PO -Work Order Based" },
-  { value: "Automatic PO -Reorder Based", label: "Automatic PO -Reorder Based" },
+  { id: "Manual PO", name: "Manual PO" },
+  { id: "Automatic PO -Work Order Based", name: "Automatic PO -Work Order Based" },
+  { id: "Automatic PO -Reorder Based", name: "Automatic PO -Reorder Based" },
 ];
 
 const GeneratePO = z.object({

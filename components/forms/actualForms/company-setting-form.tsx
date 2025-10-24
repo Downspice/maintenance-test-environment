@@ -36,7 +36,7 @@ export const vendorSchema = z.object({
 
 export default function CompanySettings() {
   const [customFields, setCustomFields] = useState<
-    { name: string; value: string }[]
+    { name: string; id: string }[]
   >([]);
 
   const vendorForm = useForm<z.infer<typeof vendorSchema>>({
@@ -52,7 +52,7 @@ export default function CompanySettings() {
   }
 
   const addCustomField = () => {
-    setCustomFields([...customFields, { name: "", value: "" }]);
+    setCustomFields([...customFields, { name: "", id: "" }]);
   };
 
   return (
@@ -235,10 +235,10 @@ export default function CompanySettings() {
                         name="pushOrPullInspections"
                         label=" "
                         options={[
-                          { id: "Hide", label: "Hide 'All OK'Option" },
+                          { id: "Hide", name: "Hide 'All OK'Option" },
                           {
                             id: "warn",
-                            label:
+                            name:
                               "Warn user of incomplete steps before saving",
                           },
                         ]}

@@ -29,15 +29,15 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useGetVendors } from "@/services/setups/vendor";
 
 // Example options (replace with your actual options)
-const equipmentOptions = [{ label: "Excavator", value: "excavator" }];
-const fuelTypeOptions = [{ label: "Diesel", value: "diesel" }];
-const driverOptions = [{ label: "John Doe", value: "john" }];
-const costCentreOptions = [{ label: "Main", value: "main" }];
-const stockTankOptions = [{ label: "Tank 1", value: "tank1" }];
-const brandOptions = [{ label: "BrandX", value: "brandx" }];
-const stateOptions = [{ label: "CA", value: "CA" }];
-const expenseOptions = [{ label: "Oil", value: "oil" }];
-const partOptions = [{ label: "Filter", value: "filter" }];
+const equipmentOptions = [{ name: "Excavator", id: "excavator" }];
+const fuelTypeOptions = [{ name: "Diesel", id: "diesel" }];
+const driverOptions = [{ name: "John Doe", id: "john" }];
+const costCentreOptions = [{ name: "Main", id: "main" }];
+const stockTankOptions = [{ name: "Tank 1", id: "tank1" }];
+const brandOptions = [{ name: "BrandX", id: "brandx" }];
+const stateOptions = [{ name: "CA", id: "CA" }];
+const expenseOptions = [{ name: "Oil", id: "oil" }];
+const partOptions = [{ name: "Filter", id: "filter" }];
 
 // Misc Expense Row Schema
 const miscExpenseSchema = z.object({

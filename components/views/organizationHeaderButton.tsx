@@ -39,11 +39,11 @@ export default function OrganizationHeaderButton() {
     handleDropdownOptionSelect(x);
   };
 
-  const dropdownItems1 = [{ label: "Settings", onSelect: genericDropdown }];
+  const dropdownItems1 = [{ name: "Settings", onSelect: genericDropdown }];
 
   const dropdownItems2 = [
-    { label: "Locations", onSelect: genericDropdown },
-    { label: "Warehouses", onSelect: genericDropdown },
+    { name: "Locations", onSelect: genericDropdown },
+    { name: "Warehouses", onSelect: genericDropdown },
   ];
 
   const formComponents = {

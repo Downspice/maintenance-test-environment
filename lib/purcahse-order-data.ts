@@ -21,16 +21,16 @@
 // };
 // export const PurchaseOrderOptions=[
 //   {
-//     value:"1",
-//     label:"PO 4004"
+//     id:"1",
+//     name:"PO 4004"
 //   },
 //   {
-//     value:"3",
-//     label:"PO 5004"
+//     id:"3",
+//     name:"PO 5004"
 //   },
 //   {
-//     value:"1",
-//     label:"PO 2004"
+//     id:"1",
+//     name:"PO 2004"
 //   },
 // ]
 // export const PurchaseOrderData:PurchaseOrderInterface[]=[

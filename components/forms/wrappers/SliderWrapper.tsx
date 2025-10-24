@@ -7,7 +7,7 @@ import type { Control } from "react-hook-form"
 interface SliderWrapperProps {
   control: Control<any>
   name: string
-  label: string
+  name: string
   min?: number
   max?: number
   step?: number

@@ -377,7 +377,7 @@ const {mutateAsync:updatePurchaseOrder}=useUpdatePurchaseOrder()
                     ))}
                   </div>
                 </div>
-                <div className="flex flex-row gap-x-2">
+                <div className="grid grid-cols-4 gap-x-2">
                   <DatePickerWrapper
                     control={form.control}
                     name="issued_date"
@@ -694,7 +694,7 @@ const {mutateAsync:updatePurchaseOrder}=useUpdatePurchaseOrder()
                             type="number"
                           />
 
-                          <ComboboxFieldWrapper
+                          {/* <ComboboxFieldWrapper
                                                 control={form.control}
                                                 name="discount_type"
                                                 label="Discount Type"
@@ -717,7 +717,7 @@ const {mutateAsync:updatePurchaseOrder}=useUpdatePurchaseOrder()
                                                   value={""}
                                                   type="text"
                                                 />
-                                              )}
+                                              )} */}
                           <InputWrapper
                             control={form.control}
                             name="tax_one"

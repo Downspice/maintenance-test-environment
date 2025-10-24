@@ -128,7 +128,7 @@ export function useDataTable<TData>(props: UseDataTableProps<TData>) {
   }, [page, perPage]);
 
   const onPaginationChange = React.useCallback(
-    (updaterOrValue: Updater<PaginationState>) => {
+    (updaterOrid: Updater<PaginationState>) => {
       if (typeof updaterOrValue === "function") {
         const newPagination = updaterOrValue(pagination);
         void setPage(newPagination.pageIndex + 1);
@@ -155,7 +155,7 @@ export function useDataTable<TData>(props: UseDataTableProps<TData>) {
   );
 
   const onSortingChange = React.useCallback(
-    (updaterOrValue: Updater<SortingState>) => {
+    (updaterOrid: Updater<SortingState>) => {
       if (typeof updaterOrValue === "function") {
         const newSorting = updaterOrValue(sorting);
         setSorting(newSorting as ExtendedColumnSort<TData>[]);
@@ -214,7 +214,7 @@ export function useDataTable<TData>(props: UseDataTableProps<TData>) {
 
           filters.push({
             id: key,
-            value: processedValue,
+            id: processedValue,
           });
         }
         return filters;
@@ -227,7 +227,7 @@ export function useDataTable<TData>(props: UseDataTableProps<TData>) {
     React.useState<ColumnFiltersState>(initialColumnFilters);
 
   const onColumnFiltersChange = React.useCallback(
-    (updaterOrValue: Updater<ColumnFiltersState>) => {
+    (updaterOrid: Updater<ColumnFiltersState>) => {
       if (enableAdvancedFilter) return;
 
       setColumnFilters((prev) => {

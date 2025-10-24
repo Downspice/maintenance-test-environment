@@ -17,11 +17,11 @@ import {
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 // Example options (replace with your actual options)
-const equipmentOptions = [{ label: "Excavator", value: "excavator" }];
-const fluidOptions = [{ label: "Oil", value: "oil" }];
-const partOptions = [{ label: "Filter", value: "filter" }];
-const fluidUnitsOptions = [{ label: "Liters", value: "liters" }];
-const costCentreOptions = [{ label: "Main", value: "main" }];
+const equipmentOptions = [{ name: "Excavator", id: "excavator" }];
+const fluidOptions = [{ name: "Oil", id: "oil" }];
+const partOptions = [{ name: "Filter", id: "filter" }];
+const fluidUnitsOptions = [{ name: "Liters", id: "liters" }];
+const costCentreOptions = [{ name: "Main", id: "main" }];
 
 // Zod schema
 export const fluidConsumedSchema = z.object({

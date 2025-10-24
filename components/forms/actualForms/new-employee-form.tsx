@@ -109,7 +109,7 @@ export const employeeSchema = z.object({
 
 export default function NewEmployeeForm() {
   const [miscellaneous, setCustomFields] = useState<
-    { name: string; value: string }[]
+    { name: string; id: string }[]
   >([]);
   const [renewals, setRenewals] = useState<RenewalData[]>([]);
   const [open, setOpen] = useState(false);

@@ -1851,55 +1851,55 @@ type Props = {
 };
 
 type TabItem = {
-  label: string;
-  value: TabKey;
+  name: string;
+  id: TabKey;
   content: React.ReactNode;
 };
 
 const tabItems: TabItem[] = [
   {
-    label: "Maintenance",
-    value: "maintenance",
+    name: "Maintenance",
+    id: "maintenance",
     content: <MaintenanceHistoryComponent />,
   },
   {
-    label: "Inspections",
-    value: "inspections",
+    name: "Inspections",
+    id: "inspections",
     content: <InspectionTab />,
   },
   {
-    label: "Expenses",
-    value: "expenses",
+    name: "Expenses",
+    id: "expenses",
     content: <ExpensesTab />,
   },
   {
-    label: "Fuel",
-    value: "fuel",
+    name: "Fuel",
+    id: "fuel",
     content: <FuelTab />,
   },
   {
-    label: "Assignments",
-    value: "assignments",
+    name: "Assignments",
+    id: "assignments",
     content: <AssignmentsTab />,
   },
   {
-    label: "Fluids",
-    value: "fluids",
+    name: "Fluids",
+    id: "fluids",
     content: <FluidsTab />,
   },
   {
-    label: "Accidents",
-    value: "accidents",
+    name: "Accidents",
+    id: "accidents",
     content: <AccidentsTab />,
   },
   {
-    label: "Meter Log",
-    value: "meter-log",
+    name: "Meter Log",
+    id: "meter-log",
     content: <MeterLog />,
   },
   {
-    label: "Meter Replacement",
-    value: "meter-replacement",
+    name: "Meter Replacement",
+    id: "meter-replacement",
     content: <MeterReplacementTab />,
   },
 ];
@@ -1926,15 +1926,15 @@ export function HistoryTabs({ defaultTab = "maintenance" }: Props) {
 
 const partOptions = [
   {
-    label: "Oil Filter (PN-123)",
-    value: "PN-123",
+    name: "Oil Filter (PN-123)",
+    id: "PN-123",
     name: "Oil Filter",
     warehouse: "WH1",
     description: "Standard oil filter",
   },
   {
-    label: "Hydraulic Fluid (PN-456)",
-    value: "PN-456",
+    name: "Hydraulic Fluid (PN-456)",
+    id: "PN-456",
     name: "Hydraulic Fluid",
     warehouse: "WH2",
     description: "High pressure fluid",
@@ -1942,14 +1942,14 @@ const partOptions = [
 ];
 
 const equipmentOptions = [
-  { label: "Forklift", value: "forklift" },
-  { label: "Light System", value: "lights" },
+  { name: "Forklift", id: "forklift" },
+  { name: "Light System", id: "lights" },
 ];
 
 const serviceOptions = [
-  { label: "repairTypes", value: "Repair Types" },
-  { label: "repairs", value: "Repairs" },
-  { label: "taskTypes", value: "Task Types" },
+  { name: "repairTypes", id: "Repair Types" },
+  { name: "repairs", id: "Repairs" },
+  { name: "taskTypes", id: "Task Types" },
 ];
 
 const partSchema = z.object({
@@ -2119,8 +2119,8 @@ export function PartsManager({ equipment }: PartsProps) {
                 label="Part Type"
                 disabled={!!editingPart}
                 options={[
-                  { label: "Assigned Part", value: "assigned" },
-                  { label: "Fixed Cost", value: "fixed" },
+                  { name: "Assigned Part", id: "assigned" },
+                  { name: "Fixed Cost", id: "fixed" },
                 ]}
               />
 
@@ -2139,8 +2139,8 @@ export function PartsManager({ equipment }: PartsProps) {
                     name="partNumber"
                     label="Part Number"
                     options={partOptions.map((p) => ({
-                      label: p.label,
-                      value: p.value,
+                      name: p.label,
+                      id: p.value,
                     }))}
                     placeholder="Select part"
                     emptyText="No part found"
@@ -2574,55 +2574,55 @@ export default function EquipmentProfile({
   const sidebarMenu = [
     {
       id: "summary",
-      label: "Summary",
+      name: "Summary",
       icon: <FileText size={20} />,
       content: <Summary />,
     },
     {
       id: "details",
-      label: "Details",
+      name: "Details",
       icon: <ClipboardList size={20} />,
       content: <EquipmentDetailsSection />,
     },
     {
       id: "tasks",
-      label: "Tasks",
+      name: "Tasks",
       icon: <ListChecks size={20} />,
       content: <Tasks />,
     },
     {
       id: "workOrders",
-      label: "Work Orders",
+      name: "Work Orders",
       icon: <ListChecks size={20} />,
       content: <WorkOrdersComponent />,
     },
     {
       id: "history",
-      label: "History",
+      name: "History",
       icon: <History size={20} />,
       content: <HistoryTabs />,
     },
     {
       id: "commonParts",
-      label: "Common Parts",
+      name: "Common Parts",
       icon: <BookText size={20} />,
       content: <PartsManager equipment={data.name} />,
     },
     {
       id: "images",
-      label: "Images",
+      name: "Images",
       icon: <ImageIcon size={20} />,
       content: <ImageGrid />,
     },
     {
       id: "attachments",
-      label: "Attachments",
+      name: "Attachments",
       icon: <Paperclip size={20} />,
       content: <AttachmentTable />,
     },
     {
       id: "notes",
-      label: "Notes",
+      name: "Notes",
       icon: <StickyNote size={20} />,
       content: (
         <Textarea

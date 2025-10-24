@@ -41,7 +41,7 @@ export function getCommonPinningStyles<TData>({
 export function getFilterOperators(filterVariant: FilterVariant) {
   const operatorMap: Record<
     FilterVariant,
-    { label: string; value: FilterOperator }[]
+    { name: string; id: FilterOperator }[]
   > = {
     text: dataTableConfig.textOperators,
     number: dataTableConfig.numericOperators,

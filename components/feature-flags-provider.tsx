@@ -47,7 +47,7 @@ export function FeatureFlagsProvider({ children }: FeatureFlagsProviderProps) {
           : null;
       },
       serialize: (value) => value ?? "",
-      defaultValue: null,
+      defaultid: null,
       clearOnDefault: true,
       shallow: false,
       eq: (a, b) => (!a && !b) || a === b,
@@ -55,7 +55,7 @@ export function FeatureFlagsProvider({ children }: FeatureFlagsProviderProps) {
   );
 
   const onFilterFlagChange = React.useCallback(
-    (value: FilterFlag) => {
+    (id: FilterFlag) => {
       setFilterFlag(value);
     },
     [setFilterFlag],

@@ -18,13 +18,13 @@ import { Trash2, Pencil } from "lucide-react";
 import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
 
 const partOptions = [
-  { label: "Oil Filter (PN-123)", value: "PN-123" },
-  { label: "Hydraulic Fluid (PN-456)", value: "PN-456" },
+  { name: "Oil Filter (PN-123)", id: "PN-123" },
+  { name: "Hydraulic Fluid (PN-456)", id: "PN-456" },
 ];
 
 const equipmentOptions = [
-  { label: "Forklift", value: "forklift" },
-  { label: "Light System", value: "lights" },
+  { name: "Forklift", id: "forklift" },
+  { name: "Light System", id: "lights" },
 ];
 
 const MaintenanceFormSchema = z.object({

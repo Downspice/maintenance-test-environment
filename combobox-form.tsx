@@ -13,16 +13,16 @@ import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 const frameworks = [
-  { value: "next.js", label: "Next.js" },
-  { value: "sveltekit", label: "SvelteKit" },
-  { value: "nuxt.js", label: "Nuxt.js" },
-  { value: "remix", label: "Remix" },
-  { value: "astro", label: "Astro" },
-  { value: "react", label: "React" },
-  { value: "vue", label: "Vue.js" },
-  { value: "angular", label: "Angular" },
-  { value: "svelte", label: "Svelte" },
-  { value: "gatsby", label: "Gatsby" },
+  { id: "next.js", name: "Next.js" },
+  { id: "sveltekit", name: "SvelteKit" },
+  { id: "nuxt.js", name: "Nuxt.js" },
+  { id: "remix", name: "Remix" },
+  { id: "astro", name: "Astro" },
+  { id: "react", name: "React" },
+  { id: "vue", name: "Vue.js" },
+  { id: "angular", name: "Angular" },
+  { id: "svelte", name: "Svelte" },
+  { id: "gatsby", name: "Gatsby" },
 ]
 
 const FormSchema = z.object({

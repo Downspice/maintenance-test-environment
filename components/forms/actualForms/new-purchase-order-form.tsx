@@ -48,7 +48,7 @@ import {
   PurchaseOrderItemType,
   PurchaseOrderStatusType,
 } from "@/lib/PurchaseOrder/purchaseOrder-data";
-import { useGetLocations, useGetVendors } from "@/services/setups/vendor";
+import { useGetLocations, useGetPurchaseOrderTerms, useGetVendors } from "@/services/setups/vendor";
 import { useGetPurchaseOrderShipVias } from "@/services/setups/purchaseOrder";
 import { useGetWarehouses } from "@/services/setups/inventory";
 import { useGetItemTypes } from "@/services/setups/invoice";
@@ -60,6 +60,7 @@ interface triggerVariant {
 export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
   const { data: shipViaOptions } = useGetPurchaseOrderShipVias();
   const { data: itemTypesOptionsList } = useGetItemTypes<Array<{ id: string; name: string }>>();
+  const { data: termsOptionsList } = useGetPurchaseOrderTerms<Array<{ id: string; name: string }>>();
   
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -270,7 +271,7 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit, onError)}
-        className="space-y-6"
+        className="space-y-6 w-7/8"
       >
         <div className="flex flex-col space-y-2">
           <div className="flex flex-row gap-x-3">
@@ -316,7 +317,7 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
               ))}
             </div>
           </div>
-          <div className="flex flex-row gap-x-2">
+          <div className="grid grid-cols-4 gap-x-2">
             <DatePickerWrapper
               control={form.control}
               name="issued_date"
@@ -585,7 +586,7 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
                       control={form.control}
                       name="term_id"
                       label="Terms"
-                      options={invoiceOptionsList}
+                      options={termsOptionsList??[]}
                     />
                     <InputWrapper
                       control={form.control}
@@ -635,9 +636,9 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
                       name="discount_type"
                       label="Discount Type"
                       options={[
-                        { value: "Fixed", label: "Fixed Amount" },
-                        { value: "Percent", label: "Percentage" },
-                      ]}
+                        { id: "Fixed", name: "Fixed Amount" },
+                        { id: "Percent", name: "Percentage" },
+                       ]}
                     />
 
                     {watchDiscountType === "Percent" && (
@@ -658,7 +659,6 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
                         type="number"
                       />
                     )}
-
                     <InputWrapper
                       control={form.control}
                       name="tax_one"

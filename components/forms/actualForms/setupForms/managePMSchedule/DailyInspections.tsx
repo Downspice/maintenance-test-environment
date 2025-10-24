@@ -17,14 +17,14 @@ import SelectWrapper from "@/components/forms/wrappers/SelectWrapper";
 import { AlertDialog } from "@/components/ui/alert-dialog";
 
 const priorityOptions = [
-  { label: "Normal", value: "normal" },
-  { label: "High", value: "high" },
+  { name: "Normal", id: "normal" },
+  { name: "High", id: "high" },
 ];
 
 const typeOptions = [
-  { label: "Forklift", value: "forklift" },
-  { label: "Lights", value: "lights" },
-  { label: "Inspection", value: "inspection" },
+  { name: "Forklift", id: "forklift" },
+  { name: "Lights", id: "lights" },
+  { name: "Inspection", id: "inspection" },
 ];
 
 // Zod Schema

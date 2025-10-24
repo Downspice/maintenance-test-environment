@@ -174,7 +174,7 @@ export default function ScheduledReportDataTable() {
 
   // Server-side search handler
   const handleServerSearch = React.useCallback(
-    (searchValue: string) => {
+    (searchid: string) => {
       console.log(`🔍 Server Search: "${searchValue}"`);
 
       setIsLoading(true);
@@ -319,7 +319,7 @@ export default function ScheduledReportDataTable() {
         };
 const dropdownItems = [
   {
-    label: "Edit",
+    name: "Edit",
     component: (
       <EditScheduledReportForm
         trigger={

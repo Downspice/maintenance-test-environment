@@ -5,15 +5,15 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import type { Control } from "react-hook-form"
 
 export interface RadioOption {
-  value: string
-  label: string
+  id: string
+  name: string
   description?: string
 }
 
 interface RadioGroupWrapperProps {
   control: Control<any>
   name: string
-  label: string
+  name: string
   options: RadioOption[]
   className?: string
   disabled?: boolean

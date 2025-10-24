@@ -436,48 +436,48 @@ export const NoteLog: NoteLogType[] = [
 
 export const MaintenanceTypesOptionList: RadioOption[] = [
   {
-    label: "Preventive",
-    value: "Preventive",
+    name: "Preventive",
+    id: "Preventive",
     description: " ",
   },
   {
-    label: "Repair",
-    value: "Repair",
+    name: "Repair",
+    id: "Repair",
     description: " ",
   },
   {
-    label: "Other",
-    value: "Other",
+    name: "Other",
+    id: "Other",
     description: " ",
   },
 ];
 
 export const performedOptionList: RadioOption[] = [
   {
-    label: "Vendor",
-    value: "Vendor",
+    name: "Vendor",
+    id: "Vendor",
     description: " ",
   },
   {
-    label: "Technician",
-    value: "Technician",
+    name: "Technician",
+    id: "Technician",
     description: " ",
   }, 
 ];
 export const maintenanceTaskOptionsList = [
-  { label: "Check Oil Level", value: "check-oil-level" },
-  { label: "Check Water Level", value: "check-water-level" },
-  { label: "Check Air Filter", value: "check-air-filter" },
-  { label: "Clean Spark Plugs", value: "clean-spark-plugs" },
-  { label: "Inspect Belts", value: "inspect-belts" },
-  { label: "Tighten Bolts", value: "tighten-bolts" },
-  { label: "Test Battery Voltage", value: "test-battery-voltage" },
-  { label: "Lubricate Moving Parts", value: "lubricate-moving-parts" },
-  { label: "Replace Fuel Filter", value: "replace-fuel-filter" },
-  { label: "Flush Coolant System", value: "flush-coolant-system" },
+  { name: "Check Oil Level", id: "check-oil-level" },
+  { name: "Check Water Level", id: "check-water-level" },
+  { name: "Check Air Filter", id: "check-air-filter" },
+  { name: "Clean Spark Plugs", id: "clean-spark-plugs" },
+  { name: "Inspect Belts", id: "inspect-belts" },
+  { name: "Tighten Bolts", id: "tighten-bolts" },
+  { name: "Test Battery Voltage", id: "test-battery-voltage" },
+  { name: "Lubricate Moving Parts", id: "lubricate-moving-parts" },
+  { name: "Replace Fuel Filter", id: "replace-fuel-filter" },
+  { name: "Flush Coolant System", id: "flush-coolant-system" },
 ];
 
 export const taskTypeOptionList = [
-  { label: "maintenance", value: "Maintenance" },
-  { label: "incident", value: "incident" },
+  { name: "maintenance", id: "Maintenance" },
+  { name: "incident", id: "incident" },
 ];

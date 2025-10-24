@@ -247,7 +247,7 @@ export default function RepairRequestTable() {
 
   // Server-side search handler
   const handleServerSearch = React.useCallback(
-    (searchValue: string) => {
+    (searchid: string) => {
       console.log(`🔍 Server Search: "${searchValue}"`);
 
       setIsLoading(true);

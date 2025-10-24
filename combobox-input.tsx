@@ -10,44 +10,44 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 
 const frameworks = [
   {
-    value: "next.js",
-    label: "Next.js",
+    id: "next.js",
+    name: "Next.js",
   },
   {
-    value: "sveltekit",
-    label: "SvelteKit",
+    id: "sveltekit",
+    name: "SvelteKit",
   },
   {
-    value: "nuxt.js",
-    label: "Nuxt.js",
+    id: "nuxt.js",
+    name: "Nuxt.js",
   },
   {
-    value: "remix",
-    label: "Remix",
+    id: "remix",
+    name: "Remix",
   },
   {
-    value: "astro",
-    label: "Astro",
+    id: "astro",
+    name: "Astro",
   },
   {
-    value: "react",
-    label: "React",
+    id: "react",
+    name: "React",
   },
   {
-    value: "vue",
-    label: "Vue.js",
+    id: "vue",
+    name: "Vue.js",
   },
   {
-    value: "angular",
-    label: "Angular",
+    id: "angular",
+    name: "Angular",
   },
   {
-    value: "svelte",
-    label: "Svelte",
+    id: "svelte",
+    name: "Svelte",
   },
   {
-    value: "gatsby",
-    label: "Gatsby",
+    id: "gatsby",
+    name: "Gatsby",
   },
 ]
 

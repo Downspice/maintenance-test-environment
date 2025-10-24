@@ -12,14 +12,14 @@ import type { Control } from "react-hook-form";
 
 interface CheckboxOption {
   id: string;
-  label: string;
+  name: string;
   description?: string;
 }
 
 interface CheckboxWrapperProps {
   control: Control<any>;
   name: string;
-  label: string;
+  name: string;
   options: CheckboxOption[];
   disabled?: boolean;
   required?: boolean;
@@ -65,7 +65,7 @@ export default function CheckboxWrapper({
                             const newValues = checked
                               ? [...currentValues, option.id]
                               : currentValues.filter(
-                                  (value: string) => value !== option.id
+                                  (id: string) => value !== option.id
                                 );
                             field.onChange(newValues);
                           }}

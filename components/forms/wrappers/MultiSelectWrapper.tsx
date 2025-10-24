@@ -24,15 +24,15 @@ import { Badge } from "@/components/ui/badge"
 import type { Control } from "react-hook-form"
 
 interface SelectOption {
-  value: string
-  label: string
+  id: string
+  name: string
   group?: string
 }
 
 interface MultiSelectWrapperProps {
   control: Control<any>
   name: string
-  label: string
+  name: string
   options: SelectOption[]
   className?: string
   placeholder?: string
@@ -87,7 +87,7 @@ export default function MultiSelectWrapper({
       render={({ field }) => {
         const selectedValues = field.value || []
         const selectedOptions = selectedValues
-          .map((value: string) => options.find((o) => o.value === value))
+          .map((id: string) => options.find((o) => o.value === value))
           .filter(Boolean) as SelectOption[]
 
         const clearAll = () => field.onChange([])

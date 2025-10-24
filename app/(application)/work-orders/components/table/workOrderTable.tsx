@@ -238,7 +238,7 @@ export default function WorkOrderDataTable() {
 
   // Server-side search handler
   const handleServerSearch = React.useCallback(
-    (searchValue: string) => {
+    (searchid: string) => {
       console.log(`🔍 Server Search: "${searchValue}"`);
 
       setIsLoading(true);
@@ -480,9 +480,9 @@ export default function WorkOrderDataTable() {
           setOpen(true);
         };
         const dropdownItems = [
-          { label: "Change Assignee", onSelect: genericDropdown },
-          { label: "Change Priority", onSelect: genericDropdown },
-          { label: "Change Cost Center", onSelect: genericDropdown },
+          { name: "Change Assignee", onSelect: genericDropdown },
+          { name: "Change Priority", onSelect: genericDropdown },
+          { name: "Change Cost Center", onSelect: genericDropdown },
         ];
 
         const formComponents = {

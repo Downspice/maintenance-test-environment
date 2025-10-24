@@ -16,20 +16,20 @@ import NewInventory from "@/components/forms/actualForms/new-inventory-form";
 
 const ActiveDropdown = [
   {
-    label: "All",
-    value: "all",
+    name: "All",
+    id: "all",
   },
   {
-    label: "Low-Stock",
-    value: "low_stock",
+    name: "Low-Stock",
+    id: "low_stock",
   },
   {
-    label: "out",
-    value: "Out of Stock",
+    name: "out",
+    id: "Out of Stock",
   },
   {
-    label: "out",
-    value: "PO Assigned",
+    name: "out",
+    id: "PO Assigned",
   },
 ];
 
@@ -69,7 +69,7 @@ export default function EmployeesPage() {
 
   const handleSelectChange = (
     key: "equipment" | "location" | "custom" | "search",
-    value: string
+    id: string
   ) => {
     if (value === "new") {
       console.log("Launching new location modal...");

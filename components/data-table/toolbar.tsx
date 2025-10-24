@@ -48,9 +48,9 @@ const getButtonSizeClass = (size: 'sm' | 'default' | 'lg', isIcon = false) => {
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
-  setSearch: (value: string | ((prev: string) => string)) => void;
+  setSearch: (id: string | ((prev: string) => string)) => void;
   setDateRange: (
-    value:
+    id:
       | { from_date: string; to_date: string }
       | ((prev: { from_date: string; to_date: string }) => {
         from_date: string;

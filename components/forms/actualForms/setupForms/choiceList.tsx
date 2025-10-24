@@ -55,6 +55,7 @@ import {
 } from "@/services/setups/vendor";
 import { useAddCostCenter, useAddInventoryCategory, useAddInventoryManufacturer, useAddInventoryUnitType, useDeleteCostCenter, useDeleteInventoryCategory, useDeleteInventoryManufacturer, useDeleteInventoryUnitType, useGetCostCenters, useGetInventoryCategories, useGetInventoryManufacturers, useGetInventoryUnitTypes, useUpdateCostCenter, useUpdateInventoryCategory, useUpdateInventoryManufacturer, useUpdateInventoryUnitType } from "@/services/setups/inventory";
 import { useAddPurchaseOrderShipVia, useDeletePurchaseOrderShipVia, useGetPurchaseOrderShipVias, useUpdatePurchaseOrderShipVia } from "@/services/setups/purchaseOrder";
+import { useAddWorkOrderType, useDeleteWorkOrderType, useGetWorkOrderTypes, useUpdateWorkOrderType } from "@/services/setups/workOrder";
 
 // ==============================
 // CONTENTS OBJECT WITH SERVICES
@@ -152,8 +153,20 @@ const tabData = [
   },
 ];
 export const contents = {
+   "workOrders:types": {
+    name: "Work Orders Types",
+    component: () => (
+      <GenericTab
+        label="Work Orders Types"
+        useGet={useGetWorkOrderTypes}
+        useAdd={useAddWorkOrderType}
+        useUpdate={useUpdateWorkOrderType}
+        useDelete={useDeleteWorkOrderType}
+      />
+    ),
+  },
   "purchaseOrders:terms": {
-    label: "Terms",
+    name: "Terms",
     component: () => (
       <GenericTab
         label="Terms"
@@ -165,7 +178,7 @@ export const contents = {
     ),
   },
   vendorTypes: {
-    label: "Vendor Types",
+    name: "Vendor Types",
     component: () => (
       <GenericTab
         label="Vendor Types"
@@ -177,7 +190,7 @@ export const contents = {
     ),
   },
   "employee:status": {
-    label: "Employee Status",
+    name: "Employee Status",
     component: () => (
       <GenericTab
         label="Employee Status"
@@ -189,7 +202,7 @@ export const contents = {
     ),
   },
   "employee:category": {
-    label: "Employee Category",
+    name: "Employee Category",
     component: () => (
       <GenericTab
         label="Employee Category"
@@ -201,7 +214,7 @@ export const contents = {
     ),
   },
   "employee:types": {
-    label: "Employee Types",
+    name: "Employee Types",
     component: () => (
       <GenericTab
         label="Employee Types"
@@ -213,7 +226,7 @@ export const contents = {
     ),
   },
   "employee:renewals": {
-    label: "Employee Renewals",
+    name: "Employee Renewals",
     component: () => (
       <GenericTab
         label="Employee Renewals"
@@ -225,7 +238,7 @@ export const contents = {
     ),
   },
   costCentres: {
-    label: "Cost Centres",
+    name: "Cost Centres",
     component: () => (
       <GenericTab
         label="Cost Centres "
@@ -238,7 +251,7 @@ export const contents = {
   },
 
    "purchaseOrders:shippingMethods" :{
-    label: "Shipping Methods",
+    name: "Shipping Methods",
     component: () => (
       <GenericTab
         label="Shipping Methods"
@@ -250,7 +263,7 @@ export const contents = {
     ),
   },
     "inventory:manufacturers" :{
-    label: "Manufacturers",
+    name: "Manufacturers",
     component: () => (
       <GenericTab
         label="Manufacturers"
@@ -262,7 +275,7 @@ export const contents = {
     ),
   },
      "inventory:categories" :{
-    label: "Category",
+    name: "Category",
     component: () => (
       <GenericTab
         label="Category"
@@ -274,7 +287,7 @@ export const contents = {
     ),
   },
        "inventory:unitTypes" :{
-    label: "Unit Types",
+    name: "Unit Types",
     component: () => (
       <GenericTab
         label="Unit Types"
@@ -297,8 +310,8 @@ interface TabData {
 }
 
 interface ContentItem {
-  value: string;
-  label: string;
+  id: string;
+  name: string;
 }
 
 interface DialogState {

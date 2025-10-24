@@ -217,7 +217,7 @@ export function PurchaseOrderDataLoader({ PurchaseOrderData, isLoading }) {
 
   // Server-side search handler
   const handleServerSearch = React.useCallback(
-    (searchValue: string) => {
+    (searchid: string) => {
       console.log(`🔍 Server Search: "${searchValue}"`);
 
       // setIsLoading(true);
@@ -439,7 +439,7 @@ export function PurchaseOrderDataLoader({ PurchaseOrderData, isLoading }) {
           setSelectedProjectType(x);
           setOpen(true);
         };
-        const dropdownItems = [{ label: "Receive", onSelect: genericDropdown }];
+        const dropdownItems = [{ name: "Receive", onSelect: genericDropdown }];
 
         const formComponents = {
           Receive: <ReceivePurchaseOrder data={row.original} />,

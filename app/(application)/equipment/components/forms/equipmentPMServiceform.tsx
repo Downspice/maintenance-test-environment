@@ -30,26 +30,26 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 // Example options
 const typeOptions = [
-  { label: "Normal", value: "normal" },
-  { label: "Forklift", value: "forklift" },
-  { label: "Generator", value: "generator" },
+  { name: "Normal", id: "normal" },
+  { name: "Forklift", id: "forklift" },
+  { name: "Generator", id: "generator" },
 ];
 const priorityOptions = [
-  { label: "Normal", value: "normal" },
-  { label: "High", value: "high" },
-  { label: "Low", value: "low" },
+  { name: "Normal", id: "normal" },
+  { name: "High", id: "high" },
+  { name: "Low", id: "low" },
 ];
 const periodOptions = [
-  { label: "Days", value: "days" },
-  { label: "Month", value: "month" },
-  { label: "Year", value: "year" },
+  { name: "Days", id: "days" },
+  { name: "Month", id: "month" },
+  { name: "Year", id: "year" },
 ];
 const pmOptions = [
-  { label: "PM1", value: "pm1" },
-  { label: "PM2", value: "pm2" },
+  { name: "PM1", id: "pm1" },
+  { name: "PM2", id: "pm2" },
 ];
-const equipmentOptions = [{ label: "Excavator", value: "excavator" }];
-const partNumberOptions = [{ label: "1234", value: "1234" }];
+const equipmentOptions = [{ name: "Excavator", id: "excavator" }];
+const partNumberOptions = [{ name: "1234", id: "1234" }];
 
 // Parts Table Schema
 const partSchema = z.object({
@@ -249,8 +249,8 @@ export default function EquipmentPMServiceForm() {
                         name="frequency.dateType"
                         label="Due"
                         options={[
-                          { label: "Due On", value: "dueOn" },
-                          { label: "Due Every", value: "dueEvery" },
+                          { name: "Due On", id: "dueOn" },
+                          { name: "Due Every", id: "dueEvery" },
                         ]}
                       />
                       {dateType === "dueOn" && (
@@ -304,8 +304,8 @@ export default function EquipmentPMServiceForm() {
                         name="frequency.hoursType"
                         label="Due"
                         options={[
-                          { label: "Due Every", value: "dueEvery" },
-                          { label: "Due At", value: "dueAt" },
+                          { name: "Due Every", id: "dueEvery" },
+                          { name: "Due At", id: "dueAt" },
                         ]}
                       />
                       {hoursType === "dueEvery" && (
@@ -378,8 +378,8 @@ export default function EquipmentPMServiceForm() {
                       name="partType"
                       label="Part Type"
                       options={[
-                        { label: "Assigned Part", value: "assignedPart" },
-                        { label: "Fixed Cost", value: "fixedCost" },
+                        { name: "Assigned Part", id: "assignedPart" },
+                        { name: "Fixed Cost", id: "fixedCost" },
                       ]}
                     />
                     {assignedPart ? (
@@ -763,8 +763,8 @@ export function UpdateEquipmentPMServiceForm({
                         name="frequency.dateType"
                         label="Due"
                         options={[
-                          { label: "Due On", value: "dueOn" },
-                          { label: "Due Every", value: "dueEvery" },
+                          { name: "Due On", id: "dueOn" },
+                          { name: "Due Every", id: "dueEvery" },
                         ]}
                       />
                       {dateType === "dueOn" && (
@@ -818,8 +818,8 @@ export function UpdateEquipmentPMServiceForm({
                         name="frequency.hoursType"
                         label="Due"
                         options={[
-                          { label: "Due Every", value: "dueEvery" },
-                          { label: "Due At", value: "dueAt" },
+                          { name: "Due Every", id: "dueEvery" },
+                          { name: "Due At", id: "dueAt" },
                         ]}
                       />
                       {hoursType === "dueEvery" && (
@@ -892,8 +892,8 @@ export function UpdateEquipmentPMServiceForm({
                       name="partType"
                       label="Part Type"
                       options={[
-                        { label: "Assigned Part", value: "assignedPart" },
-                        { label: "Fixed Cost", value: "fixedCost" },
+                        { name: "Assigned Part", id: "assignedPart" },
+                        { name: "Fixed Cost", id: "fixedCost" },
                       ]}
                     />
                     {assignedPart ? (

@@ -28,7 +28,7 @@ export default function HeaderMeterButton() {
   const [dialogContent, setDialogContent] = useState<React.ReactNode>(null);
   const [dialogTitle, setDialogTitle] = useState("");
 
-  const handleDropdownSelect = (label: string, content: React.ReactNode) => {
+  const handleDropdownSelect = (name: string, content: React.ReactNode) => {
     setDialogTitle(label);
     setDialogContent(content);
     setOpenDialog(true);
@@ -36,37 +36,37 @@ export default function HeaderMeterButton() {
 
   const dropdownItemsSection1 = [
     {
-      label: "History (Cost Summary)",
+      name: "History (Cost Summary)",
       content: <HistoryReportGeneration/>,
     },
     {
-      label: "Fuel History",
+      name: "Fuel History",
       content: <FuelReportGeneration/>,
     },
     {
-      label: "Equipment Usage",
+      name: "Equipment Usage",
       content: <EquipmentReportGeneration/>,
     },
     {
-      label: "Inventory Listing",
+      name: "Inventory Listing",
       content: <InventoryReportGeneration/>,
     },
     {
-      label: " Inventory Update",
+      name: " Inventory Update",
       content: <InventoryUsageReportGeneration/>,
     },
   ];
 
   const dropdownItemsSection2 = [
     {
-      label: "Charts",
+      name: "Charts",
       content: <div>Charts view</div>,
     },
   ];
 
   const dropdownItemsSection3 = [
     {
-      label: "View All Reports",
+      name: "View All Reports",
       content: <div>All reports listed here...</div>,
     },
   ];

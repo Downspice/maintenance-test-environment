@@ -9,8 +9,8 @@ import { GenericObject } from "@/types/types"
 interface SelectWrapperProps {
   control: Control<any>
   name: string
-  label: string
-  options: GenericObject[]
+  name: string
+  options: GenericObject[]|[]
   className?: string
   placeholder?: string
   disabled?: boolean
@@ -22,7 +22,7 @@ export default function SelectWrapper({
   control,
   name,
   label,
-  options,
+  options=[],
   className,
   placeholder,
   disabled = false,

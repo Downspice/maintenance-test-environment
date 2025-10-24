@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { ColumnSizingState } from "@tanstack/react-table";
 
 // Debounce function to limit expensive operations
-function useDebounce<T>(value: T, delay: number): T {
+function useDebounce<T>(id: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
 
   useEffect(() => {

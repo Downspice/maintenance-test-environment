@@ -102,7 +102,7 @@ export const PurchaseOrderItemSchema = z.object({
 // Custom Field Schema for dynamic fields
 export const CustomFieldSchema = z.object({
   name: z.string().min(1, "Field name is required"),
-  value: z.string().min(1, "Field value is required")
+  id: z.string().min(1, "Field value is required")
 });
 
 // Attachment Schema

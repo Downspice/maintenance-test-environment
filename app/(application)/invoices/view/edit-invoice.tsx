@@ -85,7 +85,7 @@ export const InvoiceSchema = z.object({
     .array(
       z.object({
         name: z.string(),
-        value: z.string(),
+        id: z.string(),
       })
     )
     .optional(),

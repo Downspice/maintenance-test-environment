@@ -16,13 +16,13 @@ import AddEquipmentsButton from "@/components/sideBarButtons/add-equipments-butt
 import EquipmentForm from "@/app/(application)/equipment/components/new-equipment-form";
 type Submenu = {
   href: string;
-  label: string;
+  name: string;
   active?: boolean;
 };
 
 type Menu = {
   href: string;
-  label: string;
+  name: string;
   active?: boolean;
   icon: LucideIcon;
   submenus?: Submenu[];
@@ -31,7 +31,7 @@ type Menu = {
 };
 
 type Group = {
-  groupLabel: string;
+  groupname: string;
   menus: Menu[];
 };
 
@@ -41,72 +41,72 @@ function yourImportedFunction() {
 export function getMenuList(pathname: string): Group[] {
   return [
     {
-      groupLabel: "",
+      groupname: "",
       menus: [
         {
           href: "/dashboard",
-          label: "Home",
+          name: "Home",
           icon: House,
           submenus: [],
         },
         {
           href: "/equipment",
-          label: "Equipment",
+          name: "Equipment",
           icon: Cog,
           submenus: [],
           button: <EquipmentForm variant="icon"/> 
         },
         {
           href: "/work-orders",
-          label: "Work Orders",
+          name: "Work Orders",
           icon: File,
           submenus: [],
         },
         {
           href: "/inventory",
-          label: "Inventory",
+          name: "Inventory",
           icon: Boxes,
           submenus: [],
         },
         {
           href: "/purchase-orders",
-          label: "Purchase Orders",
+          name: "Purchase Orders",
           icon: ShoppingCart,
           submenus: [],
         },
         {
           href: "/customer",
-          label: "Customer",
+          name: "Customer",
           icon: Users,
           submenus: [],
         },
         // {
         //   href: "/inspections",
-        //   label: "Inspections",
+        //   name: "Inspections",
         //   icon: ListTodo,
         //   submenus: [],
         // },
         {
           href: "/invoices",
-          label: "Invoices",
+          name: "Invoices",
           icon: ListTodo,
           submenus: [],
         },
         {
           href: "/employees",
-          label: "Employees",
+          name: "Employees",
           icon: Users,
           submenus: [],
         },
         {
           href: "/vendors",
-          label: "Vendors",
+          name: "Vendors",
           icon: Building,
           submenus: [],
         },
         {
           href: "/calendars",
-          label: "Calendars",
+          name: "Calendars",
           icon: CalendarRange,
           submenus: [],
         },

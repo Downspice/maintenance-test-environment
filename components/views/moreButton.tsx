@@ -63,22 +63,22 @@ export default function HeaderUploadButton() {
     };
 
      const dropdownItemsSection1 = [
-    { label: "Update Meters", onSelect: genericDropdown },
-    { label: "Physical Inventory Count", onSelect: genericDropdown },
-    { label: "Import Meter Readings", onSelect: genericDropdown },
+    { name: "Update Meters", onSelect: genericDropdown },
+    { name: "Physical Inventory Count", onSelect: genericDropdown },
+    { name: "Import Meter Readings", onSelect: genericDropdown },
   ];
 
   const dropdownItemsSection2 = [
-    { label: "Generate Work Orders", onSelect: genericDropdown },
-    { label: "Generate Purchase Orders", onSelect: genericDropdown },
-    { label: "PM Forecaster", onSelect: genericDropdown },
+    { name: "Generate Work Orders", onSelect: genericDropdown },
+    { name: "Generate Purchase Orders", onSelect: genericDropdown },
+    { name: "PM Forecaster", onSelect: genericDropdown },
   ];
     const dropdownItemsSection3 = [
-      { label: "Repair Request (Outstanding)", onSelect: genericDropdown },
-      { label: "Meter Updates", onSelect: genericDropdown },
-      { label: "Job site Assignments", onSelect: genericDropdown },
-      { label: "Meter Replacements", onSelect: genericDropdown },
-      { label: "Email history", onSelect: genericDropdown },
+      { name: "Repair Request (Outstanding)", onSelect: genericDropdown },
+      { name: "Meter Updates", onSelect: genericDropdown },
+      { name: "Job site Assignments", onSelect: genericDropdown },
+      { name: "Meter Replacements", onSelect: genericDropdown },
+      { name: "Email history", onSelect: genericDropdown },
     ];
 
     const formComponents = {

@@ -11,7 +11,7 @@ import { Separator } from "../ui/separator";
 type InventoryDataType = {
   name: string;
   description: string;
-  value: string;
+  id: string;
   outOfStock: string;
   soon: string;
 };

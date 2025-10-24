@@ -15,7 +15,7 @@ import { useGetMarkupTypes } from "@/services/setups/inventory";
 export const ChangeMarkUpSchema = z.object({
   markUp: z.enum(["none", "percent", "value", "manual"]),
   percentMarkup: z.coerce.number().optional(),
-  markupValue: z.coerce.number().optional(),
+  markupid: z.coerce.number().optional(),
   markupPrice: z.coerce.number().optional(),
 });
 

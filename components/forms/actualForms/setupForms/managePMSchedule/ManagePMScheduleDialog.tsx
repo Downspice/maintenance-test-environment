@@ -12,7 +12,7 @@ import { Save } from "lucide-react";
 import { useEffect } from "react";
 import { z } from "zod";
 
-const meterOptions = [{ label: "Hour", value: "hour" },{ label: "Miles", value: "Miles" }];
+const meterOptions = [{ name: "Hour", id: "hour" },{ name: "Miles", id: "Miles" }];
 
 export const ManagePMScheduleSchema = z.object({
   id: z.string().optional(),

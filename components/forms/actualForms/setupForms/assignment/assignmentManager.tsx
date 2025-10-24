@@ -186,8 +186,8 @@ const laborForm = useForm<LaborAssociationFormValues>({
               name="type_id"
               label="Type"
               options={[
-                { value: "preventive", label: "Preventive" },
-                { value: "repair", label: "Repair" },
+                { id: "preventive", name: "Preventive" },
+                { id: "repair", name: "Repair" },
               ]}
               onChange={setRadioType}
               disabled={isEditing}
@@ -197,7 +197,7 @@ const laborForm = useForm<LaborAssociationFormValues>({
               control={laborForm.control}
               name="equipment"
               label="Equipment"
-              options={equipmentList.map((e) => ({ label: e, value: e }))}
+              options={equipmentList.map((e) => ({ name: e, id: e }))}
               disabled
               value={selectedEquipment || undefined}
             />
@@ -209,12 +209,12 @@ const laborForm = useForm<LaborAssociationFormValues>({
               options={
                 radioType === "preventive"
                   ? ["Inspection", "Cleaning", "Test"].map((s) => ({
-                      label: s,
-                      value: s,
+                      name: s,
+                      id: s,
                     }))
                   : ["Repair Motor", "Replace Seal"].map((s) => ({
-                      label: s,
-                      value: s,
+                      name: s,
+                      id: s,
                     }))
               }
             />
@@ -224,8 +224,8 @@ const laborForm = useForm<LaborAssociationFormValues>({
               name="method"
               label="Cost Method"
               options={[
-                { value: "assignLabourer", label: "Assign Labourer" },
-                { value: "fixedCost", label: "Fixed Cost" },
+                { id: "assignLabourer", name: "Assign Labourer" },
+                { id: "fixedCost", name: "Fixed Cost" },
               ]}
               onChange={(val) => setMethod(val as any)} disabled={isEditing}
             />
@@ -237,8 +237,8 @@ const laborForm = useForm<LaborAssociationFormValues>({
                   name="labourerType"
                   label="Labourer Type"
                   options={[
-                    { value: "employee", label: "Employee" },
-                    { value: "vendor", label: "Vendor" },
+                    { id: "employee", name: "Employee" },
+                    { id: "vendor", name: "Vendor" },
                   ]}
                   onChange={(val) => setLabourerType(val as any)} disabled={isEditing}
                 />
@@ -249,8 +249,8 @@ const laborForm = useForm<LaborAssociationFormValues>({
                     name="labourer"
                     label="Employee"
                     options={["John Doe", "Jane Smith"].map((x) => ({
-                      label: x,
-                      value: x,
+                      name: x,
+                      id: x,
                     }))}
                   />
                 )}
@@ -260,8 +260,8 @@ const laborForm = useForm<LaborAssociationFormValues>({
                     name="labourer"
                     label="Vendor"
                     options={["ACME Services", "Vendor Corp"].map((x) => ({
-                      label: x,
-                      value: x,
+                      name: x,
+                      id: x,
                     }))}
                   />
                 )}
@@ -310,7 +310,7 @@ const laborForm = useForm<LaborAssociationFormValues>({
               control={partForm.control}
               name="equipment"
               label="Equipment"
-              options={equipmentList.map((e) => ({ label: e, value: e }))}
+              options={equipmentList.map((e) => ({ name: e, id: e }))}
               disabled
               value={selectedEquipment || undefined}
             />
@@ -320,8 +320,8 @@ const laborForm = useForm<LaborAssociationFormValues>({
               name="type_id"
               label="Type"
               options={[
-                { value: "preventive", label: "Preventive" },
-                { value: "repair", label: "Repair" },
+                { id: "preventive", name: "Preventive" },
+                { id: "repair", name: "Repair" },
               ]}
               onChange={setRadioType} disabled={isEditing}
             />
@@ -333,12 +333,12 @@ const laborForm = useForm<LaborAssociationFormValues>({
               options={
                 radioType === "preventive"
                   ? ["Inspection", "Cleaning", "Test"].map((s) => ({
-                      label: s,
-                      value: s,
+                      name: s,
+                      id: s,
                     }))
                   : ["Repair Motor", "Replace Seal"].map((s) => ({
-                      label: s,
-                      value: s,
+                      name: s,
+                      id: s,
                     }))
               }
             />
@@ -348,8 +348,8 @@ const laborForm = useForm<LaborAssociationFormValues>({
               name="method"
               label="Method"
               options={[
-                { value: "assignedPart", label: "Assigned Part" },
-                { value: "fixedCost", label: "Fixed Cost" },
+                { id: "assignedPart", name: "Assigned Part" },
+                { id: "fixedCost", name: "Fixed Cost" },
               ]}
               onChange={(val) => partForm.setValue("method", val as any)} disabled={isEditing}
             />
@@ -361,8 +361,8 @@ const laborForm = useForm<LaborAssociationFormValues>({
                   name="partNumber"
                   label="Part Number"
                   options={Object.keys(partsMap).map((p) => ({
-                    label: p,
-                    value: p,
+                    name: p,
+                    id: p,
                   }))}
                   onChange={handlePartChange}
                 />
@@ -426,7 +426,7 @@ const laborForm = useForm<LaborAssociationFormValues>({
               control={partForm.control}
               name="equipment"
               label="Equipment"
-              options={equipmentList.map((e) => ({ label: e, value: e }))}
+              options={equipmentList.map((e) => ({ name: e, id: e }))}
               disabled
               value={selectedEquipment || ""}
             />
@@ -440,7 +440,7 @@ const laborForm = useForm<LaborAssociationFormValues>({
                 "Cleaning",
                 "Repair Motor",
                 "Replace Seal",
-              ].map((s) => ({ label: s, value: s }))}
+              ].map((s) => ({ name: s, id: s }))}
             />
 
             <FileUploadWrapper

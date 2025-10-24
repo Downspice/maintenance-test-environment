@@ -20,8 +20,8 @@ interface TabData {
 }
 
 interface ContentItem {
-  value: string;
-  label: string;
+  id: string;
+  name: string;
 }
 
 interface Props {

@@ -54,19 +54,19 @@ export const requestSchema = z.object({
 type RequestFormValues = z.infer<typeof requestSchema>;
 
 const requestTypeOptions = [
-  { label: "Type 1", value: "Type1" },
-  { label: "Type 2", value: "Type2" },
+  { name: "Type 1", id: "Type1" },
+  { name: "Type 2", id: "Type2" },
 ];
 
 const compliantStatusOptions = [
-  { label: "Yes", value: "Yes" },
-  { label: "No", value: "No" },
+  { name: "Yes", id: "Yes" },
+  { name: "No", id: "No" },
 ];
 
 const statusOfRequestOptions = [
-  { label: "Passed", value: "passed" },
-  { label: "Failed", value: "failed" },
-  { label: "Outstanding", value: "outstanding" },
+  { name: "Passed", id: "passed" },
+  { name: "Failed", id: "failed" },
+  { name: "Outstanding", id: "outstanding" },
 ];
 
 export default function RequestFormPage() {

@@ -2,7 +2,7 @@ import type { SortingState, ColumnFiltersState, VisibilityState, PaginationState
 
 type SortingUpdater = (prev: SortingState) => SortingState;
 type StatePromise = Promise<URLSearchParams> | undefined;
-type SetStateFunction<T> = (value: T | ((prev: T) => T)) => StatePromise;
+type SetStateFunction<T> = (id: T | ((prev: T) => T)) => StatePromise;
 
 /**
  * Handler for sorting changes in a data table
@@ -13,7 +13,7 @@ export function createSortingHandler(
   setSortOrder: SetStateFunction<"asc" | "desc">,
   defaultSortBy = "created_at"
 ) {
-  return (updaterOrValue: SortingState | SortingUpdater): void => {
+  return (updaterOrid: SortingState | SortingUpdater): void => {
     // Handle both direct values and updater functions
     const newSorting = typeof updaterOrValue === 'function'
       ? updaterOrValue([])
@@ -50,7 +50,7 @@ export function createSortingHandler(
 export function createColumnFiltersHandler(
   setColumnFilters: SetStateFunction<ColumnFiltersState>
 ) {
-  return (updaterOrValue: ColumnFiltersState | ((prev: ColumnFiltersState) => ColumnFiltersState)) => {
+  return (updaterOrid: ColumnFiltersState | ((prev: ColumnFiltersState) => ColumnFiltersState)) => {
     // Pass through to setColumnFilters (which handles updater functions)
     setColumnFilters(updaterOrValue);
   };
@@ -62,7 +62,7 @@ export function createColumnFiltersHandler(
 export function createColumnVisibilityHandler(
   setColumnVisibility: SetStateFunction<VisibilityState>
 ) {
-  return (updaterOrValue: VisibilityState | ((prev: VisibilityState) => VisibilityState)) => {
+  return (updaterOrid: VisibilityState | ((prev: VisibilityState) => VisibilityState)) => {
     // Pass through to setColumnVisibility (which handles updater functions)
     setColumnVisibility(updaterOrValue);
   };
@@ -77,7 +77,7 @@ export function createPaginationHandler(
   currentPage: number,
   currentPageSize: number
 ) {
-  return (updaterOrValue: PaginationState | ((prev: PaginationState) => PaginationState)) => {
+  return (updaterOrid: PaginationState | ((prev: PaginationState) => PaginationState)) => {
     // Handle both direct values and updater functions
     const newPagination = typeof updaterOrValue === 'function'
       ? updaterOrValue({ pageIndex: currentPage - 1, pageSize: currentPageSize })
@@ -95,7 +95,7 @@ export function createColumnSizingHandler(
   setColumnSizing: SetStateFunction<ColumnSizingState>,
   columnSizing: ColumnSizingState
 ) {
-  return (updaterOrValue: ColumnSizingState | ((prev: ColumnSizingState) => ColumnSizingState)) => {
+  return (updaterOrid: ColumnSizingState | ((prev: ColumnSizingState) => ColumnSizingState)) => {
     // Handle both direct values and updater functions
     const newSizing = typeof updaterOrValue === 'function'
       ? updaterOrValue(columnSizing)

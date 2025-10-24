@@ -43,7 +43,7 @@ export default function ShippingView() {
   };
   const handleSelectChange = (
     key: "equipment" | "location" | "custom" | "search",
-    value: string
+    id: string
   ) => {
     if (value === "new") {
       console.log("Launching new location modal...");

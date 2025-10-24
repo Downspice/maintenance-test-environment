@@ -13,26 +13,26 @@ export interface FluidConsumedFormValues {
 }
 
 export interface EquipmentOption {
-  value: string;
-  label: string;
+  id: string;
+  name: string;
 }
 
 export interface FluidOption {
-  value: string;
-  label: string;
+  id: string;
+  name: string;
 }
 
 export interface PartOption {
-  value: string;
-  label: string;
+  id: string;
+  name: string;
 }
 
 export interface FluidUnitOption {
-  value: string;
-  label: string;
+  id: string;
+  name: string;
 }
 
 export interface CostCentreOption {
-  value: string;
-  label: string;
+  id: string;
+  name: string;
 }

@@ -14,7 +14,7 @@ export default function AlternateUpcCodesTable({
 }: {
   manufacturers: GenericObject[];
   vendors: GenericObject[];
-  value: any[];
+  id: any[];
   onChange: (rows: any[]) => void;
 }) {
   console.log("value",value)

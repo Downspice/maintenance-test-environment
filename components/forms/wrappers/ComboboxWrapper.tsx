@@ -31,7 +31,7 @@ import { GenericObject } from "@/types/types";
 interface BaseFieldProps {
   control: Control<any>;
   name: string;
-  label: string;
+  name: string;
   className?: string;
   placeholder?: string;
   disabled?: boolean;
@@ -77,7 +77,7 @@ export function ComboboxFieldWrapper({
       control={control}
       name={name}
       render={({ field }) => {
-        const handleSelect = (value: string) => {
+        const handleSelect = (id: string) => {
           const option = options.find((opt) => opt.id === value);
           if (option) {
             field.onChange(option.id);
@@ -225,7 +225,7 @@ export function MultiComboboxWrapper({
           selectedValues.includes(o.id)
         );
 
-        const handleSelect = (value: string) => {
+        const handleSelect = (id: string) => {
           const current = field.value || [];
           if (current.includes(value)) {
             field.onChange(current.filter((v: string) => v !== value));
@@ -235,7 +235,7 @@ export function MultiComboboxWrapper({
           }
         };
 
-        const handleRemove = (value: string) => {
+        const handleRemove = (id: string) => {
           field.onChange(
             (field.value || []).filter((v: string) => v !== value)
           );

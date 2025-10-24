@@ -24,7 +24,7 @@ export default function PartSubstitutionTable({
   onChange,
 }: {
   parts: PartTableInterface[];
-  value: any[];
+  id: any[];
   onChange: (rows: any[]) => void;
 }) {
   const handleAddRow = () => {

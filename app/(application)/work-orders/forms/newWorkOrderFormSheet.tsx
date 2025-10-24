@@ -34,59 +34,59 @@ export const workOrderSchema = z.object({
     .array(
       z.object({
         name: z.string(),
-        value: z.string(),
+        id: z.string(),
       })
     )
     .optional(),
 });
 
 // Equipment options
-const equipmentOptions = [{ value: "1311827", label: "AC-001-07 Class 8" }];
+const equipmentOptions = [{ id: "1311827", name: "AC-001-07 Class 8" }];
 
 // Assignee options
 const assigneeOptions = [
-  { value: "User-246964", label: "Joseph Awer", group: "Employees" },
-  { value: "Vendor-324052", label: "Cameron, Inc.", group: "Vendors" },
-  { value: "Vendor-324053", label: "Davis Plumbing", group: "Vendors" },
+  { id: "User-246964", name: "Joseph Awer", group: "Employees" },
+  { id: "Vendor-324052", name: "Cameron, Inc.", group: "Vendors" },
+  { id: "Vendor-324053", name: "Davis Plumbing", group: "Vendors" },
   {
-    value: "Vendor-324047",
-    label: "International Belt Supply",
+    id: "Vendor-324047",
+    name: "International Belt Supply",
     group: "Vendors",
   },
-  { value: "Vendor-324051", label: "NAPA", group: "Vendors" },
-  { value: "Vendor-324048", label: "Neff Electrical Supply", group: "Vendors" },
-  { value: "Vendor-324050", label: "Rush Truck Centers", group: "Vendors" },
-  { value: "Vendor-324049", label: "The Instrument Group", group: "Vendors" },
+  { id: "Vendor-324051", name: "NAPA", group: "Vendors" },
+  { id: "Vendor-324048", name: "Neff Electrical Supply", group: "Vendors" },
+  { id: "Vendor-324050", name: "Rush Truck Centers", group: "Vendors" },
+  { id: "Vendor-324049", name: "The Instrument Group", group: "Vendors" },
 ];
 
 // Priority options
 export const priorityOptions = [
-  { value: "LOW", label: "LOW" },
-  { value: "NORMAL", label: "NORMAL" },
-  { value: "HIGH", label: "HIGH" },
-  { value: "URGENT", label: "URGENT" },
+  { id: "LOW", name: "LOW" },
+  { id: "NORMAL", name: "NORMAL" },
+  { id: "HIGH", name: "HIGH" },
+  { id: "URGENT", name: "URGENT" },
 ];
 
 // Work order type options
 const workOrderTypeOptions = [
-  { value: "preventive", label: "Preventive Maintenance" },
-  { value: "corrective", label: "Corrective Maintenance" },
-  { value: "inspection", label: "Inspection" },
-  { value: "other", label: "Other" },
+  { id: "preventive", name: "Preventive Maintenance" },
+  { id: "corrective", name: "Corrective Maintenance" },
+  { id: "inspection", name: "Inspection" },
+  { id: "other", name: "Other" },
 ];
 
 // Task options
 const taskOptions = [
   {
     id: "25417067",
-    label: "Oil Leaking",
+    name: "Oil Leaking",
     description: "Repair - due 6 Days ago",
   },
 ];
 
 export default function WorkOrderForm() {
   const [customFields, setCustomFields] = useState<
-    { name: string; value: string }[]
+    { name: string; id: string }[]
   >([]);
 
   const workOrderForm = useForm<z.infer<typeof workOrderSchema>>({
@@ -107,7 +107,7 @@ export default function WorkOrderForm() {
   }
 
   const addCustomField = () => {
-    setCustomFields([...customFields, { name: "", value: "" }]);
+    setCustomFields([...customFields, { name: "", id: "" }]);
   };
 
   return (

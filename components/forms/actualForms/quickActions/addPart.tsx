@@ -147,9 +147,9 @@ export default function NewPart() {
                 warehouses={warehouses}
                 setWarehouses={setWarehouses}
                 options={[
-                  { label: "Warehouse A", value: "warehouseA" },
-                  { label: "Warehouse B", value: "warehouseB" },
-                  { label: "Warehouse C", value: "warehouseC" },
+                  { name: "Warehouse A", id: "warehouseA" },
+                  { name: "Warehouse B", id: "warehouseB" },
+                  { name: "Warehouse C", id: "warehouseC" },
                 ]}
                 control={inventoryForm.control}
                 enableTrackingWatch={

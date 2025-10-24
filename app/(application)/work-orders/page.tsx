@@ -20,21 +20,21 @@ import NotCompleteMessage from "../workInprogress/working";import WorkOrderDataT
 import NewWorkOrderForm from "@/components/forms/actualForms/work-order-form";
 
 const equipmentActiveDropdown = [
-  { value: "Active", label: "All Outstanding" },
-  { value: "due", label: "Open" },
-  { value: "work_order_assigned", label: "In Progress" },
-  { value: "parent_equipment", label: "On Hold" },
-  { value: "In Shop", label: "Assigned" },
-  { value: "Inactive", label: "Inactive" },
-  { value: "Out of Service", label: "Unassigned" },
-  { value: "Sold", label: "Closed" },
+  { id: "Active", name: "All Outstanding" },
+  { id: "due", name: "Open" },
+  { id: "work_order_assigned", name: "In Progress" },
+  { id: "parent_equipment", name: "On Hold" },
+  { id: "In Shop", name: "Assigned" },
+  { id: "Inactive", name: "Inactive" },
+  { id: "Out of Service", name: "Unassigned" },
+  { id: "Sold", name: "Closed" },
 ];
 
 const locations = [
-  { value: "delete_filter", label: "All Locations" },
-  { value: "56533", label: "Location #1" },
-  { value: "56534", label: "Location #2" },
-  { value: "56532", label: "Main Location" },
+  { id: "delete_filter", name: "All Locations" },
+  { id: "56533", name: "Location #1" },
+  { id: "56534", name: "Location #2" },
+  { id: "56532", name: "Main Location" },
 ];
 
 export default function EquipmentPage() {
@@ -73,7 +73,7 @@ export default function EquipmentPage() {
 
   const handleSelectChange = (
     key: "equipment" | "location" | "custom",
-    value: string
+    id: string
   ) => {
     if (value === "new") {
       console.log("Launching new location modal...");

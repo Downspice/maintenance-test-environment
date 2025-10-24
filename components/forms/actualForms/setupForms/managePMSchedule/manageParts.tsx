@@ -13,15 +13,15 @@ import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrappe
 
 const partOptions = [
   {
-    label: "Oil Filter (PN-123)",
-    value: "PN-123",
+    name: "Oil Filter (PN-123)",
+    id: "PN-123",
     name: "Oil Filter",
     warehouse: "WH1",
     description: "Standard oil filter",
   },
   {
-    label: "Hydraulic Fluid (PN-456)",
-    value: "PN-456",
+    name: "Hydraulic Fluid (PN-456)",
+    id: "PN-456",
     name: "Hydraulic Fluid",
     warehouse: "WH2",
     description: "High pressure fluid",
@@ -29,8 +29,8 @@ const partOptions = [
 ];
 
 const equipmentOptions = [
-  { label: "Forklift", value: "forklift" },
-  { label: "Light System", value: "lights" },
+  { name: "Forklift", id: "forklift" },
+  { name: "Light System", id: "lights" },
 ];
 
 const partSchema = z.object({
@@ -192,8 +192,8 @@ export default function ManagePMSchedulePartsTab({ serviceName }: Props) {
               name="mode"
               label="Part Type"
               options={[
-                { label: "Assigned Part", value: "assigned" },
-                { label: "Fixed Cost", value: "fixed" },
+                { name: "Assigned Part", id: "assigned" },
+                { name: "Fixed Cost", id: "fixed" },
               ]}
             />
 
@@ -212,8 +212,8 @@ export default function ManagePMSchedulePartsTab({ serviceName }: Props) {
                   name="partNumber"
                   label="Part Number"
                   options={partOptions.map((p) => ({
-                    label: p.label,
-                    value: p.value,
+                    name: p.label,
+                    id: p.value,
                   }))}
                   placeholder="Select part"
                   emptyText="No part found"

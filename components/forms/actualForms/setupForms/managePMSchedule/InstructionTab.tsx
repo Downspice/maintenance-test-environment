@@ -9,8 +9,8 @@ import FileUploadWrapper from "@/components/forms/wrappers/FileUploadWrapper";
 import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
 
 const equipmentOptions = [
-  { label: "Forklift", value: "forklift" },
-  { label: "Light System", value: "lights" },
+  { name: "Forklift", id: "forklift" },
+  { name: "Light System", id: "lights" },
 ];
 
 const InstructionTabSchema = z.object({

@@ -30,13 +30,13 @@ import { usePathname } from "next/navigation";
 
 type Submenu = {
   href: string;
-  label: string;
+  name: string;
   active?: boolean;
 };
 
 interface CollapseMenuButtonProps {
   icon: LucideIcon;
-  label: string;
+  name: string;
   active: boolean;
   submenus: Submenu[];
   isOpen: boolean | undefined;
