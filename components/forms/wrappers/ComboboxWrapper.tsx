@@ -30,7 +30,7 @@ import { GenericObject } from "@/types/types";
 
 interface BaseFieldProps {
   control: Control<any>;
-  name: string;
+  label: string;
   name: string;
   className?: string;
   placeholder?: string;
@@ -50,7 +50,7 @@ export function ComboboxFieldWrapper({
   control,
   name,
   label,
-  options=[],
+  options = [],
   className,
   placeholder,
   disabled = false,
@@ -67,8 +67,8 @@ export function ComboboxFieldWrapper({
     if (!search) return options;
     return options.filter(
       (option) =>
-        option.name.toLowerCase().includes(search.toLowerCase()) ||
-        option.id.toLowerCase().includes(search.toLowerCase())
+        option.name?.toLowerCase().includes(search.toLowerCase()) ||
+        option.id?.toLowerCase().includes(search.toLowerCase())
     );
   }, [options, search]);
 
@@ -78,7 +78,7 @@ export function ComboboxFieldWrapper({
       name={name}
       render={({ field }) => {
         const handleSelect = (id: string) => {
-          const option = options.find((opt) => opt.id === value);
+          const option = options.find((opt) => opt.id === id);
           if (option) {
             field.onChange(option.id);
             setOpen(false);
@@ -133,6 +133,7 @@ export function ComboboxFieldWrapper({
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
+
                 <PopoverContent
                   className="w-[var(--radix-popover-trigger-width)] p-0"
                   align="start"
@@ -191,7 +192,7 @@ export function MultiComboboxWrapper({
   control,
   name,
   label,
-  options,
+  options = [],
   className,
   placeholder,
   disabled = false,
@@ -210,8 +211,8 @@ export function MultiComboboxWrapper({
     if (!search) return options;
     return options.filter(
       (option) =>
-        option.name.toLowerCase().includes(search.toLowerCase()) ||
-        option.id.toLowerCase().includes(search.toLowerCase())
+        option.name?.toLowerCase().includes(search.toLowerCase()) ||
+        option.id?.toLowerCase().includes(search.toLowerCase())
     );
   }, [options, search]);
 
@@ -220,25 +221,23 @@ export function MultiComboboxWrapper({
       control={control}
       name={name}
       render={({ field }) => {
-        const selectedValues = field.value || [];
+        const selectedValues: string[] = field.value || [];
         const selectedOptions = options.filter((o) =>
           selectedValues.includes(o.id)
         );
 
         const handleSelect = (id: string) => {
           const current = field.value || [];
-          if (current.includes(value)) {
-            field.onChange(current.filter((v: string) => v !== value));
+          if (current.includes(id)) {
+            field.onChange(current.filter((v: string) => v !== id));
           } else {
             if (maxSelections && current.length >= maxSelections) return;
-            field.onChange([...current, value]);
+            field.onChange([...current, id]);
           }
         };
 
         const handleRemove = (id: string) => {
-          field.onChange(
-            (field.value || []).filter((v: string) => v !== value)
-          );
+          field.onChange((field.value || []).filter((v: string) => v !== id));
         };
 
         const getValidationMessage = () => {
@@ -323,6 +322,7 @@ export function MultiComboboxWrapper({
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
+
                 <PopoverContent
                   className="w-[var(--radix-popover-trigger-width)] p-0"
                   align="start"
