@@ -16,13 +16,13 @@ import AddEquipmentsButton from "@/components/sideBarButtons/add-equipments-butt
 import EquipmentForm from "@/app/(application)/equipment/components/new-equipment-form";
 type Submenu = {
   href: string;
-  name: string;
+  label: string;
   active?: boolean;
 };
 
 type Menu = {
   href: string;
-  name: string;
+  label: string;
   active?: boolean;
   icon: LucideIcon;
   submenus?: Submenu[];
@@ -45,68 +45,68 @@ export function getMenuList(pathname: string): Group[] {
       menus: [
         {
           href: "/dashboard",
-          name: "Home",
+          label: "Home",
           icon: House,
           submenus: [],
         },
         {
           href: "/equipment",
-          name: "Equipment",
+          label: "Equipment",
           icon: Cog,
           submenus: [],
           button: <EquipmentForm variant="icon"/> 
         },
         {
           href: "/work-orders",
-          name: "Work Orders",
+          label: "Work Orders",
           icon: File,
           submenus: [],
         },
         {
           href: "/inventory",
-          name: "Inventory",
+          label: "Inventory",
           icon: Boxes,
           submenus: [],
         },
         {
           href: "/purchase-orders",
-          name: "Purchase Orders",
+          label: "Purchase Orders",
           icon: ShoppingCart,
           submenus: [],
         },
         {
           href: "/customer",
-          name: "Customer",
+          label: "Customer",
           icon: Users,
           submenus: [],
         },
         // {
         //   href: "/inspections",
-        //   name: "Inspections",
+        //   label: "Inspections",
         //   icon: ListTodo,
         //   submenus: [],
         // },
         {
           href: "/invoices",
-          name: "Invoices",
+          label: "Invoices",
           icon: ListTodo,
           submenus: [],
         },
         {
           href: "/employees",
-          name: "Employees",
+          label: "Employees",
           icon: Users,
           submenus: [],
         },
         {
           href: "/vendors",
-          name: "Vendors",
+          label: "Vendors",
           icon: Building,
           submenus: [],
         },
         {
           href: "/calendars",
-          name: "Calendars",
+          label: "Calendars",
           icon: CalendarRange,
           submenus: [],
         },
