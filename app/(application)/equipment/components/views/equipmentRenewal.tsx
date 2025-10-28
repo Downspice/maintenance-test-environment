@@ -7,7 +7,6 @@ import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { UserRoundCheck } from "lucide-react";
 import { toast } from "sonner";
-import { renewalOptionsList } from "@/lib/option-list";
 import {
   Sheet,
   SheetContent,
@@ -19,6 +18,7 @@ import { useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
 import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";
+import { useGetEquipmentRenewals } from "@/services/setups/equipments";
 
 // Define the form schema with Zod
 export const updateEquipmentSchema = z.object({
@@ -38,6 +38,8 @@ export default function UpdateEquipmentRenewalForm({
   data: any;
 }) {
   const [open, setOpen] = useState(false);
+  const { data: renewalOptionsList } = useGetEquipmentRenewals();
+  
   const updateEquipment = useForm<z.infer<typeof updateEquipmentSchema>>({
     resolver: zodResolver(updateEquipmentSchema),
     defaultValues: data,
@@ -103,6 +105,8 @@ export default function UpdateEquipmentRenewalForm({
 }
 
 export function NewEquipmentRenewalForm() {
+  const { data: renewalOptionsList } = useGetEquipmentRenewals();
+
   const updateEquipment = useForm<z.infer<typeof updateEquipmentSchema>>({
     resolver: zodResolver(updateEquipmentSchema),
     defaultValues: {},

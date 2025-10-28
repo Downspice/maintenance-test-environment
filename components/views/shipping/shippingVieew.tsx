@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/select";
 import NewShipToForm from "./new-shipping-form";
 import ShippingSheetTable from "./shipping-table";
-import { locationOptionsList, vendorTypeOptions } from "@/lib/option-list";
+import { vendorTypeOptions } from "@/lib/option-list";
 import { useState } from "react";
 import { useGetLocations } from "@/services/setups/vendor";
 
@@ -57,11 +57,11 @@ export default function ShippingView() {
       buildURL(updated);
     }
   };
-   const { 
-    data: locationOptionsList, 
-    isLoading:locationOptionsListLoading, 
-    error: locationOptionsListError
-  } = useGetLocations<Array<{ id: string, name: string }>>();
+  const {
+    data: locationOptionsList,
+    isLoading: locationOptionsListLoading,
+    error: locationOptionsListError,
+  } = useGetLocations<Array<{ id: string; name: string }>>();
   return (
     <>
       <div className="flex flex-row justify-between">
@@ -83,7 +83,7 @@ export default function ShippingView() {
               <SelectValue placeholder="All Warehouses" />
             </SelectTrigger>
             <SelectContent>
-              {locationOptionsList.map((item) => (
+              {locationOptionsList?.map((item) => (
                 <SelectItem value={item.id} key={item.id}>
                   {item.name}
                 </SelectItem>

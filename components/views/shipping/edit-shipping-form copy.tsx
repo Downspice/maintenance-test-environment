@@ -8,9 +8,7 @@ import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { GitPullRequestArrow, Plus } from "lucide-react";
 import { toast } from "sonner";
-import {
-  statusOptions,
-} from "@/lib/equipment-schema";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { vendorTypeOptions } from "@/lib/option-list";
 import {
@@ -27,6 +25,7 @@ import SelectWrapper from "@/components/forms/wrappers/SelectWrapper";
 import CustomFieldsWrapper from "@/components/forms/wrappers/CustomFieldsWrapper";
 import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
 import { useGetInventoryCategories } from "@/services/setups/inventory";
+import { useGetEquipmentStatuses } from "@/services/setups/equipments";
 
 // Define the form schema with Zod
 export const vendorSchema = z.object({
@@ -45,6 +44,8 @@ export const vendorSchema = z.object({
     data: any;
   }) {
       const { data: categoryOptions } = useGetInventoryCategories();
+      const { data: statusOptions } = useGetEquipmentStatuses();
+      
     
   const [customFields, setCustomFields] = useState<
     { name: string; id: string }[]

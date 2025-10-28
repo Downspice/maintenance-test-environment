@@ -12,8 +12,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { useSheet } from "@/lib/sheet-providers";
 import PurchaseOrderDataTable from "./table/purchaseOrderTable";
-import { dateFilterOptionsList, locationOptionsList } from "@/lib/option-list";
+import { dateFilterOptionsList,  } from "@/lib/option-list";
 import NewPurchaseOrderForm from "@/components/forms/actualForms/new-purchase-order-form";
+import { useGetLocations } from "@/services/setups/vendor";
 
 const ActiveDropdown = [
   { name: "Open", id: "my_open" },
@@ -25,6 +26,11 @@ const ActiveDropdown = [
 ];
 
 export default function EmployeesPage() {
+    const {
+        data: locationOptionsList,
+        isLoading: locationOptionsListLoading,
+        error: locationOptionsListError,
+      } = useGetLocations<Array<{ id: string; name: string }>>();
   const [filters, setFilters] = useState({
     equipment: "",
     location: "",
@@ -123,7 +129,7 @@ export default function EmployeesPage() {
               <SelectValue placeholder="All Warehouses" />
             </SelectTrigger>
             <SelectContent>
-              {locationOptionsList.map((item) => (
+              {locationOptionsList?.map((item) => (
                 <SelectItem value={item.id} key={item.id}>
                   {item.name}
                 </SelectItem>

@@ -39,33 +39,25 @@ import MultiSelectWrapper from "@/components/forms/wrappers/MultiSelectWrapper";
 import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";
 import CustomFieldsWrapper from "@/components/forms/wrappers/CustomFieldsWrapper";
 import {
-  carModelOptionsList,
   equipmentCheckboxOptions,
-  makeOptionsList,
   pmScheduleOptionList,
 } from "@/lib/option-list";
 import { toast } from "sonner";
 import {
-  // equipmentSchema,
-  // type EquipmentFormValues,
-  equipmentTypeOptions,
-  colorOptions,
-  statusOptions,
-  meterUnitsOptions,
   assigneeOptions,
   categoryOptions,
-  ownershipOptions,
   expenseOptions,
   periodOptionList,
 } from "@/lib/equipment-schema";
 import { useGetVendors } from "@/services/setups/vendor";
+import { useGetEquipmentColors, useGetEquipmentMakes, useGetEquipmentModels, useGetEquipmentOwnerships, useGetEquipmentStatuses, useGetEquipmentTypes } from "@/services/setups/equipments";
 
 export const equipmentSchema = z.object({
   // Identification
   name: z.string().min(1, "Unit # is required"),
   make: z.string().optional(),
   model: z.string().optional(),
-  serialNumber: z.string().optional(),
+  serial_number: z.string().optional(),
   year: z.coerce.number().optional(),
   equipmentType: z.string().optional(),
 
@@ -181,9 +173,16 @@ export default function EditEquipment({
   children: React.ReactNode;
   data: any;
 }) {
+  const { data: ownershipOptions } = useGetEquipmentOwnerships();
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-    const { data: vendorOptions } = useGetVendors();
+  const { data: vendorOptions } = useGetVendors();
+  const { data: makeOptionsList } = useGetEquipmentMakes();
+  const { data: carModelOptionsList } = useGetEquipmentModels();
+  const { data: equipmentTypeOptions } = useGetEquipmentTypes();
+  const { data: colorOptions } = useGetEquipmentColors();
+  const { data: statusOptions } = useGetEquipmentStatuses();
+  
 
   const form = useForm<EquipmentFormValues>({
     resolver: zodResolver(equipmentSchema),
@@ -409,7 +408,7 @@ export default function EditEquipment({
                                     />
                                     <InputWrapper
                                       control={form.control}
-                                      name="serialNumber"
+                                      name="serial_number"
                                       label="Serial #"
                                       type="text"
                                       value={""}
@@ -527,7 +526,7 @@ export default function EditEquipment({
                                 </>
                               }
                             />
-                            <Fieldset
+                            {/* <Fieldset
                               legend="Meter Configurations"
                               content={
                                 <>
@@ -572,7 +571,7 @@ export default function EditEquipment({
                                   </div>
                                 </>
                               }
-                            />
+                            /> */}
                             <Fieldset
                               legend="Custom Fields"
                               content={

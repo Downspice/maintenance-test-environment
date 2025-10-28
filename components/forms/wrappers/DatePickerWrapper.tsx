@@ -19,7 +19,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 
 interface DateFieldProps {
   control: Control<any>
-  name: string
+  label: string
   name: string
   className?: string
   placeholder?: string

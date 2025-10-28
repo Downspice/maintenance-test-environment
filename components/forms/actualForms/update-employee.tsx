@@ -5,15 +5,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { GitPullRequestArrow, UserRoundCheck } from "lucide-react";
+import { UserRoundCheck } from "lucide-react";
 import DatePickerWrapper from "../wrappers/DatePickerWrapper";
 import { toast } from "sonner";
 import InputWrapper from "../wrappers/InputWrapper";
 import { ComboboxFieldWrapper } from "../wrappers/ComboboxWrapper";
-import { renewalOptionsList } from "@/lib/option-list";
+import { useGetEmployeeRenewals } from "@/services/setups/employee";
 // Define the form schema with Zod
 export const updateEmployeeSchema = z.object({
-
   issued_on: z.date({
     required_error: "Date is required",
   }),
@@ -24,6 +23,8 @@ export const updateEmployeeSchema = z.object({
 });
 
 export default function UpdateEmployeeRenewalForm() {
+  const { data: renewalOptionsList } = useGetEmployeeRenewals();
+
   const updateEmployee = useForm<z.infer<typeof updateEmployeeSchema>>({
     resolver: zodResolver(updateEmployeeSchema),
     // defaultValues: {

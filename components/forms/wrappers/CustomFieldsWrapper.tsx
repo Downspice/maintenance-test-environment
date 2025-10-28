@@ -16,7 +16,7 @@ interface CustomField {
 interface CustomFieldsWrapperProps {
   control: Control<any>
   name: string
-  name: string
+  label: string
   maxFields?: number
   disabled?: boolean
 }

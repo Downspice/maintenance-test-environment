@@ -13,7 +13,7 @@ import { useSheet } from "@/lib/sheet-providers";
 import EquipmentForm from "./components/new-equipment-form";
 import NewEquipmentDataTable from "./components/table/equipmentDatatable";
 import UpdateMeters from "./components/update-meters-form";
- 
+
 import { useGetLocations } from "@/services/setups/vendor";
 
 export const equipmentActiveDropdown = [
@@ -32,12 +32,12 @@ export const equipmentActiveDropdown = [
 ];
 
 export default function EquipmentPage() {
-      const { 
-    data: locationOptionsList, 
-    isLoading:locationOptionsListLoading, 
-    error: locationOptionsListError
-  } = useGetLocations<Array<{ id: string, name: string }>>();
-  
+  const {
+    data: locationOptionsList,
+    isLoading: locationOptionsListLoading,
+    error: locationOptionsListError,
+  } = useGetLocations<Array<{ id: string; name: string }>>();
+
   const [filters, setFilters] = useState({
     equipment: "",
     location: "",

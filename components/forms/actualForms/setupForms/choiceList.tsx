@@ -56,6 +56,7 @@ import {
 import { useAddCostCenter, useAddInventoryCategory, useAddInventoryManufacturer, useAddInventoryUnitType, useDeleteCostCenter, useDeleteInventoryCategory, useDeleteInventoryManufacturer, useDeleteInventoryUnitType, useGetCostCenters, useGetInventoryCategories, useGetInventoryManufacturers, useGetInventoryUnitTypes, useUpdateCostCenter, useUpdateInventoryCategory, useUpdateInventoryManufacturer, useUpdateInventoryUnitType } from "@/services/setups/inventory";
 import { useAddPurchaseOrderShipVia, useDeletePurchaseOrderShipVia, useGetPurchaseOrderShipVias, useUpdatePurchaseOrderShipVia } from "@/services/setups/purchaseOrder";
 import { useAddWorkOrderType, useDeleteWorkOrderType, useGetWorkOrderTypes, useUpdateWorkOrderType } from "@/services/setups/workOrder";
+import { useAddEquipmentColor, useAddEquipmentMake, useAddEquipmentMeterType, useAddEquipmentModel, useAddEquipmentRenewal, useAddEquipmentStatus, useAddEquipmentType, useAddExpenseType, useDeleteEquipmentColor, useDeleteEquipmentMake, useDeleteEquipmentMeterType, useDeleteEquipmentModel, useDeleteEquipmentRenewal, useDeleteEquipmentStatus, useDeleteEquipmentType, useDeleteExpenseType, useGetEquipmentColors, useGetEquipmentMakes, useGetEquipmentMeterTypes, useGetEquipmentModels, useGetEquipmentRenewals, useGetEquipmentStatuses, useGetEquipmentTypes, useGetExpenseTypes, useUpdateEquipmentColor, useUpdateEquipmentMake, useUpdateEquipmentMeterType, useUpdateEquipmentModel, useUpdateEquipmentRenewal, useUpdateEquipmentStatus, useUpdateEquipmentType, useUpdateExpenseType } from "@/services/setups/equipments";
 
 // ==============================
 // CONTENTS OBJECT WITH SERVICES
@@ -99,7 +100,7 @@ const tabData = [
     name: "Equipments",
     subs: [
       { id: "colors", name: "Colors" },
-      { id: "masks", name: "Masks" },
+      { id: "makes", name: "makes" },
       { id: "meterTypes", name: "Meter Types" },
       { id: "models", name: "Models" },
       { id: "renewals", name: "Renewals" },
@@ -153,6 +154,102 @@ const tabData = [
   },
 ];
 export const contents = {
+    generalExpenseTypes: {
+    name: "General Expense Types",
+    component: () => (
+      <GenericTab
+        label="General Expense Types"
+        useGet={useGetExpenseTypes}
+        useAdd={useAddExpenseType}
+        useUpdate={useUpdateExpenseType}
+        useDelete={useDeleteExpenseType}
+      />
+    ),
+  },
+  "equipments:types": {
+    name: "Equipment Types",
+    component: () => (
+      <GenericTab
+        label="Equipment Types"
+        useGet={useGetEquipmentTypes}
+        useAdd={useAddEquipmentType}
+        useUpdate={useUpdateEquipmentType}
+        useDelete={useDeleteEquipmentType}
+      />
+    ),
+  },
+              "equipments:status": {
+    name: "Equipment Status",
+    component: () => (
+      <GenericTab
+        label="Equipment Status"
+        useGet={useGetEquipmentStatuses}
+        useAdd={useAddEquipmentStatus}
+        useUpdate={useUpdateEquipmentStatus}
+        useDelete={useDeleteEquipmentStatus}
+      />
+    ),
+  },
+            "equipments:renewals": {
+    name: "Equipment Renewals",
+    component: () => (
+      <GenericTab
+        label="Equipment Renewals"
+        useGet={useGetEquipmentRenewals}
+        useAdd={useAddEquipmentRenewal}
+        useUpdate={useUpdateEquipmentRenewal}
+        useDelete={useDeleteEquipmentRenewal}
+      />
+    ),
+  },
+          "equipments:models": {
+    name: "Equipment Models",
+    component: () => (
+      <GenericTab
+        label="Equipment Models"
+        useGet={useGetEquipmentModels}
+        useAdd={useAddEquipmentModel}
+        useUpdate={useUpdateEquipmentModel}
+        useDelete={useDeleteEquipmentModel}
+      />
+    ),
+  },
+        "equipments:meterTypes": {
+    name: "Equipment Meter Types",
+    component: () => (
+      <GenericTab
+        label="Equipment Meter Types"
+        useGet={useGetEquipmentMeterTypes}
+        useAdd={useAddEquipmentMeterType}
+        useUpdate={useUpdateEquipmentMeterType}
+        useDelete={useDeleteEquipmentMeterType}
+      />
+    ),
+  },
+      "equipments:colors": {
+    name: "Equipment Colors",
+    component: () => (
+      <GenericTab
+        label="Equipment Colors"
+        useGet={useGetEquipmentColors}
+        useAdd={useAddEquipmentColor}
+        useUpdate={useUpdateEquipmentColor}
+        useDelete={useDeleteEquipmentColor}
+      />
+    ),
+  },
+    "equipments:makes": {
+    name: "Equipment makes",
+    component: () => (
+      <GenericTab
+        label="Equipment makes"
+        useGet={useGetEquipmentMakes}
+        useAdd={useAddEquipmentMake}
+        useUpdate={useUpdateEquipmentMake}
+        useDelete={useDeleteEquipmentMake}
+      />
+    ),
+  },
    "workOrders:types": {
     name: "Work Orders Types",
     component: () => (

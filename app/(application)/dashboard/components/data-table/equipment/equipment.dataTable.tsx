@@ -65,7 +65,7 @@ interface CarData {
   tasks?: Task[]; // Added tasks array for sub-rows
   make: string; // e.g., Toyota, Honda
   type: string; // e.g., SUV, Sedan, Truck
-  serialNumber: string; // VIN or internal serial
+  serial_number: string; // VIN or internal serial
   location: string; // e.g., "Nairobi Garage", "Lot 5"
   category: string;
 }
@@ -89,7 +89,7 @@ const mockCarData: CarData[] = [
     carNumber: "KAB 123A",
     make: "Toyota",
     type: "Sedan",
-    serialNumber: "JTNB11HK2L3056789",
+    serial_number: "JTNB11HK2L3056789",
     location: "Nairobi Garage A",
     category: "Fleet",
     tasksPending: 3,
@@ -130,7 +130,7 @@ const mockCarData: CarData[] = [
     carNumber: "KCE 456B",
     make: "Honda",
     type: "Sedan",
-    serialNumber: "1HGCV1F33KA078963",
+    serial_number: "1HGCV1F33KA078963",
     location: "Garage B - West Lot",
     category: "Leased",
     tasksPending: 1,
@@ -155,7 +155,7 @@ const mockCarData: CarData[] = [
     carNumber: "KBX 789C",
     make: "Mazda",
     type: "SUV",
-    serialNumber: "JM3KFBCM6M0334567",
+    serial_number: "JM3KFBCM6M0334567",
     location: "Mombasa Depot",
     category: "Fleet",
     tasksPending: 2,
@@ -188,7 +188,7 @@ const mockCarData: CarData[] = [
     carNumber: "KDD 321D",
     make: "Subaru",
     type: "SUV",
-    serialNumber: "JF2SKABC2JH567890",
+    serial_number: "JF2SKABC2JH567890",
     location: "Central Yard",
     category: "Owned",
     tasksPending: 4,
@@ -237,7 +237,7 @@ const mockCarData: CarData[] = [
     carNumber: "KCZ 654E",
     make: "Ford",
     type: "Truck",
-    serialNumber: "1FT7W2B68NEG12345",
+    serial_number: "1FT7W2B68NEG12345",
     location: "Offsite Lot 3",
     category: "Fleet",
     tasksPending: 1,
@@ -262,7 +262,7 @@ const mockCarData: CarData[] = [
     carNumber: "KCL 987F",
     make: "Nissan",
     type: "SUV",
-    serialNumber: "JN1BJ1CW3LW321654",
+    serial_number: "JN1BJ1CW3LW321654",
     location: "Nairobi Garage B",
     category: "Leased",
     tasksPending: 2,
@@ -295,7 +295,7 @@ const mockCarData: CarData[] = [
     carNumber: "KAR 741G",
     make: "Volkswagen",
     type: "Hatchback",
-    serialNumber: "WVWZZZAUZHP567321",
+    serial_number: "WVWZZZAUZHP567321",
     location: "Garage A - East Lot",
     category: "Owned",
     tasksPending: 3,
@@ -336,7 +336,7 @@ const mockCarData: CarData[] = [
     carNumber: "KDA 852H",
     make: "BMW",
     type: "SUV",
-    serialNumber: "5UXTY5C02P9J98765",
+    serial_number: "5UXTY5C02P9J98765",
     location: "Inspection Bay",
     category: "Fleet",
     tasksPending: 1,
@@ -361,7 +361,7 @@ const mockCarData: CarData[] = [
     carNumber: "KBM 963J",
     make: "Mercedes-Benz",
     type: "Sedan",
-    serialNumber: "WDDWF4JB8MR123456",
+    serial_number: "WDDWF4JB8MR123456",
     location: "Garage C",
     category: "Leased",
     tasksPending: 5,
@@ -418,7 +418,7 @@ const mockCarData: CarData[] = [
     carNumber: "KCX 159K",
     make: "Hyundai",
     type: "SUV",
-    serialNumber: "KM8J3CA46LU123789",
+    serial_number: "KM8J3CA46LU123789",
     location: "Main Warehouse",
     category: "Fleet",
     tasksPending: 2,
@@ -793,7 +793,7 @@ export function EquipmentDataTable({ realServer }: DataTableProps) {
                                   <div className="grid grid-cols-3 items-center gap-1">
                                     <Label htmlFor="width">Serial #</Label>
                                     <span className="col-span-2  ">
-                                      {car.serialNumber}
+                                      {car.serial_number}
                                     </span>
                                   </div>
                                   <div className="grid grid-cols-3 items-center gap-1">

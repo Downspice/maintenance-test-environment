@@ -81,18 +81,6 @@ export const conditionOptionsList = [
   { id: "6", name: "Poor" },
 ];
 
-export const destinationOptionsList = [
-  { id: "7", name: "Abuja" },
-  { id: "8", name: " Milwaukee" },
-  { id: "6", name: "Milan" },
-];
-
-export const locationOptionsList = [
-  { id: "1", name: "All locations" },
-  { id: "2", name: "General Equipments" },
-  { id: "3", name: "Plants" },
-  { id: "4", name: "Production Equipments" },
-];
 
 export const dateFilterOptionsList = [
   { id: "today", name: "Today" },
@@ -109,49 +97,6 @@ export const dateFilterOptionsList = [
   { id: "last_year", name: "Last Year" },
   { id: "custom", name: "Custom Range" },
   { id: "all_dates", name: "All Dates" },
-];
-
-export const termsOptionsList = [
-  { id: "1", name: "COD" },
-  { id: "2", name: "Cash" },
-  { id: "3", name: "NET 30" },
-  { id: "4", name: "Prepaid" },
-];
-
-export const renewalOptionsList = [
-  { id: "1", name: " Hazardous Materials" },
-  { id: "2", name: "Pesticide Applicator" },
-  { id: "3", name: "Safety Materials" },
-];
-
-export const makeOptionsList = [
-  { id: "1", name: "Azure" },
-  { id: "2", name: "Test 2" },
-  { id: "3", name: "NET 30" },
-  { id: "4", name: "Prepaid" },
-];
-
-export const carModelOptionsList = [
-  { id: "1", name: "Toyota Corolla" },
-  { id: "2", name: "Honda Civic" },
-  { id: "3", name: "Ford Mustang" },
-  { id: "4", name: "Tesla Model 3" },
-  { id: "5", name: "Chevrolet Silverado" },
-  { id: "6", name: "BMW 3 Series" },
-  { id: "7", name: "Audi A4" },
-];
-
-export const carTypeOptionsList = [
-  { id: "1", name: "Sedan" },
-  { id: "2", name: "SUV" },
-  { id: "3", name: "Hatchback" },
-  { id: "4", name: "Coupe" },
-  { id: "5", name: "Convertible" },
-  { id: "6", name: "Wagon" },
-  { id: "7", name: "Pickup Truck" },
-  { id: "8", name: "Van" },
-  { id: "9", name: "Crossover" },
-  { id: "10", name: "Electric" },
 ];
 
 export const jobSiteOptionsList = [

@@ -8,7 +8,7 @@ import { GenericObject } from "@/types/types"
 
 interface SelectWrapperProps {
   control: Control<any>
-  name: string
+  label: string
   name: string
   options: GenericObject[]|[]
   className?: string

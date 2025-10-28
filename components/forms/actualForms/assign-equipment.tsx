@@ -1,9 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  useForm,
-} from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
@@ -20,7 +18,6 @@ import {
 } from "@/lib/equipment-schema";
 import Fieldset from "@/components/customUI/fieldset";
 import {
-  destinationOptionsList,
   equipmentOptionsList,
   jobSiteOptionsList,
   rateDurationOptions,
@@ -37,6 +34,7 @@ import RadioGroupWrapper, {
   RadioOption,
 } from "@/components/forms/wrappers/RadioGroupWrapper";
 import SingleCheckboxWrapper from "@/components/forms/wrappers/SingleCheckboxWrapper";
+import { useGetLocations } from "@/services/setups/vendor";
 
 interface triggerVariant {
   variant?: "icon" | "default";
@@ -44,7 +42,11 @@ interface triggerVariant {
 export default function EquipmentAssignment({ variant }: triggerVariant) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const {
+    data: destinationOptionsList,
+    isLoading: locationOptionsListLoading,
+    error: locationOptionsListError,
+  } = useGetLocations<Array<{ id: string; name: string }>>();
   const form = useForm<EquipmentFormValues>({
     resolver: zodResolver(equipmentSchema),
     defaultValues: {
@@ -233,13 +235,12 @@ export default function EquipmentAssignment({ variant }: triggerVariant) {
                         label="Type"
                         options={vendorTypeOptions}
                       />
-
-                      <ComboboxFieldWrapper
-                        className="cols-span-1"
-                        control={form.control}
+                      <InputWrapper
+                        control={form.control} className="cols-span-1"
                         name="state"
                         label="State/Province"
-                        options={stateProvinceOptions}
+                        type={"number"}
+                        value={"0.00"}
                       />
                       <InputWrapper
                         control={form.control}

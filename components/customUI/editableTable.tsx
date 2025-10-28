@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { ChevronDown, ArrowDown, ArrowUp } from "lucide-react"
 import { cn } from "@/lib/utils"
+import debounce from "debounce"
 
 type EditableDataTableProps<TData> = {
   data: TData[]
@@ -75,19 +76,23 @@ export function EditableDataTable<TData>({
     getPaginationRowModel: getPaginationRowModel(),
   })
 
+  const debouncedChange = debounce((updated: TData[]) => {
+    onDataChange?.(updated);
+  }, 4000);
+
   const updateRow = (rowIndex: number, key: keyof TData, id: any) => {
-    const updated = [...data]
-    updated[rowIndex] = { ...updated[rowIndex], [key]: value }
-    setData(updated)
-    onDataChange?.(updated)
-  }
+    const updated = [...data];
+    updated[rowIndex] = { ...updated[rowIndex], [key]: id };
+    setData(updated);
+    debouncedChange(updated);
+  };
 
   const addNewRow = () => {
-    if (!defaultRow) return
-    const updated = [...data, defaultRow]
-    setData(updated)
-    onDataChange?.(updated)
-  }
+    if (!defaultRow) return;
+    const updated = [...data, defaultRow];
+    setData(updated);
+    debouncedChange(updated);
+  };
 
   return (
     <div className="space-y-4">

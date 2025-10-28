@@ -30,11 +30,11 @@ import {
   dateFieldTypeOptionsList,
   dateIntervalOptionsList,
   equipmentOptionsList,
-  locationOptionsList,
   reportCategoryTypeOptionsList,
   reportFrequencyTypeOptionsList,
   reportTypeOptionsList,
 } from "@/lib/option-list";
+import { useGetLocations } from "@/services/setups/vendor";
 
 const ScheduledReportSchema = z.object({
   report: z.string(),
@@ -54,6 +54,11 @@ const ScheduledReportSchema = z.object({
 
 export default function NewScheduledReportForm() {
   const [open, setOpen] = useState(false);
+  const { 
+      data: locationOptionsList, 
+      isLoading:locationOptionsListLoading, 
+      error: locationOptionsListError
+    } = useGetLocations<Array<{ id: string, name: string }>>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [recipients, setRecipients] = useState<z.infer<typeof ScheduledReportSchema>["recipients"]>([]);
   const [tab, setTab] = useState("employees");

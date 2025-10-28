@@ -3,7 +3,7 @@ import { z } from "zod"
 export const equipmentSchema = z.object({
   // Identification
   name: z.string().min(1, "Unit # is required"),
-  serialNumber: z.string().optional(),
+  serial_number: z.string().optional(),
   make: z.string().optional(),
   model: z.string().optional(),
   year: z.coerce.number().optional(),
@@ -70,65 +70,6 @@ export const equipmentSchema = z.object({
 })
 
 export type EquipmentFormValues = z.infer<typeof equipmentSchema>
-
-// Mock data for dropdowns
-export const makeOptions = [
-  { id: "ford", name: "Ford" },
-  { id: "chevrolet", name: "Chevrolet" },
-  { id: "caterpillar", name: "Caterpillar" },
-  { id: "john-deere", name: "John Deere" },
-  { id: "freightliner", name: "Freightliner" },
-]
-
-export const modelOptions = [
-  { id: "f-150", name: "F-150" },
-  { id: "silverado", name: "Silverado" },
-  { id: "320d", name: "320D" },
-  { id: "cascadia", name: "Cascadia" },
-]
-
-export const equipmentTypeOptions = [
-  { id: "truck", name: "Truck" },
-  { id: "excavator", name: "Excavator" },
-  { id: "generator", name: "Generator" },
-  { id: "trailer", name: "Trailer" },
-]
-
-export const countryOptions = [
-  { id: "ghana", name: "Ghana" },
-  { id: "india", name: "India" },
-  { id: "saudi", name: "Saudi Arabia" },
-  { id: "togo", name: "Togo" },
-]
-
-export const colorOptions = [
-  { id: "white", name: "White" },
-  { id: "black", name: "Black" },
-  { id: "red", name: "Red" },
-  { id: "blue", name: "Blue" },
-  { id: "yellow", name: "Yellow" },
-]
-
-export const statusOptions = [
-  { id: "Active", name: "Active" },
-  { id: "Inactive", name: "Inactive" },
-  { id: "Sold", name: "Sold" },
-  { id: "Maintenance", name: "Maintenance" },
-]
-
-export const employeeTypeOptions = [
-  { id: "Active", name: "Driver" },
-  { id: "Inactive", name: "Manager" },
-  { id: "Sold", name: "Supervisor" },
-  { id: "Maintenance", name: "Technician" },
-]
-
-export const meterUnitsOptions = [
-  { id: "None", name: "None" },
-  { id: "Miles", name: "Miles" },
-  { id: "Kilometers", name: "Kilometers" },
-  { id: "Hours", name: "Hours" },
-]
 
 export const assigneeOptions = [
   { id: "user-1", name: "John Smith", group: "Employees" },

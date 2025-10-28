@@ -25,7 +25,6 @@ import {
   dateFieldTypeOptionsList,
   dateIntervalOptionsList,
   equipmentOptionsList,
-  locationOptionsList,
   reportCategoryTypeOptionsList,
   reportFrequencyTypeOptionsList,
   reportTypeOptionsList,
@@ -65,6 +64,12 @@ export default function EditScheduledReportForm({
   children: React.ReactNode;
   data: ScheduledReportInterface;
 }) {
+    const {
+      data: locationOptionsList,
+      isLoading: locationOptionsListLoading,
+      error: locationOptionsListError,
+    } = useGetLocations<Array<{ id: string; name: string }>>();
+
   const [open, setOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);

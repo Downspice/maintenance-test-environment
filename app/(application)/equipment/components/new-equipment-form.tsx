@@ -3,42 +3,24 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { CardContent } from "@/components/ui/card";
-import { LucideTrash2, Save } from "lucide-react";
+import { LucideTrash2, Save, Plus } from "lucide-react";
 
 // Form wrappers
 import InputWrapper from "@/components/forms/wrappers/InputWrapper";
 import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
 import SelectWrapper from "@/components/forms/wrappers/SelectWrapper";
-import MultiSelectWrapper from "@/components/forms/wrappers/MultiSelectWrapper";
 import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";
 import CustomFieldsWrapper from "@/components/forms/wrappers/CustomFieldsWrapper";
+import SingleCheckboxWrapper from "@/components/forms/wrappers/SingleCheckboxWrapper";
+import FileUploadWrapper from "@/components/forms/wrappers/FileUploadWrapper";
+import CheckboxWrapper from "@/components/forms/wrappers/CheckboxWrapper";
 
-// Schema and types
-import {
-  // equipmentSchema,
-  // type EquipmentFormValues,
-  equipmentTypeOptions,
-  colorOptions,
-  statusOptions,
-  meterUnitsOptions,
-  assigneeOptions,
-  ownershipOptions,
-  expenseOptions,
-  periodOptionList,
-} from "@/lib/equipment-schema";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Fieldset from "@/components/customUI/fieldset";
-import {
-  carModelOptionsList,
-  equipmentCheckboxOptions,
-  makeOptionsList,
-  pmScheduleOptionList,
-} from "@/lib/option-list";
 import { toast } from "sonner";
-import { Plus } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Sheet,
@@ -48,13 +30,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import {
-  ComboboxFieldWrapper,
-  ComboboxOption,
-} from "@/components/forms/wrappers/ComboboxWrapper";
+import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
 import { Input } from "@/components/ui/input";
-import CheckboxWrapper from "@/components/forms/wrappers/CheckboxWrapper";
-import FileUploadWrapper from "@/components/forms/wrappers/FileUploadWrapper";
 import { EditableDataTable } from "@/components/customUI/editableTable";
 import {
   Select,
@@ -64,196 +41,321 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ColumnDef } from "@tanstack/react-table";
-import { Checkbox } from "@/components/ui/checkbox";
-import SingleCheckboxWrapper from "@/components/forms/wrappers/SingleCheckboxWrapper";
-import z from "zod";
-import { useGetInventoryCategories } from "@/services/setups/inventory";
+// Schema and options imports
+import { periodOptionList } from "@/lib/equipment-schema";
+import { equipmentCheckboxOptions } from "@/lib/option-list";
+import {
+  useGetCostCenters,
+  useGetInventoryCategories,
+} from "@/services/setups/inventory";
 import { useGetVendors } from "@/services/setups/vendor";
+import {
+  useAddEquipment,
+  useGetEquipmentColors,
+  useGetEquipmentMakes,
+  useGetEquipmentModels,
+  useGetEquipmentOwnerships,
+  useGetEquipmentStatuses,
+  useGetEquipmentTypes,
+  useGetExpenseTypes,
+} from "@/services/setups/equipments";
+import { useGetEmployees } from "@/services/setups/employee";
+import { convertToOptionList } from "@/lib/utils";
+import { GenericObject } from "@/types/types";
+import debounce from 'debounce';
 
-interface triggerVariant {
+interface TriggerVariant {
   variant?: "icon" | "default";
 }
 
+// New schema matching your provided structure
 export const equipmentSchema = z.object({
-  // Identification
-  name: z.string().min(1, "Unit # is required"),
-  make: z.string().optional(),
-  model: z.string().optional(),
-  serialNumber: z.string().optional(),
-  year: z.coerce.number().optional(),
-  equipmentType: z.string().optional(),
-
-  // Assignment
-  status: z.string(),
-  soldDate: z.string().optional(),
-  soldTo: z.string().optional(),
-  soldPrice: z.coerce.number().optional(),
-  assigneeIds: z.array(z.string()).optional(),
-  categoryId: z.string().optional(),
-  parentId: z.string().optional(),
-
-  // Meter Configurations
-  pmSchedule: z.string().optional(),
-  primaryMeterUnit: z.string().optional(),
-  primary: z.coerce.number().optional(),
-  secondaryMeterUnit: z.string().optional(),
-  secondary: z.coerce.number().optional(),
-
-  // Custom Fields
-  btu: z.string().optional(),
-  inputVolts: z.string().optional(),
-  installDate: z.string().optional(),
-  others: z.any().optional(),
+  unit_number: z.string().min(1, "Unit # is required"),
+  make_id: z.string().optional(),
+  model_id: z.string().optional(),
+  year: z.string().optional(),
+  serial_number: z.string().optional(),
+  tag_number: z.string().optional(),
+  type_id: z.string().optional(),
+  description: z.string().optional(),
+  location: z.string().optional(),
+  status_id: z.string().min(1, "Status is required"),
+  employee_id: z.string().optional(),
+  cost_center_id: z.string().optional(),
+  parent_id: z.string().optional(),
+  is_sync: z.boolean().default(false),
 
   // Specifications
-  color: z.string().optional(),
+  color_id: z.string().optional(),
   length: z.string().optional(),
   width: z.string().optional(),
   height: z.string().optional(),
-  grossWeight: z.coerce.number().optional(),
-  customSpecifications: z.any().optional(),
-
-  // Warranty
-  warrantyDescription: z.string().optional(),
-  warrantyExpirationDate: z.string().optional(),
-  primaryWarrantyMeter: z.coerce.number().optional(),
-  secondaryWarrantyDescription: z.string().optional(),
-  secondaryWarrantyExpirationDate: z.string().optional(),
-  secondaryWarrantyMeter: z.coerce.number().optional(),
-  CustomSecondary: z.any().optional(),
-
-  // Purchase
-  vendor: z.string().optional(),
-  purchaseDate: z.string().optional(),
-  meter: z.coerce.number().optional(),
-  price: z.coerce.number().optional(),
-  purchaseOrderothers: z.any().optional(),
-  note: z.string().optional(),
-
-  // Depreciation
-  depreciationLifeMonths: z.coerce.number().optional(),
-  startingPrice: z.coerce.number().optional(),
-  salvagePrice: z.coerce.number().optional(),
-
-  // Ownership/Status
-  ownership: z.string().optional(),
-  customerName: z.string().optional(),
-  inService: z.string().optional(),
-  outService: z.string().optional(),
-  transferred: z.string().optional(),
+  gross_weight: z.coerce.number().optional(),
   notes: z.string().optional(),
 
-  // Settings
-  tracker: z.array(z.string()).optional(),
-  budget: z.coerce.number().optional(),
-  enableMeter1: z.boolean().optional(),
-  average1: z.coerce.number().optional(),
-  lastMaintenanceCheck1: z.string().optional(),
-  enableMeter2: z.boolean().optional(),
-  average2: z.coerce.number().optional(),
+  // Custom fields
+  main_others: z
+    .array(z.object({ name: z.string(), value: z.string() }))
+    .optional(),
+  specification_others: z
+    .array(z.object({ name: z.string(), value: z.string() }))
+    .optional(),
 
-  // Attachments & Images
-  Attachments: z.any().optional(),
+  // Warranty
+  warranty: z
+    .array(
+      z.object({
+        type: z.string(),
+        name: z.string(),
+        date: z.coerce.string().optional(),
+        meter: z.coerce.number().optional(),
+      })
+    )
+    .optional(),
+  warranty_others: z
+    .array(z.object({ name: z.string(), value: z.string() }))
+    .optional(),
 
-  // Notes
-  generalNotes: z.string().optional(),
+  // Purchase
+  purchase: z
+    .object({
+      vendor_id: z.string().optional(),
+      date: z.coerce.string().optional(),
+      price: z.coerce.number().optional(),
+      notes: z.string().optional(),
+      depreciation_start_value: z.coerce.number().optional(),
+      salvage_value: z.coerce.number().optional(),
+      term: z.coerce.number().optional(),
+      depreciation: z.coerce.number().optional(),
+      current_value: z.coerce.number().optional(),
+      ownership_id: z.string().optional(),
+      in_service_date: z.coerce.string().optional(),
+      out_of_service_date: z.coerce.string().optional(),
+      transferred_date: z.coerce.string().optional(),
+      sold_date: z.coerce.string().optional(),
+      sold_to: z.string().optional(),
+      ownership_notes: z.string().optional(),
+    })
+    .optional(),
 
-  // Editable Table Data
+  purchase_others: z
+    .array(z.object({ name: z.string(), value: z.string() }))
+    .optional(),
+
+  // Expenses
   expenses: z
     .array(
       z.object({
-        id: z.string(),
-        name: z.string(),
-        lastDate: z.string().optional(),
-        nextDate: z.string().optional(),
-        period: z.string().optional(),
+        expense_type_id: z.string(),
+        last_date: z.coerce.string().optional(),
+        next_date: z.coerce.string().optional(),
         interval: z.coerce.number().optional(),
-        cost: z.coerce.number().optional(),
+        period: z.string().optional(),
         quantity: z.coerce.number().optional(),
+        cost: z.coerce.number().optional(),
         notes: z.string().optional(),
       })
     )
     .optional(),
-  notifications: z
-    .array(
-      z.object({
-        id: z.string(),
-        name: z.string(),
-        email: z.string().optional(),
-        maintenance: z.boolean().optional(),
-        renewals: z.boolean().optional(),
-        workOrders: z.boolean().optional(),
-      })
-    )
-    .optional(),
+
+  // Additional fields for UI
+  attachments: z.any().optional(),
+  tracker: z.array(z.string()).optional(),
+  budget: z.coerce.number().optional(),
 });
 
+export type EquipmentFormValues = z.infer<typeof equipmentSchema>;
+
 export function ActualEquipmentForm() {
-      const { data: vendorOptions } = useGetVendors();
-  
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [openSections, setOpenSections] = useState({
-    identification: true,
-    assignment: false,
-    purchase: false,
-    additionalDetails: false,
-  });
-  const { data: categoryOptions } = useGetInventoryCategories();
+  const { mutateAsync, isPending: isSubmitting } = useAddEquipment();
+  const { data: vendorOptions } = useGetVendors<GenericObject[]>();
+  const { data: categoryOptions } =
+    useGetInventoryCategories<GenericObject[]>();
+  const { data: makeOptionsList } = useGetEquipmentMakes<GenericObject[]>();
+  const { data: carModelOptionsList } =
+    useGetEquipmentModels<GenericObject[]>();
+  const { data: ownershipOptions } =
+    useGetEquipmentOwnerships<GenericObject[]>();
+  const { data: equipmentTypeOptions } =
+    useGetEquipmentTypes<GenericObject[]>();
+  const { data: colorOptions } = useGetEquipmentColors<GenericObject[]>();
+  const { data: statusOptions } = useGetEquipmentStatuses<GenericObject[]>();
+  const { data: expenseOptions } = useGetExpenseTypes<GenericObject[]>();
+  const { data: assigneeOptions } = useGetEmployees<GenericObject[]>();
+  const { data: costCenterOptions } = useGetCostCenters<GenericObject[]>();
+
+  const expenseColumns: ColumnDef<ExpenseTableType>[] = [
+    {
+      accessorKey: "expense_type_id",
+      header: "Expense Type",
+      cell: ({ row, updateRow, rowIndex }: any) => (
+        <Select
+          value={row.original.expense_type_id}
+          onValueChange={(e) => {
+            console.log(e);
+            updateRow(rowIndex, "expense_type_id", e);
+          }}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select..." />
+          </SelectTrigger>
+          <SelectContent>
+            {expenseOptions?.map((item) => (
+              <SelectItem value={item.id ?? ""} key={item.id}>
+                {item.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      ),
+    },
+    {
+      accessorKey: "last_date",
+      header: "Last Date",
+      cell: ({ row, updateRow, rowIndex }: any) => (
+        <Input
+          type="date"
+          value={row.original.last_date}
+          onChange={(e) => updateRow(rowIndex, "last_date", e.target.value)}
+        />
+      ),
+    },
+    {
+      accessorKey: "next_date",
+      header: "Next Date",
+      cell: ({ row, updateRow, rowIndex }: any) => (
+        <Input
+          type="date"
+          value={row.original.next_date}
+          onChange={(e) => updateRow(rowIndex, "next_date", e.target.value)}
+        />
+      ),
+    },
+    {
+      accessorKey: "period",
+      header: "Period",
+      cell: ({ row, updateRow, rowIndex }: any) => (
+        <Select
+          value={row.original.period}
+          onValueChange={(e) => updateRow(rowIndex, "period", e)}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select..." />
+          </SelectTrigger>
+          <SelectContent>
+            {periodOptionList.map((item) => (
+              <SelectItem value={item.id} key={item.id}>
+                {item.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      ),
+    },
+    {
+      accessorKey: "interval",
+      header: "Interval",
+      cell: ({ row, updateRow, rowIndex }: any) => (
+        <Input
+          type="number"
+          value={row.original.interval}
+          onChange={(e) =>
+            updateRow(rowIndex, "interval", parseFloat(e.target.value))
+          }
+        />
+      ),
+    },
+    {
+      accessorKey: "quantity",
+      header: "Quantity",
+      cell: ({ row, updateRow, rowIndex }: any) => (
+        <Input
+          type="number"
+          value={row.original.quantity}
+          onChange={(e) =>
+            updateRow(rowIndex, "quantity", parseFloat(e.target.value))
+          }
+        />
+      ),
+    },
+    {
+      accessorKey: "cost",
+      header: "Cost",
+      cell: ({ row, updateRow, rowIndex }: any) => (
+        <Input
+          type="number"
+          value={row.original.cost}
+          onChange={(e) =>
+            updateRow(rowIndex, "cost", parseFloat(e.target.value))
+          }
+        />
+      ),
+    },
+    {
+      accessorKey: "notes",
+      header: "Notes",
+      cell: ({ row, updateRow, rowIndex }: any) => (
+        <Input
+          value={row.original.notes}
+          onChange={(e) => updateRow(rowIndex, "notes", e.target.value)}
+        />
+      ),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      cell: ({ row, deleteRow, rowIndex }: any) => (
+        <div className="flex justify-end">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => deleteRow(rowIndex)}
+          >
+            <LucideTrash2 className="text-destructive" />
+          </Button>
+        </div>
+      ),
+    },
+  ];
 
   const form = useForm<EquipmentFormValues>({
     resolver: zodResolver(equipmentSchema),
     defaultValues: {
-      status: "Active",
-      renewalInterval: 1,
-      primaryMeter: 0,
-      secondaryMeter: 0,
-      purchasePrice: 0,
-      salvagePrice: 0,
-      depreciationLifeMonths: 0,
-      warrantyDescription: "Primary",
-      secondaryWarrantyDescription: "Secondary",
-      mviInterval: 1,
-      ownership: "Owned",
-      fuelVolumeUnits: "Gallons",
-      annualOperatingBudget: 0,
-      hasMeter: false,
+      status_id: "active",
+      is_sync: false,
+      warranty: [],
+      expenses: [],
+      main_others: [],
+      specification_others: [],
+      warranty_others: [],
+      purchase_others: [],
+      purchase: {
+        depreciation_start_value: 0,
+        salvage_value: 0,
+        term: 0,
+        price: 0,
+        depreciation: 0,
+        current_value: 0,
+        ownership_id: "owned",
+      },
     },
   });
 
-  const toggleSection = (section: keyof typeof openSections) => {
-    setOpenSections((prev) => ({
-      ...prev,
-      [section]: !prev[section],
-    }));
-  };
+  const watchStatus = form.watch("status_id");
+  const watchOwnership = form.watch("purchase.ownership_id");
 
-  const watchHasMeter = form.watch("hasMeter");
-
-  const watchStatus = form.watch("status");
-  const watchPrimary = form.watch("primaryMeterUnit");
-  const watchSecondary = form.watch("secondaryMeterUnit");
-
-  function onSubmit(data: EquipmentFormValues) {
+  async function onSubmit(data: EquipmentFormValues) {
     console.log("Form submitted with VALUES:", data);
 
-    toast("Equipment created successfully!", {
-      duration: 10000,
-    });
+    const res = await mutateAsync(data);
+    res && toast.success(res?.message);
 
-    setOpen(false);
     form.reset();
   }
 
   function onError(errors: any) {
-    // Get all error messages
     const errorMessages = Object.entries(errors).map(
-      ([field, error]: [string, any]) => {
-        const fieldLabels: Record<string, string> = {
-          unit: "Project Name",
-        };
-
-        return `${fieldLabels[field] || field}: ${error.message}`;
-      }
+      ([field, error]: [string, any]) => `${field}: ${error.message}`
     );
 
     toast.error("Please fix the following errors:", {
@@ -279,130 +381,7 @@ export function ActualEquipmentForm() {
         <div className="flex">
           <Tabs defaultValue="main" orientation="vertical" className="w-full">
             <div className="flex-1">
-              <TabsContent value="attachments">
-                <FileUploadWrapper
-                  multiple={true}
-                  control={form.control}
-                  name={"Attachments"}
-                  label={"Attachments"}
-                />
-              </TabsContent>
-
-              <TabsContent value="expenses">
-                <div className="flex ">
-                  <div className="text-lg font-semibold text-gray-700">
-                    Automatic Expense Logging
-                  </div>
-                </div>
-                <EditableDataTable
-                  data={expenseLogging}
-                  columns={columns}
-                  defaultRow={{ id: Date.now() }}
-                  onDataChange={(newData) => {
-                    console.log("Updated Data:", newData);
-                  }}
-                />
-              </TabsContent>
-              <TabsContent value="notifications">
-                <div className="flex ">
-                  <div className="text-lg font-semibold text-gray-700">
-                    Email Notifications
-                  </div>
-                </div>
-                <EditableDataTable
-                  data={emailPeople}
-                  columns={emailColumns}
-                  defaultRow={{ id: Date.now() }}
-                  onDataChange={(newData) => {
-                    console.log("Updated Data:", newData);
-                  }}
-                />
-              </TabsContent>
-              <TabsContent value="images">
-                <FileUploadWrapper
-                  multiple={true}
-                  control={form.control}
-                  name={"Attachments"}
-                  label={"Attachments"}
-                />
-              </TabsContent>
-              <TabsContent value="settings" className="space-y-2">
-                <Fieldset
-                  legend="Track the following details of this equipment"
-                  content={
-                    <CheckboxWrapper
-                      control={form.control}
-                      name={"tracker"}
-                      label={""}
-                      options={equipmentCheckboxOptions}
-                    />
-                  }
-                />
-                <Fieldset
-                  legend="Budget"
-                  content={
-                    <div className="grid grid-cols-2 space-x-2">
-                      <div className="col-span-1 space-y-2">
-                        <InputWrapper
-                          control={form.control}
-                          name={"budget"}
-                          label={"Budget"}
-                          value={""}
-                          type="number"
-                        />
-                      </div>
-                    </div>
-                  }
-                />
-                <Fieldset
-                  legend="Virtual Mileage/Km/Hours Configurations for meter"
-                  content={
-                    <div className="grid grid-cols-2 space-x-2">
-                      <div className="col-span-1 space-y-2">
-                        <SingleCheckboxWrapper
-                          control={form.control}
-                          name="enableMeter1"
-                          label="Enable virtual Mi/Km/Hr calcs for Meter1"
-                        />
-                        <InputWrapper
-                          control={form.control}
-                          name="average1"
-                          label="Average daily Mi/Km/Hrs"
-                          type="number"
-                          value={""}
-                        />
-                        <DatePickerWrapper
-                          control={form.control}
-                          name="lastMaintenanceCheck1"
-                          label="Last Maintenance check"
-                        />
-                      </div>
-                      <div className="col-span-1 space-y-2">
-                        <SingleCheckboxWrapper
-                          control={form.control}
-                          name="enableMeter2"
-                          label="Enable virtual Mi/Km/Hr calcs for Meter 2"
-                        />
-                        <InputWrapper
-                          control={form.control}
-                          name="average2"
-                          label="Average daily Mi/Km/Hrs"
-                          type="number"
-                          value={""}
-                        />
-                      </div>
-                    </div>
-                  }
-                />
-              </TabsContent>
-              <TabsContent value="notes" className="space-y-2">
-                <TextareaWrapper
-                  control={form.control}
-                  name="generalNotes"
-                  placeholder={""}
-                  value={""}
-                />
-              </TabsContent>
+              {/* Main Tab */}
               <TabsContent value="main">
                 <div className="grid grid-cols-2 space-x-2">
                   <div className="col-span-1 space-y-2">
@@ -410,48 +389,60 @@ export function ActualEquipmentForm() {
                       legend="Identification"
                       content={
                         <>
-                          <div className="flex flex-col space-y-0.5">
-                            <InputWrapper
-                              control={form.control}
-                              name="name"
-                              label="Unit #"
-                              type="text"
-                              required
-                              value={""}
-                            />
-                            <ComboboxFieldWrapper
-                              control={form.control}
-                              name="make"
-                              label="Make"
-                              options={makeOptionsList}
-                            />
-                            <ComboboxFieldWrapper
-                              control={form.control}
-                              name="model"
-                              label="Model"
-                              options={carModelOptionsList}
-                            />
-                            <InputWrapper
-                              control={form.control}
-                              name="serialNumber"
-                              label="Serial #"
-                              type="text"
-                              value={""}
-                            />
-                            <InputWrapper
-                              control={form.control}
-                              name="year"
-                              label="Year"
-                              type="number"
-                              value={""}
-                            />
-                            <ComboboxFieldWrapper
-                              control={form.control}
-                              name="equipmentType"
-                              label="Types"
-                              options={equipmentTypeOptions}
-                            />
-                          </div>
+                          <InputWrapper
+                            control={form.control}
+                            name="unit_number"
+                            label="Unit #"
+                            type="text"
+                            required
+                            value=""
+                          />
+                          <ComboboxFieldWrapper
+                            control={form.control}
+                            name="make_id"
+                            label="Make"
+                            options={makeOptionsList}
+                          />
+                          <ComboboxFieldWrapper
+                            control={form.control}
+                            name="model_id"
+                            label="Model"
+                            options={carModelOptionsList}
+                          />
+                          <InputWrapper
+                            control={form.control}
+                            name="serial_number"
+                            label="Serial #"
+                            type="text"
+                            value=""
+                          />
+                          <InputWrapper
+                            control={form.control}
+                            name="year"
+                            label="Year"
+                            type="text"
+                            value=""
+                          />
+                          <InputWrapper
+                            control={form.control}
+                            name="tag_number"
+                            label="Tag #"
+                            type="text"
+                            value=""
+                          />
+                          <ComboboxFieldWrapper
+                            control={form.control}
+                            name="type_id"
+                            label="Equipment Type"
+                            options={equipmentTypeOptions}
+                          />
+                          <TextareaWrapper
+                            control={form.control}
+                            name="description"
+                            label="Description"
+                            placeholder=""
+                            value=""
+                          />
                         </>
                       }
                     />
@@ -462,330 +453,171 @@ export function ActualEquipmentForm() {
                         <div className="space-y-1">
                           <SelectWrapper
                             control={form.control}
-                            name="status"
+                            name="status_id"
                             label="Status"
                             options={statusOptions}
                             required
                           />
 
-                          {watchStatus === "Sold" && (
-                            <div className="space-y-1 border rounded-md bg-muted/30">
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
-                                <DatePickerWrapper
-                                  control={form.control}
-                                  name="soldDate"
-                                  label="Date Sold"
-                                />
-                                <InputWrapper
-                                  control={form.control}
-                                  name="soldTo"
-                                  label="Buyer"
-                                  type="text"
-                                  value={""}
-                                />
-                              </div>
-                              <div className="space-y-2">
-                                <label className="text-sm font-medium">
-                                  
-                                </label>
-                                <div className="flex items-center gap-2">
-                                  <InputWrapper
-                                    control={form.control}
-                                    name="soldPrice"
-                                    label="Price Sold $"
-                                    type="number"
-                                    value={""}
-                                    className="flex-1"
-                                  />
-                                </div>
-                              </div>
-                            </div>
-                          )}
-
-                          <MultiSelectWrapper
+                          <SelectWrapper
                             control={form.control}
-                            name="assigneeIds"
-                            label="Assignees"
-                            options={assigneeOptions}
+                            name="employee_id"
+                            label="Assignee"
+                            options={
+                              assigneeOptions
+                                ? convertToOptionList(
+                                    assigneeOptions,
+                                    "id",
+                                    "first_name"
+                                  )
+                                : []
+                            }
                           />
 
                           <SelectWrapper
                             control={form.control}
-                            name="categoryId"
+                            name="location"
                             label="Location"
                             options={categoryOptions}
                           />
 
+                          <ComboboxFieldWrapper
+                            control={form.control}
+                            name="costCenter"
+                            label="Cost Center"
+                            options={costCenterOptions}
+                          />
+
                           <InputWrapper
                             control={form.control}
-                            name="parentId"
+                            name="parent_id"
                             label="Parent Equipment"
                             type="text"
-                            placeholder="Enter Equipment Parent"
-                            value={""}
+                            placeholder="Enter Parent Equipment"
+                            value=""
+                          />
+
+                          <SingleCheckboxWrapper
+                            control={form.control}
+                            name="is_sync"
+                            label="Sync with external system"
                           />
                         </div>
                       }
                     />
                   </div>
-                  <div className="col-span-1 space-y-2                                                                                                                                                                                                                                                                                                                                                                            ">
-                    <Fieldset
-                      legend="Meter Configurations"
-                      content={
-                        <>
-                          <div className="flex justify-between items-center ">
-                            <ComboboxFieldWrapper
-                              label="Select PM Schedule"
-                              control={form.control}
-                              options={pmScheduleOptionList}
-                              name="pmSchedule"
-                            />
-                          </div>
-                          <div className="text-sm">
-                            Selecting an existing PM schedule template can save
-                            data entry time. Or you may add individualPM
-                            services after equipment is saved.
-                          </div>
-                        </>
-                      }
-                    />
-                    <Fieldset
-                      legend="Meter Configurations"
-                      content={
-                        <>
-                          <div className="flex">
-                            <ComboboxFieldWrapper
-                              label="Primary"
-                              control={form.control}
-                              options={meterUnitsOptions}
-                              name="primaryMeterUnit"
-                            />
 
-                            {watchPrimary && (
-                              <InputWrapper
-                                control={form.control}
-                                name="primary"
-                                label=""
-                                type="number"
-                                placeholder="0"
-                                value={""}
-                              />
-                            )}
-                          </div>
-
-                          <div className="flex">
-                            {" "}
-                            <ComboboxFieldWrapper
-                              label="secondary"
-                              control={form.control}
-                              options={meterUnitsOptions}
-                              name="secondaryMeterUnit"
-                            />
-                            {watchSecondary && (
-                              <InputWrapper
-                                control={form.control}
-                                name="secondary"
-                                label=""
-                                type="number"
-                                placeholder="0"
-                                value={""}
-                              />
-                            )}
-                          </div>
-                        </>
-                      }
-                    />
+                  <div className="col-span-1 space-y-2">
                     <Fieldset
                       legend="Custom Fields"
                       content={
-                        <>
-                          <InputWrapper
-                            control={form.control}
-                            name="btu"
-                            label="BTU"
-                            type="text"
-                            value={""}
-                            className="flex-1"
-                          />
-                          <InputWrapper
-                            control={form.control}
-                            name="inputVolts"
-                            label="Input Volts"
-                            type="text"
-                            value={""}
-                            className="flex-1"
-                          />
-                          <DatePickerWrapper
-                            control={form.control}
-                            name="installDate"
-                            label="Install Date"
-                          />
-                          <CustomFieldsWrapper
-                            control={form.control}
-                             name="others"
-                            label={""}
-                          />
-                        </>
+                        <CustomFieldsWrapper
+                          control={form.control}
+                          name="main_others"
+                          label="Custom Fields"
+                        />
                       }
                     />
                   </div>
                 </div>
               </TabsContent>
+
+              {/* Specifications Tab */}
               <TabsContent value="specifications" className="space-y-2">
                 <Fieldset
                   legend="Physical Attributes"
                   content={
-                    <div className="grid grid-cols-2">
+                    <div className="grid grid-cols-2 gap-4">
                       <div className="col-span-1">
                         <ComboboxFieldWrapper
                           label="Color"
                           control={form.control}
                           options={colorOptions}
-                          name="color"
+                          name="color_id"
                         />
                       </div>
-                      <div className="col-span-1"></div>
                       <div className="col-span-1">
                         <InputWrapper
                           label="Length"
                           control={form.control}
                           name="length"
                           type="text"
-                          value={""}
+                          value=""
                         />
                       </div>
-                      <div className="col-span-1"></div>
                       <div className="col-span-1">
                         <InputWrapper
                           label="Width"
                           control={form.control}
                           name="width"
                           type="text"
-                          value={""}
+                          value=""
                         />
                       </div>
-                      <div className="col-span-1"></div>
                       <div className="col-span-1">
                         <InputWrapper
                           label="Height"
                           control={form.control}
                           name="height"
                           type="text"
-                          value={""}
+                          value=""
                         />
                       </div>
-                      <div className="col-span-1"></div>
-
                       <div className="col-span-1">
                         <InputWrapper
                           label="Gross Weight"
                           control={form.control}
-                          name="grossWeight"
+                          name="gross_weight"
                           type="number"
-                          value={"0"}
+                          value="0"
                         />
                       </div>
-                      <div className="col-span-1"></div>
                     </div>
                   }
                 />
 
                 <Fieldset
-                  legend="Custom Fields"
+                  legend="Custom Specifications"
                   content={
-                    <>
-                      <CustomFieldsWrapper
-                        label="customField"
-                        control={form.control}
-                        name={"customSpecifications"}
-                      />
-                    </>
+                    <CustomFieldsWrapper
+                      control={form.control}
+                      name="specification_others"
+                      label="Custom Fields"
+                    />
                   }
                 />
               </TabsContent>
-              <TabsContent
-                value="warranty"
-                className="space-x-2 space-y-2 grid grid-cols-2 "
-              >
-                <div className=" col-span-1 gap-4">
-                  <Fieldset
-                    className="col-span-1"
-                    legend="Primary Warranty"
-                    content={
-                      <div className="space-y-2">
-                        <InputWrapper
-                          control={form.control}
-                          name="warrantyDescription"
-                          label="Primary Warranty"
-                          type="text"
-                          value={""}
-                        />
-                        <DatePickerWrapper
-                          control={form.control}
-                          name="warrantyExpirationDate"
-                          label="Expiration Date"
-                        />
-                        <InputWrapper
-                          control={form.control}
-                          name="primaryWarrantyMeter"
-                          label="Meter"
-                          type="number"
-                          value={""}
-                        />
-                      </div>
-                    }
-                  />
-                </div>
-                <div className="col-span-1 gap-4">
-                  <Fieldset
-                    className="col-span-1"
-                    legend="Secondary Warranty"
-                    content={
-                      <div className="space-y-2">
-                        <InputWrapper
-                          control={form.control}
-                          name="secondaryWarrantyDescription"
-                          label="Secondary Warranty"
-                          type="text"
-                          value={""}
-                        />
-                        <DatePickerWrapper
-                          control={form.control}
-                          name="secondaryWarrantyExpirationDate"
-                          label="Expiration Date"
-                        />
-                        <InputWrapper
-                          control={form.control}
-                          name="secondaryWarrantyMeter"
-                          label="Meter"
-                          type="number"
-                          value={""}
-                        />
-                      </div>
-                    }
-                  />
-                </div>
 
-                <div className="col-span-2 gap-4">
-                  <Fieldset
-                    className="col-span-2"
-                    legend="Custom Fields"
-                    content={
-                      <div className="space-y-2">
-                        <CustomFieldsWrapper
-                          control={form.control}
-                          name="CustomSecondary"
-                          label="Custom Fields "
-                        />
-                      </div>
-                    }
-                  />
-                </div>
+              {/* Warranty Tab */}
+              <TabsContent value="warranty" className="space-y-2">
+                <Fieldset
+                  legend="Warranty Information"
+                  content={
+                    <div className="space-y-4">
+                      <p className="text-sm text-muted-foreground">
+                        Add warranty entries below
+                      </p>
+                      {/* Here you would map over form.watch("warranty") and render warranty entries */}
+                    </div>
+                  }
+                />
+
+                <Fieldset
+                  legend="Custom Warranty Fields"
+                  content={
+                    <CustomFieldsWrapper
+                      control={form.control}
+                      name="warranty_others"
+                      label="Custom Fields"
+                    />
+                  }
+                />
               </TabsContent>
 
+              {/* Purchase Tab */}
               <TabsContent
                 value="purchase"
-                className="space-x-2 space-y-2 grid grid-cols-2 "
+                className="space-y-2 grid grid-cols-2 gap-4"
               >
                 <Fieldset
                   className="col-span-1"
@@ -793,49 +625,34 @@ export function ActualEquipmentForm() {
                   content={
                     <>
                       <ComboboxFieldWrapper
-                        label="Dealer"
+                        label="Vendor"
                         control={form.control}
                         options={vendorOptions}
-                        name="vendor"
+                        name="purchase.vendor_id"
                       />
                       <DatePickerWrapper
                         control={form.control}
-                        name="purchaseDate"
+                        name="purchase.date"
                         label="Purchase Date"
                       />
                       <InputWrapper
                         control={form.control}
-                        name="meter"
-                        label={"Meter"}
+                        name="purchase.price"
+                        label="Purchase Price"
                         type="number"
-                        value={""}
-                        className=""
+                        value=""
                       />
-                      <InputWrapper
+                      <TextareaWrapper
                         control={form.control}
-                        name="price"
-                        label={"Price"}
-                        type="number"
-                        value={""}
-                        className=""
-                      />
-                      <CustomFieldsWrapper
-                        name="purchaseOrderCustom"
-                        label="Custom Field"
-                        control={form.control}
-                      />
-
-                      <InputWrapper
-                        control={form.control}
-                        name="note"
-                        label={"Notes"}
-                        type="text"
-                        value={""}
-                        className=""
+                        name="purchase.notes"
+                        label="Notes"
+                        placeholder=""
+                        value=""
                       />
                     </>
                   }
                 />
+
                 <Fieldset
                   className="col-span-1"
                   legend="Depreciation"
@@ -843,145 +660,198 @@ export function ActualEquipmentForm() {
                     <>
                       <InputWrapper
                         control={form.control}
-                        name="depreciationLifeMonths"
+                        name="purchase.term"
                         label="Term (Months)"
                         type="number"
-                        value={""}
-                        className="flex-1"
+                        value=""
                       />
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm">$</span>
-                        <InputWrapper
-                          control={form.control}
-                          name="startingPrice"
-                          label="Starting Value"
-                          type="number"
-                          value={""}
-                          className="flex-1"
-                        />
-                      </div>
-                      <div className="flex items-center gap-2 pb-2">
-                        <span className="text-sm">$</span>
-                        <InputWrapper
-                          control={form.control}
-                          name="salvagePrice"
-                          label="Salvage Value"
-                          type="number"
-                          value={""}
-                          className="flex-1"
-                        />
-                      </div>
-                      <div className="border-t flex flex-col">
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium">
-                            Depreciation (Monthly)
-                          </label>
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm">$</span>
-                            <Input
-                              type="number"
-                              value={""}
-                              className="flex-1"
-                            />
-                          </div>
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium">
-                            Current Value
-                          </label>
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm">$</span>
-                            <Input
-                              type="number"
-                              value={""}
-                              className="flex-1"
-                            />
-                          </div>
-                        </div>
-                      </div>
+                      <InputWrapper
+                        control={form.control}
+                        name="purchase.depreciation_start_value"
+                        label="Starting Value"
+                        type="number"
+                        value=""
+                      />
+                      <InputWrapper
+                        control={form.control}
+                        name="purchase.salvage_value"
+                        label="Salvage Value"
+                        type="number"
+                        value=""
+                      />
+                      <InputWrapper
+                        control={form.control}
+                        name="purchase.depreciation"
+                        label="Monthly Depreciation"
+                        type="number"
+                        value=""
+                      />
+                      <InputWrapper
+                        control={form.control}
+                        name="purchase.current_value"
+                        label="Current Value"
+                        type="number"
+                        value=""
+                      />
                     </>
                   }
                 />
 
-                <div className="col-span-2 space-x-2">
+                <div className="col-span-2">
                   <Fieldset
                     legend="Ownership/Status"
                     content={
-                      <div className="grid grid-cols-2 space-x-2">
+                      <div className="grid grid-cols-2 gap-4">
                         <div className="col-span-1">
                           <ComboboxFieldWrapper
                             control={form.control}
-                            name="ownership"
+                            name="purchase.ownership_id"
                             label="Ownership"
                             options={ownershipOptions}
                           />
-                          {form.watch("ownership") === "Customer" && (
-                            <ComboboxFieldWrapper
-                              control={form.control}
-                              name="customerName"
-                              label="Customer"
-                              options={assigneeOptions}
-                            />
-                          )}
                           <DatePickerWrapper
                             control={form.control}
-                            name="inService"
-                            label="In service"
+                            name="purchase.in_service_date"
+                            label="In Service Date"
                           />
                           <DatePickerWrapper
                             control={form.control}
-                            name="outService"
-                            label="Out of Service"
+                            name="purchase.out_of_service_date"
+                            label="Out of Service Date"
                           />
                         </div>
                         <div className="col-span-1">
                           <DatePickerWrapper
                             control={form.control}
-                            name="transferred"
+                            name="purchase.transferred_date"
                             label="Transferred Date"
                           />
                           <DatePickerWrapper
                             control={form.control}
-                            name="soldDate"
-                            label="Date sold"
+                            name="purchase.sold_date"
+                            label="Sold Date"
                           />
                           <InputWrapper
                             control={form.control}
-                            name="soldTo"
+                            name="purchase.sold_to"
                             label="Sold To"
                             type="text"
-                            value={""}
-                            className="flex-1"
+                            value=""
                           />
-                          <InputWrapper
+                          <TextareaWrapper
                             control={form.control}
-                            name="notes"
-                            label="Notes"
-                            type="text"
-                            value={""}
-                            className="flex-1"
+                            name="purchase.ownership_notes"
+                            label="Ownership Notes"
+                            placeholder=""
+                            value=""
                           />
                         </div>
                       </div>
                     }
                   />
                 </div>
+
+                <div className="col-span-2">
+                  <Fieldset
+                    legend="Custom Purchase Fields"
+                    content={
+                      <CustomFieldsWrapper
+                        control={form.control}
+                        name="purchase_others"
+                        label="Custom Fields"
+                      />
+                    }
+                  />
+                </div>
+              </TabsContent>
+
+              {/* Expenses Tab */}
+              <TabsContent value="expenses">
+                <div className="text-lg font-semibold text-gray-700 mb-4">
+                  Automatic Expense Logging
+                </div>
+                <EditableDataTable
+                  data={form.watch("expenses") || []}
+                  columns={expenseColumns}
+                  defaultRow={{
+                    id: Date.now().toString(),
+                    expense_type_id: "",
+                    last_date: "",
+                    next_date: "",
+                    period: "",
+                    interval: 0,
+                    quantity: 0,
+                    cost: 0,
+                    notes: "",
+                  }}
+                  onDataChange={(newData) => {
+                    form.setValue("expenses", newData);
+                  }}
+                />
+              </TabsContent>
+
+              {/* Attachments Tab */}
+              <TabsContent value="attachments">
+                <FileUploadWrapper
+                  multiple={true}
+                  control={form.control}
+                  name="attachments"
+                  label="Attachments"
+                />
+              </TabsContent>
+
+              {/* Notes Tab */}
+              <TabsContent value="notes" className="space-y-2">
+                <TextareaWrapper
+                  control={form.control}
+                  name="notes"
+                  label="General Notes"
+                  placeholder="Enter any additional notes..."
+                  value=""
+                />
+              </TabsContent>
+
+              {/* Settings Tab */}
+              <TabsContent value="settings" className="space-y-2">
+                <Fieldset
+                  legend="Track the following details"
+                  content={
+                    <CheckboxWrapper
+                      control={form.control}
+                      name="tracker"
+                      label=""
+                      options={equipmentCheckboxOptions}
+                    />
+                  }
+                />
+                <Fieldset
+                  legend="Budget"
+                  content={
+                    <InputWrapper
+                      control={form.control}
+                      name="budget"
+                      label="Annual Operating Budget"
+                      value=""
+                      type="number"
+                    />
+                  }
+                />
               </TabsContent>
             </div>
+
             <TabsList orientation="vertical" className="border-l border-r-0">
               <TabsTrigger value="main">Main</TabsTrigger>
               <TabsTrigger value="specifications">Specifications</TabsTrigger>
-              <TabsTrigger value="warranty">Warranty/Misc</TabsTrigger>
+              <TabsTrigger value="warranty">Warranty</TabsTrigger>
               <TabsTrigger value="purchase">Purchase</TabsTrigger>
-              <TabsTrigger value="images">Images</TabsTrigger>
-              <TabsTrigger value="attachments">Attachments</TabsTrigger>
-              <TabsTrigger value="notifications">Notifications</TabsTrigger>
               <TabsTrigger value="expenses">Expenses</TabsTrigger>
+              <TabsTrigger value="attachments">Attachments</TabsTrigger>
               <TabsTrigger value="notes">Notes</TabsTrigger>
               <TabsTrigger value="settings">Settings</TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
+
         <div className="flex justify-end">
           <Button
             type="submit"
@@ -1002,7 +872,8 @@ export function ActualEquipmentForm() {
     </Form>
   );
 }
-export default function EquipmentForm({ variant }: triggerVariant) {
+
+export default function EquipmentForm({ variant }: TriggerVariant) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -1019,11 +890,11 @@ export default function EquipmentForm({ variant }: triggerVariant) {
           )}
         </Button>
       </SheetTrigger>
-      <SheetContent className="w-3/4 ">
+      <SheetContent className="w-3/4">
         <SheetHeader>
           <SheetTitle>Create New Equipment</SheetTitle>
           <SheetDescription>
-            Fill out the form below to set up your new Equipment project.
+            Fill out the form below to set up your new equipment.
           </SheetDescription>
         </SheetHeader>
 
@@ -1035,257 +906,15 @@ export default function EquipmentForm({ variant }: triggerVariant) {
   );
 }
 
-const expenseLogging = [{}];
-const emailPeople = [{}];
-
-type emailTableType = {
+// Expense table columns
+type ExpenseTableType = {
   id: string;
-  name: string;
-  email: string;
-  maintenance: boolean;
-  renewals: boolean;
-  workOrders: boolean;
-};
-
-export const emailColumns: ColumnDef<emailTableType>[] = [
-  {
-    accessorKey: "name",
-    header: "Name",
-    cell: ({ row, updateRow, rowIndex }: any) => (
-      <Select
-        value={row.original.name}
-        onValueChange={(e) => updateRow(rowIndex, "name", e)}
-      >
-        <SelectTrigger className="">
-          <SelectValue placeholder="" />
-        </SelectTrigger>
-        <SelectContent>
-          {vendorOptions?.map((item) => (
-            <SelectItem value={item.id} key={item.id}>
-              {item.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    ),
-    enableSorting: true,
-    enableHiding: true,
-  },
-  {
-    accessorKey: "email",
-    header: "Email",
-    cell: ({ row, updateRow, rowIndex }: any) => (
-      <Input
-        value={row.original.email}
-        onChange={(e) => updateRow(rowIndex, "email", e.target.email)}
-      />
-    ),
-    enableSorting: true,
-    enableHiding: true,
-  },
-  {
-    accessorKey: "maintenance",
-    header: "Maintenance",
-    cell: ({ row, updateRow, rowIndex }: any) => (
-      <div className="flex justify-center">
-        <Checkbox
-          value={row.original.maintenance}
-          onChange={(e) => updateRow(rowIndex, "maintenance", e.target.value)}
-        />
-      </div>
-    ),
-    enableSorting: true,
-    enableHiding: true,
-  },
-  {
-    accessorKey: "renewals",
-    header: "Renewals",
-    cell: ({ row, updateRow, rowIndex }: any) => (
-      <div className="flex justify-center">
-        <Checkbox
-          value={row.original.renewals}
-          onChange={(e) => updateRow(rowIndex, "renewals", e.target.value)}
-        />
-      </div>
-    ),
-    enableSorting: true,
-    enableHiding: true,
-  },
-  {
-    accessorKey: "workOrders",
-    header: "WorkOrders",
-    cell: ({ row, updateRow, rowIndex }: any) => (
-      <div className="flex justify-center">
-        <Checkbox
-          value={row.original.workOrders}
-          onChange={(e) => updateRow(rowIndex, "renewals", e.target.value)}
-        />
-      </div>
-    ),
-    enableSorting: true,
-    enableHiding: true,
-  },
-  {
-    id: "actions",
-    header: "Actions",
-    cell: ({ row }) => {
-      const person = row.original;
-      return (
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => alert(`Delete ${person.notes}`)}
-          >
-            <LucideTrash2 className="text-destructive" />
-          </Button>
-        </div>
-      );
-    },
-    enableSorting: false,
-    enableHiding: false,
-  },
-];
-
-type expenseTableType = {
-  id: string;
-  name: number;
-  lastDate: string;
-  nextDate: string;
+  expense_type_id: string;
+  last_date: string;
+  next_date: string;
   period: string;
   interval: number;
-  cost: number;
   quantity: number;
+  cost: number;
   notes: string;
 };
-
-export const columns: ColumnDef<expenseTableType>[] = [
-  {
-    accessorKey: "name",
-    header: "Expense",
-    cell: ({ row, updateRow, rowIndex }: any) => (
-      <Select
-        value={row.original.name}
-        onValueChange={(e) => updateRow(rowIndex, "name", e)}
-      >
-        <SelectTrigger className="">
-          <SelectValue placeholder="" />
-        </SelectTrigger>
-        <SelectContent>
-          {expenseOptions.map((item) => (
-            <SelectItem value={item.id} key={item.id}>
-              {item.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    ),
-    enableSorting: true,
-    enableHiding: true,
-  },
-  {
-    accessorKey: "lastDate",
-    header: "Last Date",
-    cell: ({ row, updateRow, rowIndex }: any) => (
-      <Input
-        type="date"
-        value={row.original.lastDate}
-        onChange={(e) => updateRow(rowIndex, "lastDate", e.target.value)}
-      />
-    ),
-    enableSorting: true,
-    enableHiding: true,
-  },
-  {
-    accessorKey: "nextDate",
-    header: "Next Date",
-    cell: ({ row, updateRow, rowIndex }: any) => (
-      <Input
-        type="date"
-        value={row.original.nextDate}
-        onChange={(e) => updateRow(rowIndex, "nextDate", e.target.value)}
-      />
-    ),
-    enableSorting: true,
-    enableHiding: true,
-  },
-  {
-    accessorKey: "period",
-    header: "Period",
-    cell: ({ row, updateRow, rowIndex }: any) => (
-      <Select
-        value={row.original.name}
-        onValueChange={(e) => updateRow(rowIndex, "period", e)}
-      >
-        <SelectTrigger className="">
-          <SelectValue placeholder="" />
-        </SelectTrigger>
-        <SelectContent>
-          {periodOptionList.map((item) => (
-            <SelectItem value={item.id} key={item.id}>
-              {item.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    ),
-    enableSorting: true,
-    enableHiding: true,
-  },
-  {
-    accessorKey: "quantity",
-    header: "Quantity",
-    cell: ({ row, updateRow, rowIndex }: any) => (
-      <Input
-        value={row.original.name}
-        onChange={(e) => updateRow(rowIndex, "quantity", e)}
-      />
-    ),
-    enableSorting: true,
-    enableHiding: true,
-  },
-  {
-    accessorKey: "cost",
-    header: "Cost",
-    cell: ({ row, updateRow, rowIndex }: any) => (
-      <Input
-        value={row.original.cost}
-        onChange={(e) => updateRow(rowIndex, "cost", e.target.value)}
-      />
-    ),
-    enableSorting: true,
-    enableHiding: true,
-  },
-  {
-    accessorKey: "notes",
-    header: "Note",
-    cell: ({ row, updateRow, rowIndex }: any) => (
-      <Input
-        value={row.original.notes}
-        onChange={(e) => updateRow(rowIndex, "note", e.target.value)}
-      />
-    ),
-    enableSorting: true,
-    enableHiding: true,
-  },
-  {
-    id: "actions",
-    header: "Actions",
-    cell: ({ row }) => {
-      const person = row.original;
-      return (
-        <div className="flex justify-end  ">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => alert(`Delete ${person.notes}`)}
-          >
-            <LucideTrash2 className="text-destructive" />
-          </Button>
-        </div>
-      );
-    },
-    enableSorting: false,
-    enableHiding: false,
-  },
-];

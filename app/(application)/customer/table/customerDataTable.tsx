@@ -66,7 +66,7 @@ export function CustomerTableLoader({CustomerData,isLoading}:{CustomerData:Custo
     totalRows: CustomerData.length,
   });
 
-  const flatEmployees = getAllEmployees(CustomerData );
+const flatEmployees = getAllEmployees(CustomerData );
 const name = [...new Set(flatEmployees.map((emp) => emp.company_name ?? ""))];
 const type = [...new Set(flatEmployees.map((emp) => emp.type.name ?? ""))];
 const address1 = [...new Set(flatEmployees.map((emp) => emp.address ?? ""))];
