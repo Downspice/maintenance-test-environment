@@ -126,7 +126,7 @@ export default function NewVendor() {
 
       // 5. Handle success and feedback
       // Assuming 'res' contains a success message or the created object
-      toast.success(res?.messagee); 
+      toast.success(res?.message); 
       vendorForm.reset(); // Reset form state on success
 
       // In a real application, you would likely close the sheet/modal here
