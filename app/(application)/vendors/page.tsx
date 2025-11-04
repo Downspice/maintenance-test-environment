@@ -130,7 +130,7 @@ export default function VendorsPage() {
           </Select>
         </div>
         <div className="flex flex-row space-x-0.5">
-          <Button onClick={createEquipment}>New</Button>
+          <Button onClick={createEquipment}>Create New Vendor</Button>
         </div>
       </div>
       <div>
