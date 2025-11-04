@@ -40,10 +40,12 @@ import HistoryTable from "../view/history-inventory";
 import TransferInventoryForm from "../form/transferInventory";
 import { useDeleteInventory, useGetInventories } from "@/services/setups/inventory";
 import { toast } from "sonner";
+import { useConfirmDialog } from "@/lib/confirm-dialog";
 
 
 
 export  function InventoryDataLoader({ InventoryData, isLoading }) {
+  const confirmDialog = useConfirmDialog();
   const [isServerMode, setIsServerMode] = useState(false);
    const deleteApi =useDeleteInventory();
   const [currentData, setCurrentData] = useState(InventoryData.slice(0, 5)); // Show first 5 for demo
@@ -99,7 +101,7 @@ const quantity = [
       "Print selected rows:",
       selectedRows.map((row) => row.original)
     );
-    alert(`Printing ${selectedRows.length} selected rows`);
+    toast.info(`Printing ${selectedRows.length} selected rows`);
   };
 
   const handleEmailSelected = (selectedRows: any[]) => {
@@ -107,21 +109,21 @@ const quantity = [
       "Email selected rows:",
       selectedRows.map((row) => row.original)
     );
-    alert(`Emailing ${selectedRows.length} selected rows`);
+    toast.info(`Emailing ${selectedRows.length} selected rows`);
   };
 
-  const handleDeleteSelected = (selectedRows: any[]) => {
+  const handleDeleteSelected = async (selectedRows: any[]) => {
     console.log(
       "Delete selected rows:",
       selectedRows.map((row) => row.original)
     );
-    if (
-      confirm(
-        `Are you sure you want to delete ${selectedRows.length} selected rows?`
-      )
-    ) {
-      alert(`Deleted ${selectedRows.length} rows`);
-      // Here you would typically call your bulk delete API
+    const ok = await confirmDialog({
+      title: "Delete selected inventory?",
+      description: `This will delete ${selectedRows.length} item(s). This action cannot be undone.`,
+      confirmText: "Delete",
+    })
+    if (ok) {
+      toast.success(`Deleted ${selectedRows.length} rows`)
     }
   };
 
@@ -372,13 +374,17 @@ const quantity = [
         const handleDeleteRow = (row: any) => {
           console.log("Delete row:", row.original);
           
-          if (
-            confirm(`Are you sure you want to delete ${row.original.name}?`)
-          ) {
-            deleteApi.mutateAsync(row.original)
-            if(deleteApi){toast.info(`Deleted Successfully`)};
-            // Here you would typically call your delete API
+        (async () => {
+          const ok = await confirmDialog({
+            title: "Delete inventory item?",
+            description: `Are you sure you want to delete ${row.original.name}?`,
+            confirmText: "Delete",
+          })
+          if (ok) {
+            await deleteApi.mutateAsync(row.original)
+            toast.success(`Deleted Successfully`)
           }
+        })()
         };
         const [open, setOpen] = useState(false);
         const [selectedProjectType, setSelectedProjectType] = useState<

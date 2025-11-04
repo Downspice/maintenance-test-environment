@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import InputWrapper from "@/components/forms/wrappers/InputWrapper";
 import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
 import RadioGroupWrapper from "@/components/forms/wrappers/RadioGroupWrapper";
-import { useGetVendors } from "@/services/setups/vendor";
+import { useGetVendorOptions } from "@/services/setups/vendor";
 
 const equipmentOptions = [
   { name: "Forklift", id: "forklift" },
@@ -45,7 +45,7 @@ export default function ManageSchedulePMLaborTab({ serviceName }: Props) {
   const [labors, setLabors] = useState<LaborRecord[]>([]);
   const [open, setOpen] = useState(false);
   const [editingLabor, setEditingLabor] = useState<LaborRecord | null>(null);
-    const { data: vendorOptions } = useGetVendors();
+    const { data: vendorOptions } = useGetVendorOptions();
 
   const form = useForm<LaborForm>({
     resolver: zodResolver(laborSchema),

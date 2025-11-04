@@ -25,13 +25,13 @@ import SelectWrapper from "../../wrappers/SelectWrapper";
 import SingleCheckboxWrapper from "../../wrappers/SingleCheckboxWrapper";
 import CustomFieldsWrapper from "../../wrappers/CustomFieldsWrapper";
 import { useGetCostCenters, useGetInventoryCategories, useGetInventoryManufacturers, useGetInventoryUnitTypes, useGetMarkupTypes } from "@/services/setups/inventory";
-import { useGetVendors } from "@/services/setups/vendor";
+import { useGetVendorOptions } from "@/services/setups/vendor";
 
 export default function NewPart() {
     const { data: equipmentManufacturerOptions } = useGetInventoryManufacturers();
     const { data:   unitOptions } = useGetInventoryUnitTypes();
   const { data: costCenterOptions } = useGetCostCenters();
-    const { data: vendorOptions } = useGetVendors();
+    const { data: vendorOptions } = useGetVendorOptions();
       const{data:markupTypeOptions}=useGetMarkupTypes();
     
 

@@ -49,7 +49,7 @@ import {
   expenseOptions,
   periodOptionList,
 } from "@/lib/equipment-schema";
-import { useGetVendors } from "@/services/setups/vendor";
+import { useGetVendorOptions } from "@/services/setups/vendor";
 import { useGetEquipmentColors, useGetEquipmentMakes, useGetEquipmentModels, useGetEquipmentOwnerships, useGetEquipmentStatuses, useGetEquipmentTypes } from "@/services/setups/equipments";
 
 export const equipmentSchema = z.object({
@@ -176,7 +176,7 @@ export default function EditEquipment({
   const { data: ownershipOptions } = useGetEquipmentOwnerships();
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { data: vendorOptions } = useGetVendors();
+  const { data: vendorOptions } = useGetVendorOptions();
   const { data: makeOptionsList } = useGetEquipmentMakes();
   const { data: carModelOptionsList } = useGetEquipmentModels();
   const { data: equipmentTypeOptions } = useGetEquipmentTypes();

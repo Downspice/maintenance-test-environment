@@ -4,53 +4,60 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { AdvancedDataTable } from "@/components/customUI/advanced-data-table";
 import { SortableHeader } from "@/components/customUI/sortable-header";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Trash2, FilePenIcon } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Trash2, FilePenIcon } from "lucide-react";
 import { useState } from "react";
 import React from "react";
-import { VendorTableInterface } from "@/lib/vendor-data";
+// Using API response shape directly for table rows
 import ViewVendor from "../view/viewDetailsSheet";
 import EditVendor from "../view/editVendorSheet";
 import { matchesSearchAllFields } from "@/lib/utils";
-import { useDeleteVendor, useGetVendors } from "@/services/setups/vendor";
+import { useDeleteVendor, useGetVendorsPaginated } from "@/services/setups/vendor";
 import { toast } from "sonner";
+import { useConfirmDialog } from "@/lib/confirm-dialog";
 
-export default function VendorDataTable() {
-  const {
-    data: VendorData,
-    isLoading,
-    error: vendorTypesError,
-  } = useGetVendors();
-
-  return VendorData ? (
-    <VendorTableLoader VendorData={VendorData} isLoading={isLoading} />
-  ) : (
-    <div>is loading.......</div>
-  );
+export default function VendorDataTable({
+  locationId,
+  typeId,
+}: {
+  locationId?: string;
+  typeId?: string;
+}) {
+  return <VendorTableLoader locationId={locationId} typeId={typeId} />;
 }
-export function VendorTableLoader({ VendorData, isLoading }) {
-  const [isServerMode, setIsServerMode] = useState(false);
-  const deleteApi =useDeleteVendor();
-  const [currentData, setCurrentData] = useState(VendorData.slice(0, 5)); // Show first 5 for demo
-  const [paginationInfo, setPaginationInfo] = useState({
-    pageIndex: 0,
-    pageSize: 5,
-    totalPages: Math.ceil(VendorData?.length / 5),
-    totalRows: VendorData?.length,
+
+export function VendorTableLoader({ locationId, typeId }: { locationId?: string; typeId?: string }) {
+  const deleteApi = useDeleteVendor();
+  const confirmDialog = useConfirmDialog();
+  const [pageIndex, setPageIndex] = useState(0); // 0-based for UI
+  const [pageSize, setPageSize] = useState(10);
+  const [search, setSearch] = useState("");
+
+  const { data: paged, isLoading } = useGetVendorsPaginated<any>({
+    search: search || undefined,
+    location_id: locationId || undefined,
+    type_id: typeId || undefined,
+    size: pageSize,
+    page: pageIndex + 1, // API expects 1-based
   });
 
+  const serverRows = paged?.data ?? [];
+  const currentPage = paged?.current_page ? Number(paged.current_page) : pageIndex + 1;
+  const totalPages = paged?.last_page ? Number(paged.last_page) : 1;
+  const totalRows = paged?.total ? Number(paged.total) : serverRows.length;
+  const effectivePageSize = paged?.per_page ? Number(paged.per_page) : pageSize;
+
+  const paginationInfo = {
+    pageIndex: currentPage - 1,
+    pageSize: effectivePageSize,
+    totalPages: totalPages,
+    totalRows: totalRows,
+  };
+
   const getAllEmployees = (
-    employees: VendorTableInterface[]
-  ): VendorTableInterface[] => {
-    const result: VendorTableInterface[] = [];
-    const traverse = (emps: VendorTableInterface[]) => {
+    employees: any[]
+  ): any[] => {
+    const result: any[] = [];
+    const traverse = (emps: any[]) => {
       emps.forEach((emp) => {
         result.push(emp);
       });
@@ -59,7 +66,7 @@ export function VendorTableLoader({ VendorData, isLoading }) {
     return result;
   };
 
-  const flatEmployees = getAllEmployees(VendorData);
+  const flatEmployees = getAllEmployees(serverRows);
   const name = [...new Set(flatEmployees.map((emp) => emp.name))];
   const type = [...new Set(flatEmployees.map((emp) => emp.type.name))];
   const contact = [...new Set(flatEmployees.map((emp) => emp.contact.phone_one))];
@@ -84,7 +91,7 @@ export function VendorTableLoader({ VendorData, isLoading }) {
       "Print selected rows:",
       selectedRows.map((row) => row.original)
     );
-    alert(`Printing ${selectedRows.length} selected rows`);
+    toast.info(`Printing ${selectedRows.length} selected rows`);
   };
 
   const handleEmailSelected = (selectedRows: any[]) => {
@@ -92,21 +99,22 @@ export function VendorTableLoader({ VendorData, isLoading }) {
       "Email selected rows:",
       selectedRows.map((row) => row.original)
     );
-    alert(`Emailing ${selectedRows.length} selected rows`);
+    toast.info(`Emailing ${selectedRows.length} selected rows`);
   };
 
-  const handleDeleteSelected = (selectedRows: any[]) => {
+  const handleDeleteSelected = async (selectedRows: any[]) => {
     console.log(
       "Delete selected rows:",
       selectedRows.map((row) => row.original)
     );
-    if (
-      confirm(
-        `Are you sure you want to delete ${selectedRows.length} selected rows?`
-      )
-    ) {
-      alert(`Deleted ${selectedRows.length} rows`);
-      // Here you would typically call your bulk delete API
+    const ok = await confirmDialog({
+      title: "Delete selected vendors?",
+      description: `This will delete ${selectedRows.length} vendor(s). This action cannot be undone.`,
+      confirmText: "Delete",
+    })
+    if (ok) {
+      toast.success(`Deleted ${selectedRows.length} rows`)
+      // TODO: bulk delete API when available
     }
   };
 
@@ -133,75 +141,29 @@ export function VendorTableLoader({ VendorData, isLoading }) {
 
   // Server-side pagination handler
   const handlePaginationChange = (action: "next" | "previous" | number) => {
-    console.log(`🔄 Server Pagination Action: ${action}`);
+    if (action === "next") {
+      setPageIndex((p) => Math.min(p + 1, Math.max(0, paginationInfo.totalPages - 1)));
+    } else if (action === "previous") {
+      setPageIndex((p) => Math.max(p - 1, 0));
+    } else if (typeof action === "number") {
+      setPageIndex(action);
+    }
+  };
 
-    // setIsLoading(true);
-
-    // Simulate server delay
-    setTimeout(() => {
-      let newPageIndex = paginationInfo.pageIndex;
-
-      if (action === "next") {
-        newPageIndex = Math.min(
-          paginationInfo.pageIndex + 1,
-          paginationInfo.totalPages - 1
-        );
-      } else if (action === "previous") {
-        newPageIndex = Math.max(paginationInfo.pageIndex - 1, 0);
-      } else if (typeof action === "number") {
-        newPageIndex = action;
-      }
-
-      // Simulate fetching data for the new page
-      const startIndex = newPageIndex * paginationInfo.pageSize;
-      const endIndex = startIndex + paginationInfo.pageSize;
-      const newData = VendorData.slice(startIndex, endIndex);
-
-      setCurrentData(newData);
-      setPaginationInfo((prev) => ({
-        ...prev,
-        pageIndex: newPageIndex,
-      }));
-
-      // setIsLoading(false);
-    }, 1000); // 1 second delay to simulate server response
+  // Page size change handler: reset to first page to keep URL consistent
+  const handlePageSizeChange = (size: number) => {
+    setPageIndex(0);
+    setPageSize(size);
   };
 
   // Server-side search handler
-  const handleServerSearch = React.useCallback(
-    (searchid: string) => {
-      console.log(`🔍 Server Search: "${searchValue}"`);
-
-      // setIsLoading(true);
-
-      // Simulate server delay
-      setTimeout(() => {
-        let filteredData = VendorData;
-
-        if (searchValue.trim()) {
-          filteredData = VendorData.filter((emp) =>
-            matchesSearchAllFields(emp, searchValue.trim())
-          );
-        }
-
-        // Reset to first page and update data
-        const newData = filteredData.slice(0, paginationInfo.pageSize);
-        setCurrentData(newData);
-        setPaginationInfo((prev) => ({
-          ...prev,
-          pageIndex: 0,
-          totalPages: Math.ceil(filteredData.length / prev.pageSize),
-          totalRows: filteredData.length,
-        }));
-
-        // setIsLoading(false);
-      }, 800); // 800ms delay to simulate server response
-    },
-    [paginationInfo.pageSize]
-  ); // Add dependencies that actually matter
+  const handleServerSearch = React.useCallback((value: string) => {
+    setPageIndex(0);
+    setSearch(value);
+  }, []);
 
   // Column definitions
-  const columns: ColumnDef<VendorTableInterface>[] = [
+  const columns: ColumnDef<any>[] = [
     {
       accessorKey: "name",
       header: ({ column }) => (
@@ -209,7 +171,7 @@ export function VendorTableLoader({ VendorData, isLoading }) {
           column={column}
           title="Name"
           sortable={true}
-          filterOptions={name}
+          // filterOptions={name}
         />
       ),
       cell: ({ row }) => (
@@ -230,7 +192,7 @@ export function VendorTableLoader({ VendorData, isLoading }) {
           column={column}
           title="Type"
           sortable={true}
-          filterOptions={type}
+          // filterOptions={type}
         />
       ),
     },
@@ -241,7 +203,7 @@ export function VendorTableLoader({ VendorData, isLoading }) {
           column={column}
           title="Contact"
           sortable={true}
-          filterOptions={contact}
+          // filterOptions={contact}
         />
       ),
       filterFn: (row, id, value) => {
@@ -255,7 +217,7 @@ export function VendorTableLoader({ VendorData, isLoading }) {
           column={column}
           title="Address"
           sortable={true}
-          filterOptions={address1}
+          // filterOptions={address1}
         />
       ),
       filterFn: (row, id, value) => {
@@ -269,7 +231,7 @@ export function VendorTableLoader({ VendorData, isLoading }) {
           column={column}
           title="City"
           sortable={true}
-          filterOptions={city}
+          // filterOptions={city}
         />
       ),
       cell: ({ row }) => <>{row.original.city}</>,
@@ -285,7 +247,7 @@ export function VendorTableLoader({ VendorData, isLoading }) {
           column={column}
           title="State"
           sortable={true}
-          filterOptions={state_prov}
+          // filterOptions={state_prov}
         />
       ),
       filterFn: (row, id, value) => {
@@ -299,7 +261,7 @@ export function VendorTableLoader({ VendorData, isLoading }) {
           column={column}
           title="Postal Code"
           sortable={true}
-          filterOptions={postal_code}
+          // filterOptions={postal_code}
         />
       ),
     },
@@ -310,7 +272,7 @@ export function VendorTableLoader({ VendorData, isLoading }) {
           column={column}
           title="Email"
           sortable={true}
-          filterOptions={email}
+          // filterOptions={email}
         />
       ),
       filterFn: (row, id, value) => {
@@ -323,57 +285,40 @@ export function VendorTableLoader({ VendorData, isLoading }) {
       cell: ({ row }) => {
         const handleDeleteRow = (row: any) => {
           console.log("Delete row:", row.original);
-          if (
-            confirm(`Are you sure you want to delete ${row.original.name}?`)
-          ) {
-            deleteApi.mutateAsync(row.original)
-            if(deleteApi){toast.info(`Deleted Successfully`)};
-            // Here you would typically call your delete API
+        (async () => {
+          const ok = await confirmDialog({
+            title: "Delete vendor?",
+            description: `Are you sure you want to delete ${row.original.name}?`,
+            confirmText: "Delete",
+          })
+          if (ok) {
+            await deleteApi.mutateAsync(row.original)
+            toast.success(`Deleted successfully`)
           }
+        })()
         };
 
         return (
-          <div className="flex flex-row justify-between ">
+          <div className="flex flex-row gap-2 ">
             <EditVendor
               children={
                 <Button variant={"secondary"} size={"icon"}>
-                  <FilePenIcon />{" "}
+                  <FilePenIcon />
                 </Button>
               }
               data={row.original}
             />
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant={"secondary"} size={"icon"}>
-                  <MoreHorizontal />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-62 " align="start">
-                {/* <DropdownMenuLabel>My Account</DropdownMenuLabel> */}
-                <DropdownMenuGroup>
-                  <DropdownMenuItem>
-                    Email
-                    {/* <DropdownMenuShortcut>⌘B</DropdownMenuShortcut> */}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    Print
-                    {/* <DropdownMenuShortcut>⌘S</DropdownMenuShortcut> */}
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDeleteRow(row);
-                  }}
-                  className="text-destructive focus:text-destructive"
-                >
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Delete
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <Button
+              variant={"secondary"}
+              size={"icon"}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDeleteRow(row);
+              }}
+              className="text-destructive hover:text-destructive"
+            >
+              <Trash2 />
+            </Button>
           </div>
         );
       },
@@ -404,7 +349,7 @@ export function VendorTableLoader({ VendorData, isLoading }) {
 
       <AdvancedDataTable
         columns={columns}
-        data={isServerMode ? currentData : VendorData}
+        data={serverRows}
         defaultVisibleColumns={[
           "name",
           "type",
@@ -425,10 +370,12 @@ export function VendorTableLoader({ VendorData, isLoading }) {
         storageKey="vendor-table-visibility"
         enableExpanding={false}
         subRowKey="tasks"
-        realServerPagination={isServerMode}
-        paginationInfo={isServerMode ? paginationInfo : undefined}
-        onPaginationChange={isServerMode ? handlePaginationChange : undefined}
-        onServerSearch={isServerMode ? handleServerSearch : undefined}
+        realServerPagination={true}
+        paginationInfo={paginationInfo}
+        onPaginationChange={handlePaginationChange}
+        onPageSizeChange={handlePageSizeChange}
+        pageSizeOptions={[10, 20, 30, 50]}
+        onServerSearch={handleServerSearch}
         isLoading={isLoading}
       />
     </div>

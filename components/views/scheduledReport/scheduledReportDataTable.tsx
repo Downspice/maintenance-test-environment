@@ -20,6 +20,8 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { toast } from "sonner";
+import { useConfirmDialog } from "@/lib/confirm-dialog";
 
 // Get unique values for filter options (including sub-rows)
 const getAllEmployees = (
@@ -48,6 +50,7 @@ const equipmentFilter = [
 export default function ScheduledReportDataTable() {
   const [isServerMode, setIsServerMode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const confirmDialog = useConfirmDialog();
   const [currentData, setCurrentData] = useState(
     ScheduledReportData.slice(0, 5)
   ); // Show first 5 for demo
@@ -73,7 +76,7 @@ export default function ScheduledReportDataTable() {
       "Print selected rows:",
       selectedRows.map((row) => row.original)
     );
-    alert(`Printing ${selectedRows.length} selected rows`);
+    toast.info(`Printing ${selectedRows.length} selected rows`);
   };
 
   const handleEmailSelected = (selectedRows: any[]) => {
@@ -81,21 +84,21 @@ export default function ScheduledReportDataTable() {
       "Email selected rows:",
       selectedRows.map((row) => row.original)
     );
-    alert(`Emailing ${selectedRows.length} selected rows`);
+    toast.info(`Emailing ${selectedRows.length} selected rows`);
   };
 
-  const handleDeleteSelected = (selectedRows: any[]) => {
+  const handleDeleteSelected = async (selectedRows: any[]) => {
     console.log(
       "Delete selected rows:",
       selectedRows.map((row) => row.original)
     );
-    if (
-      confirm(
-        `Are you sure you want to delete ${selectedRows.length} selected rows?`
-      )
-    ) {
-      alert(`Deleted ${selectedRows.length} rows`);
-      // Here you would typically call your bulk delete API
+    const ok = await confirmDialog({
+      title: "Delete selected scheduled reports?",
+      description: `This will delete ${selectedRows.length} item(s). This action cannot be undone.`,
+      confirmText: "Delete",
+    })
+    if (ok) {
+      toast.success(`Deleted ${selectedRows.length} rows`)
     }
   };
 
@@ -297,14 +300,16 @@ export default function ScheduledReportDataTable() {
       cell: ({ row }) => {
         const handleDeleteRow = (row: any) => {
           console.log("Delete row:", row.original);
-          if (
-            confirm(
-              `Are you sure you want to delete ${row.original.ScheduledReportNumber}?`
-            )
-          ) {
-            alert(`Deleted ${row.original.ScheduledReportNumber}`);
-            // Here you would typically call your delete API
-          }
+          (async () => {
+            const ok = await confirmDialog({
+              title: "Delete scheduled report?",
+              description: `Are you sure you want to delete ${row.original.ScheduledReportNumber}?`,
+              confirmText: "Delete",
+            })
+            if (ok) {
+              toast.success(`Deleted ${row.original.ScheduledReportNumber}`)
+            }
+          })()
         };
 
         const [open, setOpen] = useState(false);

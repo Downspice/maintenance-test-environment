@@ -66,6 +66,216 @@ type WorkOrderPayload = TParams & { id?: TId };
 type WorkOrderAttachmentPayload = { id: TId };
 
 
+// --- Work Order Queries/Mutations ---
+
+/**
+ * Fetches the list of all Work Orders.
+ */
+export function useGetWorkOrders<TData = TEntity[]>(options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>) {
+    return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
+        queryKey: ["work-orders"],
+        queryFn: async () => {
+            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-work-orders"));
+            return response;
+        },
+        select: (response) => response.data as TData,
+        staleTime: Infinity,
+        ...options,
+    });
+}
+
+/**
+ * Fetches a single Work Order by ID.
+ * @param id The ID of the work order to fetch.
+ */
+export function useGetWorkOrder<TData = TEntity>(id: TId, options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>) {
+    return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
+        queryKey: ["work-order", id],
+        queryFn: async () => {
+            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl(`/api/get-work-order/${id}`));
+            return response;
+        },
+        select: (response) => response.data as TData,
+        enabled: !!id,
+        ...options,
+    });
+}
+
+/**
+ * Adds a new Work Order. Invalidates the 'work-orders' list.
+ */
+export function useAddWorkOrder() {
+    return useBaseMutation<TEntity, WorkOrderPayload>(
+        ["add-work-order"],
+        () => "/api/add-work-order",
+        'post',
+        () => [['work-orders']]
+    );
+}
+
+/**
+ * Deletes a Work Order. Invalidates the 'work-orders' list and the specific 'work-order' detail query.
+ */
+export function useDeleteWorkOrder() {
+    return useBaseMutation<TEntity, { id: TId }>(
+        ["delete-work-order"],
+        (payload) => `/api/delete-work-order/${payload.id}`,
+        'delete',
+        (payload) => [['work-orders'], ['work-order', payload.id]]
+    );
+}
+
+
+// --- Work Order Unit Queries/Mutations ---
+
+/**
+ * Adds a Work Order Unit. Invalidates the 'work-orders' list and the specific 'work-order' detail query.
+ */
+export function useAddWorkOrderUnit() {
+    return useBaseMutation<TEntity, WorkOrderPayload>(
+        ["add-work-order-unit"],
+        () => "/api/add-work-order-unit",
+        'post',
+        (payload) => [['work-orders'], ['work-order', (payload as any).work_order_id]]
+    );
+}
+
+/**
+ * Deletes a Work Order Unit. Invalidates the 'work-orders' list.
+ */
+export function useDeleteWorkOrderUnit() {
+    return useBaseMutation<TEntity, { id: TId }>(
+        ["delete-work-order-unit"],
+        (payload) => `/api/delete-work-order-unit/${payload.id}`,
+        'delete',
+        () => [['work-orders']]
+    );
+}
+
+
+// --- Work Order Unit Maintenance Queries/Mutations ---
+
+/**
+ * Adds a Work Order Unit Maintenance. Invalidates the 'work-orders' list and the specific 'work-order' detail query.
+ */
+export function useAddWorkOrderUnitMaintenance() {
+    return useBaseMutation<TEntity, WorkOrderPayload>(
+        ["add-work-order-unit-maintenance"],
+        () => "/api/add-work-order-unit-maintenace",
+        'post',
+        (payload) => [['work-orders'], ['work-order', (payload as any).work_order_id]]
+    );
+}
+
+
+// --- Work Order Unit Part Queries/Mutations ---
+
+/**
+ * Adds a Work Order Unit Part. Invalidates the 'work-orders' list and the specific 'work-order' detail query.
+ */
+export function useAddWorkOrderUnitPart() {
+    return useBaseMutation<TEntity, WorkOrderPayload>(
+        ["add-work-order-unit-part"],
+        () => "/api/add-work-order-unit-part",
+        'post',
+        (payload) => [['work-orders'], ['work-order', (payload as any).work_order_id]]
+    );
+}
+
+/**
+ * Deletes a Work Order Unit Part. Invalidates the 'work-orders' list.
+ */
+export function useDeleteWorkOrderUnitPart() {
+    return useBaseMutation<TEntity, { id: TId }>(
+        ["delete-work-order-unit-part"],
+        (payload) => `/api/delete-work-order-unit-part/${payload.id}`,
+        'delete',
+        () => [['work-orders']]
+    );
+}
+
+
+// --- Work Order Unit Labor Queries/Mutations ---
+
+/**
+ * Adds a Work Order Unit Labor. Invalidates the 'work-orders' list and the specific 'work-order' detail query.
+ */
+export function useAddWorkOrderUnitLabor() {
+    return useBaseMutation<TEntity, WorkOrderPayload>(
+        ["add-work-order-unit-labor"],
+        () => "/api/add-work-order-unit-labor",
+        'post',
+        (payload) => [['work-orders'], ['work-order', (payload as any).work_order_id]]
+    );
+}
+
+/**
+ * Deletes a Work Order Unit Labor. Invalidates the 'work-orders' list.
+ */
+export function useDeleteWorkOrderUnitLabor() {
+    return useBaseMutation<TEntity, { id: TId }>(
+        ["delete-work-order-unit-labor"],
+        (payload) => `/api/delete-work-order-unit-labor/${payload.id}`,
+        'delete',
+        () => [['work-orders']]
+    );
+}
+
+
+// --- Work Order Unit Attachment Queries/Mutations ---
+
+/**
+ * Adds a Work Order Unit Attachment. Invalidates the 'work-orders' list and the specific 'work-order' detail query.
+ */
+export function useAddWorkOrderUnitAttachment() {
+    return useBaseMutation<TEntity, WorkOrderPayload>(
+        ["add-work-order-unit-attachment"],
+        () => "/api/add-work-order-unit-attachment",
+        'post',
+        (payload) => [['work-orders'], ['work-order', (payload as any).work_order_id]]
+    );
+}
+
+/**
+ * Deletes a Work Order Unit Attachment. Invalidates the 'work-orders' list.
+ */
+export function useDeleteWorkOrderUnitAttachment() {
+    return useBaseMutation<TEntity, { id: TId }>(
+        ["delete-work-order-unit-attachment"],
+        (payload) => `/api/delete-work-order-unit-attachment/${payload.id}`,
+        'delete',
+        () => [['work-orders']]
+    );
+}
+
+
+// --- Work Order Unit Note Queries/Mutations ---
+
+/**
+ * Adds a Work Order Unit Note. Invalidates the 'work-orders' list and the specific 'work-order' detail query.
+ */
+export function useAddWorkOrderUnitNote() {
+    return useBaseMutation<TEntity, WorkOrderPayload>(
+        ["add-work-order-unit-note"],
+        () => "/api/add-work-order-unit-note",
+        'post',
+        (payload) => [['work-orders'], ['work-order', (payload as any).work_order_id]]
+    );
+}
+
+/**
+ * Deletes a Work Order Unit Note. Invalidates the 'work-orders' list.
+ */
+export function useDeleteWorkOrderUnitNote() {
+    return useBaseMutation<TEntity, { id: TId }>(
+        ["delete-work-order-unit-note"],
+        (payload) => `/api/delete-work-order-unit-note/${payload.id}`,
+        'delete',
+        () => [['work-orders']]
+    );
+}
+
+
 // --- Work Order Type Setup Queries/Mutations ---
 
 /**

@@ -48,7 +48,7 @@ import {
   useGetCostCenters,
   useGetInventoryCategories,
 } from "@/services/setups/inventory";
-import { useGetVendors } from "@/services/setups/vendor";
+import { useGetVendorOptions } from "@/services/setups/vendor";
 import {
   useAddEquipment,
   useGetEquipmentColors,
@@ -168,7 +168,7 @@ export type EquipmentFormValues = z.infer<typeof equipmentSchema>;
 
 export function ActualEquipmentForm() {
   const { mutateAsync, isPending: isSubmitting } = useAddEquipment();
-  const { data: vendorOptions } = useGetVendors<GenericObject[]>();
+  const { data: vendorOptions } = useGetVendorOptions<GenericObject[]>();
   const { data: categoryOptions } =
     useGetInventoryCategories<GenericObject[]>();
   const { data: makeOptionsList } = useGetEquipmentMakes<GenericObject[]>();

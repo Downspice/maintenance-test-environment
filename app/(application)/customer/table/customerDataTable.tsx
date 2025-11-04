@@ -27,6 +27,8 @@ import {  CustomerInterface, CustomerTableDataInterface } from "@/lib/Customer/c
 import { matchesSearchAllFields } from "@/lib/utils";
 import EditCustomer from "../views/edit-customer";
 import { useGetCustomers } from "@/services/setups/vendor";
+import { toast } from "sonner";
+import { useConfirmDialog } from "@/lib/confirm-dialog";
 
 const getAllEmployees = (
   employees: CustomerTableDataInterface[]
@@ -46,7 +48,7 @@ export default function CustomerDataTable() {
     data: CustomerData,
     isLoading,
     error: vendorTypesError,
-  } = useGetCustomers();
+  } = useGetCustomers<CustomerTableDataInterface[]>();
 
   return CustomerData ? (
     <CustomerTableLoader CustomerData={CustomerData} isLoading={isLoading} />
@@ -56,6 +58,7 @@ export default function CustomerDataTable() {
 }
 
 export function CustomerTableLoader({CustomerData,isLoading}:{CustomerData:CustomerTableDataInterface[];isLoading:boolean}) {
+  const confirmDialog = useConfirmDialog();
   const [isServerMode, setIsServerMode] = useState(false);
   // const [isLoading, setIsLoading] = useState(false);
   const [currentData, setCurrentData] = useState(CustomerData.slice(0, 5)); // Show first 5 for demo
@@ -93,7 +96,7 @@ const email = [...new Set(flatEmployees.map((emp) => emp.email ?? ""))];
       "Print selected rows:",
       selectedRows.map((row) => row.original)
     );
-    alert(`Printing ${selectedRows.length} selected rows`);
+    toast.info(`Printing ${selectedRows.length} selected rows`);
   };
 
   const handleEmailSelected = (selectedRows: any[]) => {
@@ -101,21 +104,22 @@ const email = [...new Set(flatEmployees.map((emp) => emp.email ?? ""))];
       "Email selected rows:",
       selectedRows.map((row) => row.original)
     );
-    alert(`Emailing ${selectedRows.length} selected rows`);
+    toast.info(`Emailing ${selectedRows.length} selected rows`);
   };
 
-  const handleDeleteSelected = (selectedRows: any[]) => {
+  const handleDeleteSelected = async (selectedRows: any[]) => {
     console.log(
       "Delete selected rows:",
       selectedRows.map((row) => row.original)
     );
-    if (
-      confirm(
-        `Are you sure you want to delete ${selectedRows.length} selected rows?`
-      )
-    ) {
-      alert(`Deleted ${selectedRows.length} rows`);
-      // Here you would typically call your bulk delete API
+    const ok = await confirmDialog({
+      title: "Delete selected customers?",
+      description: `This will delete ${selectedRows.length} item(s). This action cannot be undone.`,
+      confirmText: "Delete",
+    })
+    if (ok) {
+      toast.success(`Deleted ${selectedRows.length} rows`)
+      // TODO: bulk delete API
     }
   };
 
@@ -194,7 +198,7 @@ const email = [...new Set(flatEmployees.map((emp) => emp.email ?? ""))];
   // Server-side search handler
   const handleServerSearch = React.useCallback(
     (searchid: string) => {
-      console.log(`🔍 Server Search: "${searchValue}"`);
+      console.log(`🔍 Server Search: "${searchid}"`);
 
       // setIsLoading(true);
 
@@ -202,9 +206,9 @@ const email = [...new Set(flatEmployees.map((emp) => emp.email ?? ""))];
       setTimeout(() => {
         let filteredData = CustomerData;
 
-        if (searchValue.trim()) {
+        if (searchid.trim()) {
           filteredData = CustomerData.filter((emp) =>
-            matchesSearchAllFields(emp, searchValue.trim())
+            matchesSearchAllFields(emp, searchid.trim())
           );
         }
 
@@ -329,12 +333,16 @@ const email = [...new Set(flatEmployees.map((emp) => emp.email ?? ""))];
       cell: ({ row }) => {
         const handleDeleteRow = (row: any) => {
           console.log("Delete row:", row.original);
-          if (
-            confirm(`Are you sure you want to delete ${row.original.name}?`)
-          ) {
-            alert(`Deleted ${row.original.name}`);
-            // Here you would typically call your delete API
-          }
+          (async () => {
+            const ok = await confirmDialog({
+              title: "Delete customer?",
+              description: `Are you sure you want to delete ${row.original.name}?`,
+              confirmText: "Delete",
+            })
+            if (ok) {
+              toast.success(`Deleted ${row.original.name}`)
+            }
+          })()
         };
 
         return (

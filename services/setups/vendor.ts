@@ -151,6 +151,54 @@ export function useGetVendors<TData = TEntity[]>(options?: UseQueryOptions<ApiRe
     });
 }
 
+// Paginated vendors with server-side filters and search
+type VendorQuery = {
+    search?: string;
+    location_id?: string;
+    type_id?: string;
+    size?: number; // page size
+    page?: number; // 1-based page index as required by API
+};
+
+export function useGetVendorsPaginated<TPaginated = any>(
+    query: VendorQuery,
+    options?: UseQueryOptions<ApiResponse<TPaginated>, AxiosError<ApiError>, TPaginated>
+) {
+    return useQuery<ApiResponse<TPaginated>, AxiosError<ApiError>, TPaginated>({
+        queryKey: ["vendors", query],
+        queryFn: async () => {
+            const params = new URLSearchParams();
+            if (query.search && query.search.trim()) params.set("search", query.search.trim());
+            if (query.location_id) params.set("location_id", query.location_id);
+            if (query.type_id) params.set("type_id", query.type_id);
+            if (typeof query.size === "number") params.set("size", String(query.size));
+            if (typeof query.page === "number") params.set("page", String(query.page));
+            const url = buildUrl(`/api/get-vendors${params.toString() ? `?${params.toString()}` : ""}`);
+            const response = await dummyApiClient<ApiResponse<TPaginated>>(url);
+            return response;
+        },
+        select: (response) => response.data as TPaginated,
+        keepPreviousData: true,
+        ...options,
+    });
+}
+
+/**
+ * Fetches vendor options for selects/comboboxes.
+ */
+export function useGetVendorOptions<TData = TEntity[]>(options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>) {
+    return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
+        queryKey: ["vendor-options"],
+        queryFn: async () => {
+            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-vendor-options"));
+            return response;
+        },
+        select: (response) => response.data as TData,
+        staleTime: Infinity,
+        ...options,
+    });
+}
+
 /**
  * Fetches a single Vendor by ID.
  * @param id The ID of the vendor to fetch.

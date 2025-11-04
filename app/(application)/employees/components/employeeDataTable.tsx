@@ -24,13 +24,14 @@ import EditEmployee from "../views/editEmployeeSheet";
 import { matchesSearchAllFields } from "@/lib/utils";
 import { useDeleteEmployee, useGetEmployees } from "@/services/setups/employee";
 import { toast } from "sonner";
+import { useConfirmDialog } from "@/lib/confirm-dialog";
 
 export default function EmployeeDataTable() {
   const {
     data: EmployeeData,
     isLoading,
     error: EmployeeDataError,
-  } = useGetEmployees();
+  } = useGetEmployees<EmployeeTableInterface[]>();
 
   return EmployeeData ? (
     <EmployeeTableLoader EmployeeData={EmployeeData} isLoading={isLoading} />
@@ -39,10 +40,11 @@ export default function EmployeeDataTable() {
   );
 }
 
-export function EmployeeTableLoader({ EmployeeData, isLoading }) {
+export function EmployeeTableLoader({ EmployeeData, isLoading }: { EmployeeData: EmployeeTableInterface[]; isLoading: boolean }) {
   const [isServerMode, setIsServerMode] = useState(false);
   // const [isLoading, setIsLoading] = useState(false);
    const deleteApi =useDeleteEmployee();
+  const confirmDialog = useConfirmDialog();
   const [currentData, setCurrentData] = useState(EmployeeData.slice(0, 5)); // Show first 5 for demo
   const [paginationInfo, setPaginationInfo] = useState({
     pageIndex: 0,
@@ -99,7 +101,7 @@ export function EmployeeTableLoader({ EmployeeData, isLoading }) {
       "Print selected rows:",
       selectedRows.map((row) => row.original)
     );
-    alert(`Printing ${selectedRows.length} selected rows`);
+    toast.info(`Printing ${selectedRows.length} selected rows`);
   };
 
   const handleEmailSelected = (selectedRows: any[]) => {
@@ -107,21 +109,21 @@ export function EmployeeTableLoader({ EmployeeData, isLoading }) {
       "Email selected rows:",
       selectedRows.map((row) => row.original)
     );
-    alert(`Emailing ${selectedRows.length} selected rows`);
+    toast.info(`Emailing ${selectedRows.length} selected rows`);
   };
 
-  const handleDeleteSelected = (selectedRows: any[]) => {
+  const handleDeleteSelected = async (selectedRows: any[]) => {
     console.log(
       "Delete selected rows:",
       selectedRows.map((row) => row.original)
     );
-    if (
-      confirm(
-        `Are you sure you want to delete ${selectedRows.length} selected rows?`
-      )
-    ) {
-      alert(`Deleted ${selectedRows.length} rows`);
-      // Here you would typically call your bulk delete API
+    const ok = await confirmDialog({
+      title: "Delete selected employees?",
+      description: `This will delete ${selectedRows.length} employee(s). This action cannot be undone.`,
+      confirmText: "Delete",
+    })
+    if (ok) {
+      toast.success(`Deleted ${selectedRows.length} rows`)
     }
   };
 
@@ -201,7 +203,7 @@ export function EmployeeTableLoader({ EmployeeData, isLoading }) {
   // Server-side search handler
   const handleServerSearch = React.useCallback(
     (searchid: string) => {
-      console.log(`🔍 Server Search: "${searchValue}"`);
+      console.log(`🔍 Server Search: "${searchid}"`);
 
       // setIsLoading(true);
 
@@ -209,9 +211,9 @@ export function EmployeeTableLoader({ EmployeeData, isLoading }) {
       setTimeout(() => {
         let filteredData = EmployeeData;
 
-        if (searchValue.trim()) {
+        if (searchid.trim()) {
           filteredData = EmployeeData.filter((emp) =>
-            matchesSearchAllFields(emp, searchValue.trim())
+            matchesSearchAllFields(emp, searchid.trim())
           );
         }
 
@@ -232,7 +234,7 @@ export function EmployeeTableLoader({ EmployeeData, isLoading }) {
   ); // Add dependencies that actually matter
 
   const getSubRows = (originalRow: EmployeeTableInterface) => {
-    return originalRow.renewals;
+    return (originalRow as any).renewals;
   };
 
   // Custom sub-row renderer
@@ -350,23 +352,19 @@ export function EmployeeTableLoader({ EmployeeData, isLoading }) {
       id: "actions",
       header: "Actions",
       cell: ({ row }) => {
-        const handleDeleteRow = (row) => {
-        
-          if (
-            confirm(`Are you sure you want to delete ${row.original.last_name +
-            " " +
-            row.original.first_name +
-            " " +
-            (row.original.middle_name ?? "")}?`)
-          ) {
-             console.log("Delete row:", row.original);
-             deleteApi.mutateAsync(row.original)
-            if(deleteApi){toast.info(`Deleted ${row.original.last_name +
-            " " +
-            row.original.first_name +
-            " " +
-            (row.original.middle_name ?? "")}`)};
-          }
+        const handleDeleteRow = (row: any) => {
+          (async () => {
+            const ok = await confirmDialog({
+              title: "Delete employee?",
+              description: `Are you sure you want to delete ${row.original.last_name + " " + row.original.first_name + " " + (row.original.middle_name ?? "")}?`,
+              confirmText: "Delete",
+            })
+            if (ok) {
+              console.log("Delete row:", row.original);
+              await deleteApi.mutateAsync(row.original)
+              toast.success(`Deleted ${row.original.last_name + " " + row.original.first_name + " " + (row.original.middle_name ?? "")}`)
+            }
+          })()
         };
 
         return (

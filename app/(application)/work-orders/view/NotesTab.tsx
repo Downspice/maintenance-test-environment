@@ -11,7 +11,9 @@ import {
    TableHeader,
    TableRow,
  } from "@/components/ui/table";
- import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
+import { useConfirmDialog } from "@/lib/confirm-dialog";
+import { toast } from "sonner";
 
 export default function NotesTab({
   notes,
@@ -20,6 +22,7 @@ export default function NotesTab({
   notes: NotesInterface[];
   onUpdateNotes: (updated: NotesInterface[]) => void;
 }) {
+  const confirmDialog = useConfirmDialog();
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [editingNote, setEditingNote] = useState<NotesInterface | null>(null);
@@ -40,12 +43,19 @@ export default function NotesTab({
   };
 
   const handleDelete = (index: number) => {
-    if (confirm("Are you sure you want to delete this note?")) {
-      const updatedNotes = [...notes];
-      console.log("Deleted note:", notes[index].notes);
-      updatedNotes.splice(index, 1);
-      onUpdateNotes(updatedNotes);
-    }
+    (async () => {
+      const ok = await confirmDialog({
+        title: "Delete note?",
+        description: "Are you sure you want to delete this note?",
+        confirmText: "Delete",
+      })
+      if (ok) {
+        const updatedNotes = [...notes];
+        updatedNotes.splice(index, 1);
+        onUpdateNotes(updatedNotes);
+        toast.success("Note deleted")
+      }
+    })()
   };
 
   return (

@@ -6,8 +6,8 @@ import { useMediaQuery } from "@/hooks/use-media-query"
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 
 type DialogContentType = {
-  title: string
-  description?: string
+  title: ReactNode
+  description?: ReactNode
   content: ReactNode
   size?: "sm" | "md" | "lg" | "xl" | "full"
 }

@@ -18,6 +18,8 @@ import React from "react";
 import { matchesSearchAllFields } from "@/lib/utils";
 import { MoreButtonRequestInterface } from "./repairRequestForm";
 import EditRepairRequestForm from "./edit-repairRequestForm";
+import { toast } from "sonner";
+import { useConfirmDialog } from "@/lib/confirm-dialog";
 
 const DummyRepairRequests: MoreButtonRequestInterface[] = [
   {
@@ -122,6 +124,7 @@ const notes = [
 export default function RepairRequestTable() {
   const [isServerMode, setIsServerMode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const confirmDialog = useConfirmDialog();
   const [currentData, setCurrentData] = useState(
     DummyRepairRequests.slice(0, 5)
   ); // Show first 5 for demo
@@ -147,7 +150,7 @@ export default function RepairRequestTable() {
       "Print selected rows:",
       selectedRows.map((row) => row.original)
     );
-    alert(`Printing ${selectedRows.length} selected rows`);
+    toast.info(`Printing ${selectedRows.length} selected rows`);
   };
 
   const handleEmailSelected = (selectedRows: any[]) => {
@@ -155,21 +158,21 @@ export default function RepairRequestTable() {
       "Email selected rows:",
       selectedRows.map((row) => row.original)
     );
-    alert(`Emailing ${selectedRows.length} selected rows`);
+    toast.info(`Emailing ${selectedRows.length} selected rows`);
   };
 
-  const handleDeleteSelected = (selectedRows: any[]) => {
+  const handleDeleteSelected = async (selectedRows: any[]) => {
     console.log(
       "Delete selected rows:",
       selectedRows.map((row) => row.original)
     );
-    if (
-      confirm(
-        `Are you sure you want to delete ${selectedRows.length} selected rows?`
-      )
-    ) {
-      alert(`Deleted ${selectedRows.length} rows`);
-      // Here you would typically call your bulk delete API
+    const ok = await confirmDialog({
+      title: "Delete selected repair requests?",
+      description: `This will delete ${selectedRows.length} request(s). This action cannot be undone.`,
+      confirmText: "Delete",
+    })
+    if (ok) {
+      toast.success(`Deleted ${selectedRows.length} rows`)
     }
   };
 
@@ -395,12 +398,16 @@ export default function RepairRequestTable() {
       cell: ({ row }) => {
         const handleDeleteRow = (row: any) => {
           console.log("Delete row:", row.original);
-          if (
-            confirm(`Are you sure you want to delete ${row.original.name}?`)
-          ) {
-            alert(`Deleted ${row.original.name}`);
-            // Here you would typically call your delete API
-          }
+          (async () => {
+            const ok = await confirmDialog({
+              title: "Delete repair request?",
+              description: `Are you sure you want to delete ${row.original.name}?`,
+              confirmText: "Delete",
+            })
+            if (ok) {
+              toast.success(`Deleted ${row.original.name}`)
+            }
+          })()
         };
 
         return (

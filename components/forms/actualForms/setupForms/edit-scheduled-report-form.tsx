@@ -8,6 +8,7 @@ import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Save, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { useConfirmDialog } from "@/lib/confirm-dialog";
 import {
   ComboboxFieldWrapper,
   MultiComboboxWrapper,
@@ -64,6 +65,7 @@ export default function EditScheduledReportForm({
   children: React.ReactNode;
   data: ScheduledReportInterface;
 }) {
+  const confirmDialog = useConfirmDialog();
     const {
       data: locationOptionsList,
       isLoading: locationOptionsListLoading,
@@ -120,9 +122,17 @@ export default function EditScheduledReportForm({
   }, [recipients, form]);
 
   const handleDelete = (email: string) => {
-    if (confirm("Are you sure you want to delete this recipient?")) {
-      setRecipients((prev) => prev.filter((r) => r.email !== email));
-    }
+    (async () => {
+      const ok = await confirmDialog({
+        title: "Delete recipient?",
+        description: "This action cannot be undone.",
+        confirmText: "Delete",
+      })
+      if (ok) {
+        setRecipients((prev) => prev.filter((r) => r.email !== email));
+        toast.success("Recipient deleted")
+      }
+    })()
   };
 
   const toggleRecipient = (name: string, email: string) => {

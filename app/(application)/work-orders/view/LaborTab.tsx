@@ -16,6 +16,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { useConfirmDialog } from "@/lib/confirm-dialog";
+import { toast } from "sonner";
 
 export default function LaborTab({
   maintenanceItems,
@@ -26,6 +28,7 @@ export default function LaborTab({
   laborEntries: AddLaborFormValues[];
   onUpdateLabor: (updated: AddLaborFormValues[]) => void;
 }) {
+  const confirmDialog = useConfirmDialog();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editingLabor, setEditingLabor] = useState<AddLaborFormValues | null>(
@@ -47,13 +50,20 @@ export default function LaborTab({
     );
 
   const handleDelete = (labor: AddLaborFormValues) => {
-    if (confirm(`Delete labor entry for ${labor?.technicianName}?`)) {
-      console.log("Deleted labor:", labor?.technicianName);
-      const updated = laborEntries.filter(
-        (l) => l.technicianName !== labor?.technicianName
-      );
-      onUpdateLabor(updated);
-    }
+    (async () => {
+      const ok = await confirmDialog({
+        title: "Delete labor entry?",
+        description: `Delete labor entry for ${labor?.technicianName}?`,
+        confirmText: "Delete",
+      })
+      if (ok) {
+        const updated = laborEntries.filter(
+          (l) => l.technicianName !== labor?.technicianName
+        );
+        onUpdateLabor(updated);
+        toast.success("Labor entry deleted")
+      }
+    })()
   };
 
   const handleSave = (labor: AddLaborFormValues) => {

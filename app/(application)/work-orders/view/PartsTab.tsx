@@ -16,6 +16,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { useConfirmDialog } from "@/lib/confirm-dialog";
+import { toast } from "sonner";
 
 export default function PartsTab({
   workOrderParts,
@@ -26,6 +28,7 @@ export default function PartsTab({
   maintenanceItems: AddMaintenanceInWorkOrderInterface[];
   onUpdateParts: (parts: Part[]) => void;
 }) {
+  const confirmDialog = useConfirmDialog();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [editingPart, setEditingPart] = useState<Part | null>(null);
@@ -41,13 +44,20 @@ export default function PartsTab({
     );
 
   const handleDelete = (part: Part) => {
-    if (confirm(`Delete part ${part.partNumber}?`)) {
-      console.log("Deleted part:", part.partNumber);
-      const updatedParts = workOrderParts.filter(
-        (p) => p.partNumber !== part.partNumber
-      );
-      onUpdateParts(updatedParts);
-    }
+    (async () => {
+      const ok = await confirmDialog({
+        title: "Delete part?",
+        description: `Delete part ${part.partNumber}?`,
+        confirmText: "Delete",
+      })
+      if (ok) {
+        const updatedParts = workOrderParts.filter(
+          (p) => p.partNumber !== part.partNumber
+        );
+        onUpdateParts(updatedParts);
+        toast.success("Part deleted")
+      }
+    })()
   };
 
   const handleSavePart = (newPart: Part) => {

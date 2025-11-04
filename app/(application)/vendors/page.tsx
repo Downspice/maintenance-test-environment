@@ -29,9 +29,8 @@ export default function VendorsPage() {
   } = useGetLocations<Array<{ id: string; name: string }>>();
   console.log("vendorTypeOptions", vendorTypeOptions);
   const [filters, setFilters] = useState({
-    equipment: "",
     location: "",
-    custom: "",
+    type: "",
     search: "",
   });
 
@@ -41,29 +40,25 @@ export default function VendorsPage() {
   const buildURL = (updatedFilters: typeof filters) => {
     const queryParams = new URLSearchParams();
 
-    if (updatedFilters.equipment) {
-      queryParams.set("filter_equipment", updatedFilters.equipment);
+    if (updatedFilters.location && updatedFilters.location !== "delete_filter") {
+      queryParams.set("location_id", updatedFilters.location);
     }
 
-    if (
-      updatedFilters.location &&
-      updatedFilters.location !== "delete_filter"
-    ) {
-      queryParams.set("location_id", updatedFilters.location);
+    if (updatedFilters.type && updatedFilters.type !== "delete_filter") {
+      queryParams.set("type_id", updatedFilters.type);
     }
 
     if (updatedFilters.search.trim()) {
       queryParams.set("search", updatedFilters.search.trim());
     }
 
-    const url = `/equipment?${queryParams.toString()}`;
+    const url = `/vendors?${queryParams.toString()}`;
     console.log("Generated URL:", url);
-    // Use this URL to fetch or navigate
   };
 
   const handleSelectChange = (
-    key: "equipment" | "location" | "custom" | "search",
-    id: string
+    key: "location" | "type" | "search",
+    value: string
   ) => {
     if (value === "new") {
       console.log("Launching new location modal...");
@@ -121,7 +116,7 @@ export default function VendorsPage() {
           </Select>
 
           {/* New Location Trigger */}
-          <Select onValueChange={(val) => handleSelectChange("custom", val)}>
+          <Select onValueChange={(val) => handleSelectChange("type", val)}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="All Vendors" />
             </SelectTrigger>
@@ -139,7 +134,7 @@ export default function VendorsPage() {
         </div>
       </div>
       <div>
-        <VendorDataTable />
+        <VendorDataTable locationId={filters.location || undefined} typeId={filters.type || undefined} />
       </div>
     </div>
   );

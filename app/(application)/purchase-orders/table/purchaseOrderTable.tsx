@@ -39,6 +39,8 @@ import ReceivePurchaseOrder from "../views/receive-purchase";
 import RepairRequestForm from "@/components/forms/actualForms/repair-request-form";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useGetPurchaseOrders } from "@/services/setups/purchaseOrder";
+import { useConfirmDialog } from "@/lib/confirm-dialog";
+import { toast } from "sonner";
 
 // Get unique values for filter options (including sub-rows)
 export default function PurchaseOrderDataTable() {
@@ -60,6 +62,7 @@ export default function PurchaseOrderDataTable() {
 
 export function PurchaseOrderDataLoader({ PurchaseOrderData, isLoading }) {
   const [isServerMode, setIsServerMode] = useState(false);
+  const confirmDialog = useConfirmDialog();
   // const [isLoading, setIsLoading] = useState(false);
   const [currentData, setCurrentData] = useState(PurchaseOrderData.slice(0, 5)); // Show first 5 for demo
   const [paginationInfo, setPaginationInfo] = useState({
@@ -116,7 +119,7 @@ export function PurchaseOrderDataLoader({ PurchaseOrderData, isLoading }) {
       "Print selected rows:",
       selectedRows.map((row) => row.original)
     );
-    alert(`Printing ${selectedRows.length} selected rows`);
+    toast.info(`Printing ${selectedRows.length} selected rows`);
   };
 
   const handleEmailSelected = (selectedRows: any[]) => {
@@ -124,21 +127,21 @@ export function PurchaseOrderDataLoader({ PurchaseOrderData, isLoading }) {
       "Email selected rows:",
       selectedRows.map((row) => row.original)
     );
-    alert(`Emailing ${selectedRows.length} selected rows`);
+    toast.info(`Emailing ${selectedRows.length} selected rows`);
   };
 
-  const handleDeleteSelected = (selectedRows: any[]) => {
+  const handleDeleteSelected = async (selectedRows: any[]) => {
     console.log(
       "Delete selected rows:",
       selectedRows.map((row) => row.original)
     );
-    if (
-      confirm(
-        `Are you sure you want to delete ${selectedRows.length} selected rows?`
-      )
-    ) {
-      alert(`Deleted ${selectedRows.length} rows`);
-      // Here you would typically call your bulk delete API
+    const ok = await confirmDialog({
+      title: "Delete selected purchase orders?",
+      description: `This will delete ${selectedRows.length} PO(s). This action cannot be undone.`,
+      confirmText: "Delete",
+    })
+    if (ok) {
+      toast.success(`Deleted ${selectedRows.length} rows`)
     }
   };
 
@@ -408,26 +411,31 @@ export function PurchaseOrderDataLoader({ PurchaseOrderData, isLoading }) {
       cell: ({ row }) => {
         const handleDeleteRow = (row: any) => {
           console.log("Delete row:", row.original);
-          if (
-            confirm(
-              `Are you sure you want to delete ${row.original.purchaseOrderNumber}?`
-            )
-          ) {
-            alert(`Deleted ${row.original.purchaseOrderNumber}`);
-            // Here you would typically call your delete API
-          }
+          (async () => {
+            const ok = await confirmDialog({
+              title: "Delete purchase order?",
+              description: `Are you sure you want to delete ${row.original.purchaseOrderNumber}?`,
+              confirmText: "Delete",
+            })
+            if (ok) {
+              toast.success(`Deleted ${row.original.purchaseOrderNumber}`)
+            }
+          })()
         };
 
         const handleCloseRow = (row: any) => {
           console.log("Delete row:", row.original);
-          if (
-            confirm(
-              `Are you sure you want to close P0 #${row.original.purchaseOrderNumber}?`
-            )
-          ) {
-            alert(`P0 #${row.original.purchaseOrderNumber} is closed`);
-            // Here you would typically call your delete API
-          }
+          (async () => {
+            const ok = await confirmDialog({
+              title: "Close purchase order?",
+              description: `Are you sure you want to close PO #${row.original.purchaseOrderNumber}?`,
+              confirmText: "Close",
+              variant: "default",
+            })
+            if (ok) {
+              toast.success(`PO #${row.original.purchaseOrderNumber} closed`)
+            }
+          })()
         };
         const [open, setOpen] = useState(false);
         const [selectedProjectType, setSelectedProjectType] = useState<

@@ -29,6 +29,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ActualRecordPaymentForm } from "@/components/forms/actualForms/record-payment-form";
 import { useDeleteInvoice, useGetInvoices } from "@/services/setups/invoice";
 import { toast } from "sonner";
+import { useConfirmDialog } from "@/lib/confirm-dialog";
 
 export default function InvoicesDataTable() {
   const {
@@ -47,6 +48,7 @@ export default function InvoicesDataTable() {
 
 export function InvoicesTableLoader({ InvoiceData, isLoading }) {
   const deleteApi = useDeleteInvoice();
+  const confirmDialog = useConfirmDialog();
   const [isServerMode, setIsServerMode] = useState(false);
   // const [isLoading, setIsLoading] = useState(false);
   const [currentData, setCurrentData] = useState(InvoiceData.slice(0, 5)); // Show first 5 for demo
@@ -98,7 +100,7 @@ export function InvoicesTableLoader({ InvoiceData, isLoading }) {
       "Print selected rows:",
       selectedRows.map((row) => row.original)
     );
-    alert(`Printing ${selectedRows.length} selected rows`);
+    toast.info(`Printing ${selectedRows.length} selected rows`);
   };
 
   const handleEmailSelected = (selectedRows: any[]) => {
@@ -106,21 +108,21 @@ export function InvoicesTableLoader({ InvoiceData, isLoading }) {
       "Email selected rows:",
       selectedRows.map((row) => row.original)
     );
-    alert(`Emailing ${selectedRows.length} selected rows`);
+    toast.info(`Emailing ${selectedRows.length} selected rows`);
   };
 
-  const handleDeleteSelected = (selectedRows: any[]) => {
+  const handleDeleteSelected = async (selectedRows: any[]) => {
     console.log(
       "Delete selected rows:",
       selectedRows.map((row) => row.original)
     );
-    if (
-      confirm(
-        `Are you sure you want to delete ${selectedRows.length} selected rows?`
-      )
-    ) {
-      alert(`Deleted ${selectedRows.length} rows`);
-      // Here you would typically call your bulk delete API
+    const ok = await confirmDialog({
+      title: "Delete selected invoices?",
+      description: `This will delete ${selectedRows.length} invoice(s). This action cannot be undone.`,
+      confirmText: "Delete",
+    })
+    if (ok) {
+      toast.success(`Deleted ${selectedRows.length} rows`)
     }
   };
 
@@ -352,15 +354,17 @@ export function InvoicesTableLoader({ InvoiceData, isLoading }) {
       cell: ({ row }) => {
         const handleDeleteRow = (row: any) => {
           console.log("Delete row:", row.original);
-          if (
-            confirm(`Are you sure you want to delete ${row.original.invoice_number}?`)
-          ) {
-            alert(`Deleted ${row.original.invoice_number}`);
-            deleteApi.mutateAsync(row.original);
-            if (deleteApi) {
-              toast.info(`Deleted successfully`);
+          (async () => {
+            const ok = await confirmDialog({
+              title: "Delete invoice?",
+              description: `Are you sure you want to delete ${row.original.invoice_number}?`,
+              confirmText: "Delete",
+            })
+            if (ok) {
+              await deleteApi.mutateAsync(row.original)
+              toast.success(`Deleted successfully`)
             }
-           }
+          })()
         };
 
         const [open, setOpen] = useState(false);

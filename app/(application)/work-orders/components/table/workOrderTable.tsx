@@ -45,6 +45,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Progress } from "@/components/ui/progress";
+import { useConfirmDialog } from "@/lib/confirm-dialog";
+import { toast } from "sonner";
 import { matchesSearchAllFields } from "@/lib/utils";
 import EditWorkOrderForm from "../../view/edit-work-order";
 import ChangePriorityForm from "../../forms/change-priority";
@@ -115,6 +117,7 @@ const total = [
 export default function WorkOrderDataTable() {
   const [isServerMode, setIsServerMode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const confirmDialog = useConfirmDialog();
   const [currentData, setCurrentData] = useState(mockWorkOrders.slice(0, 5)); // Show first 5 for demo
   const [paginationInfo, setPaginationInfo] = useState({
     pageIndex: 0,
@@ -138,7 +141,7 @@ export default function WorkOrderDataTable() {
       "Print selected rows:",
       selectedRows.map((row) => row.original)
     );
-    alert(`Printing ${selectedRows.length} selected rows`);
+    toast.info(`Printing ${selectedRows.length} selected rows`);
   };
 
   const handleEmailSelected = (selectedRows: any[]) => {
@@ -146,21 +149,21 @@ export default function WorkOrderDataTable() {
       "Email selected rows:",
       selectedRows.map((row) => row.original)
     );
-    alert(`Emailing ${selectedRows.length} selected rows`);
+    toast.info(`Emailing ${selectedRows.length} selected rows`);
   };
 
-  const handleDeleteSelected = (selectedRows: any[]) => {
+  const handleDeleteSelected = async (selectedRows: any[]) => {
     console.log(
       "Delete selected rows:",
       selectedRows.map((row) => row.original)
     );
-    if (
-      confirm(
-        `Are you sure you want to delete ${selectedRows.length} selected rows?`
-      )
-    ) {
-      alert(`Deleted ${selectedRows.length} rows`);
-      // Here you would typically call your bulk delete API
+    const ok = await confirmDialog({
+      title: "Delete selected work orders?",
+      description: `This will delete ${selectedRows.length} WO(s). This action cannot be undone.`,
+      confirmText: "Delete",
+    })
+    if (ok) {
+      toast.success(`Deleted ${selectedRows.length} rows`)
     }
   };
 
@@ -451,22 +454,31 @@ export default function WorkOrderDataTable() {
       cell: ({ row }) => {
         const handleDeleteRow = (row: any) => {
           console.log("Delete row:", row.original);
-          if (
-            confirm(`Are you sure you want to delete ${row.original.workOrderNumber}?`)
-          ) {
-            alert(`Deleted ${row.original.workOrderNumber}`);
-            // Here you would typically call your delete API
-          }
+          (async () => {
+            const ok = await confirmDialog({
+              title: "Delete work order?",
+              description: `Are you sure you want to delete ${row.original.workOrderNumber}?`,
+              confirmText: "Delete",
+            })
+            if (ok) {
+              toast.success(`Deleted ${row.original.workOrderNumber}`)
+            }
+          })()
         };
 
         const handleStatus = (status: string, row: any) => {
           console.log("change row status:", row.original);
-          if (
-            confirm(`Are you sure you want to change the status to ${status}?`)
-          ) {
-            alert(`Status changed`);
-            // Here you would typically call your delete API
-          }
+          (async () => {
+            const ok = await confirmDialog({
+              title: "Change status?",
+              description: `Are you sure you want to change the status to ${status}?`,
+              confirmText: "Change",
+              variant: "default",
+            })
+            if (ok) {
+              toast.success(`Status changed`)
+            }
+          })()
         };
 
         const [open, setOpen] = useState(false);

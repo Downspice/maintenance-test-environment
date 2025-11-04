@@ -48,6 +48,8 @@ import NewMeterReplacementForm from "../forms/MeterReplacement";
 import { ActualEquipmentForm } from "../new-equipment-form";
 import { ActualWorkOrderForm } from "@/components/forms/actualForms/work-order-form";
 import { useGetEquipments } from "@/services/setups/equipments";
+import { toast } from "sonner";
+import { useConfirmDialog } from "@/lib/confirm-dialog";
 
 export default function DataTableDemo() {
   const {
@@ -65,6 +67,7 @@ export default function DataTableDemo() {
 
 export function EquipmentTableLoader({ EquipmentData, isLoading }) {
   const [isServerMode, setIsServerMode] = useState(false);
+  const confirmDialog = useConfirmDialog();
   // const [isLoading, setIsLoading] = useState(false);
   const [currentData, setCurrentData] = useState(EquipmentData.slice(0, 5)); // Show first 5 for demo
   const [paginationInfo, setPaginationInfo] = useState({
@@ -160,8 +163,7 @@ export function EquipmentTableLoader({ EquipmentData, isLoading }) {
       "Print selected rows:",
       selectedRows.map((row) => row.original)
     );
-    // alert(`Printing ${selectedRows.length} selected rows`);
-    alert(`Currently Unavailable`);
+    toast.info(`Currently unavailable`);
   };
 
   const handleEmailSelected = (selectedRows: any[]) => {
@@ -169,22 +171,22 @@ export function EquipmentTableLoader({ EquipmentData, isLoading }) {
       "Email selected rows:",
       selectedRows.map((row) => row.original)
     );
-    alert(`Currently Unavailable`);
+    toast.info(`Currently unavailable`);
     // alert(`Emailing ${selectedRows.length} selected rows`);
   };
 
-  const handleDeleteSelected = (selectedRows: any[]) => {
+  const handleDeleteSelected = async (selectedRows: any[]) => {
     console.log(
       "Delete selected rows:",
       selectedRows.map((row) => row.original)
     );
-    if (
-      confirm(
-        `Are you sure you want to delete ${selectedRows.length} selected rows?`
-      )
-    ) {
-      alert(`Deleted ${selectedRows.length} rows`);
-      // Here you would typically call your bulk delete API
+    const ok = await confirmDialog({
+      title: "Delete selected equipment?",
+      description: `This will delete ${selectedRows.length} item(s). This action cannot be undone.`,
+      confirmText: "Delete",
+    })
+    if (ok) {
+      toast.success(`Deleted ${selectedRows.length} rows`)
     }
   };
 
@@ -395,7 +397,7 @@ export function EquipmentTableLoader({ EquipmentData, isLoading }) {
           filterOptions={equipmentType}
         />
       ),
-      cell: ({ row }) => <>{row.original.type.name}</>,
+      cell: ({ row }) => <>{row.original.type?.name}</>,
       filterFn: (row, id, value) => {
         return value.length === 0 || value.includes(row.getValue(id));
       },
@@ -432,12 +434,16 @@ export function EquipmentTableLoader({ EquipmentData, isLoading }) {
       cell: ({ row }) => {
         const handleDeleteRow = (row: any) => {
           console.log("Delete row:", row.original);
-          if (
-            confirm(`Are you sure you want to delete ${row.original.name}?`)
-          ) {
-            alert(`Deleted ${row.original.name}`);
-            // Here you would typically call your delete API
-          }
+          (async () => {
+            const ok = await confirmDialog({
+              title: "Delete equipment?",
+              description: `Are you sure you want to delete ${row.original.name}?`,
+              confirmText: "Delete",
+            })
+            if (ok) {
+              toast.success(`Deleted ${row.original.name}`)
+            }
+          })()
         };
 
         const [open, setOpen] = useState(false);

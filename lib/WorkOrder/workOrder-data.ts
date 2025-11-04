@@ -87,7 +87,7 @@ export const WorkOrderSchema = z.object({
   equipment: z.string().min(1, "Equipment is required"),
   hours: z.union([z.string(), z.coerce.number()]).optional(),
   workOrderTotal: z.coerce.number(),
-  // If you're using dynamic fields
+  others: z.array(z.object({ name: z.string(), value: z.string() })).optional(),
 });
 export type AddMaintenanceInWorkOrderInterface = z.infer<
   typeof AddMaintenanceInWorkOrderSchema

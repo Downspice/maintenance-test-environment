@@ -33,7 +33,9 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableRow } from "@/components/ui/table"
+import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface PaginationInfo {
   pageIndex: number
@@ -63,8 +65,11 @@ interface DataTableProps<TData, TValue> {
   realServerPagination?: boolean
   paginationInfo?: PaginationInfo
   onPaginationChange?: (action: "next" | "previous" | number) => void
-  onServerSearch?: (searchid: string) => void
+  onServerSearch?: (value: string) => void
   isLoading?: boolean
+  // Page size control
+  onPageSizeChange?: (pageSize: number) => void
+  pageSizeOptions?: number[]
 }
 
 export function AdvancedDataTable<TData, TValue>({
@@ -89,6 +94,8 @@ export function AdvancedDataTable<TData, TValue>({
   onPaginationChange,
   onServerSearch,
   isLoading = false,
+  onPageSizeChange,
+  pageSizeOptions = [10, 20, 30, 50],
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
@@ -99,13 +106,13 @@ export function AdvancedDataTable<TData, TValue>({
 
   // Search state for server-side search
   const [searchValue, setSearchValue] = React.useState("")
-  const searchTimeoutRef = React.useRef<NodeJS.Timeout>()
+  const searchTimeoutRef = React.useRef<NodeJS.Timeout | null>(null)
   const lastSearchValueRef = React.useRef("")
   const hasUserInteractedRef = React.useRef(false)
 
   // Memoize the server search function to prevent unnecessary re-renders
   const stableOnServerSearch = React.useCallback(
-    (id: string) => {
+    (value: string) => {
       if (onServerSearch && typeof onServerSearch === "function") {
         onServerSearch(value)
       }
@@ -115,7 +122,7 @@ export function AdvancedDataTable<TData, TValue>({
 
   // Handle server-side search with debounce
   const debouncedServerSearch = React.useCallback(
-    (id: string) => {
+    (value: string) => {
       // Clear any existing timeout
       if (searchTimeoutRef.current) {
         clearTimeout(searchTimeoutRef.current)
@@ -171,7 +178,8 @@ export function AdvancedDataTable<TData, TValue>({
 
     const visibility: VisibilityState = {}
     columns.forEach((column) => {
-      const columnId = typeof column.accessorKey === "string" ? column.accessorKey : column.id
+      const maybeAccessorKey = (column as any)?.accessorKey as string | undefined
+      const columnId = (maybeAccessorKey ?? column.id) as string | undefined
       if (columnId) {
         visibility[columnId] = defaultVisibleColumns.includes(columnId)
       }
@@ -313,7 +321,7 @@ export function AdvancedDataTable<TData, TValue>({
   }
 
   // Handle search input change
-  const handleSearchChange = (id: string) => {
+  const handleSearchChange = (value: string) => {
     // Mark that user has interacted with search
     hasUserInteractedRef.current = true
 
@@ -482,15 +490,7 @@ export function AdvancedDataTable<TData, TValue>({
 
   return (
     <div className="w-full space-y-4">
-      {/* Loading indicator */}
-      {isLoading && (
-        <div className="flex items-center justify-center p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <div className="flex items-center gap-2">
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-            <span className="text-sm text-blue-600">Loading...</span>
-          </div>
-        </div>
-      )}
+      {/* Loading indicator replaced by table skeletons */}
 
       {/* Action Bar for Selected Rows */}
       {hasSelectedRows && (
@@ -541,11 +541,11 @@ export function AdvancedDataTable<TData, TValue>({
             className="max-w-sm"
             disabled={isLoading}
           />
-          {realServerPagination && (
+          {/* {realServerPagination && (
             <Badge variant="outline" className="text-xs">
               Server Mode
             </Badge>
-          )}
+          )} */}
         </div>
         <div className="flex items-center space-x-2">
           {/* Export Dropdown */}
@@ -559,8 +559,8 @@ export function AdvancedDataTable<TData, TValue>({
             <DropdownMenuContent>
               <DropdownMenuItem onClick={exportToCSV}>Export to CSV</DropdownMenuItem>
               <DropdownMenuItem onClick={exportToExcel}>Export to Excel</DropdownMenuItem>
-              <DropdownMenuItem onClick={exportToHTML}>Export to HTML</DropdownMenuItem>
-              <DropdownMenuItem onClick={exportToText}>Export to Text</DropdownMenuItem>
+              {/* <DropdownMenuItem onClick={exportToHTML}>Export to HTML</DropdownMenuItem> */}
+              {/* <DropdownMenuItem onClick={exportToText}>Export to Text</DropdownMenuItem> */}
               <DropdownMenuItem onClick={exportToPDF}>Export to PDF</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -570,7 +570,7 @@ export function AdvancedDataTable<TData, TValue>({
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
                 <Settings2 className="mr-2 h-4 w-4" />
-                Columns
+                Hide/Show Columns
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[200px]">
@@ -618,9 +618,24 @@ export function AdvancedDataTable<TData, TValue>({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows
-  .filter((row) => row.depth === 0)
+            {isLoading ? (
+              Array.from({ length: Math.min(8, paginationInfo?.pageSize ?? 10) }).map((_, idx) => (
+                <TableRow key={`skeleton-row-${idx}`}>
+                  {table.getVisibleLeafColumns().map((col, cIdx) => (
+                    <TableCell key={`skeleton-cell-${idx}-${col.id}`}>
+                      {col.id === "select" || col.id === "expand" ? (
+                        <Skeleton className="h-4 w-4 rounded-sm" />
+                      ) : (
+                        <Skeleton className={cIdx % 3 === 0 ? "h-4 w-2/3" : cIdx % 3 === 1 ? "h-4 w-1/2" : "h-4 w-3/4"} />
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : table.getRowModel().rows?.length ? (
+              table
+                .getRowModel()
+                .rows.filter((row) => row.depth === 0)
   .map((row) => (
                 <React.Fragment key={row.id}>
                   <TableRow
@@ -654,7 +669,7 @@ export function AdvancedDataTable<TData, TValue>({
             ) : (
               <TableRow>
                 <TableCell colSpan={columnsWithSelection.length} className="h-24 text-center">
-                  {isLoading ? "Loading..." : "No results."}
+                  No results.
                 </TableCell>
               </TableRow>
             )}
@@ -664,7 +679,7 @@ export function AdvancedDataTable<TData, TValue>({
 
       {/* Pagination */}
       <div className="flex items-center justify-between space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
+        <div className="flex items-center gap-3 text-sm text-muted-foreground">
           {realServerPagination && paginationInfo ? (
             <>
               Page {paginationInfo.pageIndex + 1} of {paginationInfo.totalPages} ({paginationInfo.totalRows} total rows)
@@ -674,6 +689,27 @@ export function AdvancedDataTable<TData, TValue>({
               {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s)
               selected.
             </>
+          )}
+          {realServerPagination && (
+            <div className="flex items-center gap-2">
+              <span className="text-xs">Rows per page</span>
+              <Select
+                value={String(paginationInfo?.pageSize ?? 10)}
+                onValueChange={(v) => onPageSizeChange?.(Number(v))}
+                disabled={isLoading}
+              >
+                <SelectTrigger className="h-8 w-[90px]">
+                  <SelectValue placeholder={String(paginationInfo?.pageSize ?? 10)} />
+                </SelectTrigger>
+                <SelectContent side="top">
+                  {pageSizeOptions.map((opt) => (
+                    <SelectItem key={opt} value={String(opt)}>
+                      {opt}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           )}
         </div>
         <div className="space-x-2">
@@ -687,6 +723,20 @@ export function AdvancedDataTable<TData, TValue>({
               >
                 Previous
               </Button>
+              {Array.from({ length: paginationInfo?.totalPages ?? 0 }, (_, i) => i).map((i) => {
+                const isActive = (paginationInfo?.pageIndex ?? 0) === i
+                return (
+                  <Button
+                    key={`page-${i + 1}`}
+                    variant={isActive ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => handlePagination(i)}
+                    disabled={isLoading}
+                  >
+                    {i + 1}
+                  </Button>
+                )
+              })}
               <Button
                 variant="outline"
                 size="sm"
