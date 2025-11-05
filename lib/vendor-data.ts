@@ -1,7 +1,7 @@
 import z from "zod";
 
 export const VendorSchema = z.object({
-  vendorNumber: z.string(),
+  vendor_number: z.string(),
   name: z.string(),
   type: z.enum([
     "All Vendors",
@@ -35,21 +35,22 @@ export const VendorSchema = z.object({
 // Type inference (optional)
 export type VendorInterface = z.infer<typeof VendorSchema>
 
-export interface VendorTableInterface {
+export interface VendorTableInterface  {
   id: string
   name: string
   vendor_number: string
+  contact: any
   address: string
   city: string
   state: string
   postal_code: string
-  country: string
+  country: any
   location_id: string
   status_id: string
   type_id: string
   term_id: string
   billing_rate: string
-  notes: string
+  notes: any
   created_by: any
   updated_by: any
   created_at: string
@@ -59,7 +60,7 @@ export interface VendorTableInterface {
   type: Type
   term: Term
   attachments: any[]
-  contact: Contact
+  vendor_contact: VendorContact
 }
 
 export interface Location {
@@ -74,6 +75,7 @@ export interface Location {
 export interface Status {
   id: string
   name: string
+  is_active: boolean
   created_by: any
   updated_by: any
   created_at: string
@@ -98,7 +100,7 @@ export interface Term {
   updated_at: string
 }
 
-export interface Contact {
+export interface VendorContact {
   id: string
   vendor_id: string
   phone_one: string
@@ -112,9 +114,10 @@ export interface Contact {
   updated_at: string
 }
 
-export const VendorData: VendorInterface[] = [
+
+export const VendorData = [
   {
-    vendorNumber: "VND001",
+    vendor_number: "VND001",
     name: "DealerCo Supplies",
     type: "Dealer",
     contact: "John Smith",
@@ -136,7 +139,7 @@ export const VendorData: VendorInterface[] = [
     notes: "Preferred electrical parts supplier",
   },
   {
-    vendorNumber: "VND002",
+    vendor_number: "VND002",
     name: "SupplyMax Ltd",
     type: "All Vendors",
     contact: "Sarah Johnson",
@@ -158,7 +161,7 @@ export const VendorData: VendorInterface[] = [
     notes: "",
   },
   {
-    vendorNumber: "VND003",
+    vendor_number: "VND003",
     name: "AfricaTech Distributors",
     type: "Dealer",
     contact: "Kwame Ofori",
@@ -180,7 +183,7 @@ export const VendorData: VendorInterface[] = [
     notes: "Regional tech supplier",
   },
   {
-    vendorNumber: "VND004",
+    vendor_number: "VND004",
     name: "CentralParts Inc.",
     type: "All Vendors",
     contact: "Emily Brown",
@@ -202,7 +205,7 @@ export const VendorData: VendorInterface[] = [
     notes: "Long-term vendor",
   },
   {
-    vendorNumber: "VND005",
+    vendor_number: "VND005",
     name: "KumasiTools Co.",
     type: "Dealer",
     contact: "Kofi Mensah",
@@ -224,7 +227,7 @@ export const VendorData: VendorInterface[] = [
     notes: "",
   },
   {
-    vendorNumber: "VND006",
+    vendor_number: "VND006",
     name: "VN Supplies",
     type: "All Vendors",
     contact: "Liam Nguyen",
@@ -246,7 +249,7 @@ export const VendorData: VendorInterface[] = [
     notes: "",
   },
   {
-    vendorNumber: "VND007",
+    vendor_number: "VND007",
     name: "NigeriaTools Ltd",
     type: "Dealer",
     contact: "Ahmed Ali",
@@ -268,7 +271,7 @@ export const VendorData: VendorInterface[] = [
     notes: "Steel and machinery parts",
   },
   {
-    vendorNumber: "VND008",
+    vendor_number: "VND008",
     name: "UK Parts Co.",
     type: "All Vendors",
     contact: "Olivia Green",
@@ -290,7 +293,7 @@ export const VendorData: VendorInterface[] = [
     notes: "Reliable UK vendor",
   },
   {
-    vendorNumber: "VND009",
+    vendor_number: "VND009",
     name: "ITParts SRL",
     type: "Dealer",
     contact: "Marco Rossi",
@@ -312,7 +315,7 @@ export const VendorData: VendorInterface[] = [
     notes: "Fast delivery",
   },
   {
-    vendorNumber: "VND010",
+    vendor_number: "VND010",
     name: "NipponTech",
     type: "All Vendors",
     contact: "Yuki Tanaka",

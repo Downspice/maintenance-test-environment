@@ -32,7 +32,7 @@ const buildUrl = (path: string) => path;
 const useBaseMutation = <TResponse = TEntity, TPayload = TParams, TContext = unknown>(
     mutationKey: string[],
     endpoint: (payload: TPayload) => string,
-    method: 'post' | 'put' | 'delete',
+    method: 'post' | 'put' | 'delete' | 'patch',
     invalidateKeys: (payload: TPayload) => unknown[], // Function to derive keys from payload
     options?: UseMutationOptions<TResponse, AxiosError<ApiError>, TPayload, TContext>
 ) => {
@@ -45,8 +45,8 @@ const useBaseMutation = <TResponse = TEntity, TPayload = TParams, TContext = unk
         // CRITICAL: Call dummyApiClient directly and pass method and data in the config object.
         const response = await dummyApiClient<ApiResponse<TResponse>>(url, {
             method: method,
-            // Only pass the payload (data) for POST and PUT. DELETE requests typically send data via URL/params.
-            data: (method === 'post' || method === 'put') ? payload : undefined, 
+            // Only pass the payload (data) for POST/PUT/PATCH. DELETE requests typically send data via URL/params.
+            data: (method === 'post' || method === 'put' || method === 'patch') ? payload : undefined,
         });
         
         // Return the actual data payload from the API response
@@ -158,6 +158,8 @@ type VendorQuery = {
     type_id?: string;
     size?: number; // page size
     page?: number; // 1-based page index as required by API
+    sort_by?: string;
+    sort_order?: "asc" | "desc";
 };
 
 export function useGetVendorsPaginated<TPaginated = any>(
@@ -173,12 +175,13 @@ export function useGetVendorsPaginated<TPaginated = any>(
             if (query.type_id) params.set("type_id", query.type_id);
             if (typeof query.size === "number") params.set("size", String(query.size));
             if (typeof query.page === "number") params.set("page", String(query.page));
+            if (query.sort_by) params.set("sort_by", query.sort_by);
+            if (query.sort_order) params.set("sort_order", query.sort_order);
             const url = buildUrl(`/api/get-vendors${params.toString() ? `?${params.toString()}` : ""}`);
             const response = await dummyApiClient<ApiResponse<TPaginated>>(url);
             return response;
         },
         select: (response) => response.data as TPaginated,
-        keepPreviousData: true,
         ...options,
     });
 }
@@ -437,6 +440,16 @@ export function useDeleteVendor() {
         (payload) => `/api/delete-vendor/${payload.id}`,
         'delete',
         (payload) => [['vendors'], ['vendor', payload.id]]
+    );
+}
+
+// Toggle vendor is-active by patching status_id
+export function usePatchVendorIsActive() {
+    return useBaseMutation<TEntity, { id: TId; status_id: string }>(
+        ["patch-vendor-is-active"],
+        (payload) => `/api/vendor/${payload.id}/is-active`,
+        'patch',
+        () => [['vendors']]
     );
 }
 

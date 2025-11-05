@@ -67,6 +67,11 @@ interface DataTableProps<TData, TValue> {
   onPaginationChange?: (action: "next" | "previous" | number) => void
   onServerSearch?: (value: string) => void
   isLoading?: boolean
+  // Server-side sorting
+  serverSorting?: SortingState
+  onServerSortingChange?: (sorting: SortingState) => void
+  // Row styling
+  getRowClassName?: (row: Row<TData>) => string
   // Page size control
   onPageSizeChange?: (pageSize: number) => void
   pageSizeOptions?: number[]
@@ -96,8 +101,11 @@ export function AdvancedDataTable<TData, TValue>({
   isLoading = false,
   onPageSizeChange,
   pageSizeOptions = [10, 20, 30, 50],
+  serverSorting,
+  onServerSortingChange,
+  getRowClassName,
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = React.useState<SortingState>([])
+  const [sorting, setSorting] = React.useState<SortingState>(serverSorting ?? [])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
@@ -265,7 +273,15 @@ export function AdvancedDataTable<TData, TValue>({
   const table = useReactTable({
     data,
     columns: columnsWithSelection,
-    onSortingChange: setSorting,
+    onSortingChange: (updater) => {
+      const nextSorting = typeof updater === 'function' ? updater(realServerPagination ? (serverSorting ?? sorting) : sorting) : updater
+      if (realServerPagination) {
+        onServerSortingChange?.(nextSorting)
+        setSorting(nextSorting)
+      } else {
+        setSorting(nextSorting)
+      }
+    },
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: realServerPagination ? undefined : getPaginationRowModel(),
@@ -287,7 +303,7 @@ export function AdvancedDataTable<TData, TValue>({
         : 1 // at least 1 page so TanStack is happy
       : undefined,
     state: {
-      sorting,
+      sorting: realServerPagination ? (serverSorting ?? sorting) : sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
@@ -638,9 +654,9 @@ export function AdvancedDataTable<TData, TValue>({
                 .rows.filter((row) => row.depth === 0)
   .map((row) => (
                 <React.Fragment key={row.id}>
-                  <TableRow
-                    data-state={row.getIsSelected() && "selected"}
-                    className="cursor-pointer hover:bg-muted/50"
+                    <TableRow
+                      data-state={row.getIsSelected() && "selected"}
+                      className={`cursor-pointer hover:bg-muted/50 ${getRowClassName ? getRowClassName(row) : ""}`}
                     onClick={() => onRowClick?.(row)}
                   >
                     {row.getVisibleCells().map((cell) => (

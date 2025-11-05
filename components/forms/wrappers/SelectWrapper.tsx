@@ -55,12 +55,12 @@ export default function SelectWrapper({
             <Select onValueChange={field.onChange} defaultValue={field.value} disabled={disabled}>
               <FormControl>
                 <SelectTrigger className={cn("w-full", className)}>
-                  <SelectValue placeholder={placeholder || `Select ${label.toLowerCase()}`} />
+                  <SelectValue className="text-gray-400" placeholder={placeholder || `Select ${label.toLowerCase()}`} />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
                 {options.map((option) => (
-                  <SelectItem key={option.id} value={option.id}>
+                  <SelectItem key={option.id} value={option.id??""}>
                     {option.name}
                   </SelectItem>
                 ))}

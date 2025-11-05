@@ -68,11 +68,13 @@ export default function EditVendor({
     defaultValues: {
       ...data,
       term_id: data.term.id,
-      phone_one: data.contact.phone_one ?? "",
-      phone_two: data.contact.phone_two ?? "",
-      fax: data.contact.fax ?? "",
-      email: data.contact.email ?? "",
-      website: data.contact.website ?? "",
+      phone_one: data.vendor_contact.phone_one ?? "",
+      vendor_number: data.vendor_number ?? "",
+      phone_two: data.vendor_contact.phone_two ?? "",
+      fax: data.vendor_contact.fax ?? "",
+      email: data.vendor_contact.email ?? "",
+      website: data.vendor_contact.website ?? "", notes: data.notes ?? "",
+
     },
   });
   const { mutateAsync, isPending } = useUpdateVendor();
@@ -118,7 +120,7 @@ export default function EditVendor({
                     />
                     <InputWrapper
                       control={vendorForm.control}
-                      name="vendorNumber"
+                      name="vendor_number"
                       label="Vendor #"
                       type="text"
                     />

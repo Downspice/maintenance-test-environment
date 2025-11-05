@@ -31,7 +31,7 @@ export const vendorSchema = z.object({
 
   name: z.string().min(1, { message: "Vendor name is required" }),
   vendor_number: z.string().min(1, { message: "Vendor number is required" }),
-  contactNumber: z.string().optional(),
+  contact: z.string().optional(),
   address: z.string().optional(),
   city: z.string().optional(),
   state: z.string().min(1, { message: "Vendor number is required" }),
@@ -48,7 +48,7 @@ export const vendorSchema = z.object({
     .optional()
     .transform((val) => (typeof val === "string" ? parseFloat(val) : val)),
 
-  notes: z.string().optional(),
+  notes: z.coerce.string().optional(),
 
   others: z.any().optional(), // Can refine later
 
@@ -182,7 +182,7 @@ export default function NewVendor() {
 
                 <InputWrapper
                   control={vendorForm.control}
-                  name="contactNumber"
+                  name="contact"
                   label="Contact"
                   type="text"
                 />
@@ -235,7 +235,7 @@ export default function NewVendor() {
                   name="location_id"
                   label="Location "
                   required
-                  options={locationOptionsList}
+                  options={locationOptionsList??[]}
                 />
 
                 <SelectWrapper

@@ -1,17 +1,17 @@
 "use client";
 
-import type { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef, SortingState } from "@tanstack/react-table";
 import { AdvancedDataTable } from "@/components/customUI/advanced-data-table";
 import { SortableHeader } from "@/components/customUI/sortable-header";
 import { Button } from "@/components/ui/button";
-import { Trash2, FilePenIcon } from "lucide-react";
+import { Trash2, FilePenIcon, RecycleIcon } from "lucide-react";
 import { useState } from "react";
 import React from "react";
 // Using API response shape directly for table rows
 import ViewVendor from "../view/viewDetailsSheet";
 import EditVendor from "../view/editVendorSheet";
 import { matchesSearchAllFields } from "@/lib/utils";
-import { useDeleteVendor, useGetVendorsPaginated } from "@/services/setups/vendor";
+import { useGetVendorsPaginated, usePatchVendorIsActive, useGetStatusOnes } from "@/services/setups/vendor";
 import { toast } from "sonner";
 import { useConfirmDialog } from "@/lib/confirm-dialog";
 
@@ -26,11 +26,24 @@ export default function VendorDataTable({
 }
 
 export function VendorTableLoader({ locationId, typeId }: { locationId?: string; typeId?: string }) {
-  const deleteApi = useDeleteVendor();
+  const patchIsActive = usePatchVendorIsActive();
+  const { data: statusOnes } = useGetStatusOnes<any[]>();
   const confirmDialog = useConfirmDialog();
   const [pageIndex, setPageIndex] = useState(0); // 0-based for UI
   const [pageSize, setPageSize] = useState(10);
   const [search, setSearch] = useState("");
+  const [sorting, setSorting] = useState<SortingState>([]);
+
+  const currentSort = sorting[0];
+  const mapColumnIdToSortBy = (id?: string): string | undefined => {
+    if (!id) return undefined;
+    // Map nested accessor keys to API fields
+    if (id === "type.name") return "type";
+    if (id === "vendor_contact.phone_one") return "contact";
+    if (id === "vendor_contact.email") return "email";
+    // Fallback: use the id as-is for simple fields
+    return id;
+  };
 
   const { data: paged, isLoading } = useGetVendorsPaginated<any>({
     search: search || undefined,
@@ -38,6 +51,8 @@ export function VendorTableLoader({ locationId, typeId }: { locationId?: string;
     type_id: typeId || undefined,
     size: pageSize,
     page: pageIndex + 1, // API expects 1-based
+    sort_by: mapColumnIdToSortBy(currentSort?.id),
+    sort_order: currentSort ? (currentSort.desc ? "desc" : "asc") : undefined,
   });
 
   const serverRows = paged?.data ?? [];
@@ -69,12 +84,12 @@ export function VendorTableLoader({ locationId, typeId }: { locationId?: string;
   const flatEmployees = getAllEmployees(serverRows);
   const name = [...new Set(flatEmployees.map((emp) => emp.name))];
   const type = [...new Set(flatEmployees.map((emp) => emp.type.name))];
-  const contact = [...new Set(flatEmployees.map((emp) => emp.contact.phone_one))];
+  const contact = [...new Set(flatEmployees.map((emp) => emp.contact?.phone_one))];
   const address1 = [...new Set(flatEmployees.map((emp) => emp.address))];
   const city = [...new Set(flatEmployees.map((emp) => emp.city))];
   const state_prov = [...new Set(flatEmployees.map((emp) => emp.state))];
   const postal_code = [...new Set(flatEmployees.map((emp) => emp.postal_code))];
-  const email = [...new Set(flatEmployees.map((emp) => emp.contact.email))];
+  const email = [...new Set(flatEmployees.map((emp) => emp.vendor_contact.email))];
 
   const handleRowClick = (row: any) => {
     console.log("Row clicked:", row.original);
@@ -162,6 +177,12 @@ export function VendorTableLoader({ locationId, typeId }: { locationId?: string;
     setSearch(value);
   }, []);
 
+  // Server-side sorting handler
+  const handleServerSortingChange = (next: SortingState) => {
+    setPageIndex(0);
+    setSorting(next);
+  };
+
   // Column definitions
   const columns: ColumnDef<any>[] = [
     {
@@ -197,7 +218,7 @@ export function VendorTableLoader({ locationId, typeId }: { locationId?: string;
       ),
     },
     {
-      accessorKey: "contact.phone_one",
+      accessorKey: "vendor_contact.phone_one",
       header: ({ column }) => (
         <SortableHeader
           column={column}
@@ -235,7 +256,6 @@ export function VendorTableLoader({ locationId, typeId }: { locationId?: string;
         />
       ),
       cell: ({ row }) => <>{row.original.city}</>,
-
       filterFn: (row, id, value) => {
         return value.length === 0 || value.includes(row.getValue(id));
       },
@@ -266,7 +286,7 @@ export function VendorTableLoader({ locationId, typeId }: { locationId?: string;
       ),
     },
     {
-      accessorKey: "contact.email",
+      accessorKey: "vendor_contact.email",
       header: ({ column }) => (
         <SortableHeader
           column={column}
@@ -284,41 +304,70 @@ export function VendorTableLoader({ locationId, typeId }: { locationId?: string;
       header: "Actions",
       cell: ({ row }) => {
         const handleDeleteRow = (row: any) => {
-          console.log("Delete row:", row.original);
-        (async () => {
-          const ok = await confirmDialog({
-            title: "Delete vendor?",
-            description: `Are you sure you want to delete ${row.original.name}?`,
-            confirmText: "Delete",
-          })
-          if (ok) {
-            await deleteApi.mutateAsync(row.original)
-            toast.success(`Deleted successfully`)
-          }
-        })()
+          const currentStatusId: string | undefined = row.original?.status?.id
+          const otherStatusId: string | undefined = Array.isArray(statusOnes)
+            ? statusOnes.find((s: any) => s?.id !== currentStatusId)?.id
+            : undefined
+
+          ;(async () => {
+            const isActive = row.original?.status?.is_active !== false
+            const ok = await confirmDialog({
+              title: isActive ? "Deactivate vendor?" : "Restore vendor?",
+              description: isActive
+                ? `This will deactivate ${row.original.name}.`
+                : `This will restore ${row.original.name}.`,
+              confirmText: isActive ? "Deactivate" : "Restore",
+              variant: isActive ? "destructive" : "default",
+              tone: isActive ? "danger" : "success",
+            })
+            if (ok) {
+              if (!row.original?.id || !otherStatusId) {
+                toast.error("Unable to determine target status")
+                return
+              }
+              await patchIsActive.mutateAsync({ id: row.original.id, status_id: otherStatusId })
+              toast.success(`Status updated`)
+            }
+          })()
         };
 
+        const isActive = row.original?.status?.is_active !== false
         return (
-          <div className="flex flex-row gap-2 ">
-            <EditVendor
-              children={
-                <Button variant={"secondary"} size={"icon"}>
-                  <FilePenIcon />
+          <div className="flex flex-row gap-2 justify-end">
+            {isActive ? (
+              <>
+                <EditVendor
+                  children={
+                    <Button variant={"secondary"} size={"icon"}>
+                      <FilePenIcon />
+                    </Button>
+                  }
+                  data={row.original}
+                />
+                <Button
+                  variant={"secondary"}
+                  size={"icon"}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteRow(row);
+                  }}
+                  className="text-destructive hover:text-destructive"
+                >
+                  <Trash2 />
                 </Button>
-              }
-              data={row.original}
-            />
-            <Button
-              variant={"secondary"}
-              size={"icon"}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleDeleteRow(row);
-              }}
-              className="text-destructive hover:text-destructive"
-            >
-              <Trash2 />
-            </Button>
+              </>
+            ) : (
+              <Button
+                variant={"secondary"}
+                size={"sm"}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDeleteRow(row);
+                }}
+              >
+                Restore <RecycleIcon className="w-4 h-4" />
+              </Button>
+            )}
           </div>
         );
       },
@@ -376,6 +425,9 @@ export function VendorTableLoader({ locationId, typeId }: { locationId?: string;
         onPageSizeChange={handlePageSizeChange}
         pageSizeOptions={[10, 20, 30, 50]}
         onServerSearch={handleServerSearch}
+        serverSorting={sorting}
+        onServerSortingChange={handleServerSortingChange}
+        getRowClassName={(row) => (row.original?.status?.is_active === false ? "bg-red-50" : "")}
         isLoading={isLoading}
       />
     </div>

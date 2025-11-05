@@ -379,7 +379,7 @@ export default function NewPart() {
                 />
                 <InputWrapper
                   control={control}
-                  name={`vendors.${index}.vendorNumber`}
+                  name={`vendors.${index}.vendor_number`}
                   label="Vendor#"
                   type="text"
                   value={""}
