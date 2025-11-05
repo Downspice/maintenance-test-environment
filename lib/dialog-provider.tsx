@@ -81,8 +81,8 @@ export function DialogProvider({ children }: { children: ReactNode }) {
             {content && (
               <>
                 <DialogHeader>
-                  <DialogTitle>{content.title}</DialogTitle>
-                  {content.description && <DialogDescription>{content.description}</DialogDescription>}
+                  <DialogTitle className="text-3xl">{content.title}</DialogTitle>
+                  {content.description && <DialogDescription className="text-lg">{content.description}</DialogDescription>}
                 </DialogHeader>
                 <div className="mt-6">{content.content}</div>
               </>
