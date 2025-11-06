@@ -95,7 +95,7 @@ export default function VendorsPage() {
     <div className="p-4 flex flex-col space-y-4">
       <div className="flex flex-row items-center space-x-2">
         <h1 className="text-xl font-semibold">Vendors</h1>
-        <Badge>10</Badge>
+        {/* <Badge>10</Badge> */}
       </div>
 
       <div className="flex justify-between items-center space-x-4">
