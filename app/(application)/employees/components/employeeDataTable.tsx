@@ -1,19 +1,11 @@
 "use client";
 
-import type { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef, SortingState } from "@tanstack/react-table";
 import { AdvancedDataTable } from "@/components/customUI/advanced-data-table";
 import { SortableHeader } from "@/components/customUI/sortable-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { MoreHorizontal, Trash2, Printer, FilePenIcon } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Trash2, FilePenIcon, RotateCcw } from "lucide-react";
 import { useState } from "react";
 import React from "react";
 import {
@@ -21,44 +13,67 @@ import {
   RenewalInterface,
 } from "@/lib/Employee/employee-data";
 import EditEmployee from "../views/editEmployeeSheet";
-import { matchesSearchAllFields } from "@/lib/utils";
-import { useDeleteEmployee, useGetEmployees } from "@/services/setups/employee";
+import { useGetEmployeesPaginated, usePatchEmployeeIsActive, useGetEmployeeStatuses } from "@/services/setups/employee";
 import { toast } from "sonner";
 import { useConfirmDialog } from "@/lib/confirm-dialog";
 
-export default function EmployeeDataTable() {
-  const {
-    data: EmployeeData,
-    isLoading,
-    error: EmployeeDataError,
-  } = useGetEmployees<EmployeeTableInterface[]>();
-
-  return EmployeeData ? (
-    <EmployeeTableLoader EmployeeData={EmployeeData} isLoading={isLoading} />
-  ) : (
-    <div>is loading.......</div>
-  );
+export default function EmployeeDataTable({
+  locationId,
+  typeId,
+}: {
+  locationId?: string;
+  typeId?: string;
+}) {
+  return <EmployeeTableLoader locationId={locationId} typeId={typeId} />;
 }
 
-export function EmployeeTableLoader({ EmployeeData, isLoading }: { EmployeeData: EmployeeTableInterface[]; isLoading: boolean }) {
-  const [isServerMode, setIsServerMode] = useState(false);
-  // const [isLoading, setIsLoading] = useState(false);
-   const deleteApi =useDeleteEmployee();
+export function EmployeeTableLoader({ locationId, typeId }: { locationId?: string; typeId?: string }) {
+  const patchIsActive = usePatchEmployeeIsActive();
+  const { data: employeeStatuses } = useGetEmployeeStatuses<any[]>();
   const confirmDialog = useConfirmDialog();
-  const [currentData, setCurrentData] = useState(EmployeeData.slice(0, 5)); // Show first 5 for demo
-  const [paginationInfo, setPaginationInfo] = useState({
-    pageIndex: 0,
-    pageSize: 5,
-    totalPages: Math.ceil(EmployeeData.length / 5),
-    totalRows: EmployeeData.length,
+  const [pageIndex, setPageIndex] = useState(0); // 0-based for UI
+  const [pageSize, setPageSize] = useState(10);
+  const [search, setSearch] = useState("");
+  const [sorting, setSorting] = useState<SortingState>([]);
+
+  const currentSort = sorting[0];
+  const mapColumnIdToSortBy = (id?: string): string | undefined => {
+    if (!id) return undefined;
+    // Map nested accessor keys to API fields
+    if (id === "type.name") return "type";
+    // Fallback: use the id as-is for simple fields
+    return id;
+  };
+
+  const { data: paged, isLoading } = useGetEmployeesPaginated<any>({
+    search: search || undefined,
+    location_id: locationId || undefined,
+    type_id: typeId || undefined,
+    size: pageSize,
+    page: pageIndex + 1, // API expects 1-based
+    sort_by: mapColumnIdToSortBy(currentSort?.id),
+    sort_order: currentSort ? (currentSort.desc ? "desc" : "asc") : undefined,
   });
+
+  const serverRows = paged?.data ?? [];
+  const currentPage = paged?.current_page ? Number(paged.current_page) : pageIndex + 1;
+  const totalPages = paged?.last_page ? Number(paged.last_page) : 1;
+  const totalRows = paged?.total ? Number(paged.total) : serverRows.length;
+  const effectivePageSize = paged?.per_page ? Number(paged.per_page) : pageSize;
+
+  const paginationInfo = {
+    pageIndex: currentPage - 1,
+    pageSize: effectivePageSize,
+    totalPages: totalPages,
+    totalRows: totalRows,
+  };
 
   // Get unique values for filter options (including sub-rows)
   const getAllEmployees = (
-    employees: EmployeeTableInterface[]
-  ): EmployeeTableInterface[] => {
-    const result: EmployeeTableInterface[] = [];
-    const traverse = (emps: EmployeeTableInterface[]) => {
+    employees: any[]
+  ): any[] => {
+    const result: any[] = [];
+    const traverse = (emps: any[]) => {
       emps.forEach((emp) => {
         result.push(emp);
       });
@@ -67,7 +82,7 @@ export function EmployeeTableLoader({ EmployeeData, isLoading }: { EmployeeData:
     return result;
   };
 
-  const flatEmployees = getAllEmployees(EmployeeData);
+  const flatEmployees = getAllEmployees(serverRows);
   const employeeId = [
     ...new Set(flatEmployees.map((emp) => emp.id?.toString())),
   ];
@@ -79,8 +94,8 @@ export function EmployeeTableLoader({ EmployeeData, isLoading }: { EmployeeData:
       )
     ),
   ];
-  const location = [...new Set(flatEmployees.map((emp) => emp.location.name))];
-  const type = [...new Set(flatEmployees.map((emp) => emp.type.name))];
+  const location = [...new Set(flatEmployees.map((emp) => emp.location?.name))];
+  const type = [...new Set(flatEmployees.map((emp) => emp.type?.name))];
   const drivers_license_number = [
     ...new Set(flatEmployees.map((emp) => emp.driver_license_number)),
   ];
@@ -88,12 +103,10 @@ export function EmployeeTableLoader({ EmployeeData, isLoading }: { EmployeeData:
 
   const handleRowClick = (row: any) => {
     console.log("Row clicked:", row.original);
-    // alert(`Row clicked: ${row.original.name} (Depth: ${row.depth})`);
   };
 
   const handleCellClick = (cell: any, row: any) => {
     console.log("Cell clicked:", cell.column.id, cell.getValue());
-    // alert(`Cell clicked: ${cell.column.id} = ${cell.getValue()}`);
   };
 
   const handlePrintSelected = (selectedRows: any[]) => {
@@ -118,12 +131,14 @@ export function EmployeeTableLoader({ EmployeeData, isLoading }: { EmployeeData:
       selectedRows.map((row) => row.original)
     );
     const ok = await confirmDialog({
-      title: "Delete selected employees?",
-      description: `This will delete ${selectedRows.length} employee(s). This action cannot be undone.`,
-      confirmText: "Delete",
+      title: "Deactivate selected employees?",
+      description: `This will deactivate ${selectedRows.length} employee(s).`,
+      confirmText: "Deactivate",
+      variant: "destructive",
     })
     if (ok) {
-      toast.success(`Deleted ${selectedRows.length} rows`)
+      toast.success(`Deactivated ${selectedRows.length} rows`)
+      // TODO: bulk deactivate API when available
     }
   };
 
@@ -131,11 +146,6 @@ export function EmployeeTableLoader({ EmployeeData, isLoading }: { EmployeeData:
     const employee = row.original;
     const printWindow = window.open("", "_blank");
     if (printWindow) {
-      const formattedSalary = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(employee.salary);
-
       printWindow.document.write(`
         <html>
           <head>
@@ -166,72 +176,32 @@ export function EmployeeTableLoader({ EmployeeData, isLoading }: { EmployeeData:
 
   // Server-side pagination handler
   const handlePaginationChange = (action: "next" | "previous" | number) => {
-    console.log(`🔄 Server Pagination Action: ${action}`);
+    if (action === "next") {
+      setPageIndex((p) => Math.min(p + 1, Math.max(0, paginationInfo.totalPages - 1)));
+    } else if (action === "previous") {
+      setPageIndex((p) => Math.max(p - 1, 0));
+    } else if (typeof action === "number") {
+      setPageIndex(action);
+    }
+  };
 
-    // setIsLoading(true);
-
-    // Simulate server delay
-    setTimeout(() => {
-      let newPageIndex = paginationInfo.pageIndex;
-
-      if (action === "next") {
-        newPageIndex = Math.min(
-          paginationInfo.pageIndex + 1,
-          paginationInfo.totalPages - 1
-        );
-      } else if (action === "previous") {
-        newPageIndex = Math.max(paginationInfo.pageIndex - 1, 0);
-      } else if (typeof action === "number") {
-        newPageIndex = action;
-      }
-
-      // Simulate fetching data for the new page
-      const startIndex = newPageIndex * paginationInfo.pageSize;
-      const endIndex = startIndex + paginationInfo.pageSize;
-      const newData = EmployeeData.slice(startIndex, endIndex);
-
-      setCurrentData(newData);
-      setPaginationInfo((prev) => ({
-        ...prev,
-        pageIndex: newPageIndex,
-      }));
-
-      // setIsLoading(false);
-    }, 1000); // 1 second delay to simulate server response
+  // Page size change handler: reset to first page to keep URL consistent
+  const handlePageSizeChange = (size: number) => {
+    setPageIndex(0);
+    setPageSize(size);
   };
 
   // Server-side search handler
-  const handleServerSearch = React.useCallback(
-    (searchid: string) => {
-      console.log(`🔍 Server Search: "${searchid}"`);
+  const handleServerSearch = React.useCallback((value: string) => {
+    setPageIndex(0);
+    setSearch(value);
+  }, []);
 
-      // setIsLoading(true);
-
-      // Simulate server delay
-      setTimeout(() => {
-        let filteredData = EmployeeData;
-
-        if (searchid.trim()) {
-          filteredData = EmployeeData.filter((emp) =>
-            matchesSearchAllFields(emp, searchid.trim())
-          );
-        }
-
-        // Reset to first page and update data
-        const newData = filteredData.slice(0, paginationInfo.pageSize);
-        setCurrentData(newData);
-        setPaginationInfo((prev) => ({
-          ...prev,
-          pageIndex: 0,
-          totalPages: Math.ceil(filteredData.length / prev.pageSize),
-          totalRows: filteredData.length,
-        }));
-
-        // setIsLoading(false);
-      }, 800); // 800ms delay to simulate server response
-    },
-    [paginationInfo.pageSize]
-  ); // Add dependencies that actually matter
+  // Server-side sorting handler
+  const handleServerSortingChange = (next: SortingState) => {
+    setPageIndex(0);
+    setSorting(next);
+  };
 
   const getSubRows = (originalRow: EmployeeTableInterface) => {
     return (originalRow as any).renewals;
@@ -268,21 +238,21 @@ export function EmployeeTableLoader({ EmployeeData, isLoading }: { EmployeeData:
   };
 
   // Column definitions
-  const columns: ColumnDef<EmployeeTableInterface>[] = [
+  const columns: ColumnDef<any>[] = [
     {
-      accessorKey: "id",
+      accessorKey: "employee_number",
       header: ({ column }) => (
         <SortableHeader
           column={column}
           title="Employee#"
           sortable={true}
-          filterOptions={employeeId}
+          // filterOptions={employeeId}
         />
       ),
       cell: ({ row }) => (
         <div className="font-medium flex flex-col text-primary">
           {" "}
-          {row.original.ssn}
+          {row.original.employee_number}
         </div>
       ),
     },
@@ -293,7 +263,7 @@ export function EmployeeTableLoader({ EmployeeData, isLoading }: { EmployeeData:
           column={column}
           title="Name"
           sortable={true}
-          filterOptions={name}
+          // filterOptions={name}
         />
       ),
       cell: ({ row }) => (
@@ -313,7 +283,7 @@ export function EmployeeTableLoader({ EmployeeData, isLoading }: { EmployeeData:
           column={column}
           title="Type"
           sortable={true}
-          filterOptions={type}
+          // filterOptions={type}
         />
       ),
       filterFn: (row, id, value) => {
@@ -327,7 +297,7 @@ export function EmployeeTableLoader({ EmployeeData, isLoading }: { EmployeeData:
           column={column}
           title="Driver's License#"
           sortable={true}
-          filterOptions={drivers_license_number}
+          // filterOptions={drivers_license_number}
         />
       ),
       filterFn: (row, id, value) => {
@@ -341,7 +311,7 @@ export function EmployeeTableLoader({ EmployeeData, isLoading }: { EmployeeData:
           column={column}
           title="Contact"
           sortable={true}
-          filterOptions={contact}
+          // filterOptions={contact}
         />
       ),
       filterFn: (row, id, value) => {
@@ -353,62 +323,70 @@ export function EmployeeTableLoader({ EmployeeData, isLoading }: { EmployeeData:
       header: "Actions",
       cell: ({ row }) => {
         const handleDeleteRow = (row: any) => {
-          (async () => {
+          const currentStatusId: string | undefined = row.original?.status?.id
+          const otherStatusId: string | undefined = Array.isArray(employeeStatuses)
+            ? employeeStatuses.find((s: any) => s?.id !== currentStatusId)?.id
+            : undefined
+
+          ;(async () => {
+            const isActive = row.original?.status?.is_active !== false
             const ok = await confirmDialog({
-              title: "Delete employee?",
-              description: `Are you sure you want to delete ${row.original.last_name + " " + row.original.first_name + " " + (row.original.middle_name ?? "")}?`,
-              confirmText: "Delete",
+              title: isActive ? "Deactivate employee?" : "Restore employee?",
+              description: isActive
+                ? `This will deactivate ${row.original.last_name + " " + row.original.first_name + " " + (row.original.middle_name ?? "")}.`
+                : `This will restore ${row.original.last_name + " " + row.original.first_name + " " + (row.original.middle_name ?? "")}.`,
+              confirmText: isActive ? "Deactivate" : "Restore",
+              variant: isActive ? "destructive" : "default",
+              tone: isActive ? "danger" : "success",
             })
             if (ok) {
-              console.log("Delete row:", row.original);
-              await deleteApi.mutateAsync(row.original)
-              toast.success(`Deleted ${row.original.last_name + " " + row.original.first_name + " " + (row.original.middle_name ?? "")}`)
+              if (!row.original?.id || !otherStatusId) {
+                toast.error("Unable to determine target status")
+                return
+              }
+              await patchIsActive.mutateAsync({ id: row.original.id, status_id: otherStatusId })
+              toast.success(`Status updated`)
             }
           })()
         };
 
+        const isActive = row.original?.status?.is_active !== false
         return (
-          <div className="flex flex-row justify-between ">
-            <EditEmployee
-              children={
-                <Button variant={"secondary"} size={"icon"}>
-                  <FilePenIcon />
-                </Button>
-              }
-              pageId={row.original.id}
-            />
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant={"secondary"} size={"icon"}>
-                  <MoreHorizontal />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-62 " align="start">
-                {/* <DropdownMenuLabel>My Account</DropdownMenuLabel> */}
-                <DropdownMenuGroup>
-                  <DropdownMenuItem>
-                    Email
-                    {/* <DropdownMenuShortcut>⌘B</DropdownMenuShortcut> */}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    Print
-                    {/* <DropdownMenuShortcut>⌘S</DropdownMenuShortcut> */}
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
+          <div className="flex flex-row gap-2 justify-end">
+            {isActive ? (
+              <>
+                <EditEmployee
+                  children={
+                    <Button variant={"secondary"} size={"icon"}>
+                      <FilePenIcon />
+                    </Button>
+                  }
+                  pageId={row.original.id}
+                />
+                <Button
+                  variant={"secondary"}
+                  size={"icon"}
                   onClick={(e) => {
                     e.stopPropagation();
                     handleDeleteRow(row);
                   }}
-                  className="text-destructive focus:text-destructive"
+                  className="text-destructive hover:text-destructive"
                 >
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Delete
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                  <Trash2 />
+                </Button>
+              </>
+            ) : (
+              <Button
+                variant={"secondary"}
+                size={"sm"}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDeleteRow(row);
+                }}
+              >
+                Restore <RotateCcw className="w-4 h-4 ml-1" />
+              </Button>
+            )}
           </div>
         );
       },
@@ -418,34 +396,16 @@ export function EmployeeTableLoader({ EmployeeData, isLoading }: { EmployeeData:
   ];
 
   return (
-    <div className="">
-      {/* <div className="mb-8">
-         
-
-        <div className="flex items-center gap-4 mb-4">
-          <Button
-            variant={isServerMode ? "default" : "outline"}
-            onClick={() => setIsServerMode(!isServerMode)}
-          >
-            {isServerMode ? "Server Mode ON" : "Client Mode ON"}
-          </Button>
-          {isServerMode && (
-            <Badge variant="secondary">
-              Page {paginationInfo.pageIndex + 1} of {paginationInfo.totalPages}
-            </Badge>
-          )}
-        </div>
-      </div> */}
-
+    <div className="max-w-full">
       <AdvancedDataTable
         columns={columns}
-        data={isServerMode ? currentData : EmployeeData}
+        data={serverRows}
         defaultVisibleColumns={[
           "id",
           "name",
           "type",
-          "driverNumber",
-          "contact",
+          "driver_license_number",
+          "cell",
           "actions",
         ]}
         onRowClick={handleRowClick}
@@ -461,10 +421,15 @@ export function EmployeeTableLoader({ EmployeeData, isLoading }: { EmployeeData:
         renderSubRow={renderSubRow}
         subRowKey="renewals"
         // Server-side props
-        realServerPagination={isServerMode}
-        paginationInfo={isServerMode ? paginationInfo : undefined}
-        onPaginationChange={isServerMode ? handlePaginationChange : undefined}
-        onServerSearch={isServerMode ? handleServerSearch : undefined}
+        realServerPagination={true}
+        paginationInfo={paginationInfo}
+        onPaginationChange={handlePaginationChange}
+        onPageSizeChange={handlePageSizeChange}
+        pageSizeOptions={[10, 20, 30, 50]}
+        onServerSearch={handleServerSearch}
+        serverSorting={sorting}
+        onServerSortingChange={handleServerSortingChange}
+        getRowClassName={(row) => (row.original?.status?.is_active === false ? "bg-red-50" : "")}
         isLoading={isLoading}
       />
     </div>

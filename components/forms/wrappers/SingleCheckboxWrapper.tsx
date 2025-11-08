@@ -7,7 +7,7 @@ import type { Control } from "react-hook-form"
 interface SingleCheckboxWrapperProps {
   control: Control<any>
   name: string
-  name: string
+  label: string
   description?: string
   disabled?: boolean
 }

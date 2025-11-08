@@ -1,94 +1,95 @@
 "use client";
 
-import type { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef, SortingState } from "@tanstack/react-table";
 import { AdvancedDataTable } from "@/components/customUI/advanced-data-table";
 import { SortableHeader } from "@/components/customUI/sortable-header";
 import { Button } from "@/components/ui/button";
-import {
-  MoreHorizontal,
-  Trash2,
-  Printer,
-  CheckCircle,
-  Clock,
-  AlertTriangle,
-  FilePenIcon,
-} from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Trash2, FilePenIcon, RotateCcw } from "lucide-react";
 import { useState } from "react";
 import React from "react";
-import {  CustomerInterface, CustomerTableDataInterface } from "@/lib/Customer/customer-data";
-import { matchesSearchAllFields } from "@/lib/utils";
+import { CustomerTableDataInterface } from "@/lib/Customer/customer-data";
 import EditCustomer from "../views/edit-customer";
-import { useGetCustomers } from "@/services/setups/vendor";
+import { useGetCustomersPaginated, usePatchCustomerIsActive } from "@/services/setups/vendor";
 import { toast } from "sonner";
 import { useConfirmDialog } from "@/lib/confirm-dialog";
 
-const getAllEmployees = (
-  employees: CustomerTableDataInterface[]
-): CustomerTableDataInterface[] => {
-  const result: CustomerTableDataInterface[] = [];
-  const traverse = (emps: CustomerTableDataInterface[]) => {
-    emps.forEach((emp) => {
-      result.push(emp);
-    });
-  };
-  traverse(employees);
-  return result;
-};
-
-export default function CustomerDataTable() {
-  const {
-    data: CustomerData,
-    isLoading,
-    error: vendorTypesError,
-  } = useGetCustomers<CustomerTableDataInterface[]>();
-
-  return CustomerData ? (
-    <CustomerTableLoader CustomerData={CustomerData} isLoading={isLoading} />
-  ) : (
-    <div>is loading.......</div>
-  );
+export default function CustomerDataTable({
+  locationId,
+  typeId,
+}: {
+  locationId?: string;
+  typeId?: string;
+}) {
+  return <CustomerTableLoader locationId={locationId} typeId={typeId} />;
 }
 
-export function CustomerTableLoader({CustomerData,isLoading}:{CustomerData:CustomerTableDataInterface[];isLoading:boolean}) {
+export function CustomerTableLoader({ locationId, typeId }: { locationId?: string; typeId?: string }) {
+  const patchIsActive = usePatchCustomerIsActive();
   const confirmDialog = useConfirmDialog();
-  const [isServerMode, setIsServerMode] = useState(false);
-  // const [isLoading, setIsLoading] = useState(false);
-  const [currentData, setCurrentData] = useState(CustomerData.slice(0, 5)); // Show first 5 for demo
-  const [paginationInfo, setPaginationInfo] = useState({
-    pageIndex: 0,
-    pageSize: 5,
-    totalPages: Math.ceil(CustomerData.length / 5),
-    totalRows: CustomerData.length,
+  const [pageIndex, setPageIndex] = useState(0); // 0-based for UI
+  const [pageSize, setPageSize] = useState(10);
+  const [search, setSearch] = useState("");
+  const [sorting, setSorting] = useState<SortingState>([]);
+
+  const currentSort = sorting[0];
+  const mapColumnIdToSortBy = (id?: string): string | undefined => {
+    if (!id) return undefined;
+    // Map nested accessor keys to API fields
+    if (id === "type.name") return "type";
+    // Fallback: use the id as-is for simple fields
+    return id;
+  };
+
+  const { data: paged, isLoading } = useGetCustomersPaginated<any>({
+    search: search || undefined,
+    location_id: locationId || undefined,
+    type_id: typeId || undefined,
+    size: pageSize,
+    page: pageIndex + 1, // API expects 1-based
+    sort_by: mapColumnIdToSortBy(currentSort?.id),
+    sort_order: currentSort ? (currentSort.desc ? "desc" : "asc") : undefined,
   });
 
-const flatEmployees = getAllEmployees(CustomerData );
-const name = [...new Set(flatEmployees.map((emp) => emp.company_name ?? ""))];
-const type = [...new Set(flatEmployees.map((emp) => emp.type.name ?? ""))];
-const address1 = [...new Set(flatEmployees.map((emp) => emp.address ?? ""))];
-const city = [...new Set(flatEmployees.map((emp) => emp.city ?? ""))];
-const state_prov = [...new Set(flatEmployees.map((emp) => emp.state ?? ""))];
-const postal_code = [
-  ...new Set(flatEmployees.map((emp) => emp.postal_code ?? "")),
-];
-const email = [...new Set(flatEmployees.map((emp) => emp.email ?? ""))];
+  const serverRows = paged?.data ?? [];
+  const currentPage = paged?.current_page ? Number(paged.current_page) : pageIndex + 1;
+  const totalPages = paged?.last_page ? Number(paged.last_page) : 1;
+  const totalRows = paged?.total ? Number(paged.total) : serverRows.length;
+  const effectivePageSize = paged?.per_page ? Number(paged.per_page) : pageSize;
 
+  const paginationInfo = {
+    pageIndex: currentPage - 1,
+    pageSize: effectivePageSize,
+    totalPages: totalPages,
+    totalRows: totalRows,
+  };
+
+  // Get unique values for filter options
+  const getAllCustomers = (customers: CustomerTableDataInterface[]): CustomerTableDataInterface[] => {
+    const result: CustomerTableDataInterface[] = [];
+    const traverse = (custs: CustomerTableDataInterface[]) => {
+      custs.forEach((cust) => {
+        result.push(cust);
+      });
+    };
+    traverse(customers);
+    return result;
+  };
+
+  const flatCustomers = getAllCustomers(serverRows);
+  const name = [...new Set(flatCustomers.map((cust) => cust.company_name ?? ""))];
+  const type = [...new Set(flatCustomers.map((cust) => cust.type?.name ?? ""))];
+  const address1 = [...new Set(flatCustomers.map((cust) => cust.address ?? ""))];
+  const city = [...new Set(flatCustomers.map((cust) => cust.city ?? ""))];
+  const state_prov = [...new Set(flatCustomers.map((cust) => cust.state ?? ""))];
+  const postal_code = [...new Set(flatCustomers.map((cust) => cust.postal_code ?? ""))];
+  const email = [...new Set(flatCustomers.map((cust) => cust.email ?? ""))];
 
   const handleRowClick = (row: any) => {
     console.log("Row clicked:", row.original);
-    // alert(`Row clicked: ${row.original.name} (Depth: ${row.depth})`);
   };
 
   const handleCellClick = (cell: any, row: any) => {
     console.log("Cell clicked:", cell.column.id, cell.getValue());
-    // alert(`Cell clicked: ${cell.column.id} = ${cell.getValue()}`);
   };
 
   const handlePrintSelected = (selectedRows: any[]) => {
@@ -113,25 +114,21 @@ const email = [...new Set(flatEmployees.map((emp) => emp.email ?? ""))];
       selectedRows.map((row) => row.original)
     );
     const ok = await confirmDialog({
-      title: "Delete selected customers?",
-      description: `This will delete ${selectedRows.length} item(s). This action cannot be undone.`,
-      confirmText: "Delete",
+      title: "Deactivate selected customers?",
+      description: `This will deactivate ${selectedRows.length} customer(s).`,
+      confirmText: "Deactivate",
+      variant: "destructive",
     })
     if (ok) {
-      toast.success(`Deleted ${selectedRows.length} rows`)
-      // TODO: bulk delete API
+      toast.success(`Deactivated ${selectedRows.length} rows`)
+      // TODO: bulk deactivate API when available
     }
   };
 
   const handlePrintRow = (row: any) => {
-    const employee = row.original;
+    const customer = row.original;
     const printWindow = window.open("", "_blank");
     if (printWindow) {
-      const formattedSalary = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(employee.salary);
-
       printWindow.document.write(`
         <html>
           <head>
@@ -161,75 +158,35 @@ const email = [...new Set(flatEmployees.map((emp) => emp.email ?? ""))];
 
   // Server-side pagination handler
   const handlePaginationChange = (action: "next" | "previous" | number) => {
-    console.log(`🔄 Server Pagination Action: ${action}`);
+    if (action === "next") {
+      setPageIndex((p) => Math.min(p + 1, Math.max(0, paginationInfo.totalPages - 1)));
+    } else if (action === "previous") {
+      setPageIndex((p) => Math.max(p - 1, 0));
+    } else if (typeof action === "number") {
+      setPageIndex(action);
+    }
+  };
 
-    // setIsLoading(true);
-
-    // Simulate server delay
-    setTimeout(() => {
-      let newPageIndex = paginationInfo.pageIndex;
-
-      if (action === "next") {
-        newPageIndex = Math.min(
-          paginationInfo.pageIndex + 1,
-          paginationInfo.totalPages - 1
-        );
-      } else if (action === "previous") {
-        newPageIndex = Math.max(paginationInfo.pageIndex - 1, 0);
-      } else if (typeof action === "number") {
-        newPageIndex = action;
-      }
-
-      // Simulate fetching data for the new page
-      const startIndex = newPageIndex * paginationInfo.pageSize;
-      const endIndex = startIndex + paginationInfo.pageSize;
-      const newData = CustomerData.slice(startIndex, endIndex);
-
-      setCurrentData(newData);
-      setPaginationInfo((prev) => ({
-        ...prev,
-        pageIndex: newPageIndex,
-      }));
-
-      // setIsLoading(false);
-    }, 1000); // 1 second delay to simulate server response
+  // Page size change handler: reset to first page to keep URL consistent
+  const handlePageSizeChange = (size: number) => {
+    setPageIndex(0);
+    setPageSize(size);
   };
 
   // Server-side search handler
-  const handleServerSearch = React.useCallback(
-    (searchid: string) => {
-      console.log(`🔍 Server Search: "${searchid}"`);
+  const handleServerSearch = React.useCallback((value: string) => {
+    setPageIndex(0);
+    setSearch(value);
+  }, []);
 
-      // setIsLoading(true);
-
-      // Simulate server delay
-      setTimeout(() => {
-        let filteredData = CustomerData;
-
-        if (searchid.trim()) {
-          filteredData = CustomerData.filter((emp) =>
-            matchesSearchAllFields(emp, searchid.trim())
-          );
-        }
-
-        // Reset to first page and update data
-        const newData = filteredData.slice(0, paginationInfo.pageSize);
-        setCurrentData(newData);
-        setPaginationInfo((prev) => ({
-          ...prev,
-          pageIndex: 0,
-          totalPages: Math.ceil(filteredData.length / prev.pageSize),
-          totalRows: filteredData.length,
-        }));
-
-        // setIsLoading(false);
-      }, 800); // 800ms delay to simulate server response
-    },
-    [paginationInfo.pageSize]
-  ); // Add dependencies that actually matter
+  // Server-side sorting handler
+  const handleServerSortingChange = (next: SortingState) => {
+    setPageIndex(0);
+    setSorting(next);
+  };
 
   // Column definitions
-  const columns: ColumnDef<CustomerTableDataInterface>[] = [
+  const columns: ColumnDef<any>[] = [
     {
       accessorKey: "company_name",
       header: ({ column }) => (
@@ -242,7 +199,6 @@ const email = [...new Set(flatEmployees.map((emp) => emp.email ?? ""))];
       ),
       cell: ({ row }) => (
         <div className="font-medium text-primary flex flex-col">
-          {" "}
           {row.getValue("company_name")}
         </div>
       ),
@@ -283,7 +239,6 @@ const email = [...new Set(flatEmployees.map((emp) => emp.email ?? ""))];
         />
       ),
       cell: ({ row }) => <>{row.original.city}</>,
-
       filterFn: (row, id, value) => {
         return value.length === 0 || value.includes(row.getValue(id));
       },
@@ -332,56 +287,65 @@ const email = [...new Set(flatEmployees.map((emp) => emp.email ?? ""))];
       header: "Actions",
       cell: ({ row }) => {
         const handleDeleteRow = (row: any) => {
-          console.log("Delete row:", row.original);
-          (async () => {
+          ;(async () => {
+            const isActive = row.original?.is_active === true
             const ok = await confirmDialog({
-              title: "Delete customer?",
-              description: `Are you sure you want to delete ${row.original.name}?`,
-              confirmText: "Delete",
+              title: isActive ? "Deactivate customer?" : "Restore customer?",
+              description: isActive
+                ? `This will deactivate ${row.original.company_name}.`
+                : `This will restore ${row.original.company_name}.`,
+              confirmText: isActive ? "Deactivate" : "Restore",
+              variant: isActive ? "destructive" : "default",
+              tone: isActive ? "danger" : "success",
             })
             if (ok) {
-              toast.success(`Deleted ${row.original.name}`)
+              if (!row.original?.id) {
+                toast.error("Unable to determine customer ID")
+                return
+              }
+              await patchIsActive.mutateAsync({ id: row.original.id, is_active: !isActive })
+              toast.success(`Status updated`)
             }
           })()
         };
 
+        const isActive = row.original?.is_active === true
         return (
-          <div className="flex flex-row gap-1 justify-between ">
-            <EditCustomer
-              children={
-                <Button variant={"secondary"} size={"icon"}>
-                  <FilePenIcon />
-                </Button>
-              }
-              data={row.original}
-            />
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant={"secondary"} size={"icon"}>
-                  <MoreHorizontal />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-68 " align="start">
-                <DropdownMenuGroup>
-                  <DropdownMenuItem>
-                    Email
-                    {/* <DropdownMenuShortcut>⌘B</DropdownMenuShortcut> */}
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
+          <div className="flex flex-row gap-2 justify-end">
+            {isActive ? (
+              <>
+                <EditCustomer
+                  children={
+                    <Button variant={"secondary"} size={"icon"}>
+                      <FilePenIcon />
+                    </Button>
+                  }
+                  data={row.original}
+                />
+                <Button
+                  variant={"secondary"}
+                  size={"icon"}
                   onClick={(e) => {
                     e.stopPropagation();
                     handleDeleteRow(row);
                   }}
-                  className="text-destructive focus:text-destructive"
+                  className="text-destructive hover:text-destructive"
                 >
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Delete
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                  <Trash2 />
+                </Button>
+              </>
+            ) : (
+              <Button
+                variant={"secondary"}
+                size={"sm"}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDeleteRow(row);
+                }}
+              >
+                Restore <RotateCcw className="w-4 h-4 ml-1" />
+              </Button>
+            )}
           </div>
         );
       },
@@ -391,32 +355,15 @@ const email = [...new Set(flatEmployees.map((emp) => emp.email ?? ""))];
   ];
 
   return (
-    <div className="">
-      {/* <div className="mb-8">
-         
-
-        <div className="flex items-center gap-4 mb-4">
-          <Button
-            variant={isServerMode ? "default" : "outline"}
-            onClick={() => setIsServerMode(!isServerMode)}
-          >
-            {isServerMode ? "Server Mode ON" : "Client Mode ON"}
-          </Button>
-          {isServerMode && (
-            <Badge variant="secondary">
-              Page {paginationInfo.pageIndex + 1} of {paginationInfo.totalPages}
-            </Badge>
-          )}
-        </div>
-      </div> */}
-
+    <div className="max-w-full">
       <AdvancedDataTable
         columns={columns}
-        data={isServerMode ? currentData : CustomerData}
+        data={serverRows}
         defaultVisibleColumns={[
-          "name",
+          "company_name",
           "type",
-          "address1",
+          "address",
+          "city",
           "state",
           "postal_code",
           "email",
@@ -429,11 +376,15 @@ const email = [...new Set(flatEmployees.map((emp) => emp.email ?? ""))];
         onDeleteSelected={handleDeleteSelected}
         onPrintRow={handlePrintRow}
         storageKey="customer-table-visibility"
-        // Server-side props
-        realServerPagination={isServerMode}
-        paginationInfo={isServerMode ? paginationInfo : undefined}
-        onPaginationChange={isServerMode ? handlePaginationChange : undefined}
-        onServerSearch={isServerMode ? handleServerSearch : undefined}
+        realServerPagination={true}
+        paginationInfo={paginationInfo}
+        onPaginationChange={handlePaginationChange}
+        onPageSizeChange={handlePageSizeChange}
+        pageSizeOptions={[10, 20, 30, 50]}
+        onServerSearch={handleServerSearch}
+        serverSorting={sorting}
+        onServerSortingChange={handleServerSortingChange}
+        getRowClassName={(row) => (row.original?.is_active === false ? "bg-red-50" : "")}
         isLoading={isLoading}
       />
     </div>

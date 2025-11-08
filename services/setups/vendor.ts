@@ -539,6 +539,41 @@ export function useGetCustomers<TData = TEntity[]>(options?: UseQueryOptions<Api
     });
 }
 
+// Paginated customers with server-side filters and search
+type CustomerQuery = {
+    search?: string;
+    location_id?: string;
+    type_id?: string;
+    size?: number; // page size
+    page?: number; // 1-based page index as required by API
+    sort_by?: string;
+    sort_order?: "asc" | "desc";
+};
+
+export function useGetCustomersPaginated<TPaginated = any>(
+    query: CustomerQuery,
+    options?: UseQueryOptions<ApiResponse<TPaginated>, AxiosError<ApiError>, TPaginated>
+) {
+    return useQuery<ApiResponse<TPaginated>, AxiosError<ApiError>, TPaginated>({
+        queryKey: ["customers", query],
+        queryFn: async () => {
+            const params = new URLSearchParams();
+            if (query.search && query.search.trim()) params.set("search", query.search.trim());
+            if (query.location_id) params.set("location_id", query.location_id);
+            if (query.type_id) params.set("type_id", query.type_id);
+            if (typeof query.size === "number") params.set("size", String(query.size));
+            if (typeof query.page === "number") params.set("page", String(query.page));
+            if (query.sort_by) params.set("sort_by", query.sort_by);
+            if (query.sort_order) params.set("sort_order", query.sort_order);
+            const url = buildUrl(`/api/get-customers${params.toString() ? `?${params.toString()}` : ""}`);
+            const response = await dummyApiClient<ApiResponse<TPaginated>>(url);
+            return response;
+        },
+        select: (response) => response.data as TPaginated,
+        ...options,
+    });
+}
+
 /**
  * Fetches a single Customer by ID.
  * @param id The ID of the customer to fetch.
@@ -626,6 +661,16 @@ export function useDeleteCustomer() {
         (payload) => `/api/delete-customer/${payload.id}`,
         'delete',
         (payload) => [['customers'], ['customer', payload.id]]
+    );
+}
+
+// Toggle customer is-active by patching is_active boolean
+export function usePatchCustomerIsActive() {
+    return useBaseMutation<TEntity, { id: TId; is_active: boolean }>(
+        ["patch-customer-is-active"],
+        (payload) => `/api/customer/${payload.id}/is-active`,
+        'patch',
+        () => [['customers']]
     );
 }
 

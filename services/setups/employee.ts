@@ -30,7 +30,7 @@ const buildUrl = (path: string) => path;
 const useBaseMutation = <TResponse = TEntity, TPayload = TParams, TContext = unknown>(
     mutationKey: string[],
     endpoint: (payload: TPayload) => string,
-    method: 'post' | 'put' | 'delete',
+    method: 'post' | 'put' | 'delete' | 'patch',
     invalidateKeys: (payload: TPayload) => unknown[], 
     options?: UseMutationOptions<TResponse, AxiosError<ApiError>, TPayload, TContext>
 ) => {
@@ -41,7 +41,8 @@ const useBaseMutation = <TResponse = TEntity, TPayload = TParams, TContext = unk
         
         const response = await dummyApiClient<ApiResponse<TResponse>>(url, {
             method: method,
-            data: (method === 'post' || method === 'put') ? payload : undefined, 
+            // Only pass the payload (data) for POST/PUT/PATCH. DELETE requests typically send data via URL/params.
+            data: (method === 'post' || method === 'put' || method === 'patch') ? payload : undefined,
         });
         
         return response.data as TResponse; 
@@ -308,6 +309,41 @@ export function useGetEmployees<TData = TEntity[]>(options?: UseQueryOptions<Api
     });
 }
 
+// Paginated employees with server-side filters and search
+type EmployeeQuery = {
+    search?: string;
+    location_id?: string;
+    type_id?: string;
+    size?: number; // page size
+    page?: number; // 1-based page index as required by API
+    sort_by?: string;
+    sort_order?: "asc" | "desc";
+};
+
+export function useGetEmployeesPaginated<TPaginated = any>(
+    query: EmployeeQuery,
+    options?: UseQueryOptions<ApiResponse<TPaginated>, AxiosError<ApiError>, TPaginated>
+) {
+    return useQuery<ApiResponse<TPaginated>, AxiosError<ApiError>, TPaginated>({
+        queryKey: ["employees", query],
+        queryFn: async () => {
+            const params = new URLSearchParams();
+            if (query.search && query.search.trim()) params.set("search", query.search.trim());
+            if (query.location_id) params.set("location_id", query.location_id);
+            if (query.type_id) params.set("type_id", query.type_id);
+            if (typeof query.size === "number") params.set("size", String(query.size));
+            if (typeof query.page === "number") params.set("page", String(query.page));
+            if (query.sort_by) params.set("sort_by", query.sort_by);
+            if (query.sort_order) params.set("sort_order", query.sort_order);
+            const url = buildUrl(`/api/get-employees${params.toString() ? `?${params.toString()}` : ""}`);
+            const response = await dummyApiClient<ApiResponse<TPaginated>>(url);
+            return response;
+        },
+        select: (response) => response.data as TPaginated,
+        ...options,
+    });
+}
+
 /**
  * Fetches a single Employee by ID.
  * @param id The ID of the employee to fetch.
@@ -360,6 +396,16 @@ export function useDeleteEmployee() {
         (payload) => `/api/delete-employee/${payload.id}`,
         'delete',
         (payload) => [['employees'], ['employee', payload.id]]
+    );
+}
+
+// Toggle employee is-active by patching status_id
+export function usePatchEmployeeIsActive() {
+    return useBaseMutation<TEntity, { id: TId; status_id: string }>(
+        ["patch-employee-is-active"],
+        (payload) => `/api/employee/${payload.id}/is-active`,
+        'patch',
+        () => [['employees']]
     );
 }
 

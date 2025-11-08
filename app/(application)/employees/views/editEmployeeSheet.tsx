@@ -182,7 +182,7 @@ export default function EditEmployee({
             <SheetTitle>
               <div className="flex justify-between">
                 <div>
-                  Edit {data?.first} {data?.last} {data?.middle}
+                  Edit {data?.first_name} {data?.last_name} {data?.middle_name}
                 </div>
               </div>
             </SheetTitle>
@@ -217,6 +217,12 @@ export default function EditEmployee({
                   <TabsContent value="employee">
                     <div className="flex flex-col gap-1">
                       <FormSubheader header={"Employment"} />
+                      <InputWrapper
+                        control={employeeForm.control}
+                        name="employee_number"
+                        label="Employee Number"
+                        type="text"
+                      />
                       <div className="flex flex-row">
                         <InputWrapper
                           control={employeeForm.control}

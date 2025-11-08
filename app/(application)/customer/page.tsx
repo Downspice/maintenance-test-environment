@@ -11,22 +11,25 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { useSheet } from "@/lib/sheet-providers";
-import NotCompleteMessage from "../workInprogress/working";
 import CustomerDataTable from "./table/customerDataTable";
- 
 import NewCustomer from "@/components/forms/actualForms/new-customer-form";
-import { useGetLocations } from "@/services/setups/vendor";
+import { useGetLocations, useGetVendorTypes } from "@/services/setups/vendor";
 
-export default function EmployeesPage() {
-   const {
-      data: locationOptionsList,
-      isLoading: locationOptionsListLoading,
-      error: locationOptionsListError,
-    } = useGetLocations<Array<{ id: string; name: string }>>();
+export default function CustomersPage() {
+  const {
+    data: vendorTypeOptions,
+    isLoading: vendorTypesLoading,
+    error: vendorTypesError,
+  } = useGetVendorTypes<Array<{ id: string; name: string }>>();
+  const {
+    data: locationOptionsList,
+    isLoading: locationOptionsListLoading,
+    error: locationOptionsListError,
+  } = useGetLocations<Array<{ id: string; name: string }>>();
+
   const [filters, setFilters] = useState({
-    equipment: "",
     location: "",
-    custom: "",
+    type: "",
     search: "",
   });
 
@@ -36,10 +39,6 @@ export default function EmployeesPage() {
   const buildURL = (updatedFilters: typeof filters) => {
     const queryParams = new URLSearchParams();
 
-    if (updatedFilters.equipment) {
-      queryParams.set("filter_equipment", updatedFilters.equipment);
-    }
-
     if (
       updatedFilters.location &&
       updatedFilters.location !== "delete_filter"
@@ -47,18 +46,21 @@ export default function EmployeesPage() {
       queryParams.set("location_id", updatedFilters.location);
     }
 
+    if (updatedFilters.type && updatedFilters.type !== "delete_filter") {
+      queryParams.set("type_id", updatedFilters.type);
+    }
+
     if (updatedFilters.search.trim()) {
       queryParams.set("search", updatedFilters.search.trim());
     }
 
-    const url = `/equipment?${queryParams.toString()}`;
+    const url = `/customers?${queryParams.toString()}`;
     console.log("Generated URL:", url);
-    // Use this URL to fetch or navigate
   };
 
   const handleSelectChange = (
-    key: "equipment" | "location" | "custom",
-    id: string
+    key: "location" | "type" | "search",
+    value: string
   ) => {
     if (value === "new") {
       console.log("Launching new location modal...");
@@ -82,7 +84,7 @@ export default function EmployeesPage() {
     buildURL({ ...filters, search: debouncedSearch });
   }, [debouncedSearch]);
 
-  const createEquipment = () => {
+  const createCustomer = () => {
     openSheet({
       title: "Create Customer",
       description: "Fill out the form below to create a new customer.",
@@ -90,22 +92,19 @@ export default function EmployeesPage() {
     });
   };
 
-    
-
   return (
-    <div className="flex flex-col m-4 space-y-4">
+    <div className="p-4 flex flex-col space-y-4">
       <div className="flex flex-row items-center space-x-2">
         <h1 className="text-xl font-semibold">Customers</h1>
-        <Badge>5</Badge>
+        {/* <Badge>5</Badge> */}
       </div>
 
       <div className="flex justify-between items-center space-x-4">
-        {/* Equipment Filter */}
-
         <div className="flex flex-row space-x-0.5">
+          {/* Location Filter */}
           <Select onValueChange={(val) => handleSelectChange("location", val)}>
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="All Warehouses" />
+              <SelectValue placeholder="All Locations" />
             </SelectTrigger>
             <SelectContent>
               {locationOptionsList?.map((item) => (
@@ -115,15 +114,27 @@ export default function EmployeesPage() {
               ))}
             </SelectContent>
           </Select>
+
+          {/* Customer Type Filter */}
+          <Select onValueChange={(val) => handleSelectChange("type", val)}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="All Types" />
+            </SelectTrigger>
+            <SelectContent>
+              {vendorTypeOptions?.map((item) => (
+                <SelectItem value={item.id} key={item.id}>
+                  {item.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         <div className="flex flex-row space-x-0.5">
-          {/* Search Input */}
-
-          <Button onClick={createEquipment}>New</Button>
+          <Button onClick={createCustomer}>Create New Customer</Button>
         </div>
       </div>
       <div>
-        <CustomerDataTable />
+        <CustomerDataTable locationId={filters.location || undefined} typeId={filters.type || undefined} />
       </div>
     </div>
   );

@@ -20,12 +20,14 @@ import {
   CustomerInterface,
   CustomerTableDataInterface,
 } from "@/lib/Customer/customer-data";
+import SingleCheckboxWrapper from "@/components/forms/wrappers/SingleCheckboxWrapper";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
-import { useGetLocations, useGetPurchaseOrderTerms, useGetStatusOnes, useGetVendorTypes, useUpdateCustomer } from "@/services/setups/vendor";
+import { useGetLocations, useGetPurchaseOrderTerms, useGetStatusOnes, useGetVendorTypes, useUpdateCustomer, useGetCustomer } from "@/services/setups/vendor";
 import {deepCleanNulls} from "@/lib/utils"
 import { useGetInventoryCategories } from "@/services/setups/inventory";
+import { useEffect } from "react";
 export default function EditCustomer({
   children,
   data,
@@ -36,10 +38,74 @@ export default function EditCustomer({
     const { data: categoryOptions } = useGetInventoryCategories();
   
   const [open, setOpen] = useState(false);
+  
+  // Fetch full customer details by ID
+  const { data: customerDetails, isLoading: isLoadingCustomer } = useGetCustomer<CustomerTableDataInterface & { customer_shipping?: any; discount_type?: string; discount_amount?: string }>(data.id, {
+    enabled: open && !!data.id,
+  } as any);
+
   const CustomerForm = useForm<z.infer<typeof customerSchema>>({
     resolver: zodResolver(customerSchema),
-    defaultValues: deepCleanNulls({ ...data,term_id: data.term.id,type_id: data.type.id }),
+    defaultValues: {},
   });
+
+  // Update form when customer details are loaded
+  useEffect(() => {
+    if (customerDetails && open) {
+      const formData: any = {
+        id: customerDetails.id,
+        company_name: customerDetails.company_name || "",
+        contact: customerDetails.contact || "",
+        address: customerDetails.address || "",
+        city: customerDetails.city || "",
+        state: customerDetails.state || "",
+        postal_code: customerDetails.postal_code || "",
+        country: customerDetails.country || "",
+        phone_one: customerDetails.phone_one || "",
+        phone_two: customerDetails.phone_two || "",
+        fax: customerDetails.fax || "",
+        website: customerDetails.website || "",
+        email: customerDetails.email || "",
+        term_id: customerDetails.term?.id || customerDetails.term_id || "",
+        term_days: customerDetails.term_days || 0,
+        discount_type: customerDetails.discount_type || "",
+        discount_percent: customerDetails.discount_percent || "",
+        discount_amount: customerDetails.discount_amount || "",
+        billing_rate: customerDetails.billing_rate ? Number(customerDetails.billing_rate) : undefined,
+        type_id: customerDetails.type?.id || customerDetails.type_id || "",
+        location_id: customerDetails.location?.id || customerDetails.location_id || "",
+        notes: customerDetails.notes || "",
+        // Map shipping data
+        shipping: customerDetails.customer_shipping ? {
+          company_name: customerDetails.customer_shipping.company_name || "",
+          contact: customerDetails.customer_shipping.contact || "",
+          address: customerDetails.customer_shipping.address || "",
+          city: customerDetails.customer_shipping.city || "",
+          state: customerDetails.customer_shipping.state || "",
+          postal_code: customerDetails.customer_shipping.postal_code || "",
+          country: customerDetails.customer_shipping.country || "",
+          phone_one: customerDetails.customer_shipping.phone_one || "",
+          fax: customerDetails.customer_shipping.fax || "",
+          email: customerDetails.customer_shipping.email || "",
+        } : {
+          company_name: "",
+          contact: "",
+          address: "",
+          city: "",
+          state: "",
+          postal_code: "",
+          country: "",
+          phone_one: "",
+          fax: "",
+          email: "",
+        },
+        // Map is_same from customer_shipping
+        is_same: customerDetails.customer_shipping?.is_same || false,
+      };
+      
+      CustomerForm.reset(deepCleanNulls(formData));
+    }
+  }, [customerDetails, open]);
   const {
       data: vendorTypeOptions,
       isLoading,
@@ -64,17 +130,35 @@ export default function EditCustomer({
   
  
   const { mutateAsync, isPending } = useUpdateCustomer();
-    async function handleSubmit(data: z.infer<typeof CustomerForm>) {
-      console.log(data);
+    async function handleSubmit(formData: z.infer<typeof customerSchema>) {
+      console.log(formData);
+      
+      // If is_same is true, clear shipping fields
+      if (formData.is_same) {
+        formData.shipping = {
+          ...formData.shipping,
+          company_name: "",
+          contact: "",
+          address: "",
+          city: "",
+          state: "",
+          postal_code: "",
+          country: "",
+          phone_one: "",
+          fax: "",
+          email: "",
+        };
+      }
+      
       // Here you would typically send the data to your API
-      toast.success("Edited  successfully!");
-      const res = await mutateAsync(data);
-      toast.success(res?.message);
+      const res = await mutateAsync(formData as CustomerInterface & { id: string });
+      toast.success((res as any)?.message || "Edited successfully!");
       CustomerForm.reset();
     }
   
 
   const watchdiscount_type = CustomerForm.watch("discount_type");
+  const watchIsSame = CustomerForm.watch("is_same");
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -143,6 +227,7 @@ export default function EditCustomer({
                           <InputWrapper
                             control={CustomerForm.control}
                             name="state"
+                            required
                             label="State /Province"
                             type="text"
                             value={""}
@@ -280,7 +365,7 @@ export default function EditCustomer({
                             name="type_id"
                             label="Type "
                             required
-                            options={vendorTypeOptions}
+                            options={vendorTypeOptions ?? []}
                           />
                         </div>
                         <div className="col-span-1">
@@ -297,6 +382,11 @@ export default function EditCustomer({
                   </TabsContent>
                   <TabsContent value="Shipping">
                     <div className="flex flex-col gap-1">
+                      <SingleCheckboxWrapper
+                        control={CustomerForm.control}
+                        name="is_same"
+                        label="Same as billing"
+                      />
                       <FormSubheader header="Name/Address" />
 
                       <InputWrapper
@@ -304,8 +394,9 @@ export default function EditCustomer({
                         name="shipping.company_name"
                         label="Name"
                         type="text"
-                        required
+                        required={!watchIsSame}
                         value={""}
+                        disabled={watchIsSame}
                       />
 
                       <InputWrapper
@@ -313,8 +404,9 @@ export default function EditCustomer({
                         name="shipping.contact"
                         label="Contact"
                         type="text"
-                        required
+                        required={!watchIsSame}
                         value={""}
+                        disabled={watchIsSame}
                       />
 
                       <InputWrapper
@@ -323,6 +415,7 @@ export default function EditCustomer({
                         label="Address"
                         type="text"
                         value={""}
+                        disabled={watchIsSame}
                       />
  
                       <div className="grid grid-cols-2 gap-1">
@@ -332,8 +425,9 @@ export default function EditCustomer({
                             name="shipping.phone_one"
                             label="Phone"
                             type="text"
-                            required
+                            required={!watchIsSame}
                             value={""}
+                            disabled={watchIsSame}
                           />
                         </div>
                         <div className="col-span-1">
@@ -343,6 +437,7 @@ export default function EditCustomer({
                             label="Fax:"
                             type="text"
                             value={""}
+                            disabled={watchIsSame}
                           />
                         </div>
                         <div className="col-span-1">
@@ -352,6 +447,7 @@ export default function EditCustomer({
                             label="Email:"
                             type="text"
                             value={""}
+                            disabled={watchIsSame}
                           />{" "}
                         </div>
                         <div className="col-span-1"></div>
@@ -364,6 +460,7 @@ export default function EditCustomer({
                             label="City"
                             type="text"
                             value={""}
+                            disabled={watchIsSame}
                           />
                         </div>
                         <div className="col-span-1">
@@ -372,7 +469,8 @@ export default function EditCustomer({
                             name="shipping.state"
                             label="State /Province"
                             type="text"
-                            value={""}
+                            value={""} required
+                            disabled={watchIsSame}
                           />
                         </div>
                         <div className="col-span-1">
@@ -382,6 +480,7 @@ export default function EditCustomer({
                             label="Postal Code"
                             type="text"
                             value={""}
+                            disabled={watchIsSame}
                           />
                         </div>
                         <div className="col-span-1">
@@ -391,6 +490,7 @@ export default function EditCustomer({
                             label="Country"
                             type="text"
                             value={""}
+                            disabled={watchIsSame}
                           />
                         </div>
                         <div className="col-span-1"></div>

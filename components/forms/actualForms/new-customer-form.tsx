@@ -19,6 +19,7 @@ import { ComboboxFieldWrapper } from "../wrappers/ComboboxWrapper";
 import { discount_typesOptions } from "@/lib/Invoice/invoices-page-data";
 import { customerSchema,CustomerInterface} from "@/lib/Customer/customer-data";
 import { useAddCustomer, useGetCustomerDiscounts, useGetLocations, useGetPurchaseOrderTerms, useGetStatusOnes, useGetVendorTypes } from "@/services/setups/vendor";
+import SingleCheckboxWrapper from "../wrappers/SingleCheckboxWrapper";
 
  
 export default function NewCustomer() {
@@ -55,6 +56,7 @@ const {
  
 
   const watchdiscount_type = CustomerForm.watch("discount_type");
+  const watchIsSame = CustomerForm.watch("is_same");
 
     const { 
       mutateAsync, 
@@ -64,6 +66,23 @@ const {
     // 3. Define the mutation handler that receives validated data
     const handleSubmit = async (data: CustomerInterface) => {
       console.log("Submitting data:", data);
+      
+      // If is_same is true, clear shipping fields
+      if (data.is_same) {
+        data.shipping = {
+          ...data.shipping,
+          company_name: "",
+          contact: "",
+          address: "",
+          city: "",
+          state: "",
+          postal_code: "",
+          country: "",
+          phone_one: "",
+          fax: "",
+          email: "",
+        };
+      }
       
       // try {
         // 4. AWAIT the mutateAsync call, passing the validated 'data' object
@@ -148,7 +167,7 @@ const {
                     <InputWrapper
                       control={CustomerForm.control}
                       name="state"
-                      label="State /Province"
+                      label="State /Province" required
                       type="text"
                       value={""}
                     />
@@ -301,6 +320,11 @@ const {
             </TabsContent>
             <TabsContent value="Shipping">
               <div className="flex flex-col gap-1">
+                <SingleCheckboxWrapper
+                  control={CustomerForm.control}
+                  name="is_same"
+                  label="Same as billing"
+                />
                 <FormSubheader header="Name/Address" />
 
                 <InputWrapper
@@ -308,8 +332,9 @@ const {
                   name="shipping.company_name"
                   label="Name"
                   type="text"
-                  required
+                  required={!watchIsSame}
                   value={""}
+                  disabled={watchIsSame}
                 />
 
                 <InputWrapper
@@ -317,8 +342,9 @@ const {
                   name="shipping.contact"
                   label="Contact"
                   type="text"
-                  required
+                  required={!watchIsSame}
                   value={""}
+                  disabled={watchIsSame}
                 />
 
                 <InputWrapper
@@ -327,6 +353,7 @@ const {
                   label="Address"
                   type="text"
                   value={""}
+                  disabled={watchIsSame}
                 /> 
                 <div className="grid grid-cols-2 gap-1">
                   <div className="col-span-1">
@@ -335,8 +362,9 @@ const {
                       name="shipping.phone_one"
                       label="Phone"
                       type="text"
-                      required
+                      required={!watchIsSame}
                       value={""}
+                      disabled={watchIsSame}
                     />
                   </div>
                   <div className="col-span-1">
@@ -346,6 +374,7 @@ const {
                       label="Fax:"
                       type="text"
                       value={""}
+                      disabled={watchIsSame}
                     />
                   </div>
                   <div className="col-span-1">
@@ -355,6 +384,7 @@ const {
                       label="Email:"
                       type="text"
                       value={""}
+                      disabled={watchIsSame}
                     />{" "}
                   </div>
                   <div className="col-span-1"></div>
@@ -367,15 +397,17 @@ const {
                       label="City"
                       type="text"
                       value={""}
+                      disabled={watchIsSame}
                     />
                   </div>
                   <div className="col-span-1">
                     <InputWrapper
                       control={CustomerForm.control}
                       name="shipping.state"
-                      label="State /Province"
+                      label="State /Province" required
                       type="text"
                       value={""}
+                      disabled={watchIsSame}
                     />
                   </div>
                   <div className="col-span-1">
@@ -385,6 +417,7 @@ const {
                       label="Postal Code"
                       type="text"
                       value={""}
+                      disabled={watchIsSame}
                     />
                   </div>
                   <div className="col-span-1">
@@ -394,6 +427,7 @@ const {
                       label="Country"
                       type="text"
                       value={""}
+                      disabled={watchIsSame}
                     />
                   </div>
                   <div className="col-span-1"></div>

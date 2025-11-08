@@ -12,7 +12,7 @@ import type { Control } from "react-hook-form"
 interface FileUploadWrapperProps {
   control: Control<any>
   name: string
-  name: string
+  label: string
   accept?: string
   multiple?: boolean
   maxSize?: number // in bytes

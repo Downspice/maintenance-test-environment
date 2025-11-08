@@ -31,18 +31,41 @@ export const customerSchema = z.object({
 
   // Shipping Tab
   shipping: z.object({
-    company_name: z.string({ required_error: "Name is required" }),
+    company_name: z.string().optional(),
     contact: z.string().optional(),
     address: z.string().optional(),
     city: z.string().optional(),
     state: z.string().optional(),
     postal_code: z.string().optional(),
     country: z.string().optional(),
+    phone_one: z.string().optional(),
+    fax: z.string().optional(),
+    email: z.string().optional(),
   }),
+
+  // Same as billing flag
+  is_same: z.boolean().optional(),
 
   // Notes & Attachments
   notes: z.string().optional(),
   Attachments: z.array(z.instanceof(File)).optional(),
+}).refine((data) => {
+  // If is_same is false or undefined, shipping company_name, contact, and phone_one are required
+  if (!data.is_same) {
+    if (!data.shipping.company_name || data.shipping.company_name.trim() === "") {
+      return false;
+    }
+    if (!data.shipping.contact || data.shipping.contact.trim() === "") {
+      return false;
+    }
+    if (!data.shipping.phone_one || data.shipping.phone_one.trim() === "") {
+      return false;
+    }
+  }
+  return true;
+}, {
+  message: "Name, Contact, and Phone are required when 'Same as billing' is not checked",
+  path: ["shipping", "company_name"],
 });
 
 export type CustomerInterface = z.infer<typeof customerSchema>;
@@ -74,6 +97,7 @@ export interface CustomerTableDataInterface {
   updated_by: any
   created_at: string
   updated_at: string
+  is_active: boolean
   customer_shipping: any
   customer_attachments: any[]
   term: Term

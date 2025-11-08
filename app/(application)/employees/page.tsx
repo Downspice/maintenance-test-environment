@@ -15,29 +15,23 @@ import NewEmployeeForm from "@/components/forms/actualForms/new-employee-form";
  
 import EmployeeDataTable from "./components/employeeDataTable";
 import { useGetLocations } from "@/services/setups/vendor";
-
-const ActiveDropdown = [
-  { name: "All Employees", id: "all" },
-  { name: "Active", id: "active" },
-  { name: "Inactive", id: "inactive" },
-  { name: "Renewals Due", id: "requestors" },
-  { name: "Renewals Soon Due", id: "users" },
-  { name: "Driver", id: "full_users" },
-  { name: "Manager", id: "operator_users" },
-  { name: "Technician", id: "deleted" },
-];
+import { useGetEmployeeTypes } from "@/services/setups/employee";
 
 export default function EmployeesPage() {
-      const { 
-    data: locationOptionsList, 
-    isLoading:locationOptionsListLoading, 
-    error: locationOptionsListError
-  } = useGetLocations<Array<{ id: string, name: string }>>();
-  
+  const {
+    data: employeeTypeOptions,
+    isLoading: employeeTypesLoading,
+    error: employeeTypesError,
+  } = useGetEmployeeTypes<Array<{ id: string; name: string }>>();
+  const {
+    data: locationOptionsList,
+    isLoading: locationOptionsListLoading,
+    error: locationOptionsListError,
+  } = useGetLocations<Array<{ id: string; name: string }>>();
+
   const [filters, setFilters] = useState({
-    equipment: "",
     location: "",
-    custom: "",
+    type: "",
     search: "",
   });
 
@@ -47,10 +41,6 @@ export default function EmployeesPage() {
   const buildURL = (updatedFilters: typeof filters) => {
     const queryParams = new URLSearchParams();
 
-    if (updatedFilters.equipment) {
-      queryParams.set("filter_equipment", updatedFilters.equipment);
-    }
-
     if (
       updatedFilters.location &&
       updatedFilters.location !== "delete_filter"
@@ -58,18 +48,21 @@ export default function EmployeesPage() {
       queryParams.set("location_id", updatedFilters.location);
     }
 
+    if (updatedFilters.type && updatedFilters.type !== "delete_filter") {
+      queryParams.set("type_id", updatedFilters.type);
+    }
+
     if (updatedFilters.search.trim()) {
       queryParams.set("search", updatedFilters.search.trim());
     }
 
-    const url = `/equipment?${queryParams.toString()}`;
+    const url = `/employees?${queryParams.toString()}`;
     console.log("Generated URL:", url);
-    // Use this URL to fetch or navigate
   };
 
   const handleSelectChange = (
-    key: "equipment" | "location" | "custom" | "search",
-    id: string
+    key: "location" | "type" | "search",
+    value: string
   ) => {
     if (value === "new") {
       console.log("Launching new location modal...");
@@ -103,30 +96,15 @@ export default function EmployeesPage() {
   };
 
   return (
-    <div className="pt-4 px-4 flex flex-col space-y-4">
+    <div className="p-4 flex flex-col space-y-4">
       <div className="flex flex-row items-center space-x-2">
         <h1 className="text-xl font-semibold">Employees</h1>
-        <Badge>10</Badge>
+        {/* <Badge>10</Badge> */}
       </div>
 
       <div className="flex justify-between items-center space-x-4">
-        {/* Equipment Filter */}
-
         <div className="flex flex-row space-x-0.5">
           {/* Location Filter */}
-          <Select onValueChange={(val) => handleSelectChange("equipment", val)}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="All" />
-            </SelectTrigger>
-            <SelectContent>
-              {ActiveDropdown.map((item) => (
-                <SelectItem value={item.id} key={item.id}>
-                  {item.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
           <Select onValueChange={(val) => handleSelectChange("location", val)}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="All Locations" />
@@ -139,14 +117,27 @@ export default function EmployeesPage() {
               ))}
             </SelectContent>
           </Select>
+
+          {/* Employee Type Filter */}
+          <Select onValueChange={(val) => handleSelectChange("type", val)}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="All Types" />
+            </SelectTrigger>
+            <SelectContent>
+              {employeeTypeOptions?.map((item) => (
+                <SelectItem value={item.id} key={item.id}>
+                  {item.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         <div className="flex flex-row space-x-0.5">
-          <Button onClick={createEquipment}>New</Button>
+          <Button onClick={createEquipment}>Create New Employee</Button>
         </div>
       </div>
       <div>
-        {/* <EmployeePageDataTable /> */}
-        <EmployeeDataTable />
+        <EmployeeDataTable locationId={filters.location || undefined} typeId={filters.type || undefined} />
       </div>
     </div>
   );

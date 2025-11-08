@@ -71,6 +71,7 @@ export interface RenewalData {
 // Define the form schema with Zod
 export const employeeSchema = z.object({
   id: z.string().optional(),
+  employee_number: z.string().optional(),
   last_name: z.string().optional(),
   first_name: z.string().optional(),
   middle_name: z.string().optional(),
@@ -208,6 +209,13 @@ export default function NewEmployeeForm() {
             <TabsContent value="employee">
               <div className="flex flex-col gap-1">
                 <FormSubheader header={"Employment"} />
+                <InputWrapper
+                    control={employeeForm.control}
+                    name="employee_number"
+                    label="Employee Number"
+                    type="text"
+                    value={""}
+                  />
                 <div className="flex flex-row">
                   <InputWrapper
                     control={employeeForm.control}
