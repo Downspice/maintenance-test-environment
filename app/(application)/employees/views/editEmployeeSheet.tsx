@@ -170,7 +170,7 @@ export default function EditEmployee({
   }
 
   if (isLoading) {
-    return <>Gathering all data</>;
+    return <>{children}</>;
   }
 
   if (data) {
