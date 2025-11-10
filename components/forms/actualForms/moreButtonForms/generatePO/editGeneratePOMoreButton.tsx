@@ -45,7 +45,6 @@ import {
 } from "@/components/ui/sheet";
 import {
   discount_typesOptions,
-  invoiceOptionsList,
   maintenanceItems,
 } from "@/lib/Invoice/invoices-page-data";
 import FileUploadWrapper from "@/components/forms/wrappers/FileUploadWrapper";
@@ -53,7 +52,8 @@ import SingleCheckboxWrapper from "@/components/forms/wrappers/SingleCheckboxWra
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useGetLocations, useGetVendors } from "@/services/setups/vendor";
 import { useGetPurchaseOrderShipVias } from "@/services/setups/purchaseOrder";
-import { useGetItemTypes } from "@/services/setups/invoice";
+import { useGetItemTypes, useGetInvoices } from "@/services/setups/invoice";
+import { convertToOptionList } from "@/lib/utils";
 
 // Purchase Order Item Schema
 export const PurchaseOrderItemSchema = z.object({
@@ -247,6 +247,8 @@ export default function EditPurchaseOrderFormMoreButton({
     const { data: shipViaOptions } = useGetPurchaseOrderShipVias();
       const { data: vendorOptions } = useGetVendors();
     const { data: itemTypesOptionsList } = useGetItemTypes<Array<{ id: string; name: string }>>();
+    const { data: invoices } = useGetInvoices<Array<{ id: string; invoice_number: string }>>();
+    const invoiceOptionsList = convertToOptionList(invoices ?? [], "id", "invoice_number");
   
   const [internalOpen, setInternalOpen] = useState(false);
   const open = externalOpen !== undefined ? externalOpen : internalOpen;

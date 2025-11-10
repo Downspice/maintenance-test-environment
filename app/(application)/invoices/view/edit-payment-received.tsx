@@ -19,12 +19,10 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import Fieldset from "@/components/customUI/fieldset";
-import {
-  invoiceOptionsList,
-} from "@/lib/Invoice/invoices-page-data";
 import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";
 import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
-import { useGetPaymentMethods } from "@/services/setups/invoice";
+import { useGetPaymentMethods, useGetInvoices } from "@/services/setups/invoice";
+import { convertToOptionList } from "@/lib/utils";
 
 const paymentSchema = z.object({
   invoice_number: z.string(),
@@ -55,6 +53,8 @@ export default function EditPaymentReceived({
     isLoading: invoicePaymentMethodListLoading,
     error: invoicePaymentMethodListError,
   } = useGetPaymentMethods<Array<{ id: string; name: string }>>();
+  const { data: invoices } = useGetInvoices<Array<{ id: string; invoice_number: string }>>();
+  const invoiceOptionsList = convertToOptionList(invoices ?? [], "id", "invoice_number");
   const PaymentsForm = useForm<z.infer<typeof paymentSchema>>({
     resolver: zodResolver(paymentSchema),
     defaultValues: { ...data },

@@ -37,7 +37,6 @@ import {
 import SelectWrapper from "../wrappers/SelectWrapper";
 import {
   discount_typesOptions,
-  invoiceOptionsList,
 } from "@/lib/Invoice/invoices-page-data";
 import FileUploadWrapper from "../wrappers/FileUploadWrapper";
 import SingleCheckboxWrapper from "../wrappers/SingleCheckboxWrapper";
@@ -51,7 +50,8 @@ import {
 import { useGetLocations, useGetPurchaseOrderTerms, useGetVendors } from "@/services/setups/vendor";
 import { useGetPurchaseOrderShipVias } from "@/services/setups/purchaseOrder";
 import { useGetWarehouses } from "@/services/setups/inventory";
-import { useGetItemTypes } from "@/services/setups/invoice";
+import { useGetItemTypes, useGetInvoices } from "@/services/setups/invoice";
+import { convertToOptionList } from "@/lib/utils";
 
 interface triggerVariant {
   variant?: "icon" | "default";
@@ -61,6 +61,8 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
   const { data: shipViaOptions } = useGetPurchaseOrderShipVias();
   const { data: itemTypesOptionsList } = useGetItemTypes<Array<{ id: string; name: string }>>();
   const { data: termsOptionsList } = useGetPurchaseOrderTerms<Array<{ id: string; name: string }>>();
+  const { data: invoices } = useGetInvoices<Array<{ id: string; invoice_number: string }>>();
+  const invoiceOptionsList = convertToOptionList(invoices ?? [], "id", "invoice_number");
   
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);

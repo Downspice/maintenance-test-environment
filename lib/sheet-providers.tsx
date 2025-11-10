@@ -9,6 +9,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { DialogProvider } from "@/lib/dialog-provider";
 
 type SheetContentType = {
   title: string;
@@ -47,19 +48,21 @@ export function SheetProvider({ children }: { children: ReactNode }) {
       {children}
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent>
-          <ScrollArea className="h-full px-5">
-            {content && (
-              <>
-                <SheetHeader>
-                  <SheetTitle>{content.title}</SheetTitle>
-                  {content.description && (
-                    <SheetDescription>{content.description}</SheetDescription>
-                  )}
-                </SheetHeader>
-                <div className="mt-6">{content.content}</div>
-              </>
-            )}
-          </ScrollArea>
+          <DialogProvider>
+            <ScrollArea className="h-full px-5">
+              {content && (
+                <>
+                  <SheetHeader>
+                    <SheetTitle>{content.title}</SheetTitle>
+                    {content.description && (
+                      <SheetDescription>{content.description}</SheetDescription>
+                    )}
+                  </SheetHeader>
+                  <div className="mt-6">{content.content}</div>
+                </>
+              )}
+            </ScrollArea>
+          </DialogProvider>
         </SheetContent>
       </Sheet>
     </SheetContext.Provider>

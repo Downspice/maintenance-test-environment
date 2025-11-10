@@ -252,3 +252,79 @@ export function useDeleteInvoice() {
         (payload) => [['invoices'], ['invoice', payload.id]]
     );
 }
+
+
+// --- 4. Invoice Payment Queries/Mutations ---
+
+type InvoicePaymentPayload = TParams & { id?: TId };
+
+/**
+ * Fetches the list of all Invoice Payments.
+ */
+export function useGetInvoicePayments<TData = TEntity[]>(options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>) {
+    return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
+        queryKey: ["invoice-payments"],
+        queryFn: async () => {
+            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-invoice-payments"));
+            return response;
+        },
+        select: (response) => response.data as TData,
+        staleTime: Infinity,
+        ...options,
+    });
+}
+
+/**
+ * Fetches a single Invoice Payment by ID.
+ * @param id The ID of the invoice payment to fetch.
+ */
+export function useGetInvoicePayment<TData = TEntity>(id: TId, options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>) {
+    return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
+        queryKey: ["invoice-payment", id],
+        queryFn: async () => {
+            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl(`/api/get-invoice-payment/${id}`));
+            return response;
+        },
+        select: (response) => response.data as TData,
+        enabled: !!id,
+        ...options,
+    });
+}
+
+/**
+ * Adds a new Invoice Payment. Invalidates the 'invoice-payments' list.
+ */
+export function useAddInvoicePayment() {
+    return useBaseMutation<TEntity, InvoicePaymentPayload>(
+        ["add-invoice-payment"],
+        () => "/api/add-invoice-payment",
+        'post',
+        () => [['invoice-payments']]
+    );
+}
+
+/**
+ * Updates an existing Invoice Payment. Invalidates the 'invoice-payments' list and the specific 'invoice-payment' detail query.
+ * Expects a payload with an 'id' field.
+ */
+export function useUpdateInvoicePayment() {
+    return useBaseMutation<TEntity, InvoicePaymentPayload & { id: TId }>(
+        ["update-invoice-payment"],
+        (payload) => `/api/update-invoice-payment/${payload.id}`,
+        'put',
+        (payload) => [['invoice-payments'], ['invoice-payment', payload.id]]
+    );
+}
+
+/**
+ * Deletes an Invoice Payment. Invalidates the 'invoice-payments' list and the specific 'invoice-payment' detail query.
+ * Expects a payload with an 'id' field.
+ */
+export function useDeleteInvoicePayment() {
+    return useBaseMutation<TEntity, { id: TId }>(
+        ["delete-invoice-payment"],
+        (payload) => `/api/delete-invoice-payment/${payload.id}`,
+        'delete',
+        (payload) => [['invoice-payments'], ['invoice-payment', payload.id]]
+    );
+}

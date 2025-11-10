@@ -16,10 +16,11 @@ import InputWrapper from "@/components/forms/wrappers/InputWrapper";
 import SingleCheckboxWrapper from "@/components/forms/wrappers/SingleCheckboxWrapper";
 import Fieldset from "@/components/customUI/fieldset";
 import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";
-import { invoiceOptionsList } from "@/lib/Invoice/invoices-page-data";
 import { Part, PartSchema } from "@/lib/WorkOrder/workOrder-data";
 import { equipmentOptionsList } from "@/lib/option-list";
 import { useGetCostCenters } from "@/services/setups/inventory";
+import { useGetInvoices } from "@/services/setups/invoice";
+import { convertToOptionList } from "@/lib/utils";
 
 export default function AddPart({
   initialValues,
@@ -29,6 +30,8 @@ export default function AddPart({
   onSave: (data: Part) => void;
 }) {
     const { data: costCenterOptions } = useGetCostCenters();
+    const { data: invoices } = useGetInvoices<Array<{ id: string; invoice_number: string }>>();
+    const invoiceOptionsList = convertToOptionList(invoices ?? [], "id", "invoice_number");
   
   const form = useForm<Part>({
     resolver: zodResolver(PartSchema),

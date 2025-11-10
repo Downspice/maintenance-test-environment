@@ -9,10 +9,7 @@ import { Button } from "@/components/ui/button";
 import { GitPullRequestArrow } from "lucide-react";
 import { toast } from "sonner";
 import InputWrapper from "../wrappers/InputWrapper";
-import { MultiComboboxWrapper } from "../wrappers/ComboboxWrapper";
-import {
-  invoiceOptionsList,
-} from "@/lib/Invoice/invoices-page-data";
+import { ComboboxFieldWrapper, MultiComboboxWrapper } from "../wrappers/ComboboxWrapper";
 import DatePickerWrapper from "../wrappers/DatePickerWrapper";
 import Fieldset from "@/components/customUI/fieldset";
 import SelectWrapper from "../wrappers/SelectWrapper";
@@ -24,16 +21,26 @@ import {
   SheetTitle,
   SheetDescription,
 } from "@/components/ui/sheet";
-import { useGetPaymentMethods } from "@/services/setups/invoice";
+import { useGetPaymentMethods, useGetInvoices, useAddInvoicePayment } from "@/services/setups/invoice";
+import { convertToOptionList } from "@/lib/utils";
 
 // Define the form schema with Zod
 export const vendorSchema = z.object({
-  equipmentId: z.string({
-    required_error: "Equipment is required",
-  }),
+  invoice_number: z.string(),
   date: z.date().optional(),
-  notes: z.string().optional(),
-  paymentMethod: z.string(),
+  amount_received: z.coerce.string().optional(),
+  payment_method_id: z.string(),
+  metadata: z
+    .object({
+      cheque_number: z.string().optional(),
+      credit_number: z.string().optional(),
+      name_on_card: z.string().optional(),
+      expiration_month: z.string().optional(),
+      expiration_year: z.string().optional(),
+      transaction: z.string().optional(),
+      other: z.string().optional(),
+    })
+    .optional(),
 });
 
 export default function RecordPaymentForm() {
@@ -43,6 +50,9 @@ export default function RecordPaymentForm() {
     isLoading: invoicePaymentMethodListLoading,
     error: invoicePaymentMethodListError,
   } = useGetPaymentMethods<Array<{ id: string; name: string }>>();
+  const { data: invoices } = useGetInvoices<Array<{ id: string; invoice_number: string }>>();
+  const invoiceOptionsList = convertToOptionList(invoices ?? [], "id", "invoice_number");
+  const addPaymentMutation = useAddInvoicePayment();
   
   const vendorForm = useForm<z.infer<typeof vendorSchema>>({
     resolver: zodResolver(vendorSchema),
@@ -50,13 +60,24 @@ export default function RecordPaymentForm() {
   });
 
   async function handleSubmit(data: z.infer<typeof vendorSchema>) {
-    console.log(data);
-    // Here you would typically send the data to your API
-
-    toast.success("Work Order submitted successfully!");
+    try {
+      // Format the date to ISO string if it exists
+      const payload = {
+        ...data,
+        date: data.date ? data.date.toISOString().split('T')[0] : undefined,
+      };
+      
+      await addPaymentMutation.mutateAsync(payload);
+      toast.success("Payment record created successfully!");
+      vendorForm.reset();
+      setOpen(false);
+    } catch (error) {
+      console.error("Error creating payment record:", error);
+      toast.error("Failed to create payment record. Please try again.");
+    }
   }
 
-  const paymentMethodWatch = vendorForm.watch("paymentMethod");
+  const paymentMethodWatch = vendorForm.watch("payment_method_id");
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
@@ -76,7 +97,7 @@ export default function RecordPaymentForm() {
             >
               <div className="grid grid-cols-2 space-y-2">
                 <div className="col-span-2 flex space-y-2 flex-col">
-                  <MultiComboboxWrapper
+                  <ComboboxFieldWrapper
                     className="col-span-1"
                     control={vendorForm.control}
                     name="invoice_number"
@@ -84,7 +105,7 @@ export default function RecordPaymentForm() {
                     options={invoiceOptionsList}
                   />
                   <InputWrapper
-                    name="amount"
+                    name="amount_received"
                     type="number"
                     label="Amount Received"
                     control={vendorForm.control}
@@ -104,26 +125,26 @@ export default function RecordPaymentForm() {
                           label="Payment Method"
                           options={invoicePaymentMethodOptionsList??[]}
                         />
-                        {paymentMethodWatch === "Cheque" && (
+                        {paymentMethodWatch === "9c9dc3d7-dede-42d5-bb22-aab2b82a3a63" && (
                           <InputWrapper
-                            name="chequeNumber"
+                            name="metadata.cheque_number"
                             type="text"
                             label="Cheque #"
                             control={vendorForm.control}
                             value={""}
                           />
                         )}
-                        {paymentMethodWatch === "Credit Card" && (
+                        {paymentMethodWatch === "3b5caa3b-376e-44b4-a6a6-22a7026ae925" && (
                           <>
                             <InputWrapper
-                              name="creditNumber"
+                              name="metadata.credit_number"
                               type="text"
                               label="Credit #"
                               control={vendorForm.control}
                               value={""}
                             />
                             <InputWrapper
-                              name="name"
+                              name="metadata.name_on_card"
                               type="text"
                               label="Name on Card"
                               control={vendorForm.control}
@@ -132,7 +153,7 @@ export default function RecordPaymentForm() {
                             <div className="grid grid-cols-2 gap-x-2">
                               <div className="col-span-1 flex flex-col">
                                 <InputWrapper
-                                  name="expirationMonth"
+                                  name="metadata.expiration_month"
                                   type="text"
                                   label="Expiration month"
                                   control={vendorForm.control}
@@ -141,16 +162,16 @@ export default function RecordPaymentForm() {
                               </div>
                               <div className="col-span-1 flex flex-col">
                                 <InputWrapper
-                                  name="expirationMonth"
+                                  name="metadata.expiration_year"
                                   type="text"
-                                  label="Expiration month"
+                                  label="Expiration Year"
                                   control={vendorForm.control}
                                   value={""}
                                 />
                               </div>
                             </div>
                             <InputWrapper
-                              name="transaction"
+                              name="metadata.transaction"
                               type="text"
                               label="Transaction"
                               control={vendorForm.control}
@@ -158,10 +179,10 @@ export default function RecordPaymentForm() {
                             />
                           </>
                         )}
-                        {paymentMethodWatch === "Electronic Transfer" && <></>}
+                        {paymentMethodWatch === "5f27e7e5-08de-4dcf-8fb5-96f6d8ec68f6" && <></>}
                         {paymentMethodWatch === "Other" && (
                           <InputWrapper
-                            name="other"
+                            name="metadata.other"
                             type="text"
                             label="Other"
                             control={vendorForm.control}
@@ -174,8 +195,13 @@ export default function RecordPaymentForm() {
                 </div>
               </div>
               <div className="flex justify-between gap-x-4 my-8 w-full">
-                <Button className=" w-full">
-                  <GitPullRequestArrow className="mr-2" /> Save
+                <Button 
+                  className=" w-full" 
+                  type="submit"
+                  disabled={addPaymentMutation.isPending}
+                >
+                  <GitPullRequestArrow className="mr-2" /> 
+                  {addPaymentMutation.isPending ? "Saving..." : "Save"}
                 </Button>
               </div>
             </form>
@@ -187,6 +213,11 @@ export default function RecordPaymentForm() {
 }
 
 export  function ActualRecordPaymentForm() {
+  const {
+    data: invoicePaymentMethodOptionsList,
+  } = useGetPaymentMethods<Array<{ id: string; name: string }>>();
+  const { data: invoices } = useGetInvoices<Array<{ id: string; invoice_number: string }>>();
+  const invoiceOptionsList = convertToOptionList(invoices ?? [], "id", "invoice_number");
 
   const vendorForm = useForm<z.infer<typeof vendorSchema>>({
     resolver: zodResolver(vendorSchema),
@@ -200,7 +231,7 @@ export  function ActualRecordPaymentForm() {
     toast.success("Work Order submitted successfully!");
   }
 
-  const paymentMethodWatch = vendorForm.watch("paymentMethod");
+  const paymentMethodWatch = vendorForm.watch("payment_method_id");
   return (
      
           <Form {...vendorForm}>
