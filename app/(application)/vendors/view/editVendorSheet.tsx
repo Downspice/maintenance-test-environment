@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { GitPullRequestArrow } from "lucide-react";
@@ -27,16 +27,18 @@ import {
   useGetPurchaseOrderTerms,
   useGetStatusOnes,
   useGetVendorTypes,
+  useGetVendor,
   useUpdateVendor,
 } from "@/services/setups/vendor";
 import {
   vendorSchema,
 } from "@/components/forms/actualForms/new-vendor-form";
 import { VendorTableInterface } from "@/lib/vendor-data";
+import { deepCleanNulls } from "@/lib/utils";
 
 export default function EditVendor({
   children,
-  data,
+  data: initialData,
 }: {
   children: React.ReactNode;
   data: VendorTableInterface;
@@ -65,26 +67,96 @@ export default function EditVendor({
 
   const vendorForm = useForm<z.infer<typeof vendorSchema>>({
     resolver: zodResolver(vendorSchema),
-    defaultValues: {
-      ...data,
-      term_id: data.term.id,
-      phone_one: data.vendor_contact.phone_one ?? "",
-      vendor_number: data.vendor_number ?? "",
-      phone_two: data.vendor_contact.phone_two ?? "",
-      fax: data.vendor_contact.fax ?? "",
-      email: data.vendor_contact.email ?? "",
-      website: data.vendor_contact.website ?? "", notes: data.notes ?? "",
-
-    },
+    defaultValues: {},
   });
+  const { data: vendorDetails } = useGetVendor<any>(initialData.id, {
+    enabled: open && !!initialData.id,
+  });
+
+  useEffect(() => {
+    if (!open || !vendorDetails) {
+      return;
+    }
+
+    const formData: Partial<z.infer<typeof vendorSchema>> = {
+      id: vendorDetails.id ?? initialData.id,
+      name: vendorDetails.name ?? "",
+      vendor_number: vendorDetails.vendor_number ?? "",
+      contact: vendorDetails.contact ?? "",
+      address: vendorDetails.address ?? "",
+      city: vendorDetails.city ?? "",
+      state: vendorDetails.state ?? "",
+      postal_code: vendorDetails.postal_code ?? "",
+      country: vendorDetails.country ?? "",
+      location_id:
+        vendorDetails.location?.id ??
+        vendorDetails.location_id ??
+        initialData.location?.id ??
+        initialData.location_id ??
+        "",
+      status_id:
+        vendorDetails.status?.id ??
+        vendorDetails.status_id ??
+        initialData.status?.id ??
+        initialData.status_id ??
+        "",
+      type_id:
+        vendorDetails.type?.id ??
+        vendorDetails.type_id ??
+        initialData.type?.id ??
+        initialData.type_id ??
+        "",
+      term_id:
+        vendorDetails.term?.id ??
+        vendorDetails.term_id ??
+        initialData.term?.id ??
+        initialData.term_id ??
+        "",
+      billing_rate:
+        vendorDetails.billing_rate != null
+          ? String(vendorDetails.billing_rate)
+          : initialData.billing_rate ?? "",
+      notes: vendorDetails.notes ?? initialData.notes ?? "",
+      others: vendorDetails.others ?? (initialData as any).others ?? {},
+      phone_one:
+        vendorDetails.vendor_contact?.phone_one ??
+        initialData.vendor_contact?.phone_one ??
+        "",
+      phone_two:
+        vendorDetails.vendor_contact?.phone_two ??
+        initialData.vendor_contact?.phone_two ??
+        "",
+      fax:
+        vendorDetails.vendor_contact?.fax ?? initialData.vendor_contact?.fax ?? "",
+      email:
+        vendorDetails.vendor_contact?.email ??
+        initialData.vendor_contact?.email ??
+        "",
+      website:
+        vendorDetails.vendor_contact?.website ??
+        initialData.vendor_contact?.website ??
+        "",
+      Attachments: vendorDetails.attachments ?? [],
+    };
+
+    vendorForm.reset(deepCleanNulls(formData));
+  }, [vendorDetails, open, initialData, vendorForm]);
   const { mutateAsync, isPending } = useUpdateVendor();
-  async function handleSubmit(data: z.infer<typeof vendorSchema>) {
-    console.log(data);
-    // Here you would typically send the data to your API
-    toast.success("Edited  successfully!");
-    const res = await mutateAsync(data);
-    toast.success(res?.message);
-    vendorForm.reset();
+  async function handleSubmit(formData: z.infer<typeof vendorSchema>) {
+    try {
+      const payload = {
+        ...formData,
+        id: formData.id ?? vendorDetails?.id ?? initialData.id,
+      };
+      const res = await mutateAsync(payload);
+      toast.success((res as any)?.message ?? "Edited successfully!");
+      vendorForm.reset();
+      setOpen(false);
+    } catch (error: any) {
+      const errorMessage =
+        error?.response?.data?.message ?? "Failed to update vendor.";
+      toast.error(errorMessage);
+    }
   }
 
   return (
@@ -94,7 +166,7 @@ export default function EditVendor({
         <SheetHeader>
           <SheetTitle>
             <div className="flex justify-between">
-              <div>{data.name}</div>
+              <div>{initialData.name}</div>
             </div>
           </SheetTitle>
         </SheetHeader>
@@ -178,7 +250,7 @@ export default function EditVendor({
                       name="location_id"
                       label="Location "
                       required
-                      options={locationOptionsList}
+                      options={locationOptionsList??[]}
                     />
 
                     <SelectWrapper
@@ -186,7 +258,7 @@ export default function EditVendor({
                       name="status_id"
                       label="Status "
                       required
-                      options={statusOptions}
+                      options={statusOptions??[]}
                     />
 
                     <SelectWrapper
@@ -194,14 +266,14 @@ export default function EditVendor({
                       name="type_id"
                       label="Type "
                       required
-                      options={vendorTypeOptions}
+                      options={vendorTypeOptions??[]}
                     />
                     <SelectWrapper
                       control={vendorForm.control}
                       name="term_id"
                       label="Term "
                       required
-                      options={termsOptionsList}
+                      options={termsOptionsList??[]}
                     />
                     <InputWrapper
                       control={vendorForm.control}
@@ -270,7 +342,7 @@ export default function EditVendor({
               </Tabs>
 
               <div className="flex justify-between gap-x-4 my-8 w-full">
-                <Button className=" w-full">
+                <Button className=" w-full" type="submit" disabled={isPending}>
                   <GitPullRequestArrow className="mr-2" /> Save
                 </Button>
               </div>
