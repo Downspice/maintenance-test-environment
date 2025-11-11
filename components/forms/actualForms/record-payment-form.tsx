@@ -27,7 +27,7 @@ import { convertToOptionList } from "@/lib/utils";
 // Define the form schema with Zod
 export const vendorSchema = z.object({
   invoice_number: z.string(),
-  date: z.date().optional(),
+  date_received: z.date().optional(),
   amount_received: z.coerce.string().optional(),
   payment_method_id: z.string(),
   metadata: z
@@ -53,7 +53,7 @@ export default function RecordPaymentForm() {
   const { data: invoices } = useGetInvoices<Array<{ id: string; invoice_number: string }>>();
   const invoiceOptionsList = convertToOptionList(invoices ?? [], "id", "invoice_number");
   const addPaymentMutation = useAddInvoicePayment();
-  
+
   const vendorForm = useForm<z.infer<typeof vendorSchema>>({
     resolver: zodResolver(vendorSchema),
     defaultValues: {},
@@ -64,9 +64,9 @@ export default function RecordPaymentForm() {
       // Format the date to ISO string if it exists
       const payload = {
         ...data,
-        date: data.date ? data.date.toISOString().split('T')[0] : undefined,
+        date_received: data.date_received ? data.date_received.toISOString().split('T')[0] : undefined,
       };
-      
+
       await addPaymentMutation.mutateAsync(payload);
       toast.success("Payment record created successfully!");
       vendorForm.reset();
@@ -112,7 +112,7 @@ export default function RecordPaymentForm() {
                     value={""}
                   />
                   <DatePickerWrapper
-                    name="date"
+                    name="date_received"
                     label="Date"
                     control={vendorForm.control}
                   />
@@ -123,7 +123,7 @@ export default function RecordPaymentForm() {
                           control={vendorForm.control}
                           name="payment_method_id"
                           label="Payment Method"
-                          options={invoicePaymentMethodOptionsList??[]}
+                          options={invoicePaymentMethodOptionsList ?? []}
                         />
                         {paymentMethodWatch === "9c9dc3d7-dede-42d5-bb22-aab2b82a3a63" && (
                           <InputWrapper
@@ -195,12 +195,12 @@ export default function RecordPaymentForm() {
                 </div>
               </div>
               <div className="flex justify-between gap-x-4 my-8 w-full">
-                <Button 
-                  className=" w-full" 
+                <Button
+                  className=" w-full"
                   type="submit"
                   disabled={addPaymentMutation.isPending}
                 >
-                  <GitPullRequestArrow className="mr-2" /> 
+                  <GitPullRequestArrow className="mr-2" />
                   {addPaymentMutation.isPending ? "Saving..." : "Save"}
                 </Button>
               </div>
@@ -212,7 +212,7 @@ export default function RecordPaymentForm() {
   );
 }
 
-export  function ActualRecordPaymentForm() {
+export function ActualRecordPaymentForm() {
   const {
     data: invoicePaymentMethodOptionsList,
   } = useGetPaymentMethods<Array<{ id: string; name: string }>>();
@@ -233,117 +233,117 @@ export  function ActualRecordPaymentForm() {
 
   const paymentMethodWatch = vendorForm.watch("payment_method_id");
   return (
-     
-          <Form {...vendorForm}>
-            <form
-              onSubmit={vendorForm.handleSubmit((data) => handleSubmit(data))}
-            >
-              <div className="grid grid-cols-2 space-y-2">
-                <div className="col-span-2 flex space-y-2 flex-col">
-                  <MultiComboboxWrapper
-                    className="col-span-1"
+
+    <Form {...vendorForm}>
+      <form
+        onSubmit={vendorForm.handleSubmit((data) => handleSubmit(data))}
+      >
+        <div className="grid grid-cols-2 space-y-2">
+          <div className="col-span-2 flex space-y-2 flex-col">
+            <MultiComboboxWrapper
+              className="col-span-1"
+              control={vendorForm.control}
+              name="invoice_number"
+              label="InvoiceNumber"
+              options={invoiceOptionsList}
+            />
+            <InputWrapper
+              name="amount"
+              type="number"
+              label="Amount Received"
+              control={vendorForm.control}
+              value={""}
+            />
+            <DatePickerWrapper
+              name="date_received"
+              label="Date"
+              control={vendorForm.control}
+            />
+            <Fieldset
+              content={
+                <>
+                  <SelectWrapper
                     control={vendorForm.control}
-                    name="invoice_number"
-                    label="InvoiceNumber"
-                    options={invoiceOptionsList}
+                    name="payment_method_id"
+                    label="Payment Method"
+                    options={invoicePaymentMethodOptionsList ?? []}
                   />
-                  <InputWrapper
-                    name="amount"
-                    type="number"
-                    label="Amount Received"
-                    control={vendorForm.control}
-                    value={""}
-                  />
-                  <DatePickerWrapper
-                    name="date"
-                    label="Date"
-                    control={vendorForm.control}
-                  />
-                  <Fieldset
-                    content={
-                      <>
-                        <SelectWrapper
-                          control={vendorForm.control}
-                          name="payment_method_id"
-                          label="Payment Method"
-                          options={invoicePaymentMethodOptionsList??[]}
-                        />
-                        {paymentMethodWatch === "Cheque" && (
+                  {paymentMethodWatch === "Cheque" && (
+                    <InputWrapper
+                      name="chequeNumber"
+                      type="text"
+                      label="Cheque #"
+                      control={vendorForm.control}
+                      value={""}
+                    />
+                  )}
+                  {paymentMethodWatch === "Credit Card" && (
+                    <>
+                      <InputWrapper
+                        name="creditNumber"
+                        type="text"
+                        label="Credit #"
+                        control={vendorForm.control}
+                        value={""}
+                      />
+                      <InputWrapper
+                        name="name"
+                        type="text"
+                        label="Name on Card"
+                        control={vendorForm.control}
+                        value={""}
+                      />
+                      <div className="grid grid-cols-2 gap-x-2">
+                        <div className="col-span-1 flex flex-col">
                           <InputWrapper
-                            name="chequeNumber"
+                            name="expirationMonth"
                             type="text"
-                            label="Cheque #"
+                            label="Expiration month"
                             control={vendorForm.control}
                             value={""}
                           />
-                        )}
-                        {paymentMethodWatch === "Credit Card" && (
-                          <>
-                            <InputWrapper
-                              name="creditNumber"
-                              type="text"
-                              label="Credit #"
-                              control={vendorForm.control}
-                              value={""}
-                            />
-                            <InputWrapper
-                              name="name"
-                              type="text"
-                              label="Name on Card"
-                              control={vendorForm.control}
-                              value={""}
-                            />
-                            <div className="grid grid-cols-2 gap-x-2">
-                              <div className="col-span-1 flex flex-col">
-                                <InputWrapper
-                                  name="expirationMonth"
-                                  type="text"
-                                  label="Expiration month"
-                                  control={vendorForm.control}
-                                  value={""}
-                                />
-                              </div>
-                              <div className="col-span-1 flex flex-col">
-                                <InputWrapper
-                                  name="expirationMonth"
-                                  type="text"
-                                  label="Expiration month"
-                                  control={vendorForm.control}
-                                  value={""}
-                                />
-                              </div>
-                            </div>
-                            <InputWrapper
-                              name="transaction"
-                              type="text"
-                              label="Transaction"
-                              control={vendorForm.control}
-                              value={""}
-                            />
-                          </>
-                        )}
-                        {paymentMethodWatch === "Electronic Transfer" && <></>}
-                        {paymentMethodWatch === "Other" && (
+                        </div>
+                        <div className="col-span-1 flex flex-col">
                           <InputWrapper
-                            name="other"
+                            name="expirationMonth"
                             type="text"
-                            label="Other"
+                            label="Expiration month"
                             control={vendorForm.control}
                             value={""}
                           />
-                        )}
-                      </>
-                    }
-                  />
-                </div>
-              </div>
-              <div className="flex justify-between gap-x-4 my-8 w-full">
-                <Button className=" w-full">
-                  <GitPullRequestArrow className="mr-2" /> Save
-                </Button>
-              </div>
-            </form>
-          </Form>
-         
+                        </div>
+                      </div>
+                      <InputWrapper
+                        name="transaction"
+                        type="text"
+                        label="Transaction"
+                        control={vendorForm.control}
+                        value={""}
+                      />
+                    </>
+                  )}
+                  {paymentMethodWatch === "Electronic Transfer" && <></>}
+                  {paymentMethodWatch === "Other" && (
+                    <InputWrapper
+                      name="other"
+                      type="text"
+                      label="Other"
+                      control={vendorForm.control}
+                      value={""}
+                    />
+                  )}
+                </>
+              }
+            />
+          </div>
+        </div>
+        <div className="flex justify-between gap-x-4 my-8 w-full">
+          <Button className=" w-full">
+            <GitPullRequestArrow className="mr-2" /> Save
+          </Button>
+        </div>
+      </form>
+    </Form>
+
   );
 }

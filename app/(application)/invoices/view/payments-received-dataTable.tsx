@@ -264,13 +264,13 @@ export default function PaymentReceivedTable() {
   // Column definitions
   const columns: ColumnDef<PaymentReceivedInterface>[] = [
     {
-      accessorKey: "dateReceived",
+      accessorKey: "date_received",
       header: ({ column }) => (
         <SortableHeader
           column={column}
           title="Date"
           sortable={true}
-          filterOptions={dateReceived}
+          // filterOptions={dateReceived}
         />
       ),
     },
