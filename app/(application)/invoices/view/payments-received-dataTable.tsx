@@ -292,7 +292,7 @@ export default function PaymentReceivedTable() {
           column={column}
           title="Category"
           sortable={true}
-          filterOptions={category}
+          // filterOptions={category}
         />
       ),
       filterFn: (row, id, value) => {
@@ -306,7 +306,7 @@ export default function PaymentReceivedTable() {
           column={column}
           title="Customer"
           sortable={true}
-          filterOptions={customer}
+          // filterOptions={customer}
         />
       ),
       filterFn: (row, id, value) => {
@@ -320,7 +320,7 @@ export default function PaymentReceivedTable() {
           column={column}
           title="Method"
           sortable={true}
-          filterOptions={methodOfPayment}
+          // filterOptions={methodOfPayment}
         />
       ),
       filterFn: (row, id, value) => {
@@ -359,7 +359,7 @@ export default function PaymentReceivedTable() {
           column={column}
           title="Name"
           sortable={true}
-          filterOptions={name}
+          // filterOptions={name}
         />
       ),
       filterFn: (row, id, value) => {
@@ -373,7 +373,7 @@ export default function PaymentReceivedTable() {
           column={column}
           title="Amnt"
           sortable={true}
-          filterOptions={amount}
+          // filterOptions={amount}
         />
       ),
       filterFn: (row, id, value) => {

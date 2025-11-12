@@ -1,6 +1,6 @@
 "use client";
 
-import type { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef, SortingState } from "@tanstack/react-table";
 import { AdvancedDataTable } from "@/components/customUI/advanced-data-table";
 import { SortableHeader } from "@/components/customUI/sortable-header";
 import { Button } from "@/components/ui/button";
@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 import React from "react";
-import { InvoiceData, InvoiceTableInterface } from "@/lib/Invoice/invoice-data";
+import { InvoiceTableInterface } from "@/lib/Invoice/invoice-data";
 import { matchesSearchAllFields } from "@/lib/utils";
 import EditInvoice from "../view/edit-invoice";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -36,7 +36,7 @@ export default function InvoicesDataTable() {
     data: InvoiceData,
     isLoading,
     error: InvoiceDataError,
-  } = useGetInvoices();
+  } = useGetInvoices<InvoiceTableInterface[]>();
   console.log("InvoiceData",InvoiceData)
 
   return InvoiceData ? (
@@ -46,18 +46,27 @@ export default function InvoicesDataTable() {
   );
 }
 
-export function InvoicesTableLoader({ InvoiceData, isLoading }) {
+export function InvoicesTableLoader({ InvoiceData, isLoading }: { InvoiceData: InvoiceTableInterface[]; isLoading: boolean }) {
   const deleteApi = useDeleteInvoice();
   const confirmDialog = useConfirmDialog();
-  const [isServerMode, setIsServerMode] = useState(false);
-  // const [isLoading, setIsLoading] = useState(false);
-  const [currentData, setCurrentData] = useState(InvoiceData.slice(0, 5)); // Show first 5 for demo
-  const [paginationInfo, setPaginationInfo] = useState({
-    pageIndex: 0,
-    pageSize: 5,
-    totalPages: Math.ceil(InvoiceData.length / 5),
-    totalRows: InvoiceData.length,
-  });
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [search, setSearch] = useState("");
+  const [sorting, setSorting] = useState<SortingState>([]);
+
+  // For now, using client-side pagination until paginated API is available
+  // This structure matches the vendor table pattern
+  const serverRows = InvoiceData ?? [];
+  const currentPage = pageIndex + 1;
+  const totalPages = Math.ceil(serverRows.length / pageSize);
+  const totalRows = serverRows.length;
+
+  const paginationInfo = {
+    pageIndex: pageIndex,
+    pageSize: pageSize,
+    totalPages: totalPages,
+    totalRows: totalRows,
+  };
 
   const getAllEmployees = (
     employees: InvoiceTableInterface[]
@@ -72,7 +81,7 @@ export function InvoicesTableLoader({ InvoiceData, isLoading }) {
     return result;
   };
 
-  const flatEmployees = getAllEmployees(InvoiceData);
+  const flatEmployees = getAllEmployees(serverRows);
   const invoice_number = [
     ...new Set(flatEmployees.map((emp) => emp.invoice_number)),
   ];
@@ -164,72 +173,32 @@ export function InvoicesTableLoader({ InvoiceData, isLoading }) {
 
   // Server-side pagination handler
   const handlePaginationChange = (action: "next" | "previous" | number) => {
-    console.log(`🔄 Server Pagination Action: ${action}`);
+    if (action === "next") {
+      setPageIndex((p) => Math.min(p + 1, Math.max(0, paginationInfo.totalPages - 1)));
+    } else if (action === "previous") {
+      setPageIndex((p) => Math.max(p - 1, 0));
+    } else if (typeof action === "number") {
+      setPageIndex(action);
+    }
+  };
 
-    // setIsLoading(true);
-
-    // Simulate server delay
-    setTimeout(() => {
-      let newPageIndex = paginationInfo.pageIndex;
-
-      if (action === "next") {
-        newPageIndex = Math.min(
-          paginationInfo.pageIndex + 1,
-          paginationInfo.totalPages - 1
-        );
-      } else if (action === "previous") {
-        newPageIndex = Math.max(paginationInfo.pageIndex - 1, 0);
-      } else if (typeof action === "number") {
-        newPageIndex = action;
-      }
-
-      // Simulate fetching data for the new page
-      const startIndex = newPageIndex * paginationInfo.pageSize;
-      const endIndex = startIndex + paginationInfo.pageSize;
-      const newData = InvoiceData.slice(startIndex, endIndex);
-
-      setCurrentData(newData);
-      setPaginationInfo((prev) => ({
-        ...prev,
-        pageIndex: newPageIndex,
-      }));
-
-      // setIsLoading(false);
-    }, 1000); // 1 second delay to simulate server response
+  // Page size change handler
+  const handlePageSizeChange = (size: number) => {
+    setPageIndex(0);
+    setPageSize(size);
   };
 
   // Server-side search handler
-  const handleServerSearch = React.useCallback(
-    (searchid: string) => {
-      console.log(`🔍 Server Search: "${searchValue}"`);
+  const handleServerSearch = React.useCallback((value: string) => {
+    setPageIndex(0);
+    setSearch(value);
+  }, []);
 
-      // setIsLoading(true);
-
-      // Simulate server delay
-      setTimeout(() => {
-        let filteredData = InvoiceData;
-
-        if (searchValue.trim()) {
-          filteredData = InvoiceData.filter((emp) =>
-            matchesSearchAllFields(emp, searchValue.trim())
-          );
-        }
-
-        // Reset to first page and update data
-        const newData = filteredData.slice(0, paginationInfo.pageSize);
-        setCurrentData(newData);
-        setPaginationInfo((prev) => ({
-          ...prev,
-          pageIndex: 0,
-          totalPages: Math.ceil(filteredData.length / prev.pageSize),
-          totalRows: filteredData.length,
-        }));
-
-        // setIsLoading(false);
-      }, 800); // 800ms delay to simulate server response
-    },
-    [paginationInfo.pageSize]
-  ); // Add dependencies that actually matter
+  // Server-side sorting handler
+  const handleServerSortingChange = (next: SortingState) => {
+    setPageIndex(0);
+    setSorting(next);
+  };
 
   // Column definitions
   const columns: ColumnDef<InvoiceTableInterface>[] = [
@@ -381,17 +350,17 @@ export function InvoicesTableLoader({ InvoiceData, isLoading }) {
           { name: "Record Payment", onSelect: genericDropdown },
         ];
 
-        const formComponents = {
+        const formComponents: Record<string, React.ReactElement> = {
           "Record Payment": <ActualRecordPaymentForm />,
         };
         const renderFormContent = () => {
-          const SelectedComponent = formComponents[selectedProjectType || ""];
+          const SelectedComponent = selectedProjectType ? formComponents[selectedProjectType] : null;
           console.log("new selected", SelectedComponent);
           return SelectedComponent ? SelectedComponent : null;
         };
 
         const selectedType = dropdownItems.find(
-          (type) => type.label === selectedProjectType
+          (type) => type.name === selectedProjectType
         );
 
         return (
@@ -450,7 +419,7 @@ export function InvoicesTableLoader({ InvoiceData, isLoading }) {
               <SheetContent className="w-[700px]">
                 <SheetHeader>
                   <SheetTitle className="flex items-center gap-2">
-                    {selectedType?.label}
+                    {selectedType?.name}
                     {/* Receive Purchase Order */}
                   </SheetTitle>
                   <SheetDescription></SheetDescription>
@@ -491,11 +460,11 @@ export function InvoicesTableLoader({ InvoiceData, isLoading }) {
 
       <AdvancedDataTable
         columns={columns}
-        data={isServerMode ? currentData : InvoiceData}
+        data={serverRows}
         defaultVisibleColumns={[
           "invoice_number",
           "status",
-          "date",
+          "invoice_date",
           "due_date",
           "customer",
           "total",
@@ -509,11 +478,15 @@ export function InvoicesTableLoader({ InvoiceData, isLoading }) {
         onDeleteSelected={handleDeleteSelected}
         onPrintRow={handlePrintRow}
         storageKey="invoices-table-visibility"
-        // Server-side props
-        realServerPagination={isServerMode}
-        paginationInfo={isServerMode ? paginationInfo : undefined}
-        onPaginationChange={isServerMode ? handlePaginationChange : undefined}
-        onServerSearch={isServerMode ? handleServerSearch : undefined}
+        enableExpanding={false}
+        realServerPagination={true}
+        paginationInfo={paginationInfo}
+        onPaginationChange={handlePaginationChange}
+        onPageSizeChange={handlePageSizeChange}
+        pageSizeOptions={[10, 20, 30, 50]}
+        onServerSearch={handleServerSearch}
+        serverSorting={sorting}
+        onServerSortingChange={handleServerSortingChange}
         isLoading={isLoading}
       />
     </div>

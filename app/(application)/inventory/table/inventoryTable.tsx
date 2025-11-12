@@ -1,6 +1,6 @@
 "use client";
 
-import type { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef, SortingState } from "@tanstack/react-table";
 import { AdvancedDataTable } from "@/components/customUI/advanced-data-table";
 import { SortableHeader } from "@/components/customUI/sortable-header";
 import { Button } from "@/components/ui/button";
@@ -46,15 +46,25 @@ import { useConfirmDialog } from "@/lib/confirm-dialog";
 
 export  function InventoryDataLoader({ InventoryData, isLoading }) {
   const confirmDialog = useConfirmDialog();
-  const [isServerMode, setIsServerMode] = useState(false);
-   const deleteApi =useDeleteInventory();
-  const [currentData, setCurrentData] = useState(InventoryData.slice(0, 5)); // Show first 5 for demo
-  const [paginationInfo, setPaginationInfo] = useState({
-    pageIndex: 0,
-    pageSize: 5,
-    totalPages: Math.ceil(InventoryData.length / 5),
-    totalRows: InventoryData.length,
-  });
+  const deleteApi = useDeleteInventory();
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [search, setSearch] = useState("");
+  const [sorting, setSorting] = useState<SortingState>([]);
+
+  // For now, using client-side pagination until paginated API is available
+  // This structure matches the vendor table pattern
+  const serverRows = InventoryData ?? [];
+  const currentPage = pageIndex + 1;
+  const totalPages = Math.ceil(serverRows.length / pageSize);
+  const totalRows = serverRows.length;
+
+  const paginationInfo = {
+    pageIndex: pageIndex,
+    pageSize: pageSize,
+    totalPages: totalPages,
+    totalRows: totalRows,
+  };
 
   const getAllEmployees = (
   employees: InventoryTableInterface[]
@@ -69,7 +79,7 @@ export  function InventoryDataLoader({ InventoryData, isLoading }) {
   return result;
 };
 
-const flatEmployees = getAllEmployees(InventoryData);
+const flatEmployees = getAllEmployees(serverRows);
 
 const unit_cost = [
   ...new Set(flatEmployees.map((emp) => emp.unit_cost.toString())),
@@ -165,72 +175,32 @@ const quantity = [
 
   // Server-side pagination handler
   const handlePaginationChange = (action: "next" | "previous" | number) => {
-    console.log(`🔄 Server Pagination Action: ${action}`);
+    if (action === "next") {
+      setPageIndex((p) => Math.min(p + 1, Math.max(0, paginationInfo.totalPages - 1)));
+    } else if (action === "previous") {
+      setPageIndex((p) => Math.max(p - 1, 0));
+    } else if (typeof action === "number") {
+      setPageIndex(action);
+    }
+  };
 
-    // setIsLoading(true);
-
-    // Simulate server delay
-    setTimeout(() => {
-      let newPageIndex = paginationInfo.pageIndex;
-
-      if (action === "next") {
-        newPageIndex = Math.min(
-          paginationInfo.pageIndex + 1,
-          paginationInfo.totalPages - 1
-        );
-      } else if (action === "previous") {
-        newPageIndex = Math.max(paginationInfo.pageIndex - 1, 0);
-      } else if (typeof action === "number") {
-        newPageIndex = action;
-      }
-
-      // Simulate fetching data for the new page
-      const startIndex = newPageIndex * paginationInfo.pageSize;
-      const endIndex = startIndex + paginationInfo.pageSize;
-      const newData = InventoryData.slice(startIndex, endIndex);
-
-      setCurrentData(newData);
-      setPaginationInfo((prev) => ({
-        ...prev,
-        pageIndex: newPageIndex,
-      }));
-
-      // setIsLoading(false);
-    }, 1000); // 1 second delay to simulate server response
+  // Page size change handler
+  const handlePageSizeChange = (size: number) => {
+    setPageIndex(0);
+    setPageSize(size);
   };
 
   // Server-side search handler
-  const handleServerSearch = React.useCallback(
-    (searchid: string) => {
-      console.log(`🔍 Server Search: "${searchValue}"`);
+  const handleServerSearch = React.useCallback((value: string) => {
+    setPageIndex(0);
+    setSearch(value);
+  }, []);
 
-      // setIsLoading(true);
-
-      // Simulate server delay
-      setTimeout(() => {
-        let filteredData = InventoryData;
-
-        if (searchValue.trim()) {
-          filteredData = InventoryData.filter((emp) =>
-            matchesSearchAllFields(emp, searchValue.trim())
-          );
-        }
-
-        // Reset to first page and update data
-        const newData = filteredData.slice(0, paginationInfo.pageSize);
-        setCurrentData(newData);
-        setPaginationInfo((prev) => ({
-          ...prev,
-          pageIndex: 0,
-          totalPages: Math.ceil(filteredData.length / prev.pageSize),
-          totalRows: filteredData.length,
-        }));
-
-        // setIsLoading(false);
-      }, 800); // 800ms delay to simulate server response
-    },
-    [paginationInfo.pageSize]
-  ); // Add dependencies that actually matter
+  // Server-side sorting handler
+  const handleServerSortingChange = (next: SortingState) => {
+    setPageIndex(0);
+    setSorting(next);
+  };
 
   // Column definitions
   const columns: ColumnDef<InventoryTableInterface>[] = [
@@ -555,8 +525,8 @@ const quantity = [
 
       <AdvancedDataTable
         columns={columns}
-        data={isServerMode ? currentData : InventoryData}
-        defaultVisibleColumns={["number","name","category","vendor","quantity","unit_cost", "number",  "actions"]}
+        data={serverRows}
+        defaultVisibleColumns={["part_number","name","category","vendor","quantity","unit_cost", "number",  "actions"]}
         onRowClick={handleRowClick}
         onCellClick={handleCellClick}
         onPrintSelected={handlePrintSelected}
@@ -564,10 +534,15 @@ const quantity = [
         onDeleteSelected={handleDeleteSelected}
         onPrintRow={handlePrintRow}
         storageKey="inventory-table-visibility"
-        realServerPagination={isServerMode}
-        paginationInfo={isServerMode ? paginationInfo : undefined}
-        onPaginationChange={isServerMode ? handlePaginationChange : undefined}
-        onServerSearch={isServerMode ? handleServerSearch : undefined}
+        enableExpanding={false}
+        realServerPagination={true}
+        paginationInfo={paginationInfo}
+        onPaginationChange={handlePaginationChange}
+        onPageSizeChange={handlePageSizeChange}
+        pageSizeOptions={[10, 20, 30, 50]}
+        onServerSearch={handleServerSearch}
+        serverSorting={sorting}
+        onServerSortingChange={handleServerSortingChange}
         isLoading={isLoading}
       />
     </div>
