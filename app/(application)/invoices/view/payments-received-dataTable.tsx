@@ -40,13 +40,15 @@ const mapPaymentToEditForm = (payment: PaymentReceivedInterface) => {
     amount_received: payment.amount_received?.toString() || "",
     date_received: payment.date_received,
     payment_method_id: payment.payment_method_id,
-    cheque_number: payment.cheque_number || undefined,
-    credit_number: payment.credit_number || undefined,
-    name: payment.name || undefined,
-    expiration_month: payment.expiration_month || undefined,
-    expiration_year: payment.expiration_year || undefined,
-    transaction: payment.transaction || undefined,
-    other: payment.other || undefined,
+    metadata: {
+      cheque_number: payment.metadata?.cheque_number || undefined,
+      credit_number: payment.metadata?.credit_number || undefined,
+      name_on_card: payment.metadata?.name_on_card || undefined,
+      expiration_month: payment.metadata?.expiration_month || undefined,
+      expiration_year: payment.metadata?.expiration_year || undefined,
+      transaction: payment.metadata?.transaction || undefined,
+      other: payment.metadata?.other || undefined,
+    },
   };
 };
 
