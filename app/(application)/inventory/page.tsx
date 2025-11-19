@@ -10,34 +10,27 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useSheet } from "@/lib/sheet-providers";
 import InventoryDataTable from "./table/inventoryTable";
 import NewInventory from "@/components/forms/actualForms/new-inventory-form";
+import { useGetLocations } from "@/services/setups/vendor";
 
-const ActiveDropdown = [
-  {
-    name: "All",
-    id: "all",
-  },
-  {
-    name: "Low-Stock",
-    id: "low_stock",
-  },
-  {
-    name: "out",
-    id: "Out of Stock",
-  },
-  {
-    name: "out",
-    id: "PO Assigned",
-  },
+const FilterOptions = [
+  { name: "All Parts", id: "all" },
+  { name: "Low-Stock", id: "low_stock" },
+  { name: "Out of Stock", id: "out_of_stock" },
+  { name: "PO Assigned", id: "po_assigned" },
 ];
 
-export default function EmployeesPage() {
+export default function InventoryPage() {
+  const {
+    data: locationOptionsList,
+  } = useGetLocations<Array<{ id: string; name: string }>>();
+
   const [filters, setFilters] = useState({
-    equipment: "",
+    filterType: "all",
     location: "",
-    custom: "",
     search: "",
   });
 
@@ -47,8 +40,8 @@ export default function EmployeesPage() {
   const buildURL = (updatedFilters: typeof filters) => {
     const queryParams = new URLSearchParams();
 
-    if (updatedFilters.equipment) {
-      queryParams.set("filter_equipment", updatedFilters.equipment);
+    if (updatedFilters.filterType && updatedFilters.filterType !== "all") {
+      queryParams.set(updatedFilters.filterType, "1");
     }
 
     if (
@@ -62,26 +55,17 @@ export default function EmployeesPage() {
       queryParams.set("search", updatedFilters.search.trim());
     }
 
-    const url = `/equipment?${queryParams.toString()}`;
+    const url = `/inventory?${queryParams.toString()}`;
     console.log("Generated URL:", url);
-    // Use this URL to fetch or navigate
   };
 
   const handleSelectChange = (
-    key: "equipment" | "location" | "custom" | "search",
-    id: string
+    key: "filterType" | "location",
+    value: string
   ) => {
-    if (value === "new") {
-      console.log("Launching new location modal...");
-      return;
-    }
-
     const updated = { ...filters, [key]: value };
     setFilters(updated);
-
-    if (key !== "search") {
-      buildURL(updated);
-    }
+    buildURL(updated);
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -93,8 +77,7 @@ export default function EmployeesPage() {
     buildURL({ ...filters, search: debouncedSearch });
   }, [debouncedSearch]);
 
-  const createEquipment = () => {
-    console.log("ïn the function");
+  const createInventory = () => {
     openSheet({
       title: "Create Inventory",
       description: "Fill out the form below to create a new Inventory.",
@@ -111,25 +94,52 @@ export default function EmployeesPage() {
 
       <div className="flex justify-between items-center space-x-4">
         <div className="flex flex-row space-x-0.5">
-          {/* <Select onValueChange={(val) => handleSelectChange("equipment", val)}>
+          {/* Status Filter */}
+          <Select onValueChange={(val) => handleSelectChange("filterType", val)}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="All Parts" />
             </SelectTrigger>
             <SelectContent>
-              {ActiveDropdown.map((item) => (
+              {FilterOptions.map((item) => (
                 <SelectItem value={item.id} key={item.id}>
                   {item.name}
                 </SelectItem>
               ))}
             </SelectContent>
-          </Select> */}
+          </Select>
+
+          {/* Location Filter */}
+          <Select onValueChange={(val) => handleSelectChange("location", val)}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="All Warehouses" />
+            </SelectTrigger>
+            <SelectContent>
+              {locationOptionsList?.map((item) => (
+                <SelectItem value={item.id} key={item.id}>
+                  {item.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
+
         <div className="flex flex-row space-x-0.5">
-          <Button onClick={createEquipment}>New</Button>
+          {/* Search Input */}
+          <Input
+            type="text"
+            placeholder="Search ..."
+            className="w-[240px]"
+            value={filters.search}
+            onChange={handleSearchChange}
+          />
+          <Button onClick={createInventory}>New</Button>
         </div>
       </div>
       <div>
-        <InventoryDataTable />
+        <InventoryDataTable
+          locationId={filters.location || undefined}
+          filterType={filters.filterType === "all" ? undefined : filters.filterType}
+        />
       </div>
     </div>
   );

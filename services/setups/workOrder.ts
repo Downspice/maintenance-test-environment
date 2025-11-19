@@ -27,20 +27,20 @@ const useBaseMutation = <TResponse = TEntity, TPayload = TParams, TContext = unk
     mutationKey: string[],
     endpoint: (payload: TPayload) => string,
     method: 'post' | 'put' | 'delete',
-    invalidateKeys: (payload: TPayload) => unknown[], 
+    invalidateKeys: (payload: TPayload) => unknown[],
     options?: UseMutationOptions<TResponse, AxiosError<ApiError>, TPayload, TContext>
 ) => {
     const queryClient = useQueryClient();
 
     const mutationFn = async (payload: TPayload) => {
         const url = buildUrl(endpoint(payload));
-        
+
         const response = await dummyApiClient<ApiResponse<TResponse>>(url, {
             method: method,
-            data: (method === 'post' || method === 'put') ? payload : undefined, 
+            data: (method === 'post' || method === 'put') ? payload : undefined,
         });
-        
-        return response.data as TResponse; 
+
+        return response.data as TResponse;
     };
 
     return useMutation<TResponse, AxiosError<ApiError>, TPayload, TContext>({
@@ -97,6 +97,41 @@ export function useGetWorkOrder<TData = TEntity>(id: TId, options?: UseQueryOpti
         },
         select: (response) => response.data as TData,
         enabled: !!id,
+        ...options,
+    });
+}
+
+// Paginated work orders with server-side filters and search
+type WorkOrderQuery = {
+    search?: string;
+    location_id?: string;
+    status_id?: string;
+    size?: number; // page size
+    page?: number; // 1-based page index as required by API
+    sort_by?: string;
+    sort_order?: "asc" | "desc";
+};
+
+export function useGetWorkOrdersPaginated<TPaginated = any>(
+    query: WorkOrderQuery,
+    options?: UseQueryOptions<ApiResponse<TPaginated>, AxiosError<ApiError>, TPaginated>
+) {
+    return useQuery<ApiResponse<TPaginated>, AxiosError<ApiError>, TPaginated>({
+        queryKey: ["work-orders", query],
+        queryFn: async () => {
+            const params = new URLSearchParams();
+            if (query.search && query.search.trim()) params.set("search", query.search.trim());
+            if (query.location_id) params.set("location_id", query.location_id);
+            if (query.status_id) params.set("status_id", query.status_id);
+            if (typeof query.size === "number") params.set("size", String(query.size));
+            if (typeof query.page === "number") params.set("page", String(query.page));
+            if (query.sort_by) params.set("sort_by", query.sort_by);
+            if (query.sort_order) params.set("sort_order", query.sort_order);
+            const url = buildUrl(`/api/get-work-orders${params.toString() ? `?${params.toString()}` : ""}`);
+            const response = await dummyApiClient<ApiResponse<TPaginated>>(url);
+            return response;
+        },
+        select: (response) => response.data as TPaginated,
         ...options,
     });
 }

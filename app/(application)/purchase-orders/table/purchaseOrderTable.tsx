@@ -1,29 +1,23 @@
 "use client";
 
-import type { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef, SortingState } from "@tanstack/react-table";
 import { AdvancedDataTable } from "@/components/customUI/advanced-data-table";
 import { SortableHeader } from "@/components/customUI/sortable-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MoreHorizontal, Trash2, Printer, FilePenIcon } from "lucide-react";
+import { MoreHorizontal, Trash2, FilePenIcon } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuPortal,
   DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 import React from "react";
 import {
-  PurchaseOrderData,
   PurchaseOrderTableInterface,
-  PurchaseOrderItemInterface,
   PurchaseOrderItem,
 } from "@/lib/PurchaseOrder/purchaseOrder-data";
 import {
@@ -33,85 +27,74 @@ import {
   SheetDescription,
   Sheet,
 } from "@/components/ui/sheet";
-import { matchesSearchAllFields } from "@/lib/utils";
 import EditPurchaseOrderForm from "../views/edit-purchaseOrder";
 import ReceivePurchaseOrder from "../views/receive-purchase";
-import RepairRequestForm from "@/components/forms/actualForms/repair-request-form";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useGetPurchaseOrders } from "@/services/setups/purchaseOrder";
+import { useGetPurchaseOrdersPaginated } from "@/services/setups/purchaseOrder";
 import { useConfirmDialog } from "@/lib/confirm-dialog";
 import { toast } from "sonner";
+// import ViewPurchaseOrder from "../view/viewDetailsSheet";
 
-// Get unique values for filter options (including sub-rows)
-export default function PurchaseOrderDataTable() {
-  const {
-    data: PurchaseOrderData,
-    isLoading,
-    error: EmployeeDataError,
-  } = useGetPurchaseOrders();
-
-  return PurchaseOrderData ? (
-    <PurchaseOrderDataLoader
-      PurchaseOrderData={PurchaseOrderData}
-      isLoading={isLoading}
-    />
-  ) : (
-    <div>is loading.......</div>
-  );
+export default function PurchaseOrderDataTable({
+  locationId,
+  statusId,
+}: {
+  locationId?: string;
+  statusId?: string;
+}) {
+  return <PurchaseOrderDataLoader locationId={locationId} statusId={statusId} />;
 }
 
-export function PurchaseOrderDataLoader({ PurchaseOrderData, isLoading }) {
-  const [isServerMode, setIsServerMode] = useState(false);
+export function PurchaseOrderDataLoader({
+  locationId,
+  statusId,
+}: {
+  locationId?: string;
+  statusId?: string;
+}) {
   const confirmDialog = useConfirmDialog();
-  // const [isLoading, setIsLoading] = useState(false);
-  const [currentData, setCurrentData] = useState(PurchaseOrderData.slice(0, 5)); // Show first 5 for demo
-  const [paginationInfo, setPaginationInfo] = useState({
-    pageIndex: 0,
-    pageSize: 5,
-    totalPages: Math.ceil(PurchaseOrderData.length / 5),
-    totalRows: PurchaseOrderData.length,
-  });
+  const [pageIndex, setPageIndex] = useState(0); // 0-based for UI
+  const [pageSize, setPageSize] = useState(10);
+  const [search, setSearch] = useState("");
+  const [sorting, setSorting] = useState<SortingState>([]);
 
-  const getAllEmployees = (
-    employees: PurchaseOrderTableInterface[]
-  ): PurchaseOrderTableInterface[] => {
-    const result: PurchaseOrderTableInterface[] = [];
-    const traverse = (emps: PurchaseOrderTableInterface[]) => {
-      emps.forEach((emp) => {
-        result.push(emp);
-      });
-    };
-    traverse(employees);
-    return result;
+  const currentSort = sorting[0];
+  const mapColumnIdToSortBy = (id?: string): string | undefined => {
+    if (!id) return undefined;
+    if (id === "status.name") return "status";
+    if (id === "buyer_name") return "buyer";
+    return id;
   };
 
-  const flatEmployees = getAllEmployees(PurchaseOrderData);
-  const sequential_id = [...new Set(flatEmployees.map((emp) => emp.po_number))];
-  const status = [...new Set(flatEmployees.map((emp) => emp.status.name))];
-  const created_on = [...new Set(flatEmployees.map((emp) => emp.issued_date))];
-  const vendor_name = [...new Set(flatEmployees.map((emp) => emp.vendor))];
-  const required_on = [...new Set(flatEmployees.map((emp) => emp.due_date))];
-  const buyer_name = [
-    ...new Set(
-      flatEmployees.map(
-        (emp) =>
-          emp.buyer.last_name +
-          " " +
-          emp.buyer.first_name +
-          " " +
-          (emp.buyer.middle_name ?? "")
-      )
-    ),
-  ];
+  const { data: paged, isLoading } = useGetPurchaseOrdersPaginated<any>({
+    search: search || undefined,
+    location_id: locationId || undefined,
+    status_id: statusId || undefined,
+    size: pageSize,
+    page: pageIndex + 1, // API expects 1-based
+    sort_by: mapColumnIdToSortBy(currentSort?.id),
+    sort_order: currentSort ? (currentSort.desc ? "desc" : "asc") : undefined,
+  });
+
+  const serverRows = paged?.data ?? [];
+  const currentPage = paged?.current_page ? Number(paged.current_page) : pageIndex + 1;
+  const totalPages = paged?.last_page ? Number(paged.last_page) : 1;
+  const totalRows = paged?.total ? Number(paged.total) : serverRows.length;
+  const effectivePageSize = paged?.per_page ? Number(paged.per_page) : pageSize;
+
+  const paginationInfo = {
+    pageIndex: currentPage - 1,
+    pageSize: effectivePageSize,
+    totalPages: totalPages,
+    totalRows: totalRows,
+  };
 
   const handleRowClick = (row: any) => {
     console.log("Row clicked:", row.original);
-    // alert(`Row clicked: ${row.original.name} (Depth: ${row.depth})`);
   };
 
   const handleCellClick = (cell: any, row: any) => {
     console.log("Cell clicked:", cell.column.id, cell.getValue());
-    // alert(`Cell clicked: ${cell.column.id} = ${cell.getValue()}`);
   };
 
   const handlePrintSelected = (selectedRows: any[]) => {
@@ -139,41 +122,24 @@ export function PurchaseOrderDataLoader({ PurchaseOrderData, isLoading }) {
       title: "Delete selected purchase orders?",
       description: `This will delete ${selectedRows.length} PO(s). This action cannot be undone.`,
       confirmText: "Delete",
-    })
+    });
     if (ok) {
-      toast.success(`Deleted ${selectedRows.length} rows`)
+      toast.success(`Deleted ${selectedRows.length} rows`);
     }
   };
 
   const handlePrintRow = (row: any) => {
-    const employee = row.original;
     const printWindow = window.open("", "_blank");
     if (printWindow) {
-      const formattedSalary = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(employee.salary);
-
       printWindow.document.write(`
         <html>
           <head>
-            <title>Still in progress</title>
-            <style>
-              body { font-family: Arial, sans-serif; margin: 20px; }
-              .header { border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px; }
-              .field { margin-bottom: 10px; }
-              .label { font-weight: bold; display: inline-block; width: 120px; }
-              .status { padding: 4px 8px; border-radius: 4px; font-size: 12px; }
-              .status.active { background-color: #d4edda; color: #155724; }
-              .status.inactive { background-color: #f8d7da; color: #721c24; }
-              .status.pending { background-color: #fff3cd; color: #856404; }
-            </style>
+            <title>Print PO</title>
           </head>
           <body>
             <div class="header">
-              <h1>Still in progress/h1>
+              <h1>PO #${row.original.po_number}</h1>
             </div>
-             
             <script>window.print(); window.close();</script>
           </body>
         </html>
@@ -184,72 +150,32 @@ export function PurchaseOrderDataLoader({ PurchaseOrderData, isLoading }) {
 
   // Server-side pagination handler
   const handlePaginationChange = (action: "next" | "previous" | number) => {
-    console.log(`🔄 Server Pagination Action: ${action}`);
+    if (action === "next") {
+      setPageIndex((p) => Math.min(p + 1, Math.max(0, paginationInfo.totalPages - 1)));
+    } else if (action === "previous") {
+      setPageIndex((p) => Math.max(p - 1, 0));
+    } else if (typeof action === "number") {
+      setPageIndex(action);
+    }
+  };
 
-    // setIsLoading(true);
-
-    // Simulate server delay
-    setTimeout(() => {
-      let newPageIndex = paginationInfo.pageIndex;
-
-      if (action === "next") {
-        newPageIndex = Math.min(
-          paginationInfo.pageIndex + 1,
-          paginationInfo.totalPages - 1
-        );
-      } else if (action === "previous") {
-        newPageIndex = Math.max(paginationInfo.pageIndex - 1, 0);
-      } else if (typeof action === "number") {
-        newPageIndex = action;
-      }
-
-      // Simulate fetching data for the new page
-      const startIndex = newPageIndex * paginationInfo.pageSize;
-      const endIndex = startIndex + paginationInfo.pageSize;
-      const newData = PurchaseOrderData.slice(startIndex, endIndex);
-
-      setCurrentData(newData);
-      setPaginationInfo((prev) => ({
-        ...prev,
-        pageIndex: newPageIndex,
-      }));
-
-      // setIsLoading(false);
-    }, 1000); // 1 second delay to simulate server response
+  // Page size change handler: reset to first page to keep URL consistent
+  const handlePageSizeChange = (size: number) => {
+    setPageIndex(0);
+    setPageSize(size);
   };
 
   // Server-side search handler
-  const handleServerSearch = React.useCallback(
-    (searchid: string) => {
-      console.log(`🔍 Server Search: "${searchValue}"`);
+  const handleServerSearch = React.useCallback((value: string) => {
+    setPageIndex(0);
+    setSearch(value);
+  }, []);
 
-      // setIsLoading(true);
-
-      // Simulate server delay
-      setTimeout(() => {
-        let filteredData = PurchaseOrderData;
-
-        if (searchValue.trim()) {
-          filteredData = PurchaseOrderData.filter((emp) =>
-            matchesSearchAllFields(emp, searchValue.trim())
-          );
-        }
-
-        // Reset to first page and update data
-        const newData = filteredData.slice(0, paginationInfo.pageSize);
-        setCurrentData(newData);
-        setPaginationInfo((prev) => ({
-          ...prev,
-          pageIndex: 0,
-          totalPages: Math.ceil(filteredData.length / prev.pageSize),
-          totalRows: filteredData.length,
-        }));
-
-        // setIsLoading(false);
-      }, 800); // 800ms delay to simulate server response
-    },
-    [paginationInfo.pageSize]
-  ); // Add dependencies that actually matter
+  // Server-side sorting handler
+  const handleServerSortingChange = (next: SortingState) => {
+    setPageIndex(0);
+    setSorting(next);
+  };
 
   const getSubRows = (originalRow: PurchaseOrderTableInterface) => {
     return originalRow.items;
@@ -261,46 +187,41 @@ export function PurchaseOrderDataLoader({ PurchaseOrderData, isLoading }) {
     parentRow: any,
     depth: number
   ) => {
-    console.log("subRowData", subRowData);
     return (
       <div className="space-y-4">
         <div className="grid grid-cols-1  gap-4">
-          {" "}
           <Card>
-            {" "}
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm">Items Information</CardTitle>{" "}
-            </CardHeader>{" "}
+              <CardTitle className="text-sm">Items Information</CardTitle>
+            </CardHeader>
             <CardContent className=" grid grid-cols-6 space-y-2 text-sm">
-              {" "}
               <div className="col-span-1 ">
-                <span className="ml-2">{subRowData.item}</span>{" "}
-              </div>{" "}
+                <span className="ml-2">{subRowData.item}</span>
+              </div>
               <div className="col-span-1 ">
-                {" "}
-                <span className="ml-2  ">Qty: {subRowData.quantity} </span>{" "}
-              </div>{" "}
+                <span className="ml-2  ">Qty: {subRowData.quantity} </span>
+              </div>
               <div className="col-span-1 ">
                 <div className="ml-2 font-bold text-primary underline cursor-pointer">
                   Amount #{subRowData.amount}
-                </div>{" "}
-              </div>{" "}
+                </div>
+              </div>
               <div className="col-span-1 ">
                 <div className="ml-2 font-bold text-primary underline cursor-pointer">
                   Unit Cost :{subRowData.cost}
-                </div>{" "}
-              </div>{" "}
+                </div>
+              </div>
               <div className="col-span-1 ">
                 <div className="ml-2 font-bold text-primary underline cursor-pointer">
                   Extended Cost :{subRowData.extended_cost}
-                </div>{" "}
-              </div> 
+                </div>
+              </div>
               <div className="col-span-1 ">
                 <div className="ml-2 font-bold text-primary underline cursor-pointer">
                   #{subRowData.notes}
-                </div>{" "}
-              </div>{" "}
-            </CardContent>{" "}
+                </div>
+              </div>
+            </CardContent>
           </Card>
         </div>
       </div>
@@ -316,16 +237,20 @@ export function PurchaseOrderDataLoader({ PurchaseOrderData, isLoading }) {
           column={column}
           title="PO#"
           sortable={true}
-          filterOptions={sequential_id}
         />
       ),
       cell: ({ row }) => (
-        <div
-          className="font-bold text-primary flex flex-col"
-          style={{ paddingLeft: `${row.depth * 20}px` }}
-        >
-          <div>{row.original.po_number}</div>
-        </div>
+        // <ViewPurchaseOrder
+        //   children={
+            <div
+              className="font-bold text-primary flex flex-col cursor-pointer"
+              style={{ paddingLeft: `${row.depth * 20}px` }}
+            >
+              <div>{row.original.po_number}</div>
+            </div>
+        //   }
+        //   purchaseOrderId={row.original.id}
+        // />
       ),
     },
     {
@@ -335,7 +260,6 @@ export function PurchaseOrderDataLoader({ PurchaseOrderData, isLoading }) {
           column={column}
           title="Status"
           sortable={true}
-          filterOptions={status}
         />
       ),
     },
@@ -346,13 +270,9 @@ export function PurchaseOrderDataLoader({ PurchaseOrderData, isLoading }) {
           column={column}
           title="Issued On"
           sortable={true}
-          filterOptions={created_on}
         />
       ),
       cell: ({ row }) => <>{row.original.issued_date}</>,
-      filterFn: (row, id, value) => {
-        return value.length === 0 || value.includes(row.getValue(id));
-      },
     },
     {
       accessorKey: "due_date",
@@ -361,12 +281,8 @@ export function PurchaseOrderDataLoader({ PurchaseOrderData, isLoading }) {
           column={column}
           title="Due"
           sortable={true}
-          filterOptions={[required_on as unknown as string]}
         />
       ),
-      filterFn: (row, id, value) => {
-        return value.length === 0 || value.includes(row.getValue(id));
-      },
       cell: ({ row }) => <>{row.original.due_date}</>,
     },
     {
@@ -376,13 +292,9 @@ export function PurchaseOrderDataLoader({ PurchaseOrderData, isLoading }) {
           column={column}
           title="Vendor"
           sortable={true}
-          filterOptions={vendor_name as string[]}
         />
       ),
       cell: ({ row }) => <>{row.original.vendor}</>,
-      filterFn: (row, id, value) => {
-        return value.length === 0 || value.includes(row.getValue(id));
-      },
     },
     {
       accessorKey: "buyer_name",
@@ -391,12 +303,10 @@ export function PurchaseOrderDataLoader({ PurchaseOrderData, isLoading }) {
           column={column}
           title="Buyer"
           sortable={true}
-          filterOptions={buyer_name}
         />
       ),
       cell: ({ row }) => (
         <>
-          {" "}
           {row.original.buyer.last_name +
             " " +
             row.original.buyer.first_name +
@@ -414,28 +324,28 @@ export function PurchaseOrderDataLoader({ PurchaseOrderData, isLoading }) {
           (async () => {
             const ok = await confirmDialog({
               title: "Delete purchase order?",
-              description: `Are you sure you want to delete ${row.original.purchaseOrderNumber}?`,
+              description: `Are you sure you want to delete ${row.original.po_number}?`,
               confirmText: "Delete",
-            })
+            });
             if (ok) {
-              toast.success(`Deleted ${row.original.purchaseOrderNumber}`)
+              toast.success(`Deleted ${row.original.po_number}`);
             }
-          })()
+          })();
         };
 
         const handleCloseRow = (row: any) => {
-          console.log("Delete row:", row.original);
+          console.log("Close row:", row.original);
           (async () => {
             const ok = await confirmDialog({
               title: "Close purchase order?",
-              description: `Are you sure you want to close PO #${row.original.purchaseOrderNumber}?`,
+              description: `Are you sure you want to close PO #${row.original.po_number}?`,
               confirmText: "Close",
               variant: "default",
-            })
+            });
             if (ok) {
-              toast.success(`PO #${row.original.purchaseOrderNumber} closed`)
+              toast.success(`PO #${row.original.po_number} closed`);
             }
-          })()
+          })();
         };
         const [open, setOpen] = useState(false);
         const [selectedProjectType, setSelectedProjectType] = useState<
@@ -457,9 +367,7 @@ export function PurchaseOrderDataLoader({ PurchaseOrderData, isLoading }) {
           console.log("new selected", SelectedComponent);
           return SelectedComponent ? SelectedComponent : null;
         };
-        const selectedType = dropdownItems.find(
-          (type) => type.label === selectedProjectType
-        );
+
         return (
           <div className="flex flex-row gap-2 justify-between ">
             <EditPurchaseOrderForm
@@ -478,7 +386,6 @@ export function PurchaseOrderDataLoader({ PurchaseOrderData, isLoading }) {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-68 " align="start">
-                {/* <DropdownMenuLabel>My Account</DropdownMenuLabel> */}
                 <DropdownMenuGroup>
                   {dropdownItems.map((item) => (
                     <DropdownMenuItem
@@ -492,11 +399,9 @@ export function PurchaseOrderDataLoader({ PurchaseOrderData, isLoading }) {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>
                     Email
-                    {/* <DropdownMenuShortcut>⌘B</DropdownMenuShortcut> */}
                   </DropdownMenuItem>
                   <DropdownMenuItem>
                     Print
-                    {/* <DropdownMenuShortcut>⌘S</DropdownMenuShortcut> */}
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
@@ -506,7 +411,6 @@ export function PurchaseOrderDataLoader({ PurchaseOrderData, isLoading }) {
                     handleCloseRow(row);
                   }}
                 >
-                  {" "}
                   Change Status (Closed)
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
@@ -526,12 +430,9 @@ export function PurchaseOrderDataLoader({ PurchaseOrderData, isLoading }) {
               <SheetContent className="w-[400px] sm:w-2/3">
                 <SheetHeader>
                   <SheetTitle className="flex items-center gap-2">
-                    {/* {selectedType && <selectedType.icon className="h-5 w-5" />} */}
                     Receive Purchase Order
                   </SheetTitle>
                   <SheetDescription>
-                    {/* {selectedType?.label ||
-                "Fill out the form below to set up your new development project."} */}
                   </SheetDescription>
                 </SheetHeader>
 
@@ -550,33 +451,15 @@ export function PurchaseOrderDataLoader({ PurchaseOrderData, isLoading }) {
 
   return (
     <div className="">
-      {/* <div className="mb-8">
-         
-
-        <div className="flex items-center gap-4 mb-4">
-          <Button
-            variant={isServerMode ? "default" : "outline"}
-            onClick={() => setIsServerMode(!isServerMode)}
-          >
-            {isServerMode ? "Server Mode ON" : "Client Mode ON"}
-          </Button>
-          {isServerMode && (
-            <Badge variant="secondary">
-              Page {paginationInfo.pageIndex + 1} of {paginationInfo.totalPages}
-            </Badge>
-          )}
-        </div>
-      </div> */}
-
       <AdvancedDataTable
         columns={columns}
-        data={isServerMode ? currentData : PurchaseOrderData}
+        data={serverRows}
         defaultVisibleColumns={[
-          "id",
-          "status",
-          "created_on",
-          "required_on",
-          "vendor_name",
+          "po_number",
+          "status.name",
+          "issued_date",
+          "due_date",
+          "vendor",
           "buyer_name",
           "actions",
         ]}
@@ -593,10 +476,14 @@ export function PurchaseOrderDataLoader({ PurchaseOrderData, isLoading }) {
         renderSubRow={renderSubRow}
         subRowKey="items"
         // Server-side props
-        realServerPagination={isServerMode}
-        paginationInfo={isServerMode ? paginationInfo : undefined}
-        onPaginationChange={isServerMode ? handlePaginationChange : undefined}
-        onServerSearch={isServerMode ? handleServerSearch : undefined}
+        realServerPagination={true}
+        paginationInfo={paginationInfo}
+        onPaginationChange={handlePaginationChange}
+        onPageSizeChange={handlePageSizeChange}
+        pageSizeOptions={[10, 20, 30, 50]}
+        onServerSearch={handleServerSearch}
+        serverSorting={sorting}
+        onServerSortingChange={handleServerSortingChange}
         isLoading={isLoading}
       />
     </div>

@@ -10,9 +10,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useSheet } from "@/lib/sheet-providers";
 import PurchaseOrderDataTable from "./table/purchaseOrderTable";
-import { dateFilterOptionsList,  } from "@/lib/option-list";
+import { dateFilterOptionsList } from "@/lib/option-list";
 import NewPurchaseOrderForm from "@/components/forms/actualForms/new-purchase-order-form";
 import { useGetLocations } from "@/services/setups/vendor";
 
@@ -25,14 +26,15 @@ const ActiveDropdown = [
   { name: "All", id: "all" },
 ];
 
-export default function EmployeesPage() {
-    const {
-        data: locationOptionsList,
-        isLoading: locationOptionsListLoading,
-        error: locationOptionsListError,
-      } = useGetLocations<Array<{ id: string; name: string }>>();
+export default function PurchaseOrdersPage() {
+  const {
+    data: locationOptionsList,
+    isLoading: locationOptionsListLoading,
+    error: locationOptionsListError,
+  } = useGetLocations<Array<{ id: string; name: string }>>();
+
   const [filters, setFilters] = useState({
-    equipment: "",
+    status: "",
     location: "",
     custom: "",
     search: "",
@@ -44,8 +46,8 @@ export default function EmployeesPage() {
   const buildURL = (updatedFilters: typeof filters) => {
     const queryParams = new URLSearchParams();
 
-    if (updatedFilters.equipment) {
-      queryParams.set("filter_equipment", updatedFilters.equipment);
+    if (updatedFilters.status && updatedFilters.status !== "all") {
+      queryParams.set("status_id", updatedFilters.status);
     }
 
     if (
@@ -59,26 +61,18 @@ export default function EmployeesPage() {
       queryParams.set("search", updatedFilters.search.trim());
     }
 
-    const url = `/equipment?${queryParams.toString()}`;
+    const url = `/purchase-orders?${queryParams.toString()}`;
     console.log("Generated URL:", url);
-    // Use this URL to fetch or navigate
+    // In a real app, you might use router.push(url) here to update the URL
   };
 
   const handleSelectChange = (
-    key: "equipment" | "location" | "custom"|"search",
-    id: string
+    key: "status" | "location" | "custom",
+    value: string
   ) => {
-    if (value === "new") {
-      console.log("Launching new location modal...");
-      return;
-    }
-
     const updated = { ...filters, [key]: value };
     setFilters(updated);
-
-    if (key !== "search") {
-      buildURL(updated);
-    }
+    buildURL(updated);
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -90,8 +84,7 @@ export default function EmployeesPage() {
     buildURL({ ...filters, search: debouncedSearch });
   }, [debouncedSearch]);
 
-  const createEquipment = () => {
-    console.log("ïn the function");
+  const createPurchaseOrder = () => {
     openSheet({
       title: "Create Purchase Order",
       description: "Fill out the form below to create a new Purchase Order.",
@@ -107,13 +100,12 @@ export default function EmployeesPage() {
       </div>
 
       <div className="flex justify-between items-center space-x-4">
-        {/* Equipment Filter */}
-
+        {/* Filters */}
         <div className="flex flex-row space-x-0.5">
-          {/* Location Filter */}
-          <Select onValueChange={(val) => handleSelectChange("equipment", val)}>
+          {/* Status Filter */}
+          <Select onValueChange={(val) => handleSelectChange("status", val)}>
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="All" />
+              <SelectValue placeholder="All Statuses" />
             </SelectTrigger>
             <SelectContent>
               {ActiveDropdown.map((item) => (
@@ -124,6 +116,7 @@ export default function EmployeesPage() {
             </SelectContent>
           </Select>
 
+          {/* Location Filter */}
           <Select onValueChange={(val) => handleSelectChange("location", val)}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="All Warehouses" />
@@ -137,7 +130,7 @@ export default function EmployeesPage() {
             </SelectContent>
           </Select>
 
-          {/* New Location Trigger */}
+          {/* Date Filter (Custom) */}
           <Select onValueChange={(val) => handleSelectChange("custom", val)}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="All Dates" />
@@ -151,21 +144,24 @@ export default function EmployeesPage() {
             </SelectContent>
           </Select>
         </div>
+
         <div className="flex flex-row space-x-0.5">
-          {/* Search Input
+          {/* Search Input */}
           <Input
             type="text"
             placeholder="Search ..."
             className="w-[240px]"
             value={filters.search}
             onChange={handleSearchChange}
-          /> */}
-          <Button onClick={createEquipment}>New</Button>
+          />
+          <Button onClick={createPurchaseOrder}>New</Button>
         </div>
       </div>
       <div>
-        {/* <PurchaseOrderPageDataTable /> */}
-        <PurchaseOrderDataTable />
+        <PurchaseOrderDataTable
+          locationId={filters.location || undefined}
+          statusId={filters.status === "all" ? undefined : filters.status || undefined}
+        />
       </div>
     </div>
   );

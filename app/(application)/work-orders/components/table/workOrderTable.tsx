@@ -35,24 +35,20 @@ import {
 import { useState } from "react";
 import React from "react";
 import {
-  mockWorkOrders,
-  WorkOrderInterface,
-} from "@/lib/WorkOrder/workOrder-data";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+  } from "@/components/ui/tooltip";
 import { Progress } from "@/components/ui/progress";
 import { useConfirmDialog } from "@/lib/confirm-dialog";
 import { toast } from "sonner";
-import { matchesSearchAllFields } from "@/lib/utils";
 import EditWorkOrderForm from "../../view/edit-work-order";
 import ChangePriorityForm from "../../forms/change-priority";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import ChangeAssigneesForm from "../../forms/change-assignee";
 import ChangeCostCenterForm from "../../forms/change-cost-center";
+import { useGetWorkOrdersPaginated } from "@/services/setups/workOrder";
 
 const getStatusColor = (status: string) => {
   switch (status.toLowerCase()) {
@@ -97,43 +93,65 @@ const getAllEmployees = (
   return result;
 };
 
-const flatEmployees = getAllEmployees(mockWorkOrders);
-const number = [...new Set(flatEmployees.map((emp) => emp.workOrderNumber))];
-const equipment = [...new Set(flatEmployees.map((emp) => emp.equipment))];
-const status = [...new Set(flatEmployees.map((emp) => emp.status ?? ""))];
-const dueDate = [
-  ...new Set(flatEmployees.map((emp) => emp.dueOn?.toUTCString())),
-];
-const assignees = [
-  ...new Set(flatEmployees.map((emp) => emp?.assigneeIds?.toString() ?? "")),
-];
-// const progress = [
-//   ...new Set(flatEmployees.map((emp) => emp.progress.completed.toString())),
-// ];
-const total = [
-  ...new Set(flatEmployees.map((emp) => emp.workOrderTotal ?? "")),
-];
+export default function WorkOrderDataTable({
+  locationId,
+  statusId,
+}: {
+  locationId?: string;
+  statusId?: string;
+}) {
+  return <WorkOrderDataLoader locationId={locationId} statusId={statusId} />;
+}
 
-export default function WorkOrderDataTable() {
-  const [isServerMode, setIsServerMode] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+export function WorkOrderDataLoader({
+  locationId,
+  statusId,
+}: {
+  locationId?: string;
+  statusId?: string;
+}) {
   const confirmDialog = useConfirmDialog();
-  const [currentData, setCurrentData] = useState(mockWorkOrders.slice(0, 5)); // Show first 5 for demo
-  const [paginationInfo, setPaginationInfo] = useState({
-    pageIndex: 0,
-    pageSize: 5,
-    totalPages: Math.ceil(mockWorkOrders.length / 5),
-    totalRows: mockWorkOrders.length,
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [search, setSearch] = useState("");
+  const [sorting, setSorting] = useState<SortingState>([]);
+
+  const currentSort = sorting[0];
+  const mapColumnIdToSortBy = (id?: string): string | undefined => {
+    if (!id) return undefined;
+    if (id === "wo_number") return "work_order_number";
+    return id;
+  };
+
+  const { data: paged, isLoading } = useGetWorkOrdersPaginated<any>({
+    search: search || undefined,
+    location_id: locationId || undefined,
+    status_id: statusId || undefined,
+    size: pageSize,
+    page: pageIndex + 1, // API expects 1-based
+    sort_by: mapColumnIdToSortBy(currentSort?.id),
+    sort_order: currentSort ? (currentSort.desc ? "desc" : "asc") : undefined,
   });
+
+  const serverRows = paged?.data ?? [];
+  const currentPage = paged?.current_page ? Number(paged.current_page) : pageIndex + 1;
+  const totalPages = paged?.last_page ? Number(paged.last_page) : 1;
+  const totalRows = paged?.total ? Number(paged.total) : serverRows.length;
+  const effectivePageSize = paged?.per_page ? Number(paged.per_page) : pageSize;
+
+  const paginationInfo = {
+    pageIndex: currentPage - 1,
+    pageSize: effectivePageSize,
+    totalPages: totalPages,
+    totalRows: totalRows,
+  };
 
   const handleRowClick = (row: any) => {
     console.log("Row clicked:", row.original);
-    // alert(`Row clicked: ${row.original.name} (Depth: ${row.depth})`);
   };
 
   const handleCellClick = (cell: any, row: any) => {
     console.log("Cell clicked:", cell.column.id, cell.getValue());
-    // alert(`Cell clicked: ${cell.column.id} = ${cell.getValue()}`);
   };
 
   const handlePrintSelected = (selectedRows: any[]) => {
@@ -171,11 +189,6 @@ export default function WorkOrderDataTable() {
     const employee = row.original;
     const printWindow = window.open("", "_blank");
     if (printWindow) {
-      const formattedSalary = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(employee.salary);
-
       printWindow.document.write(`
         <html>
           <head>
@@ -205,89 +218,48 @@ export default function WorkOrderDataTable() {
 
   // Server-side pagination handler
   const handlePaginationChange = (action: "next" | "previous" | number) => {
-    console.log(`🔄 Server Pagination Action: ${action}`);
+    if (action === "next") {
+      setPageIndex((p) => Math.min(p + 1, Math.max(0, paginationInfo.totalPages - 1)));
+    } else if (action === "previous") {
+      setPageIndex((p) => Math.max(p - 1, 0));
+    } else if (typeof action === "number") {
+      setPageIndex(action);
+    }
+  };
 
-    setIsLoading(true);
-
-    // Simulate server delay
-    setTimeout(() => {
-      let newPageIndex = paginationInfo.pageIndex;
-
-      if (action === "next") {
-        newPageIndex = Math.min(
-          paginationInfo.pageIndex + 1,
-          paginationInfo.totalPages - 1
-        );
-      } else if (action === "previous") {
-        newPageIndex = Math.max(paginationInfo.pageIndex - 1, 0);
-      } else if (typeof action === "number") {
-        newPageIndex = action;
-      }
-
-      // Simulate fetching data for the new page
-      const startIndex = newPageIndex * paginationInfo.pageSize;
-      const endIndex = startIndex + paginationInfo.pageSize;
-      const newData = mockWorkOrders.slice(startIndex, endIndex);
-
-      setCurrentData(newData);
-      setPaginationInfo((prev) => ({
-        ...prev,
-        pageIndex: newPageIndex,
-      }));
-
-      setIsLoading(false);
-    }, 1000); // 1 second delay to simulate server response
+  // Page size change handler
+  const handlePageSizeChange = (size: number) => {
+    setPageIndex(0);
+    setPageSize(size);
   };
 
   // Server-side search handler
-  const handleServerSearch = React.useCallback(
-    (searchid: string) => {
-      console.log(`🔍 Server Search: "${searchValue}"`);
+  const handleServerSearch = React.useCallback((value: string) => {
+    setPageIndex(0);
+    setSearch(value);
+  }, []);
 
-      setIsLoading(true);
-
-      // Simulate server delay
-      setTimeout(() => {
-        let filteredData = mockWorkOrders;
-
-        if (searchValue.trim()) {
-          filteredData = mockWorkOrders.filter((emp) =>
-            matchesSearchAllFields(emp, searchValue.trim())
-          );
-        }
-
-        // Reset to first page and update data
-        const newData = filteredData.slice(0, paginationInfo.pageSize);
-        setCurrentData(newData);
-        setPaginationInfo((prev) => ({
-          ...prev,
-          pageIndex: 0,
-          totalPages: Math.ceil(filteredData.length / prev.pageSize),
-          totalRows: filteredData.length,
-        }));
-
-        setIsLoading(false);
-      }, 800); // 800ms delay to simulate server response
-    },
-    [paginationInfo.pageSize]
-  ); // Add dependencies that actually matter
+  // Server-side sorting handler
+  const handleServerSortingChange = (next: SortingState) => {
+    setPageIndex(0);
+    setSorting(next);
+  };
 
   // Column definitions
   const columns: ColumnDef<WorkOrderInterface>[] = [
     {
-      accessorKey: "workOrderNumber",
+      accessorKey: "wo_number",
       header: ({ column }) => (
         <SortableHeader
           column={column}
           title="WO#"
           sortable={true}
-          filterOptions={number}
         />
       ),
       cell: ({ row }) => (
         <div className="font-medium text-primary flex flex-col">
           {" "}
-          {row.getValue("workOrderNumber")}
+          {row.getValue("wo_number")}
         </div>
       ),
     },
@@ -298,7 +270,6 @@ export default function WorkOrderDataTable() {
           column={column}
           title="Unit#"
           sortable={true}
-          filterOptions={equipment}
         />
       ),
       cell: ({ row }) => (
@@ -316,42 +287,33 @@ export default function WorkOrderDataTable() {
           column={column}
           title="Status"
           sortable={true}
-          filterOptions={status}
         />
       ),
       cell: ({ row }) => (
         <>
-          <Badge className={`text-xs ${getStatusColor(row.original.status)}`}>
-            {row.original.status?.toUpperCase()}
+          <Badge className={`text-xs ${getStatusColor(row.original.status_name)}`}>
+            {row.original.status_name?.toUpperCase()}
           </Badge>
         </>
       ),
-      filterFn: (row, id, value) => {
-        return value.length === 0 || value.includes(row.getValue(id));
-      },
     },
     {
-      accessorKey: "dueOn",
+      accessorKey: "due_date",
       header: ({ column }) => (
         <SortableHeader
           column={column}
           title="Due Date"
           sortable={true}
-          filterOptions={dueDate}
         />
       ),
       cell: ({ row }) => (
         <>
           <div className="flex  text-destructive items-center gap-1 text-sm">
             <Calendar className="h-3 w-3 text-destructive" />
-            {row.original.dueOn?.toUTCString()}
+            {row.original.due_date?.toUTCString()}
           </div>
         </>
       ),
-
-      filterFn: (row, id, value) => {
-        return value.length === 0 || value.includes(row.getValue(id));
-      },
     },
     {
       accessorKey: "assignees",
@@ -360,7 +322,6 @@ export default function WorkOrderDataTable() {
           column={column}
           title="Assigned to"
           sortable={true}
-          filterOptions={assignees}
         />
       ),
       cell: ({ row }) => {
@@ -368,64 +329,13 @@ export default function WorkOrderDataTable() {
           <div className="space-y-1">
             {row.original.assigneeIds?.map((assignee, index) => (
               <div key={assignee} className="flex items-center gap-1 text-sm">
-                {/* {assignee.type === "employee" ? (
-                  <Users className="h-3 w-3 text-green-600" />
-                ) : (
-                  <Users className="h-3 w-3 text-purple-600" />
-                )}
-                <span
-                  className={
-                    assignee.type === "employee"
-                      ? "text-green-700"
-                      : "text-purple-700"
-                  }
-                > */}
                 {assignee}
-                {/* </span> */}
               </div>
             ))}
           </div>
         );
       },
-      filterFn: (row, id, value) => {
-        return value.length === 0 || value.includes(row.getValue(id));
-      },
     },
-    // {
-    //   accessorKey: "progress",
-    //   header: ({ column }) => (
-    //     <SortableHeader
-    //       column={column}
-    //       title="Due status"
-    //       sortable={true}
-    //     />
-    //   ),
-    //   cell: ({ row }) => {
-    //     const progressPercentage =
-    //       (row.original.progress.completed / row.original.progress.total) * 100;
-
-    //     return (
-    //       <TooltipProvider>
-    //         <Tooltip>
-    //           <TooltipTrigger asChild>
-    //             <div className="space-y-1 cursor-help">
-    //               <div className="flex items-center gap-2">
-    //                 <Progress value={progressPercentage} className="w-20 h-2" />
-    //                 <span className="text-xs text-muted-foreground">
-    //                   {row.original.progress.completed}/
-    //                   {row.original.progress.total}
-    //                 </span>
-    //               </div>
-    //             </div>
-    //           </TooltipTrigger>
-    //           <TooltipContent side="top" className="max-w-sm">
-    //             <TaskTooltipContent tasks={row.original.tasks} />
-    //           </TooltipContent>
-    //         </Tooltip>
-    //       </TooltipProvider>
-    //     );
-    //   },
-    // },
     {
       accessorKey: "total",
       header: ({ column }) => (
@@ -433,7 +343,6 @@ export default function WorkOrderDataTable() {
           column={column}
           title="Total"
           sortable={true}
-          filterOptions={total}
         />
       ),
       cell: ({ row }) => (
@@ -443,10 +352,6 @@ export default function WorkOrderDataTable() {
           </div>
         </>
       ),
-
-      filterFn: (row, id, value) => {
-        return value.length === 0 || value.includes(row.getValue(id));
-      },
     },
     {
       id: "actions",
@@ -457,11 +362,11 @@ export default function WorkOrderDataTable() {
           (async () => {
             const ok = await confirmDialog({
               title: "Delete work order?",
-              description: `Are you sure you want to delete ${row.original.workOrderNumber}?`,
+              description: `Are you sure you want to delete ${row.original.wo_number}?`,
               confirmText: "Delete",
             })
             if (ok) {
-              toast.success(`Deleted ${row.original.workOrderNumber}`)
+              toast.success(`Deleted ${row.original.wo_number}`)
             }
           })()
         };
@@ -606,9 +511,9 @@ export default function WorkOrderDataTable() {
     <div className="">
       <AdvancedDataTable
         columns={columns}
-        data={isServerMode ? currentData : mockWorkOrders}
+        data={serverRows}
         defaultVisibleColumns={[
-          "workOrderNumber",
+          "wo_number",
           "equipment",
           "status",
           "dueOn",
@@ -623,10 +528,14 @@ export default function WorkOrderDataTable() {
         onDeleteSelected={handleDeleteSelected}
         onPrintRow={handlePrintRow}
         storageKey="work-order-table-visibility"
-        realServerPagination={isServerMode}
-        paginationInfo={isServerMode ? paginationInfo : undefined}
-        onPaginationChange={isServerMode ? handlePaginationChange : undefined}
-        onServerSearch={isServerMode ? handleServerSearch : undefined}
+        realServerPagination={true}
+        paginationInfo={paginationInfo}
+        onPaginationChange={handlePaginationChange}
+        onPageSizeChange={handlePageSizeChange}
+        pageSizeOptions={[10, 20, 30, 50]}
+        onServerSearch={handleServerSearch}
+        serverSorting={sorting}
+        onServerSortingChange={handleServerSortingChange}
         isLoading={isLoading}
       />
     </div>

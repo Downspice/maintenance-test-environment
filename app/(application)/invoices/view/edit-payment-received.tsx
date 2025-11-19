@@ -25,17 +25,22 @@ import { useGetPaymentMethods, useGetInvoices } from "@/services/setups/invoice"
 import { convertToOptionList } from "@/lib/utils";
 
 const paymentSchema = z.object({
+  id: z.string().optional(),
   invoice_number: z.string(),
-  amount: z.string(),
-  date: z.string(),
-  paymentMethod: z.string(),
-  chequeNumber: z.string().optional(),
-  creditNumber: z.string().optional(),
-  name: z.string().optional(),
-  expirationMonth: z.string().optional(),
-  expirationYear: z.string().optional(),
-  transaction: z.string().optional(),
-  other: z.string().optional(),
+  date_received: z.date().optional(),
+  amount_received: z.coerce.string().optional(),
+  payment_method_id: z.string(),
+  metadata: z
+    .object({
+      cheque_number: z.string().optional(),
+      credit_number: z.string().optional(),
+      name_on_card: z.string().optional(),
+      expiration_month: z.string().optional(),
+      expiration_year: z.string().optional(),
+      transaction: z.string().optional(),
+      other: z.string().optional(),
+    })
+    .optional(),
 });
 
 type PaymentFormValues = z.infer<typeof paymentSchema>;
@@ -59,7 +64,7 @@ export default function EditPaymentReceived({
     resolver: zodResolver(paymentSchema),
     defaultValues: { ...data },
   });
-  const paymentMethodWatch = PaymentsForm.watch("paymentMethod");
+  const paymentMethodWatch = PaymentsForm.watch("payment_method_id");
 
   async function handleSubmit(data: PaymentFormValues) {
     console.log(data);
@@ -89,20 +94,20 @@ export default function EditPaymentReceived({
                     className="col-span-1"
                     control={PaymentsForm.control}
                     name="invoice_number"
-                    label="InvoiceNumber"
+                    label="Invoice Number"
                     options={invoiceOptionsList}
                     disabled
                   />
                   <InputWrapper
-                    name="amount"
+                    name="amount_received"
                     type="number"
                     label="Amount Received"
                     control={PaymentsForm.control}
                     value={""}
                   />
                   <DatePickerWrapper
-                    name="date"
-                    label="Date"
+                    name="date_received"
+                    label="Date Received"
                     control={PaymentsForm.control}
                   />
                   <Fieldset
@@ -114,26 +119,26 @@ export default function EditPaymentReceived({
                           label="Payment Method"
                           options={invoicePaymentMethodOptionsList ?? []}
                         />
-                        {paymentMethodWatch === "Cheque" && (
+                        {paymentMethodWatch === "9c9dc3d7-dede-42d5-bb22-aab2b82a3a63" && (
                           <InputWrapper
-                            name="chequeNumber"
+                            name="metadata.cheque_number"
                             type="text"
                             label="Cheque #"
                             control={PaymentsForm.control}
                             value={""}
                           />
                         )}
-                        {paymentMethodWatch === "Credit Card" && (
+                        {paymentMethodWatch === "3b5caa3b-376e-44b4-a6a6-22a7026ae925" && (
                           <>
                             <InputWrapper
-                              name="creditNumber"
+                              name="metadata.credit_number"
                               type="text"
                               label="Credit #"
                               control={PaymentsForm.control}
                               value={""}
                             />
                             <InputWrapper
-                              name="name"
+                              name="metadata.name_on_card"
                               type="text"
                               label="Name on Card"
                               control={PaymentsForm.control}
@@ -142,7 +147,7 @@ export default function EditPaymentReceived({
                             <div className="grid grid-cols-2 gap-x-2">
                               <div className="col-span-1 flex flex-col">
                                 <InputWrapper
-                                  name="expirationMonth"
+                                  name="metadata.expiration_month"
                                   type="text"
                                   label="Expiration month"
                                   control={PaymentsForm.control}
@@ -151,16 +156,16 @@ export default function EditPaymentReceived({
                               </div>
                               <div className="col-span-1 flex flex-col">
                                 <InputWrapper
-                                  name="expirationMonth"
+                                  name="metadata.expiration_year"
                                   type="text"
-                                  label="Expiration month"
+                                  label="Expiration Year"
                                   control={PaymentsForm.control}
                                   value={""}
                                 />
                               </div>
                             </div>
                             <InputWrapper
-                              name="transaction"
+                              name="metadata.transaction"
                               type="text"
                               label="Transaction"
                               control={PaymentsForm.control}
@@ -168,10 +173,10 @@ export default function EditPaymentReceived({
                             />
                           </>
                         )}
-                        {paymentMethodWatch === "Electronic Transfer" && <></>}
+                        {paymentMethodWatch === "5f27e7e5-08de-4dcf-8fb5-96f6d8ec68f6" && <></>}
                         {paymentMethodWatch === "Other" && (
                           <InputWrapper
-                            name="other"
+                            name="metadata.other"
                             type="text"
                             label="Other"
                             control={PaymentsForm.control}

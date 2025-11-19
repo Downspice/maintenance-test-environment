@@ -22,7 +22,6 @@ import React from "react";
 import {
   InventoryTableInterface,
 } from "@/lib/Inventory/inventory-data";
-import { matchesSearchAllFields } from "@/lib/utils";
 import EditInventory from "../view/edit-inventory";
 import {
   SheetContent,
@@ -38,13 +37,27 @@ import EnableTrackingForm from "../form/enableTracking";
 import ChangeMarkUpForm from "../form/changeMarkUp";
 import HistoryTable from "../view/history-inventory";
 import TransferInventoryForm from "../form/transferInventory";
-import { useDeleteInventory, useGetInventories } from "@/services/setups/inventory";
+import { useDeleteInventory, useGetInventoriesPaginated } from "@/services/setups/inventory";
 import { toast } from "sonner";
 import { useConfirmDialog } from "@/lib/confirm-dialog";
 
+export default function InventoryDataTable({
+  locationId,
+  filterType,
+}: {
+  locationId?: string;
+  filterType?: string;
+}) {
+  return <InventoryDataLoader locationId={locationId} filterType={filterType} />;
+}
 
-
-export  function InventoryDataLoader({ InventoryData, isLoading }) {
+export function InventoryDataLoader({
+  locationId,
+  filterType,
+}: {
+  locationId?: string;
+  filterType?: string;
+}) {
   const confirmDialog = useConfirmDialog();
   const deleteApi = useDeleteInventory();
   const [pageIndex, setPageIndex] = useState(0);
@@ -52,49 +65,37 @@ export  function InventoryDataLoader({ InventoryData, isLoading }) {
   const [search, setSearch] = useState("");
   const [sorting, setSorting] = useState<SortingState>([]);
 
-  // For now, using client-side pagination until paginated API is available
-  // This structure matches the vendor table pattern
-  const serverRows = InventoryData ?? [];
-  const currentPage = pageIndex + 1;
-  const totalPages = Math.ceil(serverRows.length / pageSize);
-  const totalRows = serverRows.length;
+  const currentSort = sorting[0];
+  const mapColumnIdToSortBy = (id?: string): string | undefined => {
+    if (!id) return undefined;
+    if (id === "category") return "category";
+    return id;
+  };
+
+  const { data: paged, isLoading } = useGetInventoriesPaginated<any>({
+    search: search || undefined,
+    location_id: locationId || undefined,
+    low_stock: filterType === "low_stock" ? 1 : undefined,
+    out_of_stock: filterType === "out_of_stock" ? 1 : undefined,
+    po_assigned: filterType === "po_assigned" ? 1 : undefined,
+    size: pageSize,
+    page: pageIndex + 1, // API expects 1-based
+    sort_by: mapColumnIdToSortBy(currentSort?.id),
+    sort_order: currentSort ? (currentSort.desc ? "desc" : "asc") : undefined,
+  });
+
+  const serverRows = paged?.data ?? [];
+  const currentPage = paged?.current_page ? Number(paged.current_page) : pageIndex + 1;
+  const totalPages = paged?.last_page ? Number(paged.last_page) : 1;
+  const totalRows = paged?.total ? Number(paged.total) : serverRows.length;
+  const effectivePageSize = paged?.per_page ? Number(paged.per_page) : pageSize;
 
   const paginationInfo = {
-    pageIndex: pageIndex,
-    pageSize: pageSize,
+    pageIndex: currentPage - 1,
+    pageSize: effectivePageSize,
     totalPages: totalPages,
     totalRows: totalRows,
   };
-
-  const getAllEmployees = (
-  employees: InventoryTableInterface[]
-): InventoryTableInterface[] => {
-  const result: InventoryTableInterface[] = [];
-  const traverse = (emps: InventoryTableInterface[]) => {
-    emps?.forEach?.((emp) => {
-      result.push(emp);
-    });
-  };
-  traverse(employees??[]);
-  return result;
-};
-
-const flatEmployees = getAllEmployees(serverRows);
-
-const unit_cost = [
-  ...new Set(flatEmployees.map((emp) => emp.unit_cost.toString())),
-];
-const number = [...new Set(flatEmployees.map((emp) => emp.part_number))];
-const name = [...new Set(flatEmployees.map((emp) => emp.name))];
-const category = [
-  ...new Set(flatEmployees.map((emp) => emp.category.name)),
-];
-const vendor_names = [
-  ...new Set(flatEmployees.map((emp) => emp?.inventory_trackings?.[0]?.vendor_id ?? "")),
-];
-const quantity = [
-  ...new Set(flatEmployees.map((emp) => emp?.inventory_trackings?.[0]?.quantity ?? "")),
-];
 
   const handleRowClick = (row: any) => {
     console.log("Row clicked:", row.original);
@@ -129,40 +130,24 @@ const quantity = [
       title: "Delete selected inventory?",
       description: `This will delete ${selectedRows.length} item(s). This action cannot be undone.`,
       confirmText: "Delete",
-    })
+    });
     if (ok) {
-      toast.success(`Deleted ${selectedRows.length} rows`)
+      toast.success(`Deleted ${selectedRows.length} rows`);
     }
   };
 
   const handlePrintRow = (row: any) => {
-    const employee = row.original;
     const printWindow = window.open("", "_blank");
     if (printWindow) {
-      const formattedSalary = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(employee.salary);
-
       printWindow.document.write(`
         <html>
           <head>
-            <title>Work In Progress</title>
-            <style>
-              body { font-family: Arial, sans-serif; margin: 20px; }
-              .header { border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px; }
-              .field { margin-bottom: 10px; }
-              .label { font-weight: bold; display: inline-block; width: 120px; }
-              .status { padding: 4px 8px; border-radius: 4px; font-size: 12px; }
-              .status.active { background-color: #d4edda; color: #155724; }
-              .status.inactive { background-color: #f8d7da; color: #721c24; }
-              .status.pending { background-color: #fff3cd; color: #856404; }
-            </style>
+            <title>Print Inventory</title>
           </head>
           <body>
             <div class="header">
-              <h1>Working On This Feature</h1>
-            </div> 
+              <h1>Inventory Item: ${row.original.name}</h1>
+            </div>
             <script>window.print(); window.close();</script>
           </body>
         </html>
@@ -209,7 +194,6 @@ const quantity = [
           column={column}
           title="Part#"
           sortable={true}
-          filterOptions={number}
         />
       ),
       cell: ({ row }) => (
@@ -226,7 +210,6 @@ const quantity = [
           column={column}
           title="Name"
           sortable={true}
-          filterOptions={name}
         />
       ),
       cell: ({ row }) => (
@@ -245,13 +228,9 @@ const quantity = [
           column={column}
           title="Category"
           sortable={true}
-          filterOptions={category as string[]}
         />
       ),
       cell: ({ row }) => <>{row.original.category.name}</>,
-      filterFn: (row, id, value) => {
-        return value.length === 0 || value.includes(row.getValue(id));
-      },
     },
     {
       accessorKey: "vendor",
@@ -260,13 +239,9 @@ const quantity = [
           column={column}
           title="Vendor"
           sortable={true}
-          filterOptions={vendor_names}
         />
       ),
-      cell: ({ row }) => <>{row.original?.inventory_trackings?.[0]?.vendor_id  ?? ""}</>,
-      filterFn: (row, id, value) => {
-        return value.length === 0 || value.includes(row.getValue(id));
-      },
+      cell: ({ row }) => <>{row.original?.inventory_trackings?.[0]?.vendor_id ?? ""}</>,
     },
     {
       accessorKey: "quantity",
@@ -275,28 +250,16 @@ const quantity = [
           column={column}
           title="Quantity"
           sortable={true}
-          filterOptions={quantity}
         />
       ),
       cell: ({ row }) => {
         return (
           <div className="flex items-center gap-1 text-sm">
-            {/* {row.original.warehouses?.[0]?.reorderPoint ??
-            0 >= row.original.warehouses?.[0]?.quantity ??
-            0 ? (
-              <span className=" font-bold text-red-600">
-                {row.original.warehouses?.[0]?.quantity ?? 0}
-              </span>
-            ) : (
-              <div className=" ">
-                {row.original.warehouses?.[0]?.quantity ?? ""}{" "}
-              </div>
-            )} */}
+            <div className=" ">
+              {row.original?.inventory_trackings?.[0]?.quantity ?? ""}
+            </div>
           </div>
         );
-      },
-      filterFn: (row, id, value) => {
-        return value.length === 0 || value.includes(row.getValue(id));
       },
     },
     {
@@ -306,7 +269,6 @@ const quantity = [
           column={column}
           title="Unit Cost"
           sortable={true}
-          filterOptions={unit_cost}
         />
       ),
       cell: ({ row }) => {
@@ -320,7 +282,6 @@ const quantity = [
           column={column}
           title="PO #"
           sortable={true}
-          filterOptions={number}
         />
       ),
       cell: ({ row }) => (
@@ -330,10 +291,6 @@ const quantity = [
           </div>
         </>
       ),
-
-      filterFn: (row, id, value) => {
-        return value.length === 0 || value.includes(row.getValue(id));
-      },
     },
     {
       id: "actions",
@@ -341,18 +298,18 @@ const quantity = [
       cell: ({ row }) => {
         const handleDeleteRow = (row: any) => {
           console.log("Delete row:", row.original);
-          
-        (async () => {
-          const ok = await confirmDialog({
-            title: "Delete inventory item?",
-            description: `Are you sure you want to delete ${row.original.name}?`,
-            confirmText: "Delete",
-          })
-          if (ok) {
-            await deleteApi.mutateAsync(row.original)
-            toast.success(`Deleted Successfully`)
-          }
-        })()
+
+          (async () => {
+            const ok = await confirmDialog({
+              title: "Delete inventory item?",
+              description: `Are you sure you want to delete ${row.original.name}?`,
+              confirmText: "Delete",
+            })
+            if (ok) {
+              await deleteApi.mutateAsync(row.original)
+              toast.success(`Deleted Successfully`)
+            }
+          })()
         };
         const [open, setOpen] = useState(false);
         const [selectedProjectType, setSelectedProjectType] = useState<
@@ -503,28 +460,10 @@ const quantity = [
 
   return (
     <div className="">
-      {/* <div className="mb-8">
-         
-
-        <div className="flex items-center gap-4 mb-4">
-          <Button
-            variant={isServerMode ? "default" : "outline"}
-            onClick={() => setIsServerMode(!isServerMode)}
-          >
-            {isServerMode ? "Server Mode ON" : "Client Mode ON"}
-          </Button>
-          {isServerMode && (
-            <Badge variant="secondary">
-              Page {paginationInfo.pageIndex + 1} of {paginationInfo.totalPages}
-            </Badge>
-          )}
-        </div>
-      </div> */}
-
       <AdvancedDataTable
         columns={columns}
         data={serverRows}
-        defaultVisibleColumns={["part_number","name","category","vendor","quantity","unit_cost", "number",  "actions"]}
+        defaultVisibleColumns={["part_number", "name", "category", "vendor", "quantity", "unit_cost", "number", "actions"]}
         onRowClick={handleRowClick}
         onCellClick={handleCellClick}
         onPrintSelected={handlePrintSelected}
@@ -544,19 +483,5 @@ const quantity = [
         isLoading={isLoading}
       />
     </div>
-  );
-}
-
-export default function InventoryDataTable() {
-  const {
-    data: InventoryData,
-    isLoading,
-    error: EmployeeDataError,
-  } = useGetInventories();
-
-  return InventoryData ? (
-    <InventoryDataLoader InventoryData={InventoryData} isLoading={isLoading} />
-  ) : (
-    <div>is loading.......</div>
   );
 }

@@ -393,6 +393,47 @@ export function useGetInventories<TData = TEntity[]>(
   });
 }
 
+// Paginated inventories with server-side filters and search
+type InventoryQuery = {
+  search?: string;
+  location_id?: string;
+  category_id?: string;
+  low_stock?: number;
+  out_of_stock?: number;
+  po_assigned?: number;
+  size?: number; // page size
+  page?: number; // 1-based page index as required by API
+  sort_by?: string;
+  sort_order?: "asc" | "desc";
+};
+
+export function useGetInventoriesPaginated<TPaginated = any>(
+  query: InventoryQuery,
+  options?: UseQueryOptions<ApiResponse<TPaginated>, AxiosError<ApiError>, TPaginated>
+) {
+  return useQuery<ApiResponse<TPaginated>, AxiosError<ApiError>, TPaginated>({
+    queryKey: ["inventories", query],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (query.search && query.search.trim()) params.set("search", query.search.trim());
+      if (query.location_id) params.set("location_id", query.location_id);
+      if (query.category_id) params.set("category_id", query.category_id);
+      if (query.low_stock) params.set("low_stock", String(query.low_stock));
+      if (query.out_of_stock) params.set("out_of_stock", String(query.out_of_stock));
+      if (query.po_assigned) params.set("po_assigned", String(query.po_assigned));
+      if (typeof query.size === "number") params.set("size", String(query.size));
+      if (typeof query.page === "number") params.set("page", String(query.page));
+      if (query.sort_by) params.set("sort_by", query.sort_by);
+      if (query.sort_order) params.set("sort_order", query.sort_order);
+      const url = buildUrl(`/api/get-inventories${params.toString() ? `?${params.toString()}` : ""}`);
+      const response = await dummyApiClient<ApiResponse<TPaginated>>(url);
+      return response;
+    },
+    select: (response) => response.data as TPaginated,
+    ...options,
+  });
+}
+
 export function useGetInventory<TData = TEntity>(
   id: TId,
   options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>

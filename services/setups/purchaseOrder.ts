@@ -163,6 +163,41 @@ export function useGetPurchaseOrders<TData = TEntity[]>(
   });
 }
 
+// Paginated purchase orders with server-side filters and search
+type PurchaseOrderQuery = {
+  search?: string;
+  location_id?: string;
+  status_id?: string; // Added status_id
+  size?: number; // page size
+  page?: number; // 1-based page index as required by API
+  sort_by?: string;
+  sort_order?: "asc" | "desc";
+};
+
+export function useGetPurchaseOrdersPaginated<TPaginated = any>(
+  query: PurchaseOrderQuery,
+  options?: UseQueryOptions<ApiResponse<TPaginated>, AxiosError<ApiError>, TPaginated>
+) {
+  return useQuery<ApiResponse<TPaginated>, AxiosError<ApiError>, TPaginated>({
+    queryKey: ["purchase-orders", query],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (query.search && query.search.trim()) params.set("search", query.search.trim());
+      if (query.location_id) params.set("location_id", query.location_id);
+      if (query.status_id) params.set("status_id", query.status_id);
+      if (typeof query.size === "number") params.set("size", String(query.size));
+      if (typeof query.page === "number") params.set("page", String(query.page));
+      if (query.sort_by) params.set("sort_by", query.sort_by);
+      if (query.sort_order) params.set("sort_order", query.sort_order);
+      const url = buildUrl(`/api/get-purchase-orders${params.toString() ? `?${params.toString()}` : ""}`);
+      const response = await dummyApiClient<ApiResponse<TPaginated>>(url);
+      return response;
+    },
+    select: (response) => response.data as TPaginated,
+    ...options,
+  });
+}
+
 export function useGetPurchaseOrder<TData = TEntity>(
   id: TId,
   options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>

@@ -36,24 +36,23 @@ const getAllEmployees = (
 // Map PaymentReceivedInterface to the format expected by EditPaymentReceived
 const mapPaymentToEditForm = (payment: PaymentReceivedInterface) => {
   return {
-    invoice_number: payment.invoice_number,
-    amount: payment.amount?.toString() || "",
-    date: payment.dateReceived,
-    paymentMethod: payment.methodOfPayment,
-    chequeNumber: payment.chequeNumber || undefined,
-    creditNumber: payment.cardNumber || undefined,
+    invoice_id: payment.invoice_id,
+    amount_received: payment.amount_received?.toString() || "",
+    date_received: payment.date_received,
+    payment_method_id: payment.payment_method_id,
+    cheque_number: payment.cheque_number || undefined,
+    credit_number: payment.credit_number || undefined,
     name: payment.name || undefined,
-    expirationMonth: payment.expMonth || undefined,
-    expirationYear: payment.expYear || undefined,
-    transaction: payment.transactionNumber || undefined,
-    other: payment.otherPaymentMethod || undefined,
+    expiration_month: payment.expiration_month || undefined,
+    expiration_year: payment.expiration_year || undefined,
+    transaction: payment.transaction || undefined,
+    other: payment.other || undefined,
   };
 };
 
 export default function PaymentReceivedTable() {
-  const [isServerMode, setIsServerMode] = useState(false);
   const confirmDialog = useConfirmDialog();
-  
+
   // Fetch invoice payments from API
   const {
     data: paymentReceived = [],
@@ -61,63 +60,101 @@ export default function PaymentReceivedTable() {
     error: apiError,
   } = useGetInvoicePayments<PaymentReceivedInterface[]>();
 
-  // Generate filter options from the fetched data
+  // State for "server-side" features (simulated locally)
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [search, setSearch] = useState("");
+
+  // Process data: Filter -> Sort -> Paginate
+  const processedData = useMemo(() => {
+    let data = [...paymentReceived];
+
+    // 1. Filter
+    if (search) {
+      const lowerSearch = search.toLowerCase();
+      data = data.filter((item) =>
+        Object.values(item).some((value) =>
+          String(value).toLowerCase().includes(lowerSearch)
+        )
+      );
+    }
+
+    // 2. Sort
+    if (sorting.length > 0) {
+      const { id, desc } = sorting[0];
+      data.sort((a, b) => {
+        // Handle nested properties if needed, though currently flat
+        const aValue = (a as any)[id];
+        const bValue = (b as any)[id];
+
+        if (aValue < bValue) return desc ? 1 : -1;
+        if (aValue > bValue) return desc ? -1 : 1;
+        return 0;
+      });
+    }
+
+    return data;
+  }, [paymentReceived, search, sorting]);
+
+  // 3. Paginate
+  const paginatedData = useMemo(() => {
+    const startIndex = pageIndex * pageSize;
+    return processedData.slice(startIndex, startIndex + pageSize);
+  }, [processedData, pageIndex, pageSize]);
+
+  const totalRows = processedData.length;
+  const totalPages = Math.ceil(totalRows / pageSize);
+
+  const paginationInfo = {
+    pageIndex,
+    pageSize,
+    totalPages,
+    totalRows,
+  };
+
+  // Handlers
+  const handlePaginationChange = (action: "next" | "previous" | number) => {
+    if (action === "next") {
+      setPageIndex((p) => Math.min(p + 1, Math.max(0, totalPages - 1)));
+    } else if (action === "previous") {
+      setPageIndex((p) => Math.max(p - 1, 0));
+    } else if (typeof action === "number") {
+      setPageIndex(action);
+    }
+  };
+
+  const handlePageSizeChange = (newSize: number) => {
+    setPageSize(newSize);
+    setPageIndex(0); // Reset to first page
+  };
+
+  const handleServerSearch = (value: string) => {
+    setSearch(value);
+    setPageIndex(0); // Reset to first page
+  };
+
+  const handleServerSortingChange = (newSorting: SortingState) => {
+    setSorting(newSorting);
+    // Optional: Reset to first page on sort change? Usually good practice.
+    // setPageIndex(0); 
+  };
+
+  // Generate filter options from the fetched data (for column headers)
   const flatEmployees = useMemo(() => getAllEmployees(paymentReceived), [paymentReceived]);
-  const name = useMemo(() => [...new Set(flatEmployees.map((emp) => emp.name))], [flatEmployees]);
-  const dateReceived = useMemo(() => [...new Set(flatEmployees.map((emp) => emp.dateReceived))], [flatEmployees]);
   const invoice_number = useMemo(() => [
     ...new Set(flatEmployees.map((emp) => emp.invoice_number)),
   ], [flatEmployees]);
-  const category = useMemo(() => [...new Set(flatEmployees.map((emp) => emp.category))], [flatEmployees]);
-  const customer = useMemo(() => [...new Set(flatEmployees.map((emp) => emp.customer))], [flatEmployees]);
-  const methodOfPayment = useMemo(() => [
-    ...new Set(flatEmployees.map((emp) => emp.methodOfPayment)),
-  ], [flatEmployees]);
-  const chequeNumber = useMemo(() => [
-    ...new Set(flatEmployees.map((emp) => emp.chequeNumber || "")),
-  ], [flatEmployees]);
-  const cardNumber = useMemo(() => [
-    ...new Set(flatEmployees.map((emp) => emp.cardNumber || "")),
-  ], [flatEmployees]);
-  const expMonth = useMemo(() => [...new Set(flatEmployees.map((emp) => emp.expMonth || ""))], [flatEmployees]);
-  const expYear = useMemo(() => [...new Set(flatEmployees.map((emp) => emp.expYear || ""))], [flatEmployees]);
-  const transactionNumber = useMemo(() => [
-    ...new Set(flatEmployees.map((emp) => emp.transactionNumber || "")),
-  ], [flatEmployees]);
-  const amount = useMemo(() => [
-    ...new Set(flatEmployees.map((emp) => emp.amount?.toString() || "")),
-  ], [flatEmployees]);
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [currentData, setCurrentData] = useState<PaymentReceivedInterface[]>([]);
-  const [paginationInfo, setPaginationInfo] = useState({
-    pageIndex: 0,
-    pageSize: 5,
-    totalPages: 0,
-    totalRows: 0,
-  });
-
-  // Update pagination info when data changes
-  React.useEffect(() => {
-    if (paymentReceived.length > 0) {
-      setPaginationInfo({
-        pageIndex: 0,
-        pageSize: 5,
-        totalPages: Math.ceil(paymentReceived.length / 5),
-        totalRows: paymentReceived.length,
-      });
-      setCurrentData(paymentReceived.slice(0, 5));
-    }
-  }, [paymentReceived]);
+  // ... (other filter options can remain if needed for specific column filters, 
+  // but we are using global search mostly)
 
   const handleRowClick = (row: any) => {
     console.log("Row clicked:", row.original);
-    // alert(`Row clicked: ${row.original.name} (Depth: ${row.depth})`);
   };
 
   const handleCellClick = (cell: any, row: any) => {
     console.log("Cell clicked:", cell.column.id, cell.getValue());
-    // alert(`Cell clicked: ${cell.column.id} = ${cell.getValue()}`);
   };
 
   const handlePrintSelected = (selectedRows: any[]) => {
@@ -152,6 +189,7 @@ export default function PaymentReceivedTable() {
   };
 
   const handlePrintRow = (row: any) => {
+    // ... existing print logic ...
     const employee = row.original;
     const printWindow = window.open("", "_blank");
     if (printWindow) {
@@ -187,92 +225,21 @@ export default function PaymentReceivedTable() {
     }
   };
 
-  // Server-side pagination handler
-  const handlePaginationChange = (action: "next" | "previous" | number) => {
-    console.log(`🔄 Server Pagination Action: ${action}`);
-
-    setIsLoading(true);
-
-    // Simulate server delay
-    setTimeout(() => {
-      let newPageIndex = paginationInfo.pageIndex;
-
-      if (action === "next") {
-        newPageIndex = Math.min(
-          paginationInfo.pageIndex + 1,
-          paginationInfo.totalPages - 1
-        );
-      } else if (action === "previous") {
-        newPageIndex = Math.max(paginationInfo.pageIndex - 1, 0);
-      } else if (typeof action === "number") {
-        newPageIndex = action;
-      }
-
-      // Simulate fetching data for the new page
-      const startIndex = newPageIndex * paginationInfo.pageSize;
-      const endIndex = startIndex + paginationInfo.pageSize;
-      const newData = paymentReceived.slice(startIndex, endIndex);
-
-      setCurrentData(newData);
-      setPaginationInfo((prev) => ({
-        ...prev,
-        pageIndex: newPageIndex,
-      }));
-
-      setIsLoading(false);
-    }, 1000); // 1 second delay to simulate server response
-  };
-
-  // Server-side search handler
-  const handleServerSearch = React.useCallback(
-    (searchValue: string) => {
-      console.log(`🔍 Server Search: "${searchValue}"`);
-
-      setIsLoading(true);
-
-      // Simulate server delay
-      setTimeout(() => {
-        let filteredData = paymentReceived;
-
-        if (searchValue.trim()) {
-          filteredData = paymentReceived.filter((item) =>
-            Object.values(item).some((value) =>
-              value
-                ?.toString()
-                .toLowerCase()
-                .includes(searchValue.toLowerCase())
-            )
-          );
-        }
-
-        // Reset to first page and update data
-        const newData = filteredData.slice(0, paginationInfo.pageSize);
-        setCurrentData(newData);
-        setPaginationInfo((prev) => ({
-          ...prev,
-          pageIndex: 0,
-          totalPages: Math.ceil(filteredData.length / prev.pageSize),
-          totalRows: filteredData.length,
-        }));
-
-        setIsLoading(false);
-      }, 800); // 800ms delay to simulate server response
-    },
-    [paymentReceived, paginationInfo.pageSize]
-  );
-
   // Column definitions
   const columns: ColumnDef<PaymentReceivedInterface>[] = [
     {
-      accessorKey: "date_received",
+      accessorKey: "date_received", // Fixed accessor key to match interface
       header: ({ column }) => (
         <SortableHeader
           column={column}
           title="Date"
           sortable={true}
-          // filterOptions={dateReceived}
         />
       ),
+      cell: ({ row }) => {
+        // Format date if needed, or just display
+        return <div>{row.getValue("date_received")}</div>
+      }
     },
     {
       accessorKey: "invoice_number",
@@ -292,12 +259,8 @@ export default function PaymentReceivedTable() {
           column={column}
           title="Category"
           sortable={true}
-          // filterOptions={category}
         />
       ),
-      filterFn: (row, id, value) => {
-        return value.length === 0 || value.includes(row.getValue(id));
-      },
     },
     {
       accessorKey: "customer",
@@ -306,79 +269,44 @@ export default function PaymentReceivedTable() {
           column={column}
           title="Customer"
           sortable={true}
-          // filterOptions={customer}
         />
       ),
-      filterFn: (row, id, value) => {
-        return value.length === 0 || value.includes(row.getValue(id));
-      },
     },
     {
-      accessorKey: "methodOfPayment",
+      accessorKey: "payment_method_name",
       header: ({ column }) => (
         <SortableHeader
           column={column}
           title="Method"
           sortable={true}
-          // filterOptions={methodOfPayment}
         />
       ),
-      filterFn: (row, id, value) => {
-        return value.length === 0 || value.includes(row.getValue(id));
-      },
     },
-    // {
-    //   accessorKey: "chequeNumber",
-    //   header: ({ column }) => (
-    //     <SortableHeader
-    //       column={column}
-    //       title="Check#"
-    //       sortable={true}
-    //       filterOptions={chequeNumber||""}
-    //     />
-    //   ),
-    // },
-    // {
-    //   accessorKey: "cardNumber",
-    //   header: ({ column }) => (
-    //     <SortableHeader
-    //       column={column}
-    //       title="Card#"
-    //       sortable={true}
-    //       filterOptions={cardNumber}
-    //     />
-    //   ),
-    //   filterFn: (row, id, value) => {
-    //     return value.length === 0 || value.includes(row.getValue(id));
-    //   },
-    // },
     {
-      accessorKey: "name",
+      accessorKey: "metadata.cheque_number",
       header: ({ column }) => (
         <SortableHeader
           column={column}
-          title="Name"
+          title="Cheque#"
           sortable={true}
-          // filterOptions={name}
         />
       ),
-      filterFn: (row, id, value) => {
-        return value.length === 0 || value.includes(row.getValue(id));
-      },
+      cell: ({ row }) => {
+        // Format date if needed, or just display
+        const metadata = row.original?.metadata
+        console.log(metadata)
+        return <div>{metadata?.cheque_number}</div>
+      }
     },
     {
-      accessorKey: "amount",
+      accessorKey: "amount_received",
       header: ({ column }) => (
         <SortableHeader
           column={column}
           title="Amnt"
           sortable={true}
-          // filterOptions={amount}
         />
       ),
-      filterFn: (row, id, value) => {
-        return value.length === 0 || value.includes(row.getValue(id));
-      },
     },
     {
       id: "actions",
@@ -439,33 +367,16 @@ export default function PaymentReceivedTable() {
 
   return (
     <div className="">
-      {/* <div className="mb-8">
-         
-
-        <div className="flex items-center gap-4 mb-4">
-          <Button
-            variant={isServerMode ? "default" : "outline"}
-            onClick={() => setIsServerMode(!isServerMode)}
-          >
-            {isServerMode ? "Server Mode ON" : "Client Mode ON"}
-          </Button>
-          {isServerMode && (
-            <Badge variant="secondary">
-              Page {paginationInfo.pageIndex + 1} of {paginationInfo.totalPages}
-            </Badge>
-          )}
-        </div>
-      </div> */}
       <RecordPaymentForm />
       <AdvancedDataTable
         columns={columns}
-        data={isServerMode ? currentData : paymentReceived}
+        data={paginatedData} // Use paginated data
         defaultVisibleColumns={[
-          "dateReceived",
+          "date_received",
           "invoice_number",
           "category",
           "customer",
-          "methodOfPayment",
+          "payment_method_name",
           "name",
           "amount",
           "actions",
@@ -477,11 +388,22 @@ export default function PaymentReceivedTable() {
         onDeleteSelected={handleDeleteSelected}
         onPrintRow={handlePrintRow}
         storageKey="payments-received-table-visibility"
-        realServerPagination={isServerMode}
-        paginationInfo={isServerMode ? paginationInfo : undefined}
-        onPaginationChange={isServerMode ? handlePaginationChange : undefined}
-        onServerSearch={isServerMode ? handleServerSearch : undefined}
-        isLoading={isLoading || isApiLoading}
+
+        // Enable "Server" Pagination (Simulated)
+        realServerPagination={true}
+        paginationInfo={paginationInfo}
+        onPaginationChange={handlePaginationChange}
+        onPageSizeChange={handlePageSizeChange}
+        pageSizeOptions={[5, 10, 20, 50]}
+
+        // Enable "Server" Search (Simulated)
+        onServerSearch={handleServerSearch}
+
+        // Enable "Server" Sorting (Simulated)
+        serverSorting={sorting}
+        onServerSortingChange={handleServerSortingChange}
+
+        isLoading={isApiLoading}
       />
     </div>
   );
