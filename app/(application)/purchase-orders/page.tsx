@@ -131,7 +131,7 @@ export default function PurchaseOrdersPage() {
           </Select>
 
           {/* Date Filter (Custom) */}
-          <Select onValueChange={(val) => handleSelectChange("custom", val)}>
+          {/* <Select onValueChange={(val) => handleSelectChange("custom", val)}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="All Dates" />
             </SelectTrigger>
@@ -142,7 +142,7 @@ export default function PurchaseOrdersPage() {
                 </SelectItem>
               ))}
             </SelectContent>
-          </Select>
+          </Select> */}
         </div>
 
         <div className="flex flex-row space-x-0.5">
