@@ -96,7 +96,7 @@ export default function PurchaseOrdersPage() {
     <div className="flex flex-col p-4 mx-auto py-10 space-y-4">
       <div className="flex flex-row items-center space-x-2">
         <h1 className="text-xl font-semibold">Purchase Orders</h1>
-        <Badge>8</Badge>
+        {/* <Badge>8</Badge> */}
       </div>
 
       <div className="flex justify-between items-center space-x-4">
@@ -147,14 +147,14 @@ export default function PurchaseOrdersPage() {
 
         <div className="flex flex-row space-x-0.5">
           {/* Search Input */}
-          <Input
+          {/* <Input
             type="text"
             placeholder="Search ..."
             className="w-[240px]"
             value={filters.search}
             onChange={handleSearchChange}
-          />
-          <Button onClick={createPurchaseOrder}>New</Button>
+          /> */}
+          <Button onClick={createPurchaseOrder}>New Purchase Order</Button>
         </div>
       </div>
       <div>

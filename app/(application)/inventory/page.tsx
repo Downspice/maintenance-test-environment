@@ -125,14 +125,14 @@ export default function InventoryPage() {
 
         <div className="flex flex-row space-x-0.5">
           {/* Search Input */}
-          <Input
+          {/* <Input
             type="text"
             placeholder="Search ..."
             className="w-[240px]"
             value={filters.search}
             onChange={handleSearchChange}
-          />
-          <Button onClick={createInventory}>New</Button>
+          /> */}
+          <Button onClick={createInventory}>New Inventory</Button>
         </div>
       </div>
       <div>

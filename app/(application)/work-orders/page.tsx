@@ -123,14 +123,14 @@ export default function WorkOrdersPage() {
         </div>
         <div className="flex flex-row space-x-0.5">
           {/* Search Input */}
-          <Input
+          {/* <Input
             type="text"
             placeholder="Search ..."
             className="w-[240px]"
             value={filters.search}
             onChange={handleSearchChange}
-          />
-          <Button onClick={createWorkOrder}>New</Button>
+          /> */}
+          <Button onClick={createWorkOrder}>New Work Order</Button>
         </div>
       </div>
       <div>
