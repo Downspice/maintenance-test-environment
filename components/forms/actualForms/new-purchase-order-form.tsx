@@ -48,7 +48,7 @@ import {
   PurchaseOrderStatusType,
 } from "@/lib/PurchaseOrder/purchaseOrder-data";
 import { useGetLocations, useGetPurchaseOrderTerms, useGetVendors } from "@/services/setups/vendor";
-import { useGetPurchaseOrderShipVias } from "@/services/setups/purchaseOrder";
+import { useGetPurchaseOrderShipVias, useGetNextPurchaseOrderNumber } from "@/services/setups/purchaseOrder";
 import { useGetWarehouses } from "@/services/setups/inventory";
 import { useGetItemTypes, useGetInvoices } from "@/services/setups/invoice";
 import { convertToOptionList } from "@/lib/utils";
@@ -63,32 +63,36 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
   const { data: termsOptionsList } = useGetPurchaseOrderTerms<Array<{ id: string; name: string }>>();
   const { data: invoices } = useGetInvoices<Array<{ id: string; invoice_number: string }>>();
   const invoiceOptionsList = convertToOptionList(invoices ?? [], "id", "invoice_number");
-  
+
+  const { data: nextPoNumberData } = useGetNextPurchaseOrderNumber();
+
+
+
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const { data: vendorOptions } = useGetVendors();
-  
+
   const [items, setItems] = useState<PurchaseOrderItemType[]>([]);
   const [editItems, setEditItems] = useState<PurchaseOrderItemType | null>(null);
   const [openItems, setOpenItems] = useState(false);
   const { data: warehouseOptionsList } = useGetWarehouses<Array<{ id: string; name: string }>>();
 
   const [status, setStatus] = useState<PurchaseOrderStatusType>("Requisition");
-  
-  const { 
-    data: locationOptionsList, 
-    isLoading: locationOptionsListLoading, 
+
+  const {
+    data: locationOptionsList,
+    isLoading: locationOptionsListLoading,
     error: locationOptionsListError
   } = useGetLocations<Array<{ id: string, name: string }>>();
-  
+
   const PurchaseOrderStatuses: PurchaseOrderStatusType[] = [
     "Requisition",
     "Ordered",
     "Partial",
     "Closed",
   ];
-  
+
   const handleDeleteItem = (index: number) => {
     const filtered = items.filter((_, idx) => idx !== index);
     setItems(filtered);
@@ -192,6 +196,13 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
     },
   });
 
+  useEffect(() => {
+    if (nextPoNumberData) {
+      form.setValue("po_number", nextPoNumberData);
+    }
+  }, [nextPoNumberData, form]);
+
+
   function onSubmit(data: PurchaseOrderType) {
     // Add items to the submission data
     const submissionData = {
@@ -251,7 +262,7 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
   useEffect(() => {
     const subtotal = items.reduce((sum, item) => sum + item.amount, 0);
     form.setValue("subtotal", subtotal);
-    
+
     // Calculate total cost (you can add tax and discount logic here)
     const total = subtotal + form.getValues("freight") - form.getValues("credit");
     form.setValue("total_cost", total);
@@ -290,17 +301,16 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
                 <button
                   key={stat}
                   type="button"
-                  className={`p-3 h-fit rounded-md border text-sm font-medium ${
-                    status === stat
-                      ? stat === "Requisition"
-                        ? "bg-green-600 text-white"
-                        : stat === "Ordered"
+                  className={`p-3 h-fit rounded-md border text-sm font-medium ${status === stat
+                    ? stat === "Requisition"
+                      ? "bg-green-600 text-white"
+                      : stat === "Ordered"
                         ? "bg-yellow-500 text-white"
                         : stat === "Partial"
-                        ? "bg-orange-500 text-white"
-                        : "bg-red-600 text-white"
-                      : "bg-white text-gray-700 border-gray-300"
-                  }`}
+                          ? "bg-orange-500 text-white"
+                          : "bg-red-600 text-white"
+                    : "bg-white text-gray-700 border-gray-300"
+                    }`}
                   onClick={() => {
                     // You need to map status to status_id here
                     // This is a placeholder - replace with actual logic
@@ -334,7 +344,7 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
               control={form.control}
               name="buyer_id"
               label="Buyer"
-              options={assigneeOptions??[]}
+              options={assigneeOptions ?? []}
             />
             <DatePickerWrapper
               control={form.control}
@@ -376,14 +386,14 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
                       <ComboboxFieldWrapper
                         control={form.control}
                         name="ship_via_id"
-                        options={shipViaOptions??[]}
+                        options={shipViaOptions ?? []}
                         label="Ship Via"
                       />
                       <ComboboxFieldWrapper
                         control={form.control}
                         name="location_id"
                         label="Location"
-                        options={locationOptionsList??[]}
+                        options={locationOptionsList ?? []}
                       />
                     </>
                   }
@@ -439,7 +449,7 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
                                 control={Itemsform.control}
                                 name="item_type_id"
                                 label="Item Type"
-                                options={itemTypesOptionsList??[]}
+                                options={itemTypesOptionsList ?? []}
                               />
                               <InputWrapper
                                 control={Itemsform.control}
@@ -452,7 +462,7 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
                                 control={Itemsform.control}
                                 name="warehouse_id"
                                 label="Warehouse"
-                                options={warehouseOptionsList??[]}
+                                options={warehouseOptionsList ?? []}
                               />
                               <InputWrapper
                                 control={Itemsform.control}
@@ -588,7 +598,7 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
                       control={form.control}
                       name="term_id"
                       label="Terms"
-                      options={termsOptionsList??[]}
+                      options={termsOptionsList ?? []}
                     />
                     <InputWrapper
                       control={form.control}
@@ -640,7 +650,7 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
                       options={[
                         { id: "Fixed", name: "Fixed Amount" },
                         { id: "Percent", name: "Percentage" },
-                       ]}
+                      ]}
                     />
 
                     {watchDiscountType === "Percent" && (

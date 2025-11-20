@@ -31,20 +31,20 @@ const useBaseMutation = <TResponse = TEntity, TPayload = TParams, TContext = unk
     mutationKey: string[],
     endpoint: (payload: TPayload) => string,
     method: 'post' | 'put' | 'delete',
-    invalidateKeys: (payload: TPayload) => unknown[], 
+    invalidateKeys: (payload: TPayload) => unknown[],
     options?: UseMutationOptions<TResponse, AxiosError<ApiError>, TPayload, TContext>
 ) => {
     const queryClient = useQueryClient();
 
     const mutationFn = async (payload: TPayload) => {
         const url = buildUrl(endpoint(payload));
-        
+
         const response = await dummyApiClient<ApiResponse<TResponse>>(url, {
             method: method,
-            data: (method === 'post' || method === 'put') ? payload : undefined, 
+            data: (method === 'post' || method === 'put') ? payload : undefined,
         });
-        
-        return response.data as TResponse; 
+
+        return response.data as TResponse;
     };
 
     return useMutation<TResponse, AxiosError<ApiError>, TPayload, TContext>({
@@ -316,6 +316,7 @@ export function useUpdateInvoicePayment() {
     );
 }
 
+
 /**
  * Deletes an Invoice Payment. Invalidates the 'invoice-payments' list and the specific 'invoice-payment' detail query.
  * Expects a payload with an 'id' field.
@@ -328,3 +329,20 @@ export function useDeleteInvoicePayment() {
         (payload) => [['invoice-payments'], ['invoice-payment', payload.id]]
     );
 }
+
+/**
+ * Fetches the next available Invoice Number.
+ */
+export function useGetNextInvoiceNumber<TData = { next_invoice_number: string }>(options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>) {
+    return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
+        queryKey: ["get-next-invoice-number"],
+        queryFn: async () => {
+            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-next-invoice-number"));
+            return response;
+        },
+        select: (response) => response.data as TData,
+        staleTime: 0, // Always fetch fresh
+        ...options,
+    });
+}
+

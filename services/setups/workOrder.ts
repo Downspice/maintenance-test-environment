@@ -794,6 +794,7 @@ export function useDeletePartKit() {
 
 // --- Part Kit Parts Queries/Mutations ---
 
+
 /**
  * Fetches the list of all Part Kit Parts.
  */
@@ -809,6 +810,34 @@ export function useGetPartKitParts<TData = TEntity[]>(options?: UseQueryOptions<
         ...options,
     });
 }
+
+/**
+ * Fetches the next available Work Order Number.
+ */
+export function useGetNextWorkOrderNumber<TData = { next_work_order_number: string }>(options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>) {
+    return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
+        queryKey: ["get-next-work-order-number"],
+        queryFn: async () => {
+            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-next-work-order-number"));
+            return response;
+        },
+        select: (response) => response.data as TData,
+        staleTime: 0, // Always fetch fresh
+        ...options,
+    });
+}
+
+// return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
+//     queryKey: ["part-kit-parts"],
+//     queryFn: async () => {
+//         const response = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-part-kit-parts"));
+//         return response;
+//     },
+//     select: (response) => response.data as TData,
+//     staleTime: Infinity,
+//     ...options,
+// });
+// }
 
 /**
  * Adds a new Part Kit Part. Invalidates the 'part-kit-parts' list.

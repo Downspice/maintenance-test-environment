@@ -56,6 +56,7 @@ import {
   useGetWorkOrderTypes,
   useAddWorkOrder,
   useGetWorkOrder,
+  useGetNextWorkOrderNumber,
 } from "@/services/setups/workOrder";
 import { GenericObject } from "@/types/types";
 import { useSheet } from "@/lib/sheet-providers";
@@ -91,6 +92,9 @@ export function ActualWorkOrderForm() {
   const { data: costCenterOptions } = useGetCostCenters<GenericObject[]>();
   const { data: workOrderTypeOptions } = useGetWorkOrderTypes<GenericObject[]>();
   const { data: priorityOptions } = useGetPriorities<GenericObject[]>();
+  const { data: nextWorkOrderNumberData } = useGetNextWorkOrderNumber();
+
+
 
   const [maintenanceTasks, setMaintenanceTasks] = useState<
     AddMaintenanceInWorkOrderInterface[]
@@ -121,6 +125,12 @@ export function ActualWorkOrderForm() {
     resolver: zodResolver(WorkOrderSchema),
     defaultValues: {},
   });
+
+  useEffect(() => {
+    if (nextWorkOrderNumberData) {
+      workOrderForm.setValue("workOrderNumber", nextWorkOrderNumberData);
+    }
+  }, [nextWorkOrderNumberData, workOrderForm]);
 
   const addWorkOrderMutation = useAddWorkOrder();
   const { openSheet } = useSheet();
@@ -161,13 +171,13 @@ export function ActualWorkOrderForm() {
     try {
       const apiPayload = transformFormDataToAPI(data);
       const response = await addWorkOrderMutation.mutateAsync(apiPayload);
-      
+
       // Get the work order ID from response (assuming response contains id)
       const workOrderId = (response as any)?.id || (response as any)?.data?.id;
-      
+
       if (workOrderId) {
         toast.success("Work Order created successfully!");
-        
+
         // Fetch the work order data and open edit form
         openSheet({
           title: "Edit Work Order",
@@ -259,19 +269,19 @@ export function ActualWorkOrderForm() {
               legend="Misc. Details"
               content={
                 <>
-                    <ComboboxFieldWrapper
-                      control={workOrderForm.control}
-                      name="workOrderType"
-                      label="Type"
-                      options={(workOrderTypeOptions || []) as GenericObject[]}
-                    />
+                  <ComboboxFieldWrapper
+                    control={workOrderForm.control}
+                    name="workOrderType"
+                    label="Type"
+                    options={(workOrderTypeOptions || []) as GenericObject[]}
+                  />
 
-                    <ComboboxFieldWrapper
-                      control={workOrderForm.control}
-                      name="costCenter"
-                      label="Cost center"
-                      options={(costCenterOptions || []) as GenericObject[]}
-                    />
+                  <ComboboxFieldWrapper
+                    control={workOrderForm.control}
+                    name="costCenter"
+                    label="Cost center"
+                    options={(costCenterOptions || []) as GenericObject[]}
+                  />
 
                   <ComboboxFieldWrapper
                     control={workOrderForm.control}
@@ -299,32 +309,31 @@ export function ActualWorkOrderForm() {
             <div className="flex justify-end space-x-1 border border-b-black/20">
               <div className="flex gap-2">
                 {WorkOrderStatuses?.map((stat) => (
-                        <button
-                          key={stat?.id}
-                          type="button"
-                          className={`p-3 h-fit rounded-md border text-sm font-medium ${
-                            status === stat.name
-                              ? stat.name.toLowerCase().includes("open")
-                                ? "bg-green-500 text-white" // Open = Fresh, ready to start
-                                : stat.name.toLowerCase().includes("progress")
-                                ? "bg-blue-500 text-white" // In Progress = Active, working
-                                : stat.name.toLowerCase().includes("hold")
-                                ? "bg-yellow-400 text-white" // On Hold = Caution, paused
-                                : stat.name.toLowerCase().includes("complete")
-                                ? "bg-purple-600 text-white" // Complete = Done, celebratory
-                                : stat.name.toLowerCase().includes("cancelled")
+                  <button
+                    key={stat?.id}
+                    type="button"
+                    className={`p-3 h-fit rounded-md border text-sm font-medium ${status === stat.name
+                      ? stat.name.toLowerCase().includes("open")
+                        ? "bg-green-500 text-white" // Open = Fresh, ready to start
+                        : stat.name.toLowerCase().includes("progress")
+                          ? "bg-blue-500 text-white" // In Progress = Active, working
+                          : stat.name.toLowerCase().includes("hold")
+                            ? "bg-yellow-400 text-white" // On Hold = Caution, paused
+                            : stat.name.toLowerCase().includes("complete")
+                              ? "bg-purple-600 text-white" // Complete = Done, celebratory
+                              : stat.name.toLowerCase().includes("cancelled")
                                 ? "bg-red-600 text-white" // Cancelled = Error or terminated
                                 : "bg-gray-400 text-white" // Fallback for unexpected status
-                              : "bg-white text-gray-700 border border-gray-300"
-                          }`}
-                          onClick={() => {
-                            workOrderForm.setValue("status", stat?.id ?? "");
-                            setStatus(stat.name);
-                          }}
-                        >
-                          {stat.name}
-                        </button>
-                      ))}
+                      : "bg-white text-gray-700 border border-gray-300"
+                      }`}
+                    onClick={() => {
+                      workOrderForm.setValue("status", stat?.id ?? "");
+                      setStatus(stat.name);
+                    }}
+                  >
+                    {stat.name}
+                  </button>
+                ))}
               </div>
             </div>
             <div>
@@ -755,21 +764,20 @@ export function EditActualWorkOrderForm({
                     <button
                       key={stat?.id}
                       type="button"
-                      className={`p-3 h-fit rounded-md border text-sm font-medium ${
-                        status === (stat?.name as string)
-                          ? (stat?.name as string).toLowerCase().includes("open")
-                            ? "bg-green-500 text-white"
-                            : (stat?.name as string).toLowerCase().includes("progress")
+                      className={`p-3 h-fit rounded-md border text-sm font-medium ${status === (stat?.name as string)
+                        ? (stat?.name as string).toLowerCase().includes("open")
+                          ? "bg-green-500 text-white"
+                          : (stat?.name as string).toLowerCase().includes("progress")
                             ? "bg-blue-500 text-white"
                             : (stat?.name as string).toLowerCase().includes("hold")
-                            ? "bg-yellow-400 text-white"
-                            : (stat?.name as string).toLowerCase().includes("complete")
-                            ? "bg-purple-600 text-white"
-                            : (stat?.name as string).toLowerCase().includes("cancelled")
-                            ? "bg-red-600 text-white"
-                            : "bg-gray-400 text-white"
-                          : "bg-white text-gray-700 border border-gray-300"
-                      }`}
+                              ? "bg-yellow-400 text-white"
+                              : (stat?.name as string).toLowerCase().includes("complete")
+                                ? "bg-purple-600 text-white"
+                                : (stat?.name as string).toLowerCase().includes("cancelled")
+                                  ? "bg-red-600 text-white"
+                                  : "bg-gray-400 text-white"
+                        : "bg-white text-gray-700 border border-gray-300"
+                        }`}
                       onClick={() => {
                         workOrderForm.setValue("status", (stat?.id as string) ?? "");
                         setStatus((stat?.name as string) ?? "");
@@ -1075,21 +1083,20 @@ export function EditActualWorkOrderForm({
                         <button
                           key={stat?.id}
                           type="button"
-                          className={`p-3 h-fit rounded-md border text-sm font-medium ${
-                            status === (stat?.name as string)
-                              ? (stat?.name as string).toLowerCase().includes("open")
-                                ? "bg-green-500 text-white"
-                                : (stat?.name as string).toLowerCase().includes("progress")
+                          className={`p-3 h-fit rounded-md border text-sm font-medium ${status === (stat?.name as string)
+                            ? (stat?.name as string).toLowerCase().includes("open")
+                              ? "bg-green-500 text-white"
+                              : (stat?.name as string).toLowerCase().includes("progress")
                                 ? "bg-blue-500 text-white"
                                 : (stat?.name as string).toLowerCase().includes("hold")
-                                ? "bg-yellow-400 text-white"
-                                : (stat?.name as string).toLowerCase().includes("complete")
-                                ? "bg-purple-600 text-white"
-                                : (stat?.name as string).toLowerCase().includes("cancelled")
-                                ? "bg-red-600 text-white"
-                                : "bg-gray-400 text-white"
-                              : "bg-white text-gray-700 border border-gray-300"
-                          }`}
+                                  ? "bg-yellow-400 text-white"
+                                  : (stat?.name as string).toLowerCase().includes("complete")
+                                    ? "bg-purple-600 text-white"
+                                    : (stat?.name as string).toLowerCase().includes("cancelled")
+                                      ? "bg-red-600 text-white"
+                                      : "bg-gray-400 text-white"
+                            : "bg-white text-gray-700 border border-gray-300"
+                            }`}
                           onClick={() => {
                             workOrderForm.setValue("status", (stat?.id as string) ?? "");
                             setStatus((stat?.name as string) ?? "");

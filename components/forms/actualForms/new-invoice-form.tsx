@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
@@ -41,12 +41,13 @@ import {
   useAddInvoice,
   useGetItemTypes,
   useGetPaymentMethods,
+  useGetNextInvoiceNumber,
 } from "@/services/setups/invoice";
 import { convertToOptionList } from "@/lib/utils";
 
 // Updated Schema to match backend structure
 export const InvoiceSchema = z.object({
-  id:z.string().optional(),
+  id: z.string().optional(),
   invoice_number: z.string().min(1, "Invoice number is required"),
   invoice_date: z.date({
     required_error: "Invoice date is required",
@@ -153,7 +154,11 @@ export default function NewInvoiceForm() {
     error: customersListError,
   } = useGetCustomers<Array<{ id: string; name: string }>>();
 
-  
+  const { data: nextInvoiceNumberData } = useGetNextInvoiceNumber();
+
+
+
+
 
   const [items, setItems] = useState<InvoiceItemInterface[]>([]);
   const [editItems, setEditItems] = useState<InvoiceItemInterface | null>(null);
@@ -240,8 +245,16 @@ export default function NewInvoiceForm() {
       total: 0,
       payments: 0,
       balance_due: 0,
+      others: [],
     },
   });
+
+  useEffect(() => {
+    if (nextInvoiceNumberData) {
+      form.setValue("invoice_number", nextInvoiceNumberData);
+    }
+  }, [nextInvoiceNumberData, form]);
+
 
   function onSubmit(data: z.infer<typeof InvoiceSchema>) {
     // Transform data to match backend format
@@ -581,7 +594,7 @@ export default function NewInvoiceForm() {
                               control={PaymentsForm.control}
                               name="payment_method_id"
                               label="Payment Method"
-                              options={invoicePaymentMethodOptionsList??[]}
+                              options={invoicePaymentMethodOptionsList ?? []}
                             />
                             <InputWrapper
                               name="metadata.cheque_number"
@@ -607,8 +620,8 @@ export default function NewInvoiceForm() {
                                 }
                               }
                             )}
-                            className="grid gap-4 mt-4"
-                          >Save Payment</Button>
+                              className="grid gap-4 mt-4"
+                            >Save Payment</Button>
                           </div>
                         </DialogContent>
                       </Dialog>

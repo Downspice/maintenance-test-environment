@@ -234,6 +234,7 @@ export function useUpdatePurchaseOrder() {
   );
 }
 
+
 export function useDeletePurchaseOrder() {
   return useBaseMutation<TEntity, { id: TId }>(
     ["delete-purchase-order"],
@@ -241,4 +242,24 @@ export function useDeletePurchaseOrder() {
     'delete',
     (payload) => [['purchase-orders'], ['purchase-order', payload.id]]
   );
+}
+
+/**
+ * Fetches the next available Purchase Order Number.
+ */
+export function useGetNextPurchaseOrderNumber<TData = { next_purchase_order_number: string }>(
+  options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>
+) {
+  return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
+    queryKey: ["get-next-purchase-order-number"],
+    queryFn: async () => {
+      const response = await dummyApiClient<ApiResponse<TData>>(
+        buildUrl("/api/get-next-purchase-order-number")
+      );
+      return response;
+    },
+    select: (response) => response.data as TData,
+    staleTime: 0, // Always fetch fresh
+    ...options,
+  });
 }
