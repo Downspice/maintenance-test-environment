@@ -45,6 +45,15 @@ import {
 } from "@/services/setups/invoice";
 import { convertToOptionList } from "@/lib/utils";
 
+type Customer = {
+  id: string;
+  company_name: string;
+  address: string;
+  customer_shipping: {
+    address: string;
+  };
+};
+
 // Updated Schema to match backend structure
 export const InvoiceSchema = z.object({
   id: z.string().optional(),
@@ -152,7 +161,7 @@ export default function NewInvoiceForm() {
     data: customersOptionsList,
     isLoading: customersListLoading,
     error: customersListError,
-  } = useGetCustomers<Array<{ id: string; name: string }>>();
+  } = useGetCustomers<Customer[]>();
 
   const { data: nextInvoiceNumberData } = useGetNextInvoiceNumber();
 
@@ -254,6 +263,21 @@ export default function NewInvoiceForm() {
       form.setValue("invoice_number", nextInvoiceNumberData);
     }
   }, [nextInvoiceNumberData, form]);
+
+  const customerId = form.watch("customer_id");
+
+  useEffect(() => {
+    if (customerId && customersOptionsList) {
+      const customer = customersOptionsList.find((c) => c.id === customerId);
+      if (customer) {
+        form.setValue("customer_billing", customer.address || "");
+        form.setValue(
+          "customer_shipping",
+          customer.customer_shipping?.address || ""
+        );
+      }
+    }
+  }, [customerId, customersOptionsList, form]);
 
 
   function onSubmit(data: z.infer<typeof InvoiceSchema>) {

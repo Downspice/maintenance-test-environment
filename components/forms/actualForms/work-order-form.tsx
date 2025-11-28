@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,6 +14,8 @@ import {
   Plus,
   Trash2,
 } from "lucide-react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import DatePickerWrapper from "../wrappers/DatePickerWrapper";
 import InputWrapper from "../wrappers/InputWrapper";
 import { toast } from "sonner";
@@ -41,9 +43,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import AddMaintenance from "@/app/(application)/work-orders/forms/add-maintenance-form";
+import NewEmployeeForm from "./new-employee-form";
+import NewVendor from "./new-vendor-form";
 import {
   AddMaintenanceInWorkOrderInterface,
+  CreateWorkOrderSchema,
   WorkOrderSchema,
 } from "@/lib/WorkOrder/workOrder-data";
 import PartsTab from "@/app/(application)/work-orders/view/PartsTab";
@@ -58,33 +62,27 @@ import {
   useGetWorkOrder,
   useGetNextWorkOrderNumber,
 } from "@/services/setups/workOrder";
+import { useGetEquipments } from "@/services/setups/equipments";
+import {
+  useAddWorkOrderUnit,
+  useAddWorkOrderUnitMaintenance,
+  useAddWorkOrderUnitPart,
+  useAddWorkOrderUnitLabor,
+  useAddWorkOrderUnitAttachment,
+  useAddWorkOrderUnitNote,
+} from "@/services/setups/workOrder";
 import { GenericObject } from "@/types/types";
 import { useSheet } from "@/lib/sheet-providers";
 import { useConfirmDialog } from "@/lib/confirm-dialog";
+import { useGetPurchaseOrders } from "@/services/setups/purchaseOrder";
+import { convertToOptionList } from "@/lib/utils";
+import { useGetInvoices } from "@/services/setups/invoice";
+import { useGetVendors } from "@/services/setups/vendor";
+import { useGetEmployees } from "@/services/setups/employee";
 // Equipment options
-const equipmentOptions = [{ id: "1311827", name: "AC-001-07 Class 8" }];
-// Assignee options
-const assigneeOptions = [
-  { id: "User-246964", name: "Joseph Awer", group: "Employees" },
-  { id: "Vendor-324052", name: "Cameron, Inc.", group: "Vendors" },
-  { id: "Vendor-324053", name: "Davis Plumbing", group: "Vendors" },
-  {
-    id: "Vendor-324047",
-    name: "International Belt Supply",
-    group: "Vendors",
-  },
-  { id: "Vendor-324051", name: "NAPA", group: "Vendors" },
-  { id: "Vendor-324048", name: "Neff Electrical Supply", group: "Vendors" },
-  { id: "Vendor-324050", name: "Rush Truck Centers", group: "Vendors" },
-  { id: "Vendor-324049", name: "The Instrument Group", group: "Vendors" },
-];
 
-export const PurchaseOrderOptions = [
-  { id: "LOW", name: "P-00123" },
-  { id: "NORMAL", name: "P-00124" },
-  { id: "HIGH", name: "P-00128" },
-  { id: "URGENT", name: "P-001234" },
-];
+
+
 
 export function ActualWorkOrderForm() {
   const confirmDialog = useConfirmDialog();
@@ -93,8 +91,34 @@ export function ActualWorkOrderForm() {
   const { data: workOrderTypeOptions } = useGetWorkOrderTypes<GenericObject[]>();
   const { data: priorityOptions } = useGetPriorities<GenericObject[]>();
   const { data: nextWorkOrderNumberData } = useGetNextWorkOrderNumber();
+  const { data: PurchaseOrderOptions } = useGetPurchaseOrders<GenericObject[]>();
+  const { data: InvoiceOptions } = useGetInvoices<GenericObject[]>();
+  const { data: vendorOptions } = useGetVendors<GenericObject[]>();
+  const { data: employeeOptions } = useGetEmployees<GenericObject[]>();
 
+  const transformedEmployeeOptions = useMemo(() => {
+    return (employeeOptions || []).map((emp: any) => ({
+      id: emp.id,
+      name: `${emp.first_name} ${emp.last_name}`,
+      group: "Employees",
+    }));
+  }, [employeeOptions]);
 
+  const { data: equipments } = useGetEquipments<GenericObject[]>();
+  const equipmentOptions = useMemo(() => {
+    return (equipments || []).map((eq: any) => ({
+      id: eq.id,
+      name: eq.unit_number,
+    }));
+  }, [equipments]);
+
+  const transformedVendorOptions = useMemo(() => {
+    return (vendorOptions || []).map((vendor: any) => ({
+      id: vendor.id,
+      name: vendor.name,
+      group: "Vendors",
+    }));
+  }, [vendorOptions]);
 
   const [maintenanceTasks, setMaintenanceTasks] = useState<
     AddMaintenanceInWorkOrderInterface[]
@@ -106,6 +130,8 @@ export function ActualWorkOrderForm() {
   >([]);
   const [isMaintenanceSheetOpen, setIsMaintenanceSheetOpen] = useState(false);
   const [status, setStatus] = useState<string>("Open");
+  const [assigneeType, setAssigneeType] = useState<"Employee" | "Vendor">("Employee");
+  const [selectedAssigneeId, setSelectedAssigneeId] = useState<string>("");
 
   function handleAddMaintenanceTask(task: AddMaintenanceInWorkOrderInterface) {
     const taskWithStatus = { ...task, complete: false };
@@ -121,14 +147,15 @@ export function ActualWorkOrderForm() {
     setSelectedMaintenance(null);
   }
 
-  const workOrderForm = useForm<z.infer<typeof WorkOrderSchema>>({
-    resolver: zodResolver(WorkOrderSchema),
+  const workOrderForm = useForm<z.infer<typeof CreateWorkOrderSchema>>({
+    resolver: zodResolver(CreateWorkOrderSchema),
     defaultValues: {},
   });
 
   useEffect(() => {
     if (nextWorkOrderNumberData) {
-      workOrderForm.setValue("workOrderNumber", nextWorkOrderNumberData);
+      workOrderForm.setValue("wo_number", nextWorkOrderNumberData);
+      workOrderForm.setValue("status_id", "e0a77a5e-fffe-4d94-bec2-91aa2bf1750d");
     }
   }, [nextWorkOrderNumberData, workOrderForm]);
 
@@ -136,11 +163,12 @@ export function ActualWorkOrderForm() {
   const { openSheet } = useSheet();
 
   // Helper function to transform form data to API format
-  function transformFormDataToAPI(data: z.infer<typeof WorkOrderSchema>) {
+  function transformFormDataToAPI(data: z.infer<typeof CreateWorkOrderSchema>) {
     // Transform assignees
-    const assignees = (data.assigneeIds || []).map((assigneeId: string) => {
-      const assigneeOption = assigneeOptions.find((opt) => opt.id === assigneeId);
-      const assigneeType = assigneeOption?.group === "Employees" ? "Employee" : "Vendor";
+    const assignees = (data.assignee_ids || []).map((assigneeId: string) => {
+      // Check both lists to find the assignee
+      const isEmployee = transformedEmployeeOptions.find(opt => opt.id === assigneeId);
+      const assigneeType = isEmployee ? "Employee" : "Vendor";
       return {
         assignee: assigneeType,
         assignee_id: assigneeId,
@@ -148,17 +176,17 @@ export function ActualWorkOrderForm() {
     });
 
     return {
-      wo_number: parseInt(data.workOrderNumber) || 0,
-      priority_id: data.priority || "", // priority is already an ID from combobox
-      scheduled_date: data.scheduledOn ? data.scheduledOn.toISOString().split("T")[0] : "",
-      due_date: data.dueOn ? data.dueOn.toISOString().split("T")[0] : "",
-      started_date: data.startedOn ? data.startedOn.toISOString().split("T")[0] : "",
-      completed_date: data.completedOn ? data.completedOn.toISOString().split("T")[0] : "",
-      type_id: data.workOrderType || "", // workOrderType is already an ID from combobox
-      cost_center_id: data.costCenter || "", // costCenter is already an ID from combobox
-      po_id: data.po || "", // po is already an ID from combobox
-      invoice_number: data.invoice || "",
-      status_id: data.status || "", // status is already an ID
+      wo_number: data.wo_number || 0,
+      priority_id: data.priority_id || "",
+      scheduled_date: data.scheduled_date ? data.scheduled_date.toISOString().split("T")[0] : "",
+      due_date: data.due_date ? data.due_date.toISOString().split("T")[0] : "",
+      started_date: data.started_date ? data.started_date.toISOString().split("T")[0] : "",
+      completed_date: data.completed_date ? data.completed_date.toISOString().split("T")[0] : "",
+      type_id: data.type_id || "",
+      cost_center_id: data.cost_center_id || "",
+      po_id: data.po_id || "",
+      invoice_number: data.invoice_number || "",
+      status_id: data.status_id || "",
       others: ((data as any).others || []).map((item: { name: string; value: string }) => ({
         name: item.name || "",
         value: item.value || "",
@@ -167,7 +195,7 @@ export function ActualWorkOrderForm() {
     };
   }
 
-  async function handleSubmit(data: z.infer<typeof WorkOrderSchema>) {
+  async function handleSubmit(data: z.infer<typeof CreateWorkOrderSchema>) {
     try {
       const apiPayload = transformFormDataToAPI(data);
       const response = await addWorkOrderMutation.mutateAsync(apiPayload);
@@ -195,7 +223,15 @@ export function ActualWorkOrderForm() {
 
   return (
     <Form {...workOrderForm}>
-      <form onSubmit={workOrderForm.handleSubmit((data) => handleSubmit(data))}>
+      <form
+        onSubmit={workOrderForm.handleSubmit(
+          (data) => handleSubmit(data),
+          (errors) => {
+            console.error("Form validation errors:", errors);
+            toast.error("Please check the form for errors");
+          }
+        )}
+      >
         <div className="grid grid-cols-7 space-x-2">
           <div className="col-span-2 space-y-1">
             <Fieldset
@@ -203,15 +239,15 @@ export function ActualWorkOrderForm() {
                 <>
                   <InputWrapper
                     control={workOrderForm.control}
-                    name="workOrderNumber"
+                    name="wo_number"
                     label="WO Number"
-                    type="text"
+                    type="number"
                     value={""}
                     required
                   />
                   <ComboboxFieldWrapper
                     control={workOrderForm.control}
-                    name="priority"
+                    name="priority_id"
                     label="Priority"
                     options={(priorityOptions || []) as GenericObject[]}
                     required={true}
@@ -226,23 +262,23 @@ export function ActualWorkOrderForm() {
                 <>
                   <DatePickerWrapper
                     control={workOrderForm.control}
-                    name="scheduledOn"
+                    name="scheduled_date"
                     label="Scheduled"
                   />
 
                   <DatePickerWrapper
                     control={workOrderForm.control}
-                    name="dueOn"
+                    name="due_date"
                     label="Due"
                   />
                   <DatePickerWrapper
                     control={workOrderForm.control}
-                    name="startedOn"
+                    name="started_date"
                     label="Started On"
                   />
                   <DatePickerWrapper
                     control={workOrderForm.control}
-                    name="completedOn"
+                    name="completed_date"
                     label="Completed On"
                   />
                 </>
@@ -252,15 +288,59 @@ export function ActualWorkOrderForm() {
               legend="Assignees"
               content={
                 <>
-                  <MultiComboboxWrapper
-                    control={workOrderForm.control}
-                    name="assigneeIds"
-                    label="Assignee"
-                    options={assigneeOptions}
-                    placeholder="Select assignees"
-                    searchPlaceholder="Search assignees..."
-                    maxSelections={2}
-                  />
+                  <div className="space-y-4">
+                    <RadioGroup
+                      defaultValue="Employee"
+                      onValueChange={(val) => setAssigneeType(val as "Employee" | "Vendor")}
+                      className="flex flex-row space-x-4"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="Employee" id="r1" />
+                        <Label htmlFor="r1">Employee</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="Vendor" id="r2" />
+                        <Label htmlFor="r2">Vendor</Label>
+                      </div>
+                    </RadioGroup>
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1">
+                        <MultiComboboxWrapper
+                          control={workOrderForm.control}
+                          name="assignee_ids"
+                          label=""
+                          options={assigneeType === "Employee" ? transformedEmployeeOptions : transformedVendorOptions}
+                          placeholder={`Select ${assigneeType}s`}
+                          searchPlaceholder={`Search ${assigneeType}s...`}
+                          maxSelections={assigneeType === "Employee" ? 2 : 1}
+                        />
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          if (assigneeType === "Employee") {
+                            openSheet({
+                              title: "Add New Employee",
+                              description: "Create a new employee record",
+                              content: <NewEmployeeForm />,
+                            });
+                          } else {
+                            openSheet({
+                              title: "Add New Vendor",
+                              description: "Create a new vendor record",
+                              content: <NewVendor />,
+                            });
+                          }
+                        }}
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+
+
                 </>
               }
             />
@@ -271,30 +351,29 @@ export function ActualWorkOrderForm() {
                 <>
                   <ComboboxFieldWrapper
                     control={workOrderForm.control}
-                    name="workOrderType"
+                    name="type_id"
                     label="Type"
                     options={(workOrderTypeOptions || []) as GenericObject[]}
                   />
 
                   <ComboboxFieldWrapper
                     control={workOrderForm.control}
-                    name="costCenter"
+                    name="cost_center_id"
                     label="Cost center"
                     options={(costCenterOptions || []) as GenericObject[]}
                   />
 
                   <ComboboxFieldWrapper
                     control={workOrderForm.control}
-                    name="po"
+                    name="po_id"
                     label="PO#"
-                    options={PurchaseOrderOptions}
+                    options={convertToOptionList(PurchaseOrderOptions ?? [], "id", "po_number")}
                   />
-                  <InputWrapper
+                  <ComboboxFieldWrapper
                     control={workOrderForm.control}
-                    name="invoice"
+                    name="invoice_number"
                     label="Invoice"
-                    value={""}
-                    type={"text"}
+                    options={convertToOptionList(InvoiceOptions ?? [], "id", "invoice_number")}
                   />
                   <CustomFieldsWrapper
                     control={workOrderForm.control}
@@ -304,188 +383,9 @@ export function ActualWorkOrderForm() {
                 </>
               }
             />
-          </div>
-          <div className="col-span-5 space-y-2">
-            <div className="flex justify-end space-x-1 border border-b-black/20">
-              <div className="flex gap-2">
-                {WorkOrderStatuses?.map((stat) => (
-                  <button
-                    key={stat?.id}
-                    type="button"
-                    className={`p-3 h-fit rounded-md border text-sm font-medium ${status === stat.name
-                      ? stat.name.toLowerCase().includes("open")
-                        ? "bg-green-500 text-white" // Open = Fresh, ready to start
-                        : stat.name.toLowerCase().includes("progress")
-                          ? "bg-blue-500 text-white" // In Progress = Active, working
-                          : stat.name.toLowerCase().includes("hold")
-                            ? "bg-yellow-400 text-white" // On Hold = Caution, paused
-                            : stat.name.toLowerCase().includes("complete")
-                              ? "bg-purple-600 text-white" // Complete = Done, celebratory
-                              : stat.name.toLowerCase().includes("cancelled")
-                                ? "bg-red-600 text-white" // Cancelled = Error or terminated
-                                : "bg-gray-400 text-white" // Fallback for unexpected status
-                      : "bg-white text-gray-700 border border-gray-300"
-                      }`}
-                    onClick={() => {
-                      workOrderForm.setValue("status", stat?.id ?? "");
-                      setStatus(stat.name);
-                    }}
-                  >
-                    {stat.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div>
-              <div className="flex flex-row justify-between space-x-2 pb-2">
-                <div className="flex w-fit items-end">
-                  <ComboboxFieldWrapper
-                    control={workOrderForm.control}
-                    name="equipment"
-                    label="Unit"
-                    options={equipmentOptions}
-                    required={true}
-                  />
-                  {/* <Button variant="secondary" size={"icon"}>
-                            <Plus />
-                          </Button> */}
-                </div>
-                <div className="flex w-fit">
-                  <InputWrapper
-                    control={workOrderForm.control}
-                    name="hours"
-                    label="Hours"
-                    value={""}
-                    type={"number"}
-                  />
-                </div>
-              </div>
-            </div>
-            <div>
-              <Tabs defaultValue="Maintenance" className="w-full">
-                <TabsList>
-                  <TabsTrigger value="Maintenance">Maintenance</TabsTrigger>
-                  <TabsTrigger value="Parts">Parts</TabsTrigger>
-                  <TabsTrigger value="Labor">Labor</TabsTrigger>
-                  <TabsTrigger value="Attachments">Attachments</TabsTrigger>
-                  <TabsTrigger value="Notes">Notes</TabsTrigger>
-                </TabsList>
-                <TabsContent value="Maintenance">
-                  <div className="mb-4">
-                    <AddMaintenance
-                      data={selectedMaintenance}
-                      onAdd={handleAddMaintenanceTask}
-                      open={isMaintenanceSheetOpen}
-                      setOpen={setIsMaintenanceSheetOpen}
-                    />
-                  </div>
 
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Task Name</TableHead>
-                        <TableHead>Total</TableHead>
-                        <TableHead>Complete</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {maintenanceTasks.map((task, index) => (
-                        <TableRow key={index}>
-                          <TableCell>{task.task}</TableCell>
-                          <TableCell>
-                            $
-                            {(
-                              (parseFloat(task.partsCost) || 0) +
-                              (parseFloat(task.laborCost) || 0)
-                            ).toFixed(2)}
-                          </TableCell>
-                          <TableCell>
-                            <input
-                              type="checkbox"
-                              checked={task.complete}
-                              onChange={async (e) => {
-                                if (e.target.checked) {
-                                  const confirmed = await confirmDialog({ title: "Mark task complete?", confirmText: "Mark" });
-                                  if (confirmed) {
-                                    setMaintenanceTasks((prev) =>
-                                      prev.map((t, i) =>
-                                        i === index
-                                          ? { ...t, complete: true }
-                                          : t
-                                      )
-                                    );
-                                  }
-                                } else {
-                                  // Optional: uncheck logic, or disable unchecking
-                                  setMaintenanceTasks((prev) =>
-                                    prev.map((t, i) =>
-                                      i === index
-                                        ? { ...t, complete: false }
-                                        : t
-                                    )
-                                  );
-                                }
-                              }}
-                            />
-                          </TableCell>
-
-                          <TableCell className="space-x-2">
-                            <Button
-                              onClick={() => {
-                                setSelectedMaintenance(task);
-                                setIsMaintenanceSheetOpen(true);
-                              }}
-                            >
-                              <Pen />
-                            </Button>
-                            <Button
-                              variant="destructive"
-                              size="sm"
-                              onClick={() =>
-                                setMaintenanceTasks((prev) =>
-                                  prev.filter((_, i) => i !== index)
-                                )
-                              }
-                            >
-                              Delete
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TabsContent>
-                <TabsContent value="Parts">
-                  <PartsTab
-                    workOrderParts={workOrderForm.watch("parts") || []}
-                    maintenanceItems={workOrderForm.watch("maintenance") || []}
-                    onUpdateParts={(updatedParts) =>
-                      workOrderForm.setValue("parts", updatedParts)
-                    }
-                  />
-                </TabsContent>
-                <TabsContent value="Labor">
-                  <LaborTab
-                    maintenanceItems={workOrderForm.watch("maintenance") || []}
-                    laborEntries={workOrderForm.watch("labor") || []}
-                    onUpdateLabor={(updated) =>
-                      workOrderForm.setValue("labor", updated)
-                    }
-                  />
-                </TabsContent>
-                <TabsContent value="Attachments"> </TabsContent>
-                <TabsContent value="Notes">
-                  <NotesTab
-                    notes={workOrderForm.watch("notes") || []}
-                    onUpdateNotes={(updated) =>
-                      workOrderForm.setValue("notes", updated)
-                    }
-                  />
-                </TabsContent>
-              </Tabs>
-            </div>
           </div>
+
         </div>
         <div className="flex justify-between gap-x-4 my-8 w-full">
           <Button className=" w-full">
@@ -520,23 +420,33 @@ function EditWorkOrderSheetContent({ workOrderId }: { workOrderId: string }) {
 
   // Transform API data to form format
   const apiData = workOrderData as any;
-  const formData: Partial<z.infer<typeof WorkOrderSchema>> = {
-    workOrderNumber: apiData?.wo_number?.toString() || "",
-    priority: apiData?.priority_id || "",
-    scheduledOn: apiData?.scheduled_date ? new Date(apiData.scheduled_date) : undefined,
-    dueOn: apiData?.due_date ? new Date(apiData.due_date) : undefined,
-    startedOn: apiData?.started_date ? new Date(apiData.started_date) : undefined,
-    completedOn: apiData?.completed_date ? new Date(apiData.completed_date) : undefined,
-    workOrderType: apiData?.type_id || "",
-    costCenter: apiData?.cost_center_id || "",
-    po: apiData?.po_id || "",
-    invoice: apiData?.invoice_number || "",
-    status: apiData?.status_id || "",
+  const formData: Partial<z.infer<typeof CreateWorkOrderSchema>> = {
+    wo_number: apiData?.wo_number || apiData?.workOrderNumber || 0,
+    priority_id: apiData?.priority_id || apiData?.priority || "",
+    scheduled_date: apiData?.scheduled_date ? new Date(apiData.scheduled_date) : apiData?.scheduledOn ? new Date(apiData.scheduledOn) : undefined,
+    due_date: apiData?.due_date ? new Date(apiData.due_date) : apiData?.dueOn ? new Date(apiData.dueOn) : undefined,
+    started_date: apiData?.started_date ? new Date(apiData.started_date) : apiData?.startedOn ? new Date(apiData.startedOn) : undefined,
+    completed_date: apiData?.completed_date ? new Date(apiData.completed_date) : apiData?.completedOn ? new Date(apiData.completedOn) : undefined,
+    type_id: apiData?.type_id || apiData?.workOrderType || "",
+    cost_center_id: apiData?.cost_center_id || apiData?.costCenter || "",
+    po_id: apiData?.po_id || apiData?.po || "",
+    invoice_number: apiData?.invoice_number || apiData?.invoice || "",
+    status_id: apiData?.status_id || apiData?.status || "",
     others: (apiData?.others || []) as { name: string; value: string }[],
-    assigneeIds: (apiData?.assignees || []).map((a: any) => a.assignee_id),
+    assignee_ids: apiData?.assignee_ids || apiData?.assigneeIds || (apiData?.assignees || []).map((a: any) => a.assignee_id || a.id),
+    equipment_id: apiData?.units?.[0]?.unit_id || apiData?.units?.[0]?.equipment_id || apiData?.units?.[0]?.id || apiData?.equipment_id || apiData?.equipment || "",
+    hours: apiData?.units?.[0]?.hours || apiData?.hours || 0,
+    maintenance: apiData?.maintenance || [],
+    parts: apiData?.parts || [],
+    labor: apiData?.labor || [],
+    notes: apiData?.notes || [],
+    units: apiData?.units || [],
   };
 
-  return <EditActualWorkOrderForm workOrderId={workOrderId} initialData={formData} onClose={closeSheet} />;
+  console.log("EditWorkOrderSheetContent - API Data:", apiData);
+  console.log("EditWorkOrderSheetContent - Form Data:", formData);
+
+  return <EditActualWorkOrderForm workOrderId={workOrderId} initialData={formData} onClose={closeSheet} onRefetch={refetch} />;
 }
 
 export default function NewWorkOrderForm() {
@@ -566,58 +476,150 @@ export default function NewWorkOrderForm() {
   );
 }
 
-export function EditActualWorkOrderForm({
+function EditActualWorkOrderFormContent({
   children,
   data,
   onEdit,
   workOrderId,
   initialData,
   onClose,
+  onRefetch,
 }: {
   children?: React.ReactNode;
   data?: any;
   onEdit?: (data: any) => void;
   workOrderId?: string;
-  initialData?: Partial<z.infer<typeof WorkOrderSchema>>;
+  initialData?: Partial<z.infer<typeof CreateWorkOrderSchema>>;
   onClose?: () => void;
+  onRefetch?: () => void;
 }) {
   const confirmDialog = useConfirmDialog();
-  const [open, setOpen] = useState(false);
+
   const { data: priorityOptions } = useGetPriorities();
   const { data: workOrderTypeOptions } = useGetWorkOrderTypes();
   const { data: costCenterOptions } = useGetCostCenters();
   const { data: WorkOrderStatuses } = useGetWorkOrderStatuses();
+  const { data: PurchaseOrderOptions } = useGetPurchaseOrders<GenericObject[]>();
+  const { data: InvoiceOptions } = useGetInvoices<GenericObject[]>();
+  const { data: vendorOptions } = useGetVendors<GenericObject[]>();
+  const { data: employeeOptions } = useGetEmployees<GenericObject[]>();
+  const { data: equipments } = useGetEquipments<GenericObject[]>();
+
+  const equipmentOptions = useMemo(() => {
+    return (equipments || []).map((eq: any) => ({
+      id: eq.id,
+      name: eq.unit_number,
+    }));
+  }, [equipments]);
+
 
   const [maintenanceTasks, setMaintenanceTasks] = useState<
     AddMaintenanceInWorkOrderInterface[]
   >([]);
   const [selectedMaintenance, setSelectedMaintenance] =
     useState<AddMaintenanceInWorkOrderInterface | null>(null);
-  const [maintenanceList, setMaintenanceList] = useState<
-    AddMaintenanceInWorkOrderInterface[]
-  >([]);
+
   const [isMaintenanceSheetOpen, setIsMaintenanceSheetOpen] = useState(false);
+  const [isAddUnitSheetOpen, setIsAddUnitSheetOpen] = useState(false);
   const [status, setStatus] = useState<string>("Open");
+  const [assigneeType, setAssigneeType] = useState<"Employee" | "Vendor">("Employee");
+
+  const transformedEmployeeOptions = useMemo(() => {
+    return (employeeOptions || []).map((emp: any) => ({
+      id: emp.id,
+      name: `${emp.first_name} ${emp.last_name} ${emp?.middle_name}`,
+    }));
+  }, [employeeOptions]);
+
+  const transformedVendorOptions = useMemo(() => {
+    return (vendorOptions || []).map((ven: any) => ({
+      id: ven.id,
+      name: ven.name,
+      group: "Vendors",
+    }));
+  }, [vendorOptions]);
+
+  const { mutate: addMaintenance } = useAddWorkOrderUnitMaintenance();
 
   function handleAddMaintenanceTask(task: AddMaintenanceInWorkOrderInterface) {
-    const taskWithStatus = { ...task, complete: false };
-    setMaintenanceTasks((prev) => {
-      if (selectedMaintenance) {
-        // If editing, replace the task instead of adding
-        return prev.map((t, i) =>
-          t === selectedMaintenance ? taskWithStatus : t
-        );
-      }
-      return [...prev, taskWithStatus];
+    const unitId = workOrderForm.getValues("equipment_id");
+    if (!unitId) {
+      toast.error("Please select a unit first.");
+      return;
+    }
+
+    const payload = {
+      unit_id: unitId,
+      maintenance: [
+        {
+          category: task.usage,
+          task_id: task.task, // Assuming this is the ID
+          type_id: task.taskType, // Assuming this is the ID
+          other_task_name: "", // Handle if "Other" is selected?
+          other_type_name: "",
+          parts_cost: parseFloat(task.partsCost) || 0,
+          labor_cost: parseFloat(task.laborCost) || 0,
+          total: parseFloat(task.total || "0") || 0,
+          notes: "", // Add notes if available in task interface
+          parts: (task.parts || []).map((p) => ({
+            part_id: p.partNumber, // Assuming partNumber is the ID
+            name: p.name,
+            description: "",
+            vendor_id: "",
+            cost_center_id: "",
+            quantity: p.quantityUsed,
+            unit_cost: p.unit_cost,
+            extended_cost: p.totalCost,
+            is_warranty_replaced: false,
+            po_id: "",
+            is_part_under_warranty: false,
+            days: "",
+            hours: "",
+            expiry_date: "",
+          })),
+          labor: [
+            {
+              performed_by: "Employee", // Default or from task?
+              technician_id: "", // Need to map from task.labor.technicianName (if it's ID)
+              work_performed: task.labor.workPerformed,
+              cost_center_id: task.labor.costCenter,
+              labor_rate: task.labor.labor_rate,
+              is_under_warranty: false,
+              hours: task.labor.hours,
+              total_cost: task.labor.totalCost,
+            },
+          ],
+        },
+      ],
+    };
+
+    addMaintenance(payload, {
+      onSuccess: () => {
+        toast.success("Maintenance task added successfully");
+        const taskWithStatus = { ...task, complete: false };
+        setMaintenanceTasks((prev) => {
+          if (selectedMaintenance) {
+            return prev.map((t, i) =>
+              t === selectedMaintenance ? taskWithStatus : t
+            );
+          }
+          return [...prev, taskWithStatus];
+        });
+        setSelectedMaintenance(null);
+        setIsMaintenanceSheetOpen(false);
+      },
+      onError: (error) => {
+        toast.error("Failed to add maintenance task");
+        console.error(error);
+      },
     });
-    setSelectedMaintenance(null);
   }
 
   // Use initialData if provided, otherwise fall back to data
   const formData = initialData || data || {};
 
-  const workOrderForm = useForm<z.infer<typeof WorkOrderSchema>>({
-    resolver: zodResolver(WorkOrderSchema),
+  const workOrderForm = useForm<z.infer<typeof CreateWorkOrderSchema>>({
+    resolver: zodResolver(CreateWorkOrderSchema),
     defaultValues: formData,
   });
 
@@ -630,7 +632,28 @@ export function EditActualWorkOrderForm({
     }
   }, [initialData, workOrderForm]);
 
-  async function handleSubmit(data: z.infer<typeof WorkOrderSchema>) {
+  // Watch for equipment selection changes
+  const selectedEquipmentId = workOrderForm.watch("equipment_id");
+  const [initialEquipmentId, setInitialEquipmentId] = useState<string | undefined>(initialData?.equipment_id);
+
+  useEffect(() => {
+    // If initial data loads later, update the ref
+    if (initialData?.equipment_id && !initialEquipmentId) {
+      setInitialEquipmentId(initialData.equipment_id);
+    }
+  }, [initialData, initialEquipmentId]);
+
+  useEffect(() => {
+    if (selectedEquipmentId && selectedEquipmentId !== initialEquipmentId) {
+      // Wait a bit as requested ("wait a while")
+      const timer = setTimeout(() => {
+        setIsAddUnitSheetOpen(true);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [selectedEquipmentId, initialEquipmentId]);
+
+  async function handleSubmit(data: z.infer<typeof CreateWorkOrderSchema>) {
     console.log(data);
     // Here you would typically send the data to your API
     toast.success("Work Order updated successfully!");
@@ -640,177 +663,214 @@ export function EditActualWorkOrderForm({
   }
 
   // If used directly (without Sheet wrapper), render just the form
-  if (workOrderId || initialData) {
-    return (
-      <Form {...workOrderForm}>
-        <form
-          onSubmit={workOrderForm.handleSubmit((data) =>
-            handleSubmit(data)
-          )}
-        >
-          <div className="grid grid-cols-7 space-x-2">
-            <div className="col-span-2 space-y-1">
-              <Fieldset
-                content={
-                  <>
-                    <InputWrapper
-                      control={workOrderForm.control}
-                      name="workOrderNumber"
-                      label="WO Number"
-                      type="text"
-                      value={""}
-                      required
-                    />
-                    <ComboboxFieldWrapper
-                      control={workOrderForm.control}
-                      name="priority"
-                      label="Priority"
-                      options={(priorityOptions || []) as GenericObject[]}
-                      required={true}
-                    />
-                  </>
-                }
-              />
 
-              <Fieldset
-                legend="Dates"
-                content={
-                  <>
-                    <DatePickerWrapper
-                      control={workOrderForm.control}
-                      name="scheduledOn"
-                      label="Scheduled"
-                    />
+  return (
+    <Form {...workOrderForm}>
+      <form
+        onSubmit={workOrderForm.handleSubmit((data) =>
+          handleSubmit(data)
+        )}
+      >
+        <div className="grid grid-cols-7 space-x-2">
+          <div className="col-span-2 space-y-1">
+            <Fieldset
+              content={
+                <>
+                  <InputWrapper
+                    control={workOrderForm.control}
+                    name="wo_number"
+                    label="WO Number"
+                    type="number"
+                    value={""}
+                    required
+                  />
+                  <ComboboxFieldWrapper
+                    control={workOrderForm.control}
+                    name="priority_id"
+                    label="Priority"
+                    options={(priorityOptions || []) as GenericObject[]}
+                    required={true}
+                  />
+                </>
+              }
+            />
 
-                    <DatePickerWrapper
-                      control={workOrderForm.control}
-                      name="dueOn"
-                      label="Due"
-                    />
-                    <DatePickerWrapper
-                      control={workOrderForm.control}
-                      name="startedOn"
-                      label="Started On"
-                    />
-                    <DatePickerWrapper
-                      control={workOrderForm.control}
-                      name="completedOn"
-                      label="Completed On"
-                    />
-                  </>
-                }
-              />
-              <Fieldset
-                legend="Assignees"
-                content={
-                  <>
-                    <MultiComboboxWrapper
-                      control={workOrderForm.control}
-                      name="assigneeIds"
-                      label="Assignee"
-                      options={assigneeOptions}
-                      placeholder="Select assignees"
-                      searchPlaceholder="Search assignees..."
-                      maxSelections={2}
-                    />
-                  </>
-                }
-              />
+            <Fieldset
+              legend="Dates"
+              content={
+                <>
+                  <DatePickerWrapper
+                    control={workOrderForm.control}
+                    name="scheduled_date"
+                    label="Scheduled"
+                  />
 
-              <Fieldset
-                legend="Misc. Details"
-                content={
-                  <>
-                    <ComboboxFieldWrapper
-                      control={workOrderForm.control}
-                      name="workOrderType"
-                      label="Type"
-                      options={(workOrderTypeOptions || []) as GenericObject[]}
-                    />
-
-                    <ComboboxFieldWrapper
-                      control={workOrderForm.control}
-                      name="costCenter"
-                      label="Cost center"
-                      options={(costCenterOptions || []) as GenericObject[]}
-                    />
-
-                    <ComboboxFieldWrapper
-                      control={workOrderForm.control}
-                      name="po"
-                      label="PO#"
-                      options={PurchaseOrderOptions}
-                    />
-                    <InputWrapper
-                      control={workOrderForm.control}
-                      name="invoice"
-                      label="Invoice"
-                      value={""}
-                      type={"text"}
-                    />
-                    <CustomFieldsWrapper
-                      control={workOrderForm.control}
-                      name="others"
-                      label={"Custom Fields"}
-                    />
-                  </>
-                }
-              />
-            </div>
-            <div className="col-span-5 space-y-2">
-              <div className="flex justify-end space-x-1 border border-b-black/20">
-                <div className="flex gap-2">
-                  {((WorkOrderStatuses || []) as GenericObject[]).map((stat: GenericObject) => (
-                    <button
-                      key={stat?.id}
-                      type="button"
-                      className={`p-3 h-fit rounded-md border text-sm font-medium ${status === (stat?.name as string)
-                        ? (stat?.name as string).toLowerCase().includes("open")
-                          ? "bg-green-500 text-white"
-                          : (stat?.name as string).toLowerCase().includes("progress")
-                            ? "bg-blue-500 text-white"
-                            : (stat?.name as string).toLowerCase().includes("hold")
-                              ? "bg-yellow-400 text-white"
-                              : (stat?.name as string).toLowerCase().includes("complete")
-                                ? "bg-purple-600 text-white"
-                                : (stat?.name as string).toLowerCase().includes("cancelled")
-                                  ? "bg-red-600 text-white"
-                                  : "bg-gray-400 text-white"
-                        : "bg-white text-gray-700 border border-gray-300"
-                        }`}
-                      onClick={() => {
-                        workOrderForm.setValue("status", (stat?.id as string) ?? "");
-                        setStatus((stat?.name as string) ?? "");
-                      }}
+                  <DatePickerWrapper
+                    control={workOrderForm.control}
+                    name="due_date"
+                    label="Due"
+                  />
+                  <DatePickerWrapper
+                    control={workOrderForm.control}
+                    name="started_date"
+                    label="Started On"
+                  />
+                  <DatePickerWrapper
+                    control={workOrderForm.control}
+                    name="completed_date"
+                    label="Completed On"
+                  />
+                </>
+              }
+            />
+            <Fieldset
+              legend="Assignees"
+              content={
+                <>
+                  <div className="space-y-4">
+                    <RadioGroup
+                      defaultValue="Employee"
+                      onValueChange={(val) => setAssigneeType(val as "Employee" | "Vendor")}
+                      className="flex flex-row space-x-4"
                     >
-                      {stat?.name as string}
-                    </button>
-                  ))}
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="Employee" id="edit-r1" />
+                        <Label htmlFor="edit-r1">Employee</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="Vendor" id="edit-r2" />
+                        <Label htmlFor="edit-r2">Vendor</Label>
+                      </div>
+                    </RadioGroup>
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1">
+                        <MultiComboboxWrapper
+                          control={workOrderForm.control}
+                          name="assignee_ids"
+                          label=""
+                          options={assigneeType === "Employee" ? transformedEmployeeOptions : transformedVendorOptions}
+                          placeholder={`Select ${assigneeType}s`}
+                          searchPlaceholder={`Search ${assigneeType}s...`}
+                          maxSelections={assigneeType === "Employee" ? 2 : 1}
+                        />
+                      </div>
+                      <Button
+                        variant="secondary"
+                        size="icon"
+                        type="button"
+                        onClick={() => {
+                          if (assigneeType === "Employee") {
+                            // Logic to open new employee sheet if needed
+                            toast.info("Add new employee feature coming soon");
+                          } else {
+                            // Logic to open new vendor sheet if needed
+                            toast.info("Add new vendor feature coming soon");
+                          }
+                        }}
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </>
+              }
+            />
+
+            <Fieldset
+              legend="Misc. Details"
+              content={
+                <>
+                  <ComboboxFieldWrapper
+                    control={workOrderForm.control}
+                    name="type_id"
+                    label="Type"
+                    options={(workOrderTypeOptions || []) as GenericObject[]}
+                  />
+
+                  <ComboboxFieldWrapper
+                    control={workOrderForm.control}
+                    name="cost_center_id"
+                    label="Cost center"
+                    options={(costCenterOptions || []) as GenericObject[]}
+                  />
+
+                  <ComboboxFieldWrapper
+                    control={workOrderForm.control}
+                    name="po_id"
+                    label="PO#"
+                    options={convertToOptionList(PurchaseOrderOptions ?? [], "id", "po_number")}
+                  />
+                  <ComboboxFieldWrapper
+                    control={workOrderForm.control}
+                    name="invoice_number"
+                    label="Invoice"
+                    options={convertToOptionList(InvoiceOptions ?? [], "id", "invoice_number")}
+                  />
+                  <CustomFieldsWrapper
+                    control={workOrderForm.control}
+                    name="others"
+                    label={"Custom Fields"}
+                  />
+                </>
+              }
+            />
+          </div>
+          <div className="col-span-5 space-y-2">
+            <div className="flex justify-end space-x-1 border border-b-black/20">
+              <div className="flex gap-2">
+                {((WorkOrderStatuses || []) as GenericObject[]).map((stat: GenericObject) => (
+                  <button
+                    key={stat?.id}
+                    type="button"
+                    className={`p-3 h-fit rounded-md border text-sm font-medium ${status === (stat?.name as string)
+                      ? (stat?.name as string).toLowerCase().includes("open")
+                        ? "bg-green-500 text-white"
+                        : (stat?.name as string).toLowerCase().includes("progress")
+                          ? "bg-blue-500 text-white"
+                          : (stat?.name as string).toLowerCase().includes("hold")
+                            ? "bg-yellow-400 text-white"
+                            : (stat?.name as string).toLowerCase().includes("complete")
+                              ? "bg-purple-600 text-white"
+                              : (stat?.name as string).toLowerCase().includes("cancelled")
+                                ? "bg-red-600 text-white"
+                                : "bg-gray-400 text-white"
+                      : "bg-white text-gray-700 border border-gray-300"
+                      }`}
+                    onClick={() => {
+                      workOrderForm.setValue("status_id", stat?.id);
+                      setStatus((stat?.name as string) ?? "");
+                    }}
+                  >
+                    {stat?.name as string}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <div className="flex flex-row justify-between space-x-2 pb-2">
+                <div className="flex w-fit items-end">
+                  <ComboboxFieldWrapper
+                    control={workOrderForm.control}
+                    name="equipment_id"
+                    label="Unit"
+                    options={equipmentOptions}
+                    required={true}
+                  />
+
+                </div>
+                <div className="flex w-fit">
+                  <InputWrapper
+                    control={workOrderForm.control}
+                    name="hours"
+                    label="Hours"
+                    value={""}
+                    type={"number"}
+                  />
                 </div>
               </div>
-              <div>
-                <div className="flex flex-row justify-between space-x-2 pb-2">
-                  <div className="flex w-fit items-end">
-                    <ComboboxFieldWrapper
-                      control={workOrderForm.control}
-                      name="equipment"
-                      label="Unit"
-                      options={equipmentOptions}
-                      required={true}
-                    />
-                  </div>
-                  <div className="flex w-fit">
-                    <InputWrapper
-                      control={workOrderForm.control}
-                      name="hours"
-                      label="Hours"
-                      value={""}
-                      type={"number"}
-                    />
-                  </div>
-                </div>
-              </div>
-              <div>
+            </div>
+            {(workOrderForm.watch("units")?.length ?? 0) > 0 && (
+              <div id="orderDetailsTabs">
                 <Tabs defaultValue="Maintenance" className="w-full">
                   <TabsList>
                     <TabsTrigger value="Maintenance">Maintenance</TabsTrigger>
@@ -853,11 +913,9 @@ export function EditActualWorkOrderForm({
                               <input
                                 type="checkbox"
                                 checked={task.complete}
-                                onChange={(e) => {
+                                onChange={async (e) => {
                                   if (e.target.checked) {
-                                    const confirmed = window.confirm(
-                                      "Mark this task as complete?"
-                                    );
+                                    const confirmed = await confirmDialog({ title: "Mark task complete?", confirmText: "Mark" });
                                     if (confirmed) {
                                       setMaintenanceTasks((prev) =>
                                         prev.map((t, i) =>
@@ -868,6 +926,7 @@ export function EditActualWorkOrderForm({
                                       );
                                     }
                                   } else {
+                                    // Optional: uncheck logic, or disable unchecking
                                     setMaintenanceTasks((prev) =>
                                       prev.map((t, i) =>
                                         i === index
@@ -927,7 +986,7 @@ export function EditActualWorkOrderForm({
                   <TabsContent value="Attachments"> </TabsContent>
                   <TabsContent value="Notes">
                     <NotesTab
-                      notes={workOrderForm.watch("notes") || []}
+                      notes={(workOrderForm.watch("notes") || []) as NotesInterface[]}
                       onUpdateNotes={(updated) =>
                         workOrderForm.setValue("notes", updated)
                       }
@@ -935,345 +994,138 @@ export function EditActualWorkOrderForm({
                   </TabsContent>
                 </Tabs>
               </div>
-            </div>
+            )}
           </div>
-          <div className="flex justify-between gap-x-4 my-8 w-full">
-            <Button className=" w-full">
-              <GitPullRequestArrow className="mr-2" /> Update Work Order
-            </Button>
-          </div>
-        </form>
-      </Form>
-    );
+        </div>
+        <div className="flex justify-between gap-x-4 my-8 w-full">
+          <Button className=" w-full">
+            <GitPullRequestArrow className="mr-2" /> Update Work Order
+          </Button>
+        </div>
+      </form>
+      <UnitHoursDialog
+        open={isAddUnitSheetOpen}
+        onOpenChange={setIsAddUnitSheetOpen}
+        unitId={workOrderForm.watch("equipment_id")}
+        unitName={equipmentOptions?.find((e) => e.id === workOrderForm.watch("equipment_id"))?.name || ""}
+        workOrderId={workOrderId || ""}
+        onSuccess={() => {
+          setIsAddUnitSheetOpen(false);
+          // Optionally trigger a refetch of the work order data here
+          if (onRefetch) onRefetch();
+        }}
+        onCancel={() => {
+          setIsAddUnitSheetOpen(false);
+          toast.info("Unit addition cancelled. No hours entered.");
+        }}
+      />
+    </Form>
+  );
+}
+
+export function EditActualWorkOrderForm(props: {
+  children?: React.ReactNode;
+  data?: any;
+  onEdit?: (data: any) => void;
+  workOrderId?: string;
+  initialData?: Partial<z.infer<typeof CreateWorkOrderSchema>>;
+  onClose?: () => void;
+  onRefetch?: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+
+  // If controlled (has ID or data), render directly
+  if (props.workOrderId || props.initialData) {
+    return <EditActualWorkOrderFormContent {...props} />;
   }
 
-  // Original Sheet-based usage
-
+  // Otherwise render with Sheet wrapper
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>{children}</SheetTrigger>
-      <SheetContent>
+      <SheetTrigger asChild>{props.children}</SheetTrigger>
+      <SheetContent className="w-3/4 sm:max-w-screen-lg">
         <SheetHeader>
           <SheetTitle>
             <div className="flex justify-between">
-              <div>Edit Fluid consumption</div>
+              <div>Edit Work Order</div>
             </div>
           </SheetTitle>
         </SheetHeader>
         <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
-          <Form {...workOrderForm}>
-            <form
-              onSubmit={workOrderForm.handleSubmit((data) =>
-                handleSubmit(data)
-              )}
-            >
-              <div className="grid grid-cols-7 space-x-2">
-                <div className="col-span-2 space-y-1">
-                  <Fieldset
-                    content={
-                      <>
-                        <InputWrapper
-                          control={workOrderForm.control}
-                          name="workOrderNumber"
-                          label="WO Number"
-                          type="text"
-                          value={""}
-                          required
-                        />
-                        <ComboboxFieldWrapper
-                          control={workOrderForm.control}
-                          name="priority"
-                          label="Priority"
-                          options={(priorityOptions || []) as GenericObject[]}
-                          required={true}
-                        />
-                      </>
-                    }
-                  />
-
-                  <Fieldset
-                    legend="Dates"
-                    content={
-                      <>
-                        <DatePickerWrapper
-                          control={workOrderForm.control}
-                          name="scheduledOn"
-                          label="Scheduled"
-                        />
-
-                        <DatePickerWrapper
-                          control={workOrderForm.control}
-                          name="dueOn"
-                          label="Due"
-                        />
-                        <DatePickerWrapper
-                          control={workOrderForm.control}
-                          name="startedOn"
-                          label="Started On"
-                        />
-                        <DatePickerWrapper
-                          control={workOrderForm.control}
-                          name="completedOn"
-                          label="Completed On"
-                        />
-                      </>
-                    }
-                  />
-                  <Fieldset
-                    legend="Assignees"
-                    content={
-                      <>
-                        <MultiComboboxWrapper
-                          control={workOrderForm.control}
-                          name="assigneeIds"
-                          label="Assignee"
-                          options={assigneeOptions}
-                          placeholder="Select assignees"
-                          searchPlaceholder="Search assignees..."
-                          maxSelections={2}
-                        />
-                      </>
-                    }
-                  />
-
-                  <Fieldset
-                    legend="Misc. Details"
-                    content={
-                      <>
-                        <ComboboxFieldWrapper
-                          control={workOrderForm.control}
-                          name="workOrderType"
-                          label="Type"
-                          options={(workOrderTypeOptions || []) as GenericObject[]}
-                        />
-
-                        <ComboboxFieldWrapper
-                          control={workOrderForm.control}
-                          name="costCenter"
-                          label="Cost center"
-                          options={(costCenterOptions || []) as GenericObject[]}
-                        />
-
-                        <ComboboxFieldWrapper
-                          control={workOrderForm.control}
-                          name="po"
-                          label="PO#"
-                          options={PurchaseOrderOptions}
-                        />
-                        <InputWrapper
-                          control={workOrderForm.control}
-                          name="invoice"
-                          label="Invoice"
-                          value={""}
-                          type={"text"}
-                        />
-                        <CustomFieldsWrapper
-                          control={workOrderForm.control}
-                          name="others"
-                          label={"Custom Fields"}
-                        />
-                      </>
-                    }
-                  />
-                </div>
-                <div className="col-span-5 space-y-2">
-                  <div className="flex justify-end space-x-1 border border-b-black/20">
-                    <div className="flex gap-2">
-                      {((WorkOrderStatuses || []) as GenericObject[]).map((stat: GenericObject) => (
-                        <button
-                          key={stat?.id}
-                          type="button"
-                          className={`p-3 h-fit rounded-md border text-sm font-medium ${status === (stat?.name as string)
-                            ? (stat?.name as string).toLowerCase().includes("open")
-                              ? "bg-green-500 text-white"
-                              : (stat?.name as string).toLowerCase().includes("progress")
-                                ? "bg-blue-500 text-white"
-                                : (stat?.name as string).toLowerCase().includes("hold")
-                                  ? "bg-yellow-400 text-white"
-                                  : (stat?.name as string).toLowerCase().includes("complete")
-                                    ? "bg-purple-600 text-white"
-                                    : (stat?.name as string).toLowerCase().includes("cancelled")
-                                      ? "bg-red-600 text-white"
-                                      : "bg-gray-400 text-white"
-                            : "bg-white text-gray-700 border border-gray-300"
-                            }`}
-                          onClick={() => {
-                            workOrderForm.setValue("status", (stat?.id as string) ?? "");
-                            setStatus((stat?.name as string) ?? "");
-                          }}
-                        >
-                          {stat?.name as string}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex flex-row justify-between space-x-2 ">
-                      <div className="flex w-fit items-end">
-                        <ComboboxFieldWrapper
-                          control={workOrderForm.control}
-                          name="equipment"
-                          label="Unit"
-                          options={equipmentOptions}
-                          required={true}
-                        />
-                        {/* <Button variant="secondary" size={"icon"}>
-                            <Plus />
-                          </Button> */}
-                      </div>
-                      <div className="flex w-fit">
-                        <InputWrapper
-                          control={workOrderForm.control}
-                          name="hours"
-                          label="Hours"
-                          value={""}
-                          type={"number"}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <Tabs defaultValue="Maintenance" className="w-full">
-                      <TabsList>
-                        <TabsTrigger value="Maintenance">
-                          Maintenance
-                        </TabsTrigger>
-                        <TabsTrigger value="Parts">Parts</TabsTrigger>
-                        <TabsTrigger value="Labor">Labor</TabsTrigger>
-                        <TabsTrigger value="Attachments">
-                          Attachments
-                        </TabsTrigger>
-                        <TabsTrigger value="Notes">Notes</TabsTrigger>
-                      </TabsList>
-                      <TabsContent value="Maintenance">
-                        <div className="mb-4">
-                          <AddMaintenance
-                            data={selectedMaintenance}
-                            onAdd={handleAddMaintenanceTask}
-                            open={isMaintenanceSheetOpen}
-                            setOpen={setIsMaintenanceSheetOpen}
-                          />
-                        </div>
-
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead>Task Name</TableHead>
-                              <TableHead>Total</TableHead>
-                              <TableHead>Complete</TableHead>
-                              <TableHead>Actions</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {maintenanceTasks.map((task, index) => (
-                              <TableRow key={index}>
-                                <TableCell>{task.task}</TableCell>
-                                <TableCell>
-                                  $
-                                  {(
-                                    (parseFloat(task.partsCost) || 0) +
-                                    (parseFloat(task.laborCost) || 0)
-                                  ).toFixed(2)}
-                                </TableCell>
-                                <TableCell>
-                                  <input
-                                    type="checkbox"
-                                    checked={task.complete}
-                                    onChange={async (e) => {
-                                      if (e.target.checked) {
-                                        const confirmed = await confirmDialog({ title: "Mark task complete?", confirmText: "Mark" });
-                                        if (confirmed) {
-                                          setMaintenanceTasks((prev) =>
-                                            prev.map((t, i) =>
-                                              i === index
-                                                ? { ...t, complete: true }
-                                                : t
-                                            )
-                                          );
-                                        }
-                                      } else {
-                                        // Optional: uncheck logic, or disable unchecking
-                                        setMaintenanceTasks((prev) =>
-                                          prev.map((t, i) =>
-                                            i === index
-                                              ? { ...t, complete: false }
-                                              : t
-                                          )
-                                        );
-                                      }
-                                    }}
-                                  />
-                                </TableCell>
-
-                                <TableCell className="space-x-2">
-                                  <Button
-                                    onClick={() => {
-                                      setSelectedMaintenance(task);
-                                      setIsMaintenanceSheetOpen(true);
-                                    }}
-                                  >
-                                    <Pen />
-                                  </Button>
-                                  <Button
-                                    variant="destructive"
-                                    size="sm"
-                                    onClick={() =>
-                                      setMaintenanceTasks((prev) =>
-                                        prev.filter((_, i) => i !== index)
-                                      )
-                                    }
-                                  >
-                                    Delete
-                                  </Button>
-                                </TableCell>
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                      </TabsContent>
-                      <TabsContent value="Parts">
-                        <PartsTab
-                          workOrderParts={workOrderForm.watch("parts") || []}
-                          maintenanceItems={
-                            workOrderForm.watch("maintenance") || []
-                          }
-                          onUpdateParts={(updatedParts) =>
-                            workOrderForm.setValue("parts", updatedParts)
-                          }
-                        />
-                      </TabsContent>
-                      <TabsContent value="Labor">
-                        <LaborTab
-                          maintenanceItems={
-                            workOrderForm.watch("maintenance") || []
-                          }
-                          laborEntries={workOrderForm.watch("labor") || []}
-                          onUpdateLabor={(updated) =>
-                            workOrderForm.setValue("labor", updated)
-                          }
-                        />
-                      </TabsContent>
-                      <TabsContent value="Attachments"> </TabsContent>
-                      <TabsContent value="Notes">
-                        <NotesTab
-                          notes={workOrderForm.watch("notes") || []}
-                          onUpdateNotes={(updated) =>
-                            workOrderForm.setValue("notes", updated)
-                          }
-                        />
-                      </TabsContent>
-                    </Tabs>
-                  </div>
-                </div>
-              </div>
-              <div className="flex justify-between gap-x-4 my-8 w-full">
-                <Button className=" w-full">
-                  <GitPullRequestArrow className="mr-2" /> Create Work Order
-                </Button>
-              </div>
-            </form>
-          </Form>
+          <EditActualWorkOrderFormContent {...props} onClose={() => setOpen(false)} />
         </ScrollArea>
+      </SheetContent>
+    </Sheet>
+  );
+}
+
+export function UnitHoursDialog({
+  open,
+  onOpenChange,
+  unitId,
+  unitName,
+  workOrderId,
+  onSuccess,
+  onCancel,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  unitId: string;
+  unitName: string;
+  workOrderId: string;
+  onSuccess: () => void;
+  onCancel: () => void;
+}) {
+  const { mutate: addUnit } = useAddWorkOrderUnit();
+  const [hours, setHours] = useState(0);
+
+  useEffect(() => {
+    if (hours <= 0) return;
+
+    const timer = setTimeout(() => {
+      addUnit(
+        { work_order_id: workOrderId, unit_id: unitId, hours },
+        {
+          onSuccess: () => {
+            toast.success("Unit added successfully");
+            onSuccess();
+            setHours(0);
+          },
+          onError: () => toast.error("Failed to add unit"),
+        }
+      );
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [hours, workOrderId, unitId, addUnit, onSuccess]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+  };
+
+  return (
+    <Sheet open={open} onOpenChange={(val) => {
+      onOpenChange(val);
+      if (!val) onCancel();
+    }}>
+      <SheetContent>
+        <SheetHeader>
+          <SheetTitle>Add Unit: {unitName}</SheetTitle>
+          <SheetDescription>Enter hours for this unit.</SheetDescription>
+        </SheetHeader>
+        <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+          <div className="space-y-2">
+            <Label>Hours</Label>
+            <input
+              type="number"
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              value={hours}
+              onChange={(e) => setHours(Number(e.target.value))}
+              autoFocus
+            />
+          </div>
+
+        </form>
       </SheetContent>
     </Sheet>
   );

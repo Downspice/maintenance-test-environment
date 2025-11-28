@@ -814,14 +814,14 @@ export function useGetPartKitParts<TData = TEntity[]>(options?: UseQueryOptions<
 /**
  * Fetches the next available Work Order Number.
  */
-export function useGetNextWorkOrderNumber<TData = { next_work_order_number: string }>(options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>) {
-    return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
+export function useGetNextWorkOrderNumber(options?: UseQueryOptions<ApiResponse<number>, AxiosError<ApiError>, number>) {
+    return useQuery<ApiResponse<number>, AxiosError<ApiError>, number>({
         queryKey: ["get-next-work-order-number"],
         queryFn: async () => {
-            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-next-work-order-number"));
+            const response = await dummyApiClient<ApiResponse<number>>(buildUrl("/api/get-next-work-order-number"));
             return response;
         },
-        select: (response) => response.data as TData,
+        select: (response) => response.data,
         staleTime: 0, // Always fetch fresh
         ...options,
     });

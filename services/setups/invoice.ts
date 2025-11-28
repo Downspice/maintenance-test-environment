@@ -333,7 +333,7 @@ export function useDeleteInvoicePayment() {
 /**
  * Fetches the next available Invoice Number.
  */
-export function useGetNextInvoiceNumber<TData = { next_invoice_number: string }>(options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>) {
+export function useGetNextInvoiceNumber<TData = string>(options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>) {
     return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
         queryKey: ["get-next-invoice-number"],
         queryFn: async () => {

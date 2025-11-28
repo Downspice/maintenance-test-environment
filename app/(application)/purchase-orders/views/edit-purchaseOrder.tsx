@@ -60,7 +60,8 @@ import {
 } from "@/services/setups/purchaseOrder";
 import { convertToOptionList } from "@/lib/utils";
 import { useGetWarehouses } from "@/services/setups/inventory";
-import { useGetItemTypes } from "@/services/setups/invoice";
+import { useGetItemTypes, useGetInvoices } from "@/services/setups/invoice";
+import { useGetWorkOrders } from "@/services/setups/workOrder";
 
 export default function EditPurchaseOrderForm({
   children,
@@ -80,19 +81,24 @@ export default function EditPurchaseOrderForm({
     error: locationOptionsListError,
   } = useGetLocations<Array<{ id: string; name: string }>>();
   const { data: shipViaOptions } = useGetPurchaseOrderShipVias();
-  const { data: vendorOptions } = useGetVendors();
+  const { data: vendorOptions } = useGetVendors<Array<{ id: string; name: string }>>();
+  const vendorOptionsList = convertToOptionList(vendorOptions ?? [], "id", "name");
   const { data: customersOptions } = useGetCustomers();
-      const {
-        data: termsOptionsList,
-        isLoading: termsOptionsListLoading,
-        error: termsOptionsListError,
-      } = useGetPurchaseOrderTerms<Array<{ id: string; name: string }>>();
-        const { 
-          data: discount_typesOptions, 
-          isLoading:discount_typesOptionsLoading, 
-          error: discount_typesOptionsError
-        } = useGetCustomerDiscounts<Array<{ id: string, name: string }>>();
-      const { data: warehouseOptionsList } = useGetWarehouses<Array<{ id: string; name: string }>>();
+  const { data: invoices } = useGetInvoices<Array<{ id: string; invoice_number: string }>>();
+  const invoiceOptionsList = convertToOptionList(invoices ?? [], "id", "invoice_number");
+  const { data: workOrders } = useGetWorkOrders<Array<{ id: string; wo_number: string }>>();
+  const workOrderOptionsList = convertToOptionList(workOrders ?? [], "id", "wo_number");
+  const {
+    data: termsOptionsList,
+    isLoading: termsOptionsListLoading,
+    error: termsOptionsListError,
+  } = useGetPurchaseOrderTerms<Array<{ id: string; name: string }>>();
+  const {
+    data: discount_typesOptions,
+    isLoading: discount_typesOptionsLoading,
+    error: discount_typesOptionsError
+  } = useGetCustomerDiscounts<Array<{ id: string, name: string }>>();
+  const { data: warehouseOptionsList } = useGetWarehouses<Array<{ id: string; name: string }>>();
 
   const [internalOpen, setInternalOpen] = useState(false);
   const open = externalOpen !== undefined ? externalOpen : internalOpen;
@@ -254,7 +260,7 @@ export default function EditPurchaseOrderForm({
     resolver: zodResolver(PurchaseOrderSchema),
     defaultValues: {},
   });
-const {mutateAsync:updatePurchaseOrder}=useUpdatePurchaseOrder()
+  const { mutateAsync: updatePurchaseOrder } = useUpdatePurchaseOrder()
   function onSubmit(data: PurchaseOrderType) {
     // Add items to submission data
     const submissionData = {
@@ -263,11 +269,12 @@ const {mutateAsync:updatePurchaseOrder}=useUpdatePurchaseOrder()
     };
 
     console.log("Form submitted with VALUES:", submissionData);
-    const res=updatePurchaseOrder(data)
-    if(res){
-    toast.success(res.message, {
-      duration: 10000,
-    });}
+    const res = updatePurchaseOrder(data)
+    if (res) {
+      toast.success(res.message, {
+        duration: 10000,
+      });
+    }
 
     setOpen(false);
   }
@@ -352,17 +359,16 @@ const {mutateAsync:updatePurchaseOrder}=useUpdatePurchaseOrder()
                       <button
                         key={stat}
                         type="button"
-                        className={`p-3 h-fit rounded-md border text-sm font-medium ${
-                          status === stat
-                            ? stat === "Requisition"
-                              ? "bg-green-600 text-white"
-                              : stat === "Ordered"
+                        className={`p-3 h-fit rounded-md border text-sm font-medium ${status === stat
+                          ? stat === "Requisition"
+                            ? "bg-green-600 text-white"
+                            : stat === "Ordered"
                               ? "bg-yellow-500 text-white"
                               : stat === "Partial"
-                              ? "bg-orange-500 text-white"
-                              : "bg-red-600 text-white"
-                            : "bg-white text-gray-700 border-gray-300"
-                        }`}
+                                ? "bg-orange-500 text-white"
+                                : "bg-red-600 text-white"
+                          : "bg-white text-gray-700 border-gray-300"
+                          }`}
                         onClick={() => {
                           // Update both status name and status_id
                           const statusId = statusNameToIdMap[stat];
@@ -392,7 +398,7 @@ const {mutateAsync:updatePurchaseOrder}=useUpdatePurchaseOrder()
                     control={form.control}
                     name="buyer_id"
                     label="Buyer"
-                    options={convertToOptionList(customersOptions??[],"id","company_name")}
+                    options={convertToOptionList(customersOptions ?? [], "id", "company_name")}
                   />
                   <DatePickerWrapper
                     control={form.control}
@@ -408,12 +414,11 @@ const {mutateAsync:updatePurchaseOrder}=useUpdatePurchaseOrder()
                         legend="Vendor"
                         content={
                           <>
-                            <InputWrapper
+                            <ComboboxFieldWrapper
                               control={form.control}
                               name="vendor"
                               label="Vendor Name"
-                              type="text"
-                              value=""
+                              options={vendorOptionsList ?? []}
                             />
 
                             <TextareaWrapper
@@ -435,7 +440,7 @@ const {mutateAsync:updatePurchaseOrder}=useUpdatePurchaseOrder()
                             <ComboboxFieldWrapper
                               control={form.control}
                               name="ship_via_id"
-                              options={shipViaOptions??[]}
+                              options={shipViaOptions ?? []}
                               label="Ship Via"
                             />
                             <TextareaWrapper
@@ -495,15 +500,15 @@ const {mutateAsync:updatePurchaseOrder}=useUpdatePurchaseOrder()
                                   </DialogTitle>
                                 </DialogHeader>
                                 <div
-                                  
-                                   
+
+
                                 >
                                   <div className="grid grid-cols-2 gap-2">
                                     <ComboboxFieldWrapper
                                       control={Itemsform.control}
                                       name="item_type_id"
                                       label="Item Type"
-                                      options={itemTypesOptionsList??[]}
+                                      options={itemTypesOptionsList ?? []}
                                     />
                                     <InputWrapper
                                       control={Itemsform.control}
@@ -644,7 +649,7 @@ const {mutateAsync:updatePurchaseOrder}=useUpdatePurchaseOrder()
                             control={form.control}
                             name="term_id"
                             label="Terms"
-                            options={termsOptionsList??[]}
+                            options={termsOptionsList ?? []}
                           />
                           <ComboboxFieldWrapper
                             control={form.control}
@@ -652,12 +657,11 @@ const {mutateAsync:updatePurchaseOrder}=useUpdatePurchaseOrder()
                             label="Ship Via"
                             options={shipViaOptions}
                           />
-                          <InputWrapper
+                          <ComboboxFieldWrapper
                             control={form.control}
-                            name={"invoice_number"}
-                            label={"Invoice#"}
-                            value={""}
-                            type="text"
+                            name="invoice_number"
+                            label="Invoice #"
+                            options={invoiceOptionsList ?? []}
                           />
                           <InputWrapper
                             control={form.control}
@@ -666,12 +670,11 @@ const {mutateAsync:updatePurchaseOrder}=useUpdatePurchaseOrder()
                             value={""}
                             type="text"
                           />
-                          <InputWrapper
+                          <ComboboxFieldWrapper
                             control={form.control}
-                            name={"wo_number"}
-                            label={"WO #"}
-                            value={""}
-                            type="text"
+                            name="wo_number"
+                            label="WO #"
+                            options={workOrderOptionsList ?? []}
                           />
                           <ComboboxFieldWrapper
                             control={form.control}

@@ -310,7 +310,7 @@ export function WorkOrderDataLoader({
         <>
           <div className="flex  text-destructive items-center gap-1 text-sm">
             <Calendar className="h-3 w-3 text-destructive" />
-            {row.original.due_date?.toUTCString()}
+            {row.original.due_date}
           </div>
         </>
       ),

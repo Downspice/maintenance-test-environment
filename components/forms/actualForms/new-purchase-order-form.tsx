@@ -51,6 +51,7 @@ import { useGetLocations, useGetPurchaseOrderTerms, useGetVendors } from "@/serv
 import { useGetPurchaseOrderShipVias, useGetNextPurchaseOrderNumber } from "@/services/setups/purchaseOrder";
 import { useGetWarehouses } from "@/services/setups/inventory";
 import { useGetItemTypes, useGetInvoices } from "@/services/setups/invoice";
+import { useGetWorkOrders } from "@/services/setups/workOrder";
 import { convertToOptionList } from "@/lib/utils";
 
 interface triggerVariant {
@@ -63,6 +64,8 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
   const { data: termsOptionsList } = useGetPurchaseOrderTerms<Array<{ id: string; name: string }>>();
   const { data: invoices } = useGetInvoices<Array<{ id: string; invoice_number: string }>>();
   const invoiceOptionsList = convertToOptionList(invoices ?? [], "id", "invoice_number");
+  const { data: workOrders } = useGetWorkOrders<Array<{ id: string; wo_number: string }>>();
+  const workOrderOptionsList = convertToOptionList(workOrders ?? [], "id", "wo_number");
 
   const { data: nextPoNumberData } = useGetNextPurchaseOrderNumber();
 
@@ -71,7 +74,8 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editIndex, setEditIndex] = useState<number | null>(null);
-  const { data: vendorOptions } = useGetVendors();
+  const { data: vendorOptions } = useGetVendors<Array<{ id: string; name: string }>>();
+  const vendorOptionsList = convertToOptionList(vendorOptions ?? [], "id", "name");
 
   const [items, setItems] = useState<PurchaseOrderItemType[]>([]);
   const [editItems, setEditItems] = useState<PurchaseOrderItemType | null>(null);
@@ -360,12 +364,11 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
                   legend="Vendor"
                   content={
                     <>
-                      <InputWrapper
+                      <ComboboxFieldWrapper
                         control={form.control}
                         name="vendor"
                         label="Vendor Name"
-                        type="text"
-                        value=""
+                        options={vendorOptionsList ?? []}
                       />
                       <TextareaWrapper
                         control={form.control}
@@ -600,12 +603,11 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
                       label="Terms"
                       options={termsOptionsList ?? []}
                     />
-                    <InputWrapper
+                    <ComboboxFieldWrapper
                       control={form.control}
                       name="invoice_number"
                       label="Invoice #"
-                      value=""
-                      type="text"
+                      options={invoiceOptionsList ?? []}
                     />
                     <InputWrapper
                       control={form.control}
@@ -614,12 +616,11 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
                       value=""
                       type="text"
                     />
-                    <InputWrapper
+                    <ComboboxFieldWrapper
                       control={form.control}
                       name="wo_number"
                       label="WO #"
-                      value=""
-                      type="text"
+                      options={workOrderOptionsList ?? []}
                     />
                   </>
                 }

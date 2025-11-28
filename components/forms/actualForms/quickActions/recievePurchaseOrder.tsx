@@ -21,7 +21,7 @@ import {
 } from "@/lib/PurchaseOrder/purchaseOrder-data";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ComboboxFieldWrapper } from "../../wrappers/ComboboxWrapper";
-import { PurchaseOrderOptions } from "@/app/(application)/work-orders/view/edit-work-order";
+import { useGetPurchaseOrders } from "@/services/setups/purchaseOrder";
 
 type ItemFormValues = z.infer<typeof PurchaseOrderItemSchema>;
 
@@ -29,6 +29,7 @@ export default function QuickActionsReceivePurchaseOrder() {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editIndex, setEditIndex] = useState<number | null>(null);
+  const {data:PurchaseOrderOptions} = useGetPurchaseOrders();
 
   const [items, setItems] = useState<ItemFormValues[]>();
   const [editItems, setEditItems] = useState<ItemFormValues | null>(null);
