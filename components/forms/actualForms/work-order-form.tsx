@@ -7,13 +7,17 @@ import { useEffect, useState, useMemo } from "react";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import {
-  ArrowDown,
-  ArrowUp,
   GitPullRequestArrow,
   Pen,
   Plus,
-  Trash2,
+  MoreVertical,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import DatePickerWrapper from "../wrappers/DatePickerWrapper";
@@ -34,7 +38,6 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Fieldset from "@/components/customUI/fieldset";
 import CustomFieldsWrapper from "../wrappers/CustomFieldsWrapper";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
   TableBody,
@@ -43,16 +46,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import NewEmployeeForm from "./new-employee-form";
 import NewVendor from "./new-vendor-form";
 import {
   AddMaintenanceInWorkOrderInterface,
   CreateWorkOrderSchema,
-  WorkOrderSchema,
 } from "@/lib/WorkOrder/workOrder-data";
-import PartsTab from "@/app/(application)/work-orders/view/PartsTab";
-import LaborTab from "@/app/(application)/work-orders/view/LaborTab";
-import NotesTab from "@/app/(application)/work-orders/view/NotesTab";
+import AddMaintenance from "./add-maintenance";
 import { useGetCostCenters } from "@/services/setups/inventory";
 import {
   useGetPriorities,
@@ -61,16 +62,14 @@ import {
   useAddWorkOrder,
   useGetWorkOrder,
   useGetNextWorkOrderNumber,
+  useAddWorkOrderUnit,
 } from "@/services/setups/workOrder";
 import { useGetEquipments } from "@/services/setups/equipments";
 import {
-  useAddWorkOrderUnit,
-  useAddWorkOrderUnitMaintenance,
-  useAddWorkOrderUnitPart,
-  useAddWorkOrderUnitLabor,
-  useAddWorkOrderUnitAttachment,
-  useAddWorkOrderUnitNote,
+  useAddWorkOrderUnitMaintenance, useAddWorkOrderUnitLabor, useAddWorkOrderUnitPart
 } from "@/services/setups/workOrder";
+import AddLaborUsed from "./add-labor-used";
+import AddPartUsed from "./add-part-used";
 import { GenericObject } from "@/types/types";
 import { useSheet } from "@/lib/sheet-providers";
 import { useConfirmDialog } from "@/lib/confirm-dialog";
@@ -125,13 +124,9 @@ export function ActualWorkOrderForm() {
   >([]);
   const [selectedMaintenance, setSelectedMaintenance] =
     useState<AddMaintenanceInWorkOrderInterface | null>(null);
-  const [maintenanceList, setMaintenanceList] = useState<
-    AddMaintenanceInWorkOrderInterface[]
-  >([]);
   const [isMaintenanceSheetOpen, setIsMaintenanceSheetOpen] = useState(false);
   const [status, setStatus] = useState<string>("Open");
   const [assigneeType, setAssigneeType] = useState<"Employee" | "Vendor">("Employee");
-  const [selectedAssigneeId, setSelectedAssigneeId] = useState<string>("");
 
   function handleAddMaintenanceTask(task: AddMaintenanceInWorkOrderInterface) {
     const taskWithStatus = { ...task, complete: false };
@@ -520,6 +515,8 @@ function EditActualWorkOrderFormContent({
     useState<AddMaintenanceInWorkOrderInterface | null>(null);
 
   const [isMaintenanceSheetOpen, setIsMaintenanceSheetOpen] = useState(false);
+  const [isAddLaborSheetOpen, setIsAddLaborSheetOpen] = useState(false);
+  const [isAddPartSheetOpen, setIsAddPartSheetOpen] = useState(false);
   const [isAddUnitSheetOpen, setIsAddUnitSheetOpen] = useState(false);
   const [status, setStatus] = useState<string>("Open");
   const [assigneeType, setAssigneeType] = useState<"Employee" | "Vendor">("Employee");
@@ -540,6 +537,8 @@ function EditActualWorkOrderFormContent({
   }, [vendorOptions]);
 
   const { mutate: addMaintenance } = useAddWorkOrderUnitMaintenance();
+  const { mutate: addLaborAPI } = useAddWorkOrderUnitLabor();
+  const { mutate: addPartAPI } = useAddWorkOrderUnitPart();
 
   function handleAddMaintenanceTask(task: AddMaintenanceInWorkOrderInterface) {
     const unitId = workOrderForm.getValues("equipment_id");
@@ -552,7 +551,7 @@ function EditActualWorkOrderFormContent({
       unit_id: unitId,
       maintenance: [
         {
-          category: task.usage,
+          category: task.category,
           task_id: task.task, // Assuming this is the ID
           type_id: task.taskType, // Assuming this is the ID
           other_task_name: "", // Handle if "Other" is selected?
@@ -610,6 +609,54 @@ function EditActualWorkOrderFormContent({
       },
       onError: (error) => {
         toast.error("Failed to add maintenance task");
+        console.error(error);
+      },
+    });
+  }
+
+  function handleAddLabor(laborData: AddLaborUsedInterface) {
+    const unitId = workOrderForm.getValues("equipment_id");
+    if (!unitId) {
+      toast.error("Please select a unit first.");
+      return;
+    }
+
+    const payload = {
+      unit_id: unitId,
+      labor: [laborData],
+    };
+
+    addLaborAPI(payload, {
+      onSuccess: () => {
+        toast.success("Labor added successfully");
+        setIsAddLaborSheetOpen(false);
+      },
+      onError: (error: any) => {
+        toast.error(error?.response?.data?.message || "Failed to add labor");
+        console.error(error);
+      },
+    });
+  }
+
+  function handleAddPart(partData: AddPartUsedInterface) {
+    const unitId = workOrderForm.getValues("equipment_id");
+    if (!unitId) {
+      toast.error("Please select a unit first.");
+      return;
+    }
+
+    const payload = {
+      unit_id: unitId,
+      parts: [partData],
+    };
+
+    addPartAPI(payload, {
+      onSuccess: () => {
+        toast.success("Part added successfully");
+        setIsAddPartSheetOpen(false);
+      },
+      onError: (error: any) => {
+        toast.error(error?.response?.data?.message || "Failed to add part");
         console.error(error);
       },
     });
@@ -856,7 +903,6 @@ function EditActualWorkOrderFormContent({
                     options={equipmentOptions}
                     required={true}
                   />
-
                 </div>
                 <div className="flex w-fit">
                   <InputWrapper
@@ -868,141 +914,177 @@ function EditActualWorkOrderFormContent({
                   />
                 </div>
               </div>
-            </div>
-            {(workOrderForm.watch("units")?.length ?? 0) > 0 && (
-              <div id="orderDetailsTabs">
-                <Tabs defaultValue="Maintenance" className="w-full">
-                  <TabsList>
-                    <TabsTrigger value="Maintenance">Maintenance</TabsTrigger>
-                    <TabsTrigger value="Parts">Parts</TabsTrigger>
-                    <TabsTrigger value="Labor">Labor</TabsTrigger>
-                    <TabsTrigger value="Attachments">Attachments</TabsTrigger>
-                    <TabsTrigger value="Notes">Notes</TabsTrigger>
+              {workOrderForm.watch("equipment_id") && (
+                <Tabs defaultValue="maintenance" className="w-full mt-4">
+                  <TabsList className="grid w-full grid-cols-3">
+                    <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
+                    <TabsTrigger value="labor">Labor</TabsTrigger>
+                    <TabsTrigger value="parts">Parts</TabsTrigger>
                   </TabsList>
-                  <TabsContent value="Maintenance">
-                    <div className="mb-4">
-                      <AddMaintenance
-                        data={selectedMaintenance}
-                        onAdd={handleAddMaintenanceTask}
-                        open={isMaintenanceSheetOpen}
-                        setOpen={setIsMaintenanceSheetOpen}
-                      />
-                    </div>
-
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Task Name</TableHead>
-                          <TableHead>Total</TableHead>
-                          <TableHead>Complete</TableHead>
-                          <TableHead>Actions</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {maintenanceTasks.map((task, index) => (
-                          <TableRow key={index}>
-                            <TableCell>{task.task}</TableCell>
-                            <TableCell>
-                              $
-                              {(
-                                (parseFloat(task.partsCost) || 0) +
-                                (parseFloat(task.laborCost) || 0)
-                              ).toFixed(2)}
-                            </TableCell>
-                            <TableCell>
-                              <input
-                                type="checkbox"
-                                checked={task.complete}
-                                onChange={async (e) => {
-                                  if (e.target.checked) {
-                                    const confirmed = await confirmDialog({ title: "Mark task complete?", confirmText: "Mark" });
-                                    if (confirmed) {
-                                      setMaintenanceTasks((prev) =>
-                                        prev.map((t, i) =>
-                                          i === index
-                                            ? { ...t, complete: true }
-                                            : t
-                                        )
-                                      );
-                                    }
-                                  } else {
-                                    // Optional: uncheck logic, or disable unchecking
-                                    setMaintenanceTasks((prev) =>
-                                      prev.map((t, i) =>
-                                        i === index
-                                          ? { ...t, complete: false }
-                                          : t
-                                      )
-                                    );
-                                  }
-                                }}
-                              />
-                            </TableCell>
-
-                            <TableCell className="space-x-2">
-                              <Button
-                                onClick={() => {
-                                  setSelectedMaintenance(task);
-                                  setIsMaintenanceSheetOpen(true);
-                                }}
-                              >
-                                <Pen />
-                              </Button>
-                              <Button
-                                variant="destructive"
-                                size="sm"
-                                onClick={() =>
-                                  setMaintenanceTasks((prev) =>
-                                    prev.filter((_, i) => i !== index)
-                                  )
-                                }
-                              >
-                                Delete
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
+                  <TabsContent value="maintenance" className="mt-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="w-full"
+                      onClick={() => {
+                        setSelectedMaintenance(null);
+                        setIsMaintenanceSheetOpen(true);
+                      }}
+                    >
+                      <Plus className="mr-2 h-4 w-4" /> Add Maintenance
+                    </Button>
                   </TabsContent>
-                  <TabsContent value="Parts">
-                    <PartsTab
-                      workOrderParts={workOrderForm.watch("parts") || []}
-                      maintenanceItems={workOrderForm.watch("maintenance") || []}
-                      onUpdateParts={(updatedParts) =>
-                        workOrderForm.setValue("parts", updatedParts)
-                      }
-                    />
+                  <TabsContent value="labor" className="mt-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="w-full"
+                      onClick={() => setIsAddLaborSheetOpen(true)}
+                    >
+                      <Plus className="mr-2 h-4 w-4" /> Add Labor
+                    </Button>
                   </TabsContent>
-                  <TabsContent value="Labor">
-                    <LaborTab
-                      maintenanceItems={workOrderForm.watch("maintenance") || []}
-                      laborEntries={workOrderForm.watch("labor") || []}
-                      onUpdateLabor={(updated) =>
-                        workOrderForm.setValue("labor", updated)
-                      }
-                    />
-                  </TabsContent>
-                  <TabsContent value="Attachments"> </TabsContent>
-                  <TabsContent value="Notes">
-                    <NotesTab
-                      notes={(workOrderForm.watch("notes") || []) as NotesInterface[]}
-                      onUpdateNotes={(updated) =>
-                        workOrderForm.setValue("notes", updated)
-                      }
-                    />
+                  <TabsContent value="parts" className="mt-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="w-full"
+                      onClick={() => setIsAddPartSheetOpen(true)}
+                    >
+                      <Plus className="mr-2 h-4 w-4" /> Add Parts
+                    </Button>
                   </TabsContent>
                 </Tabs>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
+        {(workOrderForm.watch("units")?.length ?? 0) > 0 && (
+          <div className="mt-8 space-y-4">
+            <div className="flex justify-between items-center">
+              <h3 className="text-lg font-medium">Maintenance Services</h3>
+              <Button
+                type="button"
+                onClick={() => {
+                  setSelectedMaintenance(null);
+                  setIsMaintenanceSheetOpen(true);
+                }}
+              >
+                <Plus className="mr-2 h-4 w-4" /> Add Maintenance Service
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="ml-2"
+                onClick={() => setIsAddLaborSheetOpen(true)}
+              >
+                <Plus className="mr-2 h-4 w-4" /> Add Labor
+              </Button>
+            </div>
+
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Maintenance</TableHead>
+                  <TableHead>Total</TableHead>
+                  <TableHead>Complete</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {maintenanceTasks.map((task, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{task.task}</TableCell>
+                    <TableCell>${task.total}</TableCell>
+                    <TableCell>
+                      <input
+                        type="checkbox"
+                        checked={task.complete}
+                        onChange={(e) => {
+                          const updatedTasks = [...maintenanceTasks];
+                          updatedTasks[index].complete = e.target.checked;
+                          setMaintenanceTasks(updatedTasks);
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell className="flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          setSelectedMaintenance(task);
+                          setIsMaintenanceSheetOpen(true);
+                        }}
+                      >
+                        <Pen className="h-4 w-4" />
+                      </Button>
+
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => toast.info("Add Parts clicked")}>
+                            Add Parts
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => toast.info("Add Part Kit clicked")}>
+                            Add Part Kit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => toast.info("Add Labor clicked")}>
+                            Add Labor
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => toast.info("Start Labor clicked")}>
+                            Start Labor
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            className="text-red-600 focus:text-red-600"
+                            onClick={() => {
+                              setMaintenanceTasks((prev) =>
+                                prev.filter((_, i) => i !== index)
+                              );
+                            }}
+                          >
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+
+          </div>
+        )}
+
         <div className="flex justify-between gap-x-4 my-8 w-full">
           <Button className=" w-full">
             <GitPullRequestArrow className="mr-2" /> Update Work Order
           </Button>
         </div>
       </form>
+      <AddMaintenance
+        open={isMaintenanceSheetOpen}
+        setOpen={setIsMaintenanceSheetOpen}
+        onAdd={handleAddMaintenanceTask}
+        data={selectedMaintenance}
+        unitId={workOrderForm.watch("equipment_id")}
+      />
+      <AddLaborUsed
+        open={isAddLaborSheetOpen}
+        setOpen={setIsAddLaborSheetOpen}
+        onAdd={handleAddLabor}
+      />
+      <AddPartUsed
+        open={isAddPartSheetOpen}
+        setOpen={setIsAddPartSheetOpen}
+        onAdd={handleAddPart}
+      />
       <UnitHoursDialog
         open={isAddUnitSheetOpen}
         onOpenChange={setIsAddUnitSheetOpen}

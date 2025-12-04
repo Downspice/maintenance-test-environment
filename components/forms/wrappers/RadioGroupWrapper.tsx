@@ -13,11 +13,11 @@ export interface RadioOption {
 interface RadioGroupWrapperProps {
   control: Control<any>
   name: string
-  name: string
   options: RadioOption[]
   className?: string
   disabled?: boolean
   required?: boolean
+  orientation?: "horizontal" | "vertical"
 }
 
 export default function RadioGroupWrapper({
@@ -28,6 +28,7 @@ export default function RadioGroupWrapper({
   className,
   disabled = false,
   required = false,
+  orientation = "vertical",
 }: RadioGroupWrapperProps) {
   return (
     <FormField
@@ -43,14 +44,14 @@ export default function RadioGroupWrapper({
             <RadioGroup
               onValueChange={field.onChange}
               value={field.value}
-              className={className}
+              className={`${className} ${orientation === "horizontal" ? "flex flex-row gap-4" : "flex flex-col space-y-1"}`}
               disabled={disabled}
             >
               {options.map((option) => (
-                <FormItem key={option.value} className="flex flex-row items-center gap-3 space-y-0">
-                  <RadioGroupItem value={option.value} disabled={disabled} />
+                <FormItem key={option.id} className="flex flex-row items-center gap-3 space-y-0">
+                  <RadioGroupItem value={option.id} disabled={disabled} />
                   <div className="space-y-1 leading-none">
-                    <FormLabel className="font-normal">{option.label}</FormLabel>
+                    <FormLabel className="font-normal">{option.name}</FormLabel>
                     {option.description && (
                       <p className="text-sm text-muted-foreground">{option.description}</p>
                     )}

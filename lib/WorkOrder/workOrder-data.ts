@@ -34,33 +34,53 @@ export const PartSchema = z.object({
   totalCost: z.coerce.number().nonnegative(),
 });
 
+export const AddPartUsedSchema = z.object({
+  part_id: z.string().min(1, { message: "Part is required" }),
+  name: z.string().optional(),
+  description: z.string().optional(),
+  vendor_id: z.string().optional(),
+  cost_center_id: z.string().optional(),
+  quantity: z.coerce.number().positive({ message: "Quantity must be greater than 0" }),
+  unit_cost: z.coerce.number().nonnegative({ message: "Unit cost must be a valid number" }),
+  extended_cost: z.coerce.number().nonnegative({ message: "Extended cost must be a valid number" }),
+  is_warranty_replaced: z.boolean().optional(),
+  po_id: z.string().optional(),
+  is_part_under_warranty: z.boolean().optional(),
+  days: z.coerce.number().optional(),
+  hours: z.coerce.number().optional(),
+  expiry_date: z.string().optional(),
+});
+
+export type AddPartUsedInterface = z.infer<typeof AddPartUsedSchema>;
+
+export const AddLaborUsedSchema = z.object({
+  performed_by: z.enum(["Employee", "Vendor"], { required_error: "Performed by is required" }),
+  technician_id: z.string().min(1, { message: "Technician is required" }),
+  work_performed: z.string().optional(),
+  cost_center_id: z.string().optional(),
+  labor_rate: z.coerce.number().nonnegative({ message: "Labor rate must be a valid number" }),
+  is_under_warranty: z.boolean().optional(),
+  hours: z.coerce.number().positive({ message: "Hours must be greater than 0" }),
+  total_cost: z.coerce.number().nonnegative({ message: "Total cost must be a valid number" }),
+});
+
+export type AddLaborUsedInterface = z.infer<typeof AddLaborUsedSchema>;
+
 export const AddMaintenanceInWorkOrderSchema = z.object({
-  usage: z.enum(["Preventive", "Repair", "Other"], {
-    required_error: "Maintenance type is required",
+  category: z.enum(["Preventive", "Repair", "Other"], {
+    required_error: "Category is required",
   }),
   complete: z.boolean().optional(),
-  task: z.string().min(1, { message: "Task is required" }),
-  taskType: z.string().min(1, { message: "Task Type is required" }),
-  partsCost: z
-    .string()
-    .min(1, { message: "Parts Cost is required" })
-    .refine((val) => !isNaN(Number(val)), {
-      message: "Parts Cost must be a valid number",
-    }),
-  laborCost: z.coerce
-    .string()
-    .min(1, { message: "Labor Cost is required" })
-    .refine((val) => !isNaN(Number(val)), {
-      message: "Labor Cost must be a valid number",
-    }),
-  total: z
-    .string()
-    .optional()
-    .refine((val) => !val || !isNaN(Number(val)), {
-      message: "Total must be a valid number",
-    }),
-  labor: AddLaborSchema,
-  parts: z.array(PartSchema).optional(),
+  task_id: z.string().optional(),
+  type_id: z.string().optional(),
+  other_task_name: z.string().optional(),
+  other_type_name: z.string().optional(),
+  parts_cost: z.coerce.number().nonnegative({ message: "Parts Cost must be a valid number" }),
+  labor_cost: z.coerce.number().nonnegative({ message: "Labor Cost must be a valid number" }),
+  total: z.coerce.number().nonnegative({ message: "Total must be a valid number" }),
+  notes: z.string().optional(),
+  labor: z.array(AddLaborUsedSchema).optional(),
+  parts: z.array(AddPartUsedSchema).optional(),
 });
 
 export const WorkOrderSchema = z.object({
