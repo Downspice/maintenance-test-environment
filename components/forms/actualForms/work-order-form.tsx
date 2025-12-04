@@ -463,7 +463,7 @@ export default function NewWorkOrderForm() {
           </SheetDescription>
         </SheetHeader>
 
-        <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
+        <ScrollArea className="h-[calc(100vh-60px)] pr-4 mt-6">
           <ActualWorkOrderForm />
         </ScrollArea>
       </SheetContent>

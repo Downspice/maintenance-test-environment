@@ -348,7 +348,7 @@ export function WorkOrderDataLoader({
       cell: ({ row }) => (
         <>
           <div className="flex  items-end gap-1 text-sm">
-            $ {row.original.workOrderTotal}
+            {row.original.currency} {row.original.subtotal}
           </div>
         </>
       ),
