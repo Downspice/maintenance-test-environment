@@ -149,6 +149,18 @@ export function useAddWorkOrder() {
 }
 
 /**
+ * Updates an existing Work Order. Invalidates the 'work-orders' list and the specific 'work-order' detail query.
+ */
+export function useUpdateWorkOrder() {
+    return useBaseMutation<TEntity, WorkOrderPayload & { id: TId }>(
+        ["update-work-order"],
+        (payload) => `/api/update-work-order/${payload.id}`,
+        'put',
+        (payload) => [['work-orders'], ['work-order', payload.id]]
+    );
+}
+
+/**
  * Deletes a Work Order. Invalidates the 'work-orders' list and the specific 'work-order' detail query.
  */
 export function useDeleteWorkOrder() {

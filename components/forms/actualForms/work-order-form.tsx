@@ -67,6 +67,7 @@ import {
   useGetWorkOrder,
   useGetNextWorkOrderNumber,
   useAddWorkOrderUnit,
+  useUpdateWorkOrder,
 } from "@/services/setups/workOrder";
 import { useGetEquipments } from "@/services/setups/equipments";
 import {
@@ -515,6 +516,7 @@ function EditActualWorkOrderFormContent({
     }));
   }, [equipments]);
 
+  const { mutate: updateWorkOrder } = useUpdateWorkOrder();
 
   const [maintenanceTasks, setMaintenanceTasks] = useState<
     AddMaintenanceInWorkOrderInterface[]
@@ -814,12 +816,23 @@ function EditActualWorkOrderFormContent({
   }, [selectedEquipmentId, initialEquipmentId]);
 
   async function handleSubmit(data: z.infer<typeof CreateWorkOrderSchema>) {
-    console.log(data);
-    // Here you would typically send the data to your API
-    toast.success("Work Order updated successfully!");
-    if (onClose) {
-      onClose();
+    const targetId = workOrderId || (initialData as any)?.id;
+    if (!targetId) {
+      toast.error("Cannot update: Missing Work Order ID");
+      return;
     }
+
+    updateWorkOrder({ ...data, id: targetId }, {
+      onSuccess: () => {
+        toast.success("Work Order updated successfully!");
+        if (onRefetch) onRefetch();
+        if (onClose) onClose();
+      },
+      onError: (error: any) => {
+        toast.error(error?.response?.data?.message || "Failed to update Work Order");
+        console.error("Update Error:", error);
+      }
+    });
   }
 
   // If used directly (without Sheet wrapper), render just the form
@@ -827,8 +840,12 @@ function EditActualWorkOrderFormContent({
   return (
     <Form {...workOrderForm}>
       <form
-        onSubmit={workOrderForm.handleSubmit((data) =>
-          handleSubmit(data)
+        onSubmit={workOrderForm.handleSubmit(
+          (data) => handleSubmit(data),
+          (errors) => {
+            console.error("Form Validation Errors:", errors);
+            toast.error("Please fix the errors in the form");
+          }
         )}
       >
         <div className="grid grid-cols-7 space-x-2">
