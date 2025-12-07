@@ -43,11 +43,11 @@ export default function EditWorkOrderForm({
     status_id: apiData.status_id || apiData.status || "",
     others: (apiData.others || []) as { name: string; value: string }[],
     assignee_ids: apiData.assignee_ids || apiData.assigneeIds || (apiData.assignees || []).map((a: any) => a.assignee_id || a.id),
-    equipment_id: apiData.units?.[0]?.unit_id || apiData.equipment_id || apiData.equipment || "",
+    equipment_id: apiData.units?.[0]?.id || "",
     hours: apiData.units?.[0]?.hours || apiData.hours || 0,
-    maintenance: apiData.maintenance || [],
-    parts: apiData.parts || [],
-    labor: apiData.labor || [],
+    maintenance: apiData.units?.[0]?.maintenance || [],
+    parts: apiData.units?.[0]?.parts || [],
+    labor: apiData.units?.[0]?.labors || [],
     notes: apiData.notes || [],
   } : {};
 
@@ -62,7 +62,7 @@ export default function EditWorkOrderForm({
             </div>
           </SheetTitle>
         </SheetHeader>
-        <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
+        <ScrollArea className="h-[calc(100vh-60px)] pr-4 mt-6">
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
               <div className="text-muted-foreground">Loading work order...</div>

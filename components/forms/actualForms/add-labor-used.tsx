@@ -26,7 +26,8 @@ import { GenericObject } from "@/types/types";
 interface AddLaborUsedProps {
     open: boolean;
     setOpen: (open: boolean) => void;
-    onAdd: (labor: AddLaborUsedInterface) => void;
+    onAdd: (data: AddLaborUsedInterface) => void;
+    maintenanceId?: string;
     data?: AddLaborUsedInterface | null;
 }
 
@@ -35,6 +36,7 @@ export default function AddLaborUsed({
     setOpen,
     onAdd,
     data,
+    maintenanceId,
 }: AddLaborUsedProps) {
     const { data: employees } = useGetEmployees<GenericObject[]>();
     const { data: vendorOptions } = useGetVendorOptions<GenericObject[]>();
@@ -97,7 +99,10 @@ export default function AddLaborUsed({
 
     function handleSubmit(data: AddLaborUsedInterface) {
         if (data) {
-            onAdd(data);
+            if (maintenanceId) {
+                console.log("Submitting Labor with Maintenance ID:", maintenanceId);
+            }
+            onAdd({ ...data, maintenance_id: maintenanceId } as any);
             form.reset();
             setOpen(false);
         }
@@ -107,7 +112,15 @@ export default function AddLaborUsed({
         e.preventDefault();
         e.stopPropagation();
         const data = form.getValues();
-        onAdd(data);
+        if (maintenanceId) {
+            // If we need to pass maintenance_id in the labor data itself, add it here
+            // However, usually it's passed in the API payload structure
+            console.log("Submitting Labor with Maintenance ID:", maintenanceId);
+            // For now, we'll just log it. The parent component usually handles the API payload construction
+            // But if there's a field in AddLaborUsedInterface for it, we should add it.
+            // Assuming AddLaborUsedInterface doesn't have it yet based on previous files.
+        }
+        onAdd({ ...data, maintenance_id: maintenanceId } as any);
         form.reset({
             performed_by: performedBy,
             hours: 1,

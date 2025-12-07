@@ -138,18 +138,6 @@ export default function AddMaintenance({
     });
   }
 
-  // const watchPartsCost = form.watch("partsCost");
-  // const watchLabor = form.watch("labor");
-
-  // useEffect(() => {
-  //   const parts = parseFloat(watchPartsCost || "0");
-  //   const laborCost = watchLabor?.totalCost || 0;
-  //   console.log("laborCost",laborCost)
-  //   const total = (parts + laborCost).toFixed(2);
-
-  //   form.setValue("total", total);
-  // }, [watchPartsCost, watchLabor, form]);
-
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>

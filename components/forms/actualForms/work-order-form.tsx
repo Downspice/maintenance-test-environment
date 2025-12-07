@@ -429,7 +429,7 @@ function EditWorkOrderSheetContent({ workOrderId }: { workOrderId: string }) {
     status_id: apiData?.status_id || apiData?.status || "",
     others: (apiData?.others || []) as { name: string; value: string }[],
     assignee_ids: apiData?.assignee_ids || apiData?.assigneeIds || (apiData?.assignees || []).map((a: any) => a.assignee_id || a.id),
-    equipment_id: apiData?.units?.[0]?.unit_id || apiData?.units?.[0]?.equipment_id || apiData?.units?.[0]?.id || apiData?.equipment_id || apiData?.equipment || "",
+    equipment_id: apiData?.units?.[0]?.id || "",
     hours: apiData?.units?.[0]?.hours || apiData?.hours || 0,
     maintenance: apiData?.maintenance || [],
     parts: apiData?.parts || [],
@@ -542,6 +542,11 @@ function EditActualWorkOrderFormContent({
 
   function handleAddMaintenanceTask(task: AddMaintenanceInWorkOrderInterface) {
     const unitId = workOrderForm.getValues("equipment_id");
+    const units = workOrderForm.getValues("units");
+
+    console.log("handleAddMaintenanceTask - equipment_id:", unitId);
+    console.log("handleAddMaintenanceTask - units array:", units);
+
     if (!unitId) {
       toast.error("Please select a unit first.");
       return;
@@ -676,6 +681,8 @@ function EditActualWorkOrderFormContent({
       Object.entries(initialData).forEach(([key, value]) => {
         workOrderForm.setValue(key as any, value);
       });
+      console.log("Form initialized with equipment_id:", initialData.equipment_id);
+      console.log("Form initialized with units:", initialData.units);
     }
   }, [initialData, workOrderForm]);
 
@@ -926,7 +933,7 @@ function EditActualWorkOrderFormContent({
                       type="button"
                       variant="outline"
                       size="sm"
-                      className="w-full"
+                      className="w-full mb-4"
                       onClick={() => {
                         setSelectedMaintenance(null);
                         setIsMaintenanceSheetOpen(true);
@@ -934,6 +941,102 @@ function EditActualWorkOrderFormContent({
                     >
                       <Plus className="mr-2 h-4 w-4" /> Add Maintenance
                     </Button>
+
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Maintenance</TableHead>
+                          <TableHead>Total</TableHead>
+                          <TableHead>Complete</TableHead>
+                          <TableHead>Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {(workOrderForm.watch("maintenance")?.length ?? 0) === 0 ? (
+                          <TableRow>
+                            <TableCell colSpan={4} className="text-center text-muted-foreground">
+                              No maintenance tasks added.
+                            </TableCell>
+                          </TableRow>
+                        ) : (
+                          workOrderForm.watch("maintenance")?.map((task, index) => (
+                            <TableRow key={index}>
+                              <TableCell>
+                                {task.other_task_name ||
+                                  (task.task_id
+                                    ? task.task_name // Assuming task_name is populated, otherwise needs lookup
+                                    : "Unknown Task")}
+                              </TableCell>
+                              <TableCell>
+                                {workOrderForm.watch("currency")}{" "}
+                                {typeof task.total === 'number' ? task.total.toFixed(2) : parseFloat(task.total as any).toFixed(2)}
+                              </TableCell>
+                              <TableCell>
+                                <input
+                                  type="checkbox"
+                                  className="h-4 w-4"
+                                  checked={task.complete}
+                                  onChange={() => {
+                                    console.log("Complete toggled for row:", task);
+                                    // Logic to update completion status would go here
+                                  }}
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex items-center gap-2">
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => {
+                                      setSelectedMaintenance(task);
+                                      setIsMaintenanceSheetOpen(true);
+                                    }}
+                                  >
+                                    <Pen className="h-4 w-4" />
+                                  </Button>
+                                  <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                      <Button variant="ghost" size="icon">
+                                        <MoreVertical className="h-4 w-4" />
+                                      </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                      <DropdownMenuItem
+                                        onClick={() => {
+                                          setSelectedMaintenance({ ...task, id: task.id || (task as any).maintenance_id }); // Ensure ID is passed for linking
+                                          setIsAddLaborSheetOpen(true);
+                                        }}
+                                      >
+                                        Add Labor
+                                      </DropdownMenuItem>
+                                      <DropdownMenuItem
+                                        onClick={() => {
+                                          setSelectedMaintenance({ ...task, id: task.id || (task as any).maintenance_id }); // Ensure ID is passed for linking
+                                          setIsAddPartSheetOpen(true);
+                                        }}
+                                      >
+                                        Add Parts
+                                      </DropdownMenuItem>
+                                      <DropdownMenuItem
+                                        className="text-red-600 focus:text-red-600"
+                                        onClick={() => {
+                                          const currentMaintenance = workOrderForm.getValues("maintenance") || [];
+                                          const updatedMaintenance = currentMaintenance.filter((_, i) => i !== index);
+                                          workOrderForm.setValue("maintenance", updatedMaintenance);
+                                        }}
+                                      >
+                                        Delete
+                                      </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                  </DropdownMenu>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))
+                        )}
+                      </TableBody>
+                    </Table>
                   </TabsContent>
                   <TabsContent value="labor" className="mt-2">
                     <Button
@@ -962,112 +1065,14 @@ function EditActualWorkOrderFormContent({
             </div>
           </div>
         </div>
-        {(workOrderForm.watch("units")?.length ?? 0) > 0 && (
-          <div className="mt-8 space-y-4">
-            <div className="flex justify-between items-center">
-              <h3 className="text-lg font-medium">Maintenance Services</h3>
-              <Button
-                type="button"
-                onClick={() => {
-                  setSelectedMaintenance(null);
-                  setIsMaintenanceSheetOpen(true);
-                }}
-              >
-                <Plus className="mr-2 h-4 w-4" /> Add Maintenance Service
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                className="ml-2"
-                onClick={() => setIsAddLaborSheetOpen(true)}
-              >
-                <Plus className="mr-2 h-4 w-4" /> Add Labor
-              </Button>
-            </div>
-
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Maintenance</TableHead>
-                  <TableHead>Total</TableHead>
-                  <TableHead>Complete</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {maintenanceTasks.map((task, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{task.task}</TableCell>
-                    <TableCell>${task.total}</TableCell>
-                    <TableCell>
-                      <input
-                        type="checkbox"
-                        checked={task.complete}
-                        onChange={(e) => {
-                          const updatedTasks = [...maintenanceTasks];
-                          updatedTasks[index].complete = e.target.checked;
-                          setMaintenanceTasks(updatedTasks);
-                        }}
-                      />
-                    </TableCell>
-                    <TableCell className="flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => {
-                          setSelectedMaintenance(task);
-                          setIsMaintenanceSheetOpen(true);
-                        }}
-                      >
-                        <Pen className="h-4 w-4" />
-                      </Button>
-
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoreVertical className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => toast.info("Add Parts clicked")}>
-                            Add Parts
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => toast.info("Add Part Kit clicked")}>
-                            Add Part Kit
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => toast.info("Add Labor clicked")}>
-                            Add Labor
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => toast.info("Start Labor clicked")}>
-                            Start Labor
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            className="text-red-600 focus:text-red-600"
-                            onClick={() => {
-                              setMaintenanceTasks((prev) =>
-                                prev.filter((_, i) => i !== index)
-                              );
-                            }}
-                          >
-                            Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-
-          </div>
-        )}
-
+        {/* Duplicate table and buttons removed from here */}
         <div className="flex justify-between gap-x-4 my-8 w-full">
           <Button className=" w-full">
             <GitPullRequestArrow className="mr-2" /> Update Work Order
           </Button>
         </div>
       </form>
+      {console.log("Passing unitId to AddMaintenance:", workOrderForm.watch("equipment_id"))}
       <AddMaintenance
         open={isMaintenanceSheetOpen}
         setOpen={setIsMaintenanceSheetOpen}
@@ -1079,11 +1084,13 @@ function EditActualWorkOrderFormContent({
         open={isAddLaborSheetOpen}
         setOpen={setIsAddLaborSheetOpen}
         onAdd={handleAddLabor}
+        maintenanceId={selectedMaintenance?.id || (selectedMaintenance as any)?.maintenance_id}
       />
       <AddPartUsed
         open={isAddPartSheetOpen}
         setOpen={setIsAddPartSheetOpen}
         onAdd={handleAddPart}
+        maintenanceId={selectedMaintenance?.id || (selectedMaintenance as any)?.maintenance_id}
       />
       <UnitHoursDialog
         open={isAddUnitSheetOpen}

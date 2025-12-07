@@ -28,7 +28,8 @@ import Fieldset from "@/components/customUI/fieldset";
 interface AddPartUsedProps {
     open: boolean;
     setOpen: (open: boolean) => void;
-    onAdd: (part: AddPartUsedInterface) => void;
+    onAdd: (data: AddPartUsedInterface) => void;
+    maintenanceId?: string;
     data?: AddPartUsedInterface | null;
 }
 
@@ -36,6 +37,7 @@ export default function AddPartUsed({
     open,
     setOpen,
     onAdd,
+    maintenanceId,
     data,
 }: AddPartUsedProps) {
     const { data: inventoriesRes } = useGetInventories();
@@ -102,7 +104,10 @@ export default function AddPartUsed({
         e.preventDefault();
         e.stopPropagation();
         const data = form.getValues();
-        onAdd(data);
+        if (maintenanceId) {
+            console.log("Submitting Part with Maintenance ID:", maintenanceId);
+        }
+        onAdd({ ...data, maintenance_id: maintenanceId } as any);
         form.reset();
     }
 
@@ -110,7 +115,7 @@ export default function AddPartUsed({
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent className="w-full sm:max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle>{data ? "Edit Part Used" : "Add Part Used"}</DialogTitle>
+                    <DialogTitle>Add Part Used</DialogTitle>
                     <DialogDescription>
                         {data ? "Update the" : "Add a"} part used details below.
                     </DialogDescription>
