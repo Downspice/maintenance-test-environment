@@ -59,6 +59,27 @@ export default function AddPartUsed({
         },
     });
 
+    // Populate form when data changes (edit mode)
+    useEffect(() => {
+        if (data) {
+            form.reset({
+                part_id: data.part_id,
+                name: data.name,
+                description: data.description,
+                vendor_id: data.vendor_id,
+                cost_center_id: data.cost_center_id,
+                quantity: data.quantity,
+                unit_cost: data.unit_cost,
+                extended_cost: data.extended_cost,
+                is_warranty_replaced: data.is_warranty_replaced,
+                is_part_under_warranty: data.is_part_under_warranty,
+                days: data.days,
+                hours: data.hours,
+                expiry_date: data.expiry_date,
+            });
+        }
+    }, [data, form]);
+
     const partOptions = Array.isArray(inventories)
         ? inventories.map((part: any) => ({
             id: part.id,

@@ -11,6 +11,7 @@ import {
   Pen,
   Plus,
   MoreVertical,
+  Trash2,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -54,7 +55,7 @@ import {
   CreateWorkOrderSchema,
 } from "@/lib/WorkOrder/workOrder-data";
 import AddMaintenance from "./add-maintenance";
-import { useGetCostCenters } from "@/services/setups/inventory";
+import { useGetCostCenters, useGetInventories } from "@/services/setups/inventory";
 import {
   useGetPriorities,
   useGetWorkOrderStatuses,
@@ -66,7 +67,7 @@ import {
 } from "@/services/setups/workOrder";
 import { useGetEquipments } from "@/services/setups/equipments";
 import {
-  useAddWorkOrderUnitMaintenance, useAddWorkOrderUnitLabor, useAddWorkOrderUnitPart
+  useAddWorkOrderUnitMaintenance, useAddWorkOrderUnitLabor, useAddWorkOrderUnitPart, useDeleteWorkOrderUnitLabor, useDeleteWorkOrderUnitPart
 } from "@/services/setups/workOrder";
 import AddLaborUsed from "./add-labor-used";
 import AddPartUsed from "./add-part-used";
@@ -87,6 +88,8 @@ export function ActualWorkOrderForm() {
   const confirmDialog = useConfirmDialog();
   const { data: WorkOrderStatuses } = useGetWorkOrderStatuses<GenericObject[]>();
   const { data: costCenterOptions } = useGetCostCenters<GenericObject[]>();
+  const { data: inventoriesRes } = useGetInventories();
+  const inventories = inventoriesRes?.data || [];
   const { data: workOrderTypeOptions } = useGetWorkOrderTypes<GenericObject[]>();
   const { data: priorityOptions } = useGetPriorities<GenericObject[]>();
   const { data: nextWorkOrderNumberData } = useGetNextWorkOrderNumber();
@@ -493,6 +496,8 @@ function EditActualWorkOrderFormContent({
   const { data: priorityOptions } = useGetPriorities();
   const { data: workOrderTypeOptions } = useGetWorkOrderTypes();
   const { data: costCenterOptions } = useGetCostCenters();
+  const { data: inventoriesRes } = useGetInventories();
+  const inventories = inventoriesRes?.data || [];
   const { data: WorkOrderStatuses } = useGetWorkOrderStatuses();
   const { data: PurchaseOrderOptions } = useGetPurchaseOrders<GenericObject[]>();
   const { data: InvoiceOptions } = useGetInvoices<GenericObject[]>();
@@ -515,6 +520,15 @@ function EditActualWorkOrderFormContent({
     useState<AddMaintenanceInWorkOrderInterface | null>(null);
   const [selectedMaintenanceParts, setSelectedMaintenanceParts] = useState<any[]>([]);
   const [selectedMaintenanceLabor, setSelectedMaintenanceLabor] = useState<any[]>([]);
+  const [editingLaborId, setEditingLaborId] = useState<string | null>(null);
+  const [editingLaborData, setEditingLaborData] = useState<AddLaborUsedInterface | null>(null);
+  const [editingPartId, setEditingPartId] = useState<string | null>(null);
+  const [editingPartData, setEditingPartData] = useState<AddPartUsedInterface | null>(null);
+
+  const { mutate: addLabor } = useAddWorkOrderUnitLabor();
+  const { mutate: deleteLabor } = useDeleteWorkOrderUnitLabor();
+  const { mutate: addPart } = useAddWorkOrderUnitPart();
+  const { mutate: deletePart } = useDeleteWorkOrderUnitPart();
 
   const [isMaintenanceSheetOpen, setIsMaintenanceSheetOpen] = useState(false);
   const [isAddLaborSheetOpen, setIsAddLaborSheetOpen] = useState(false);
@@ -565,7 +579,7 @@ function EditActualWorkOrderFormContent({
           other_type_name: "",
           parts_cost: parseFloat(task.partsCost) || 0,
           labor_cost: parseFloat(task.laborCost) || 0,
-          total: parseFloat(task.total || "0") || 0,
+          total: Number(task.total || "0") || 0,
           notes: "", // Add notes if available in task interface
           parts: (task.parts || []).map((p) => ({
             part_id: p.partNumber, // Assuming partNumber is the ID
@@ -583,18 +597,17 @@ function EditActualWorkOrderFormContent({
             hours: "",
             expiry_date: "",
           })),
-          labor: [
-            {
-              performed_by: "Employee", // Default or from task?
-              technician_id: "", // Need to map from task.labor.technicianName (if it's ID)
-              work_performed: task.labor.workPerformed,
-              cost_center_id: task.labor.costCenter,
-              labor_rate: task.labor.labor_rate,
-              is_under_warranty: false,
-              hours: task.labor.hours,
-              total_cost: task.labor.totalCost,
-            },
-          ],
+          labor: (task.labor || []).map((l) => ({
+            performed_by: l.performed_by,
+            technician_id: l.technician_id,
+            work_performed: l.work_performed,
+            cost_center_id: l.cost_center_id,
+            labor_rate: l.labor_rate,
+            hours: l.hours,
+            total_cost: l.total_cost,
+            maintenance_id: "",
+            is_under_warranty: l.is_under_warranty,
+          })),
         },
       ],
     };
@@ -621,8 +634,11 @@ function EditActualWorkOrderFormContent({
     });
   }
 
-  function handleAddLabor(laborData: AddLaborUsedInterface) {
+  const handleAddLabor = async (labor: AddLaborUsedInterface) => {
     const unitId = workOrderForm.getValues("equipment_id");
+    const workOrderData = props as any;
+    const workOrderId = workOrderData.workOrderId || workOrderData.data?.id;
+
     if (!unitId) {
       toast.error("Please select a unit first.");
       return;
@@ -630,22 +646,66 @@ function EditActualWorkOrderFormContent({
 
     const payload = {
       unit_id: unitId,
-      labor: [laborData],
+      labor: [labor],
     };
 
-    addLaborAPI(payload, {
-      onSuccess: () => {
-        toast.success("Labor added successfully");
-        setIsAddLaborSheetOpen(false);
-      },
-      onError: (error: any) => {
-        toast.error(error?.response?.data?.message || "Failed to add labor");
-        console.error(error);
-      },
-    });
-  }
+    try {
+      if (editingLaborId) {
+        // Edit mode: Delete old then Add new
+        await deleteLabor({ id: editingLaborId }, {
+          onSuccess: () => {
+            console.log("Deleted old labor entry");
+          },
+          onError: (err) => {
+            console.error("Failed to delete labor for update", err);
+            toast.error("Failed to update labor (delete step)");
+            return; // Stop if delete fails?
+          }
+        });
+        // Proceed to add
+      }
 
-  function handleAddPart(partData: AddPartUsedInterface) {
+      addLabor(payload, {
+        onSuccess: () => {
+          toast.success(editingLaborId ? "Labor updated successfully" : "Labor added successfully");
+          setIsAddLaborSheetOpen(false);
+          setEditingLaborId(null);
+          setEditingLaborData(null);
+          // Refetch happens automatically due to query invalidation
+        },
+        onError: (error: any) => {
+          toast.error(error?.response?.data?.message || "Failed to add labor");
+          console.error(error);
+        },
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleDeleteLabor = (id: string, index: number) => {
+    if (!id) {
+      // Fallback for local-only items (shouldn't happen if everything is via API)
+      const currentLabor = workOrderForm.getValues("labor") || [];
+      const updatedLabor = currentLabor.filter((_, i) => i !== index);
+      workOrderForm.setValue("labor", updatedLabor);
+      return;
+    }
+
+    if (confirm("Are you sure you want to delete this labor entry?")) {
+      deleteLabor({ id }, {
+        onSuccess: () => {
+          toast.success("Labor deleted successfully");
+        },
+        onError: (error) => {
+          toast.error("Failed to delete labor");
+          console.error(error);
+        }
+      });
+    }
+  };
+
+  async function handleAddPart(partData: AddPartUsedInterface) {
     const unitId = workOrderForm.getValues("equipment_id");
     if (!unitId) {
       toast.error("Please select a unit first.");
@@ -657,17 +717,58 @@ function EditActualWorkOrderFormContent({
       parts: [partData],
     };
 
-    addPartAPI(payload, {
-      onSuccess: () => {
-        toast.success("Part added successfully");
-        setIsAddPartSheetOpen(false);
-      },
-      onError: (error: any) => {
-        toast.error(error?.response?.data?.message || "Failed to add part");
-        console.error(error);
-      },
-    });
+    try {
+      if (editingPartId) {
+        // Edit mode: Delete old then Add new
+        await deletePart({ id: editingPartId }, {
+          onSuccess: () => {
+            console.log("Deleted old part entry");
+          },
+          onError: (err) => {
+            console.error("Failed to delete part for update", err);
+            toast.error("Failed to update part (delete step)");
+            return;
+          }
+        });
+      }
+
+      addPart(payload, {
+        onSuccess: () => {
+          toast.success(editingPartId ? "Part updated successfully" : "Part added successfully");
+          setIsAddPartSheetOpen(false);
+          setEditingPartId(null);
+          setEditingPartData(null);
+        },
+        onError: (error: any) => {
+          toast.error(error?.response?.data?.message || "Failed to add part");
+          console.error(error);
+        },
+      });
+    } catch (e) {
+      console.error(e);
+    }
   }
+
+  const handleDeletePart = (id: string, index: number) => {
+    if (!id) {
+      const currentParts = workOrderForm.getValues("parts") || [];
+      const updatedParts = currentParts.filter((_, i) => i !== index);
+      workOrderForm.setValue("parts", updatedParts);
+      return;
+    }
+
+    if (confirm("Are you sure you want to delete this part?")) {
+      deletePart({ id }, {
+        onSuccess: () => {
+          toast.success("Part deleted successfully");
+        },
+        onError: (error) => {
+          toast.error("Failed to delete part");
+          console.error(error);
+        }
+      });
+    }
+  };
 
   // Use initialData if provided, otherwise fall back to data
   const formData = initialData || data || {};
@@ -998,12 +1099,6 @@ function EditActualWorkOrderFormContent({
                                       const linkedParts = allParts.filter((p: any) => p.maintenance_id === maintenanceId);
                                       const linkedLabor = allLabor.filter((l: any) => l.maintenance_id === maintenanceId);
 
-                                      console.log("Edit clicked. Maintenance ID:", maintenanceId);
-                                      console.log("All Parts:", allParts);
-                                      console.log("Linked Parts:", linkedParts);
-                                      console.log("All Labor:", allLabor);
-                                      console.log("Linked Labor:", linkedLabor);
-
                                       setSelectedMaintenanceParts(linkedParts);
                                       setSelectedMaintenanceLabor(linkedLabor);
                                       setSelectedMaintenance(task);
@@ -1060,22 +1155,176 @@ function EditActualWorkOrderFormContent({
                       type="button"
                       variant="outline"
                       size="sm"
-                      className="w-full"
-                      onClick={() => setIsAddLaborSheetOpen(true)}
+                      className="w-full mb-4"
+                      onClick={() => {
+                        setSelectedMaintenance(null); // Ensure no maintenance context
+                        setEditingLaborId(null); // Reset edit state
+                        setEditingLaborData(null);
+                        setIsAddLaborSheetOpen(true);
+                      }}
                     >
                       <Plus className="mr-2 h-4 w-4" /> Add Labor
                     </Button>
+
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Technician</TableHead>
+                          <TableHead>Comments</TableHead>
+                          <TableHead>Rate</TableHead>
+                          <TableHead>Hours</TableHead>
+                          <TableHead>Total</TableHead>
+                          <TableHead>Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {(workOrderForm.watch("labor")?.filter((l: any) => !l.maintenance_id) ?? []).length === 0 ? (
+                          <TableRow>
+                            <TableCell colSpan={6} className="text-center text-muted-foreground">
+                              No standalone labor added.
+                            </TableCell>
+                          </TableRow>
+                        ) : (
+                          workOrderForm.watch("labor")?.map((laborItem, index) => {
+                            if (laborItem.maintenance_id) return null; // Skip maintenance-linked labor
+
+                            // Lookup technician name
+                            const technicianId = laborItem.technician_id;
+                            const employee = employeeOptions?.find((e) => e.id === technicianId);
+                            const vendor = vendorOptions?.find((v) => v.id === technicianId);
+
+                            let technicianName = "Unknown";
+                            if (employee) {
+                              technicianName = `${employee.last_name || ''}, ${employee.first_name || ''}`.trim().replace(/^, /, "").replace(/,$/, "");
+                            } else if (vendor) {
+                              technicianName = vendor.name || "Vendor";
+                            }
+
+                            return (
+                              <TableRow key={index}>
+                                <TableCell>{technicianName}</TableCell>
+                                <TableCell>{laborItem.work_performed || "-"}</TableCell>
+                                <TableCell>{workOrderForm.watch("currency")} {Number(laborItem.labor_rate).toFixed(2)}</TableCell>
+                                <TableCell>{laborItem.hours}</TableCell>
+                                <TableCell>{workOrderForm.watch("currency")} {Number(laborItem.total_cost).toFixed(2)}</TableCell>
+                                <TableCell>
+                                  <div className="flex items-center gap-2">
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="icon"
+                                      onClick={() => {
+                                        setEditingLaborId(laborItem.id);
+                                        setEditingLaborData(laborItem);
+                                        setSelectedMaintenance(null);
+                                        setIsAddLaborSheetOpen(true);
+                                      }}
+                                    >
+                                      <Pen className="h-4 w-4" />
+                                    </Button>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="icon"
+                                      className="text-red-600"
+                                      onClick={() => handleDeleteLabor(laborItem.id, index)}
+                                    >
+                                      <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })
+                        )}
+                      </TableBody>
+                    </Table>
                   </TabsContent>
                   <TabsContent value="parts" className="mt-2">
                     <Button
                       type="button"
                       variant="outline"
                       size="sm"
-                      className="w-full"
-                      onClick={() => setIsAddPartSheetOpen(true)}
+                      className="w-full mb-4"
+                      onClick={() => {
+                        setSelectedMaintenance(null);
+                        setEditingPartId(null);
+                        setEditingPartData(null);
+                        setIsAddPartSheetOpen(true);
+                      }}
                     >
                       <Plus className="mr-2 h-4 w-4" /> Add Parts
                     </Button>
+
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Part#</TableHead>
+                          <TableHead>Name</TableHead>
+                          <TableHead>Used</TableHead>
+                          <TableHead>Cost</TableHead>
+                          <TableHead>Total</TableHead>
+                          <TableHead>Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {(workOrderForm.watch("parts")?.filter((p: any) => !p.maintenance_id) ?? []).length === 0 ? (
+                          <TableRow>
+                            <TableCell colSpan={6} className="text-center text-muted-foreground">
+                              No standalone parts added.
+                            </TableCell>
+                          </TableRow>
+                        ) : (
+                          workOrderForm.watch("parts")?.map((partItem, index) => {
+                            if (partItem.maintenance_id) return null; // Skip maintenance-linked parts
+
+                            const partId = partItem.part_id;
+                            const inventoryPart = inventories?.find((i: any) => i.id === partId);
+                            const partNumber = inventoryPart?.part_number || "N/A";
+                            const partName = inventoryPart?.name || partItem.name || "Unknown";
+
+                            // Calculate total if extended_cost is missing (though our form calculates it)
+                            const total = partItem.extended_cost || ((partItem.quantity || 0) * (partItem.unit_cost || 0));
+
+                            return (
+                              <TableRow key={index}>
+                                <TableCell>{partNumber}</TableCell>
+                                <TableCell>{partName}</TableCell>
+                                <TableCell>{partItem.quantity}</TableCell>
+                                <TableCell>{workOrderForm.watch("currency")} {Number(partItem.unit_cost).toFixed(2)}</TableCell>
+                                <TableCell>{workOrderForm.watch("currency")} {Number(total).toFixed(2)}</TableCell>
+                                <TableCell>
+                                  <div className="flex items-center gap-2">
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="icon"
+                                      onClick={() => {
+                                        setEditingPartId(partItem.id);
+                                        setEditingPartData(partItem);
+                                        setSelectedMaintenance(null);
+                                        setIsAddPartSheetOpen(true);
+                                      }}
+                                    >
+                                      <Pen className="h-4 w-4" />
+                                    </Button>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="icon"
+                                      className="text-red-600"
+                                      onClick={() => handleDeletePart(partItem.id, index)}
+                                    >
+                                      <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })
+                        )}
+                      </TableBody>
+                    </Table>
                   </TabsContent>
                 </Tabs>
               )}
@@ -1089,7 +1338,7 @@ function EditActualWorkOrderFormContent({
           </Button>
         </div>
       </form>
-      {console.log("Passing unitId to AddMaintenance:", workOrderForm.watch("equipment_id"))}
+
       <AddMaintenance
         open={isMaintenanceSheetOpen}
         setOpen={setIsMaintenanceSheetOpen}
@@ -1104,17 +1353,19 @@ function EditActualWorkOrderFormContent({
         setOpen={setIsAddLaborSheetOpen}
         onAdd={handleAddLabor}
         maintenanceId={selectedMaintenance?.id || (selectedMaintenance as any)?.maintenance_id}
+        data={editingLaborData}
       />
       <AddPartUsed
         open={isAddPartSheetOpen}
         setOpen={setIsAddPartSheetOpen}
         onAdd={handleAddPart}
         maintenanceId={selectedMaintenance?.id || (selectedMaintenance as any)?.maintenance_id}
+        data={editingPartData}
       />
       <UnitHoursDialog
         open={isAddUnitSheetOpen}
         onOpenChange={setIsAddUnitSheetOpen}
-        unitId={workOrderForm.watch("equipment_id")}
+        unitId={workOrderForm.watch("equipment_id") || ""}
         unitName={equipmentOptions?.find((e) => e.id === workOrderForm.watch("equipment_id"))?.name || ""}
         workOrderId={workOrderId || ""}
         onSuccess={() => {

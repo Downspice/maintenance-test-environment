@@ -53,6 +53,22 @@ export default function AddLaborUsed({
         },
     });
 
+    // Populate form when data changes (edit mode)
+    useEffect(() => {
+        if (data) {
+            form.reset({
+                performed_by: data.performed_by || "Employee",
+                technician_id: data.technician_id,
+                work_performed: data.work_performed || "",
+                cost_center_id: data.cost_center_id || "",
+                labor_rate: data.labor_rate || 0,
+                hours: data.hours || 1,
+                total_cost: data.total_cost || 0,
+                is_under_warranty: data.is_under_warranty || false,
+            });
+        }
+    }, [data, form]);
+
     const performedByOptions = [
         { id: "Employee", name: "Employee" },
         { id: "Vendor", name: "Vendor" },

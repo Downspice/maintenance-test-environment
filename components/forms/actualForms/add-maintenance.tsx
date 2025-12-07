@@ -60,7 +60,6 @@ export default function AddMaintenance({
     // Populate form when data changes (edit mode)
     useEffect(() => {
         if (data) {
-            console.log("Populating form with data:", data);
             form.reset({
                 category: data.category || "Preventive",
                 task_id: data.task_id || "",
@@ -99,11 +98,6 @@ export default function AddMaintenance({
             setLabor([]);
         }
     }, [data, initialParts, initialLabor]);
-
-    useEffect(() => {
-        console.log("AddMaintenance rendered. Parts:", parts, "Labor:", labor);
-        console.log("Initial Parts Prop:", initialParts, "Initial Labor Prop:", initialLabor);
-    }, [parts, labor, initialParts, initialLabor]);
 
     const taskOptions = pmServices?.map((service: any) => ({
         id: service.id,
@@ -172,11 +166,6 @@ export default function AddMaintenance({
     ];
 
     function handleSubmit(data: AddMaintenanceInWorkOrderInterface) {
-        console.log("handleSubmit called with data:", data);
-        console.log("unitId:", unitId);
-        console.log("parts:", parts);
-        console.log("labor:", labor);
-
         if (!unitId) {
             toast.error("Unit ID is required to add maintenance");
             return;

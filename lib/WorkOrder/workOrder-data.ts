@@ -70,6 +70,7 @@ export const AddLaborUsedSchema = z.object({
 export type AddLaborUsedInterface = z.infer<typeof AddLaborUsedSchema>;
 
 export const AddMaintenanceInWorkOrderSchema = z.object({
+  id: z.string().optional(),
   category: z.enum(["Preventive", "Repair", "Other"], {
     required_error: "Category is required",
   }),
@@ -89,8 +90,8 @@ export const AddMaintenanceInWorkOrderSchema = z.object({
 
 export const WorkOrderSchema = z.object({
   maintenance: z.array(AddMaintenanceInWorkOrderSchema).optional(),
-  parts: z.array(PartSchema).optional(),
-  labor: z.array(AddLaborSchema).optional(),
+  parts: z.array(AddPartUsedSchema).optional(),
+  labor: z.array(AddLaborUsedSchema).optional(),
   notes: z.array(NotesSchema).optional(),
   workOrderNumber: z.number().min(1, "WO Number is required"),
   priority: z.string().min(1, "Priority is required"),
@@ -134,8 +135,8 @@ export const CreateWorkOrderSchema = z.object({
   hours: z.coerce.number().optional(),
   equipment_id: z.string().optional(),
   maintenance: z.array(AddMaintenanceInWorkOrderSchema).optional(),
-  parts: z.array(PartSchema).optional(),
-  labor: z.array(AddLaborSchema).optional(),
+  parts: z.array(AddPartUsedSchema).optional(),
+  labor: z.array(AddLaborUsedSchema).optional(),
   notes: z.array(NotesSchema).optional(),
   units: z.array(z.any()).optional(),
 });
