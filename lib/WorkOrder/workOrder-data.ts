@@ -139,6 +139,7 @@ export const CreateWorkOrderSchema = z.object({
   labor: z.array(AddLaborUsedSchema).optional(),
   notes: z.array(NotesSchema).optional(),
   units: z.array(z.any()).optional(),
+  currency: z.string().optional(),
 });
 
 export type CreateWorkOrderInterface = z.infer<typeof CreateWorkOrderSchema>;

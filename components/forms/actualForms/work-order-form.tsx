@@ -46,6 +46,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  TableFooter,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import NewEmployeeForm from "./new-employee-form";
@@ -1032,18 +1033,20 @@ function EditActualWorkOrderFormContent({
                     <TabsTrigger value="parts">Parts</TabsTrigger>
                   </TabsList>
                   <TabsContent value="maintenance" className="mt-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="w-full mb-4"
-                      onClick={() => {
-                        setSelectedMaintenance(null);
-                        setIsMaintenanceSheetOpen(true);
-                      }}
-                    >
-                      <Plus className="mr-2 h-4 w-4" /> Add Maintenance
-                    </Button>
+                    <div className="flex justify-between items-center mb-4">
+                      <div className="font-semibold text-lg">Maintenance List</div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setSelectedMaintenance(null);
+                          setIsMaintenanceSheetOpen(true);
+                        }}
+                      >
+                        <Plus className="mr-2 h-4 w-4" /> Add Maintenance
+                      </Button>
+                    </div>
 
                     <Table>
                       <TableHeader>
@@ -1051,120 +1054,124 @@ function EditActualWorkOrderFormContent({
                           <TableHead>Maintenance</TableHead>
                           <TableHead>Total</TableHead>
                           <TableHead>Complete</TableHead>
-                          <TableHead>Actions</TableHead>
+                          <TableHead className="w-[100px]">Actions</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {(workOrderForm.watch("maintenance")?.length ?? 0) === 0 ? (
-                          <TableRow>
-                            <TableCell colSpan={4} className="text-center text-muted-foreground">
-                              No maintenance tasks added.
+                        {workOrderForm.watch("maintenance")?.map((task, index) => (
+                          <TableRow key={index}>
+                            <TableCell>
+                              {task.other_task_name ||
+                                (task.task_id
+                                  ? task.task_name // Assuming task_name is populated, otherwise needs lookup
+                                  : "Unknown Task")}
+                            </TableCell>
+                            <TableCell>
+                              {workOrderForm.watch("currency")}{Number(task.total).toFixed(2)}
+                            </TableCell>
+                            <TableCell>
+                              <input
+                                type="checkbox"
+                                className="h-4 w-4"
+                                checked={task.complete}
+                                onChange={() => {
+                                  // Logic to update completion status would go here
+                                  // For now, just a placeholder or read-only view since functionality wasn't clearly defined in recent edits
+                                }}
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-2">
+                                <Button
+                                  type="button"
+                                  variant="secondary"
+                                  size="icon"
+                                  onClick={() => {
+                                    const maintenanceId = task.id || (task as any).maintenance_id;
+                                    const allParts = workOrderForm.getValues("parts") || [];
+                                    const allLabor = workOrderForm.getValues("labor") || [];
+
+                                    const linkedParts = allParts.filter((p: any) => p.maintenance_id === maintenanceId);
+                                    const linkedLabor = allLabor.filter((l: any) => l.maintenance_id === maintenanceId);
+
+                                    setSelectedMaintenanceParts(linkedParts);
+                                    setSelectedMaintenanceLabor(linkedLabor);
+                                    setSelectedMaintenance(task);
+                                    setIsMaintenanceSheetOpen(true);
+                                  }}
+                                >
+                                  <Pen className="h-4 w-4" />
+                                </Button>
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild>
+                                    <Button variant="secondary" size="icon">
+                                      <MoreVertical className="h-4 w-4" />
+                                    </Button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent align="end">
+                                    <DropdownMenuItem
+                                      onClick={() => {
+                                        setSelectedMaintenance({ ...task, id: task.id || (task as any).maintenance_id }); // Ensure ID is passed for linking
+                                        setIsAddLaborSheetOpen(true);
+                                      }}
+                                    >
+                                      Add Labor
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                      onClick={() => {
+                                        setSelectedMaintenance({ ...task, id: task.id || (task as any).maintenance_id }); // Ensure ID is passed for linking
+                                        setIsAddPartSheetOpen(true);
+                                      }}
+                                    >
+                                      Add Parts
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                      className="text-red-600 focus:text-red-600"
+                                      onClick={() => {
+                                        const currentMaintenance = workOrderForm.getValues("maintenance") || [];
+                                        const updatedMaintenance = currentMaintenance.filter((_, i) => i !== index);
+                                        workOrderForm.setValue("maintenance", updatedMaintenance);
+                                      }}
+                                    >
+                                      Delete
+                                    </DropdownMenuItem>
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
+                              </div>
                             </TableCell>
                           </TableRow>
-                        ) : (
-                          workOrderForm.watch("maintenance")?.map((task, index) => (
-                            <TableRow key={index}>
-                              <TableCell>
-                                {task.other_task_name ||
-                                  (task.task_id
-                                    ? task.task_name // Assuming task_name is populated, otherwise needs lookup
-                                    : "Unknown Task")}
-                              </TableCell>
-                              <TableCell>
-                                {workOrderForm.watch("currency")}{" "}
-                                {typeof task.total === 'number' ? task.total.toFixed(2) : parseFloat(task.total as any).toFixed(2)}
-                              </TableCell>
-                              <TableCell>
-                                <input
-                                  type="checkbox"
-                                  className="h-4 w-4"
-                                  checked={task.complete}
-                                  onChange={() => {
-                                    console.log("Complete toggled for row:", task);
-                                    // Logic to update completion status would go here
-                                  }}
-                                />
-                              </TableCell>
-                              <TableCell>
-                                <div className="flex items-center gap-2">
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() => {
-                                      const maintenanceId = task.id || (task as any).maintenance_id;
-                                      const allParts = workOrderForm.getValues("parts") || [];
-                                      const allLabor = workOrderForm.getValues("labor") || [];
-
-                                      const linkedParts = allParts.filter((p: any) => p.maintenance_id === maintenanceId);
-                                      const linkedLabor = allLabor.filter((l: any) => l.maintenance_id === maintenanceId);
-
-                                      setSelectedMaintenanceParts(linkedParts);
-                                      setSelectedMaintenanceLabor(linkedLabor);
-                                      setSelectedMaintenance(task);
-                                      setIsMaintenanceSheetOpen(true);
-                                    }}
-                                  >
-                                    <Pen className="h-4 w-4" />
-                                  </Button>
-                                  <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                      <Button variant="ghost" size="icon">
-                                        <MoreVertical className="h-4 w-4" />
-                                      </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end">
-                                      <DropdownMenuItem
-                                        onClick={() => {
-                                          setSelectedMaintenance({ ...task, id: task.id || (task as any).maintenance_id }); // Ensure ID is passed for linking
-                                          setIsAddLaborSheetOpen(true);
-                                        }}
-                                      >
-                                        Add Labor
-                                      </DropdownMenuItem>
-                                      <DropdownMenuItem
-                                        onClick={() => {
-                                          setSelectedMaintenance({ ...task, id: task.id || (task as any).maintenance_id }); // Ensure ID is passed for linking
-                                          setIsAddPartSheetOpen(true);
-                                        }}
-                                      >
-                                        Add Parts
-                                      </DropdownMenuItem>
-                                      <DropdownMenuItem
-                                        className="text-red-600 focus:text-red-600"
-                                        onClick={() => {
-                                          const currentMaintenance = workOrderForm.getValues("maintenance") || [];
-                                          const updatedMaintenance = currentMaintenance.filter((_, i) => i !== index);
-                                          workOrderForm.setValue("maintenance", updatedMaintenance);
-                                        }}
-                                      >
-                                        Delete
-                                      </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                  </DropdownMenu>
-                                </div>
-                              </TableCell>
-                            </TableRow>
-                          ))
-                        )}
+                        ))}
                       </TableBody>
+                      <TableFooter>
+                        <TableRow>
+                          <TableCell className="text-right font-bold">Total</TableCell>
+                          <TableCell className="font-bold">
+                            {workOrderForm.watch("currency")}{
+                              (workOrderForm.watch("maintenance") || []).reduce((sum, task) => sum + (Number(task.total) || 0), 0).toFixed(2)
+                            }
+                          </TableCell>
+                          <TableCell colSpan={2}></TableCell>
+                        </TableRow>
+                      </TableFooter>
                     </Table>
                   </TabsContent>
                   <TabsContent value="labor" className="mt-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="w-full mb-4"
-                      onClick={() => {
-                        setSelectedMaintenance(null); // Ensure no maintenance context
-                        setEditingLaborId(null); // Reset edit state
-                        setEditingLaborData(null);
-                        setIsAddLaborSheetOpen(true);
-                      }}
-                    >
-                      <Plus className="mr-2 h-4 w-4" /> Add Labor
-                    </Button>
+                    <div className="flex justify-between items-center mb-4">
+                      <div className="font-semibold text-lg">Labor List</div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setSelectedMaintenance(null); // Ensure no maintenance context
+                          setEditingLaborId(null); // Reset edit state
+                          setEditingLaborData(null);
+                          setIsAddLaborSheetOpen(true);
+                        }}
+                      >
+                        <Plus className="mr-2 h-4 w-4" /> Add Labor
+                      </Button>
+                    </div>
 
                     <Table>
                       <TableHeader>
@@ -1174,7 +1181,7 @@ function EditActualWorkOrderFormContent({
                           <TableHead>Rate</TableHead>
                           <TableHead>Hours</TableHead>
                           <TableHead>Total</TableHead>
-                          <TableHead>Actions</TableHead>
+                          <TableHead className="w-[100px]">Actions</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -1204,14 +1211,14 @@ function EditActualWorkOrderFormContent({
                               <TableRow key={index}>
                                 <TableCell>{technicianName}</TableCell>
                                 <TableCell>{laborItem.work_performed || "-"}</TableCell>
-                                <TableCell>{workOrderForm.watch("currency")} {Number(laborItem.labor_rate).toFixed(2)}</TableCell>
+                                <TableCell>{workOrderForm.watch("currency")}{Number(laborItem.labor_rate).toFixed(2)}</TableCell>
                                 <TableCell>{laborItem.hours}</TableCell>
-                                <TableCell>{workOrderForm.watch("currency")} {Number(laborItem.total_cost).toFixed(2)}</TableCell>
+                                <TableCell>{workOrderForm.watch("currency")}{Number(laborItem.total_cost).toFixed(2)}</TableCell>
                                 <TableCell>
                                   <div className="flex items-center gap-2">
                                     <Button
                                       type="button"
-                                      variant="ghost"
+                                      variant="secondary"
                                       size="icon"
                                       onClick={() => {
                                         setEditingLaborId(laborItem.id);
@@ -1224,7 +1231,7 @@ function EditActualWorkOrderFormContent({
                                     </Button>
                                     <Button
                                       type="button"
-                                      variant="ghost"
+                                      variant="secondary"
                                       size="icon"
                                       className="text-red-600"
                                       onClick={() => handleDeleteLabor(laborItem.id, index)}
@@ -1238,23 +1245,39 @@ function EditActualWorkOrderFormContent({
                           })
                         )}
                       </TableBody>
+                      <TableFooter>
+                        <TableRow>
+                          <TableCell colSpan={4} className="text-right font-bold">Total</TableCell>
+                          <TableCell className="font-bold">
+                            {workOrderForm.watch("currency")}{
+                              (workOrderForm.watch("labor") || [])
+                                .filter(l => !l.maintenance_id)
+                                .reduce((sum, l) => sum + (Number(l.total_cost) || 0), 0)
+                                .toFixed(2)
+                            }
+                          </TableCell>
+                          <TableCell></TableCell>
+                        </TableRow>
+                      </TableFooter>
                     </Table>
                   </TabsContent>
                   <TabsContent value="parts" className="mt-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="w-full mb-4"
-                      onClick={() => {
-                        setSelectedMaintenance(null);
-                        setEditingPartId(null);
-                        setEditingPartData(null);
-                        setIsAddPartSheetOpen(true);
-                      }}
-                    >
-                      <Plus className="mr-2 h-4 w-4" /> Add Parts
-                    </Button>
+                    <div className="flex justify-between items-center mb-4">
+                      <div className="font-semibold text-lg">Parts List</div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setSelectedMaintenance(null);
+                          setEditingPartId(null);
+                          setEditingPartData(null);
+                          setIsAddPartSheetOpen(true);
+                        }}
+                      >
+                        <Plus className="mr-2 h-4 w-4" /> Add Parts
+                      </Button>
+                    </div>
 
                     <Table>
                       <TableHeader>
@@ -1264,7 +1287,7 @@ function EditActualWorkOrderFormContent({
                           <TableHead>Used</TableHead>
                           <TableHead>Cost</TableHead>
                           <TableHead>Total</TableHead>
-                          <TableHead>Actions</TableHead>
+                          <TableHead className="w-[100px]">Actions</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -1291,13 +1314,13 @@ function EditActualWorkOrderFormContent({
                                 <TableCell>{partNumber}</TableCell>
                                 <TableCell>{partName}</TableCell>
                                 <TableCell>{partItem.quantity}</TableCell>
-                                <TableCell>{workOrderForm.watch("currency")} {Number(partItem.unit_cost).toFixed(2)}</TableCell>
-                                <TableCell>{workOrderForm.watch("currency")} {Number(total).toFixed(2)}</TableCell>
+                                <TableCell>{workOrderForm.watch("currency")}{Number(partItem.unit_cost).toFixed(2)}</TableCell>
+                                <TableCell>{workOrderForm.watch("currency")}{Number(total).toFixed(2)}</TableCell>
                                 <TableCell>
                                   <div className="flex items-center gap-2">
                                     <Button
                                       type="button"
-                                      variant="ghost"
+                                      variant="secondary"
                                       size="icon"
                                       onClick={() => {
                                         setEditingPartId(partItem.id);
@@ -1310,7 +1333,7 @@ function EditActualWorkOrderFormContent({
                                     </Button>
                                     <Button
                                       type="button"
-                                      variant="ghost"
+                                      variant="secondary"
                                       size="icon"
                                       className="text-red-600"
                                       onClick={() => handleDeletePart(partItem.id, index)}
@@ -1324,6 +1347,20 @@ function EditActualWorkOrderFormContent({
                           })
                         )}
                       </TableBody>
+                      <TableFooter>
+                        <TableRow>
+                          <TableCell colSpan={4} className="text-right font-bold">Total</TableCell>
+                          <TableCell className="font-bold">
+                            {workOrderForm.watch("currency")}{
+                              (workOrderForm.watch("parts") || [])
+                                .filter(p => !p.maintenance_id)
+                                .reduce((sum, p) => sum + (Number(p.extended_cost) || ((Number(p.quantity) || 0) * (Number(p.unit_cost) || 0)) || 0), 0)
+                                .toFixed(2)
+                            }
+                          </TableCell>
+                          <TableCell></TableCell>
+                        </TableRow>
+                      </TableFooter>
                     </Table>
                   </TabsContent>
                 </Tabs>

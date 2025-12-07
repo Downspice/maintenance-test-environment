@@ -22,7 +22,7 @@ import { Input } from "@/components/ui/input";
 import { EditableDataTable } from "@/components/customUI/editableTable";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Form } from "@/components/ui/form";
-import { Save } from "lucide-react";
+import { Save, Pen, Trash2 } from "lucide-react";
 import InputWrapper from "@/components/forms/wrappers/InputWrapper";
 import RadioGroupWrapper from "@/components/forms/wrappers/RadioGroupWrapper";
 import {
@@ -231,7 +231,7 @@ export default function AddMaintenance({
                         <th className="px-2 py-1">Qty</th>
                         <th className="px-2 py-1">Unit Cost</th>
                         <th className="px-2 py-1">Total</th>
-                        <th className="px-2 py-1">Actions</th>
+                        <th className="px-2 py-1 w-[100px]">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -248,19 +248,19 @@ export default function AddMaintenance({
                           </td>
                           <td className="px-2 py-1 space-x-2">
                             <Button
-                              variant="outline"
-                              size="sm"
+                              variant="secondary"
+                              size="icon"
                               onClick={() => {
                                 setEditPartIndex(index);
                                 setPartToEdit(part);
                                 setPartDialogOpen(true);
                               }}
                             >
-                              Edit
+                              <Pen className="h-4 w-4" />
                             </Button>
                             <Button
-                              variant="destructive"
-                              size="sm"
+                              variant="secondary"
+                              size="icon"
                               onClick={() => {
                                 if (
                                   confirm(
@@ -278,7 +278,7 @@ export default function AddMaintenance({
                                 }
                               }}
                             >
-                              Delete
+                              <Trash2 className="h-4 w-4" />
                             </Button>
                           </td>
                         </tr>
