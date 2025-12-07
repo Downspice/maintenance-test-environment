@@ -513,6 +513,8 @@ function EditActualWorkOrderFormContent({
   >([]);
   const [selectedMaintenance, setSelectedMaintenance] =
     useState<AddMaintenanceInWorkOrderInterface | null>(null);
+  const [selectedMaintenanceParts, setSelectedMaintenanceParts] = useState<any[]>([]);
+  const [selectedMaintenanceLabor, setSelectedMaintenanceLabor] = useState<any[]>([]);
 
   const [isMaintenanceSheetOpen, setIsMaintenanceSheetOpen] = useState(false);
   const [isAddLaborSheetOpen, setIsAddLaborSheetOpen] = useState(false);
@@ -989,6 +991,21 @@ function EditActualWorkOrderFormContent({
                                     variant="ghost"
                                     size="icon"
                                     onClick={() => {
+                                      const maintenanceId = task.id || (task as any).maintenance_id;
+                                      const allParts = workOrderForm.getValues("parts") || [];
+                                      const allLabor = workOrderForm.getValues("labor") || [];
+
+                                      const linkedParts = allParts.filter((p: any) => p.maintenance_id === maintenanceId);
+                                      const linkedLabor = allLabor.filter((l: any) => l.maintenance_id === maintenanceId);
+
+                                      console.log("Edit clicked. Maintenance ID:", maintenanceId);
+                                      console.log("All Parts:", allParts);
+                                      console.log("Linked Parts:", linkedParts);
+                                      console.log("All Labor:", allLabor);
+                                      console.log("Linked Labor:", linkedLabor);
+
+                                      setSelectedMaintenanceParts(linkedParts);
+                                      setSelectedMaintenanceLabor(linkedLabor);
                                       setSelectedMaintenance(task);
                                       setIsMaintenanceSheetOpen(true);
                                     }}
@@ -1079,6 +1096,8 @@ function EditActualWorkOrderFormContent({
         onAdd={handleAddMaintenanceTask}
         data={selectedMaintenance}
         unitId={workOrderForm.watch("equipment_id")}
+        initialParts={selectedMaintenanceParts}
+        initialLabor={selectedMaintenanceLabor}
       />
       <AddLaborUsed
         open={isAddLaborSheetOpen}

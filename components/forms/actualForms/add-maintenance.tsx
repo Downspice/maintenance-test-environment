@@ -29,6 +29,8 @@ interface AddMaintenanceProps {
     onAdd: (task: AddMaintenanceInWorkOrderInterface) => void;
     data?: AddMaintenanceInWorkOrderInterface | null;
     unitId?: string; // Unit ID for API submission
+    initialParts?: AddPartUsedInterface[];
+    initialLabor?: AddLaborUsedInterface[];
 }
 
 export default function AddMaintenance({
@@ -37,6 +39,8 @@ export default function AddMaintenance({
     onAdd,
     data,
     unitId,
+    initialParts = [],
+    initialLabor = [],
 }: AddMaintenanceProps) {
     const { data: pmServices } = useGetPMServices();
 
@@ -53,10 +57,53 @@ export default function AddMaintenance({
         },
     });
 
+    // Populate form when data changes (edit mode)
+    useEffect(() => {
+        if (data) {
+            console.log("Populating form with data:", data);
+            form.reset({
+                category: data.category || "Preventive",
+                task_id: data.task_id || "",
+                type_id: data.type_id || "",
+                other_task_name: data.other_task_name || "",
+                other_type_name: data.other_type_name || "",
+                parts_cost: data.parts_cost || 0,
+                labor_cost: data.labor_cost || 0,
+                total: data.total || 0,
+                notes: data.notes || "",
+            });
+        } else {
+            form.reset({
+                category: "Preventive",
+                parts_cost: 0,
+                labor_cost: 0,
+                total: 0,
+                notes: "",
+            });
+        }
+    }, [data, form]);
+
     const [parts, setParts] = useState<AddPartUsedInterface[]>([]);
     const [addPartOpen, setAddPartOpen] = useState(false);
     const [labor, setLabor] = useState<AddLaborUsedInterface[]>([]);
     const [addLaborOpen, setAddLaborOpen] = useState(false);
+
+    // Initialize parts and labor from props when in edit mode
+    useEffect(() => {
+        if (data) {
+            if (initialParts.length > 0) setParts(initialParts);
+            if (initialLabor.length > 0) setLabor(initialLabor);
+        } else {
+            // Reset if adding new
+            setParts([]);
+            setLabor([]);
+        }
+    }, [data, initialParts, initialLabor]);
+
+    useEffect(() => {
+        console.log("AddMaintenance rendered. Parts:", parts, "Labor:", labor);
+        console.log("Initial Parts Prop:", initialParts, "Initial Labor Prop:", initialLabor);
+    }, [parts, labor, initialParts, initialLabor]);
 
     const taskOptions = pmServices?.map((service: any) => ({
         id: service.id,
@@ -268,7 +315,7 @@ export default function AddMaintenance({
                                             <div key={index} className="flex items-center justify-between bg-muted/50 p-2 rounded">
                                                 <span>{part.name} (x{part.quantity})</span>
                                                 <span className="flex items-center gap-2">
-                                                    <span className="font-medium">${part.extended_cost.toFixed(2)}</span>
+                                                    <span className="font-medium">${Number(part.extended_cost).toFixed(2)}</span>
                                                     <button
                                                         type="button"
                                                         onClick={() => handleRemovePart(index)}
@@ -307,7 +354,7 @@ export default function AddMaintenance({
                                             <div key={index} className="flex items-center justify-between bg-muted/50 p-2 rounded">
                                                 <span>{laborItem.performed_by} ({laborItem.hours}h)</span>
                                                 <span className="flex items-center gap-2">
-                                                    <span className="font-medium">${laborItem.total_cost.toFixed(2)}</span>
+                                                    <span className="font-medium">${Number(laborItem.total_cost).toFixed(2)}</span>
                                                     <button
                                                         type="button"
                                                         onClick={() => handleRemoveLabor(index)}

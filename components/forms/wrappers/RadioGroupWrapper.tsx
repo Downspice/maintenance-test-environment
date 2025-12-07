@@ -18,6 +18,7 @@ interface RadioGroupWrapperProps {
   disabled?: boolean
   required?: boolean
   orientation?: "horizontal" | "vertical"
+  label?: string
 }
 
 export default function RadioGroupWrapper({

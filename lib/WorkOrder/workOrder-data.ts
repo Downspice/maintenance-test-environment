@@ -32,6 +32,7 @@ export const PartSchema = z.object({
   quantityUsed: z.coerce.number().nonnegative(),
   unit_cost: z.coerce.number().nonnegative(),
   totalCost: z.coerce.number().nonnegative(),
+  maintenance_id: z.string().optional(),
 });
 
 export const AddPartUsedSchema = z.object({
@@ -49,6 +50,7 @@ export const AddPartUsedSchema = z.object({
   days: z.coerce.number().optional(),
   hours: z.coerce.number().optional(),
   expiry_date: z.string().optional(),
+  maintenance_id: z.string().optional(),
 });
 
 export type AddPartUsedInterface = z.infer<typeof AddPartUsedSchema>;
@@ -62,6 +64,7 @@ export const AddLaborUsedSchema = z.object({
   is_under_warranty: z.boolean().optional(),
   hours: z.coerce.number().positive({ message: "Hours must be greater than 0" }),
   total_cost: z.coerce.number().nonnegative({ message: "Total cost must be a valid number" }),
+  maintenance_id: z.string().optional(),
 });
 
 export type AddLaborUsedInterface = z.infer<typeof AddLaborUsedSchema>;
@@ -71,6 +74,7 @@ export const AddMaintenanceInWorkOrderSchema = z.object({
     required_error: "Category is required",
   }),
   complete: z.boolean().optional(),
+  task: z.string().optional(),
   task_id: z.string().optional(),
   type_id: z.string().optional(),
   other_task_name: z.string().optional(),

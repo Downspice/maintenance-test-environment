@@ -34,9 +34,10 @@ export default function InputWrapper({
   placeholder,
   disabled = false,
   required = false,
+  readOnly = false,
   warning,
   direction = "horizontal", // default
-}: InputWrapperProps) {
+}: InputWrapperProps & { readOnly?: boolean }) {
   return (
     <FormField
       control={control}
@@ -66,6 +67,7 @@ export default function InputWrapper({
                 placeholder={placeholder || `Enter ${label.toLowerCase()}`}
                 className={className}
                 disabled={disabled}
+                readOnly={readOnly}
                 {...field}
               />
             </FormControl>
