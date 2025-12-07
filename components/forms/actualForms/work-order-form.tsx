@@ -21,6 +21,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Input } from "@/components/ui/input";
 import DatePickerWrapper from "../wrappers/DatePickerWrapper";
 import InputWrapper from "../wrappers/InputWrapper";
 import { toast } from "sonner";
@@ -1005,7 +1007,54 @@ function EditActualWorkOrderFormContent({
               </div>
             </div>
             <div>
-              <div className="flex flex-row justify-between space-x-2 pb-2">
+              <div className="flex flex-row justify-between pb-2">
+                {/* Logic for live calculations */}
+                {(() => {
+                  const maintenance = workOrderForm.watch("maintenance") || [];
+                  const labor = workOrderForm.watch("labor") || [];
+                  const parts = workOrderForm.watch("parts") || [];
+                  const isDiscount = workOrderForm.watch("is_discount");
+                  const discountType = workOrderForm.watch("discount_type");
+                  const discountAmount = Number(workOrderForm.watch("discount_amount") || 0);
+                  const tax1Rate = Number(workOrderForm.watch("tax_one") || 0);
+                  const tax2Rate = Number(workOrderForm.watch("tax_two") || 0);
+                  const isCalculated = workOrderForm.watch("is_calculated");
+
+                  // Calculate Subtotal
+                  const mTotal = maintenance.reduce((sum, task) => sum + (Number(task.total) || 0), 0);
+                  const lTotal = labor.filter((l: any) => !l.maintenance_id).reduce((sum, l: any) => sum + (Number(l.total_cost) || 0), 0);
+                  const pTotal = parts.filter((p: any) => !p.maintenance_id).reduce((sum, p: any) => sum + (Number(p.extended_cost) || ((Number(p.quantity) || 0) * (Number(p.unit_cost) || 0)) || 0), 0);
+
+                  const calculatedSubtotal = mTotal + lTotal + pTotal;
+
+                  useEffect(() => {
+                    // Update subtotal if not manually overridden (User said: when is calculated is false use totals)
+                    // Assuming 'calculated' means auto-sum from tables.
+                    // We don't have a UI to toggle 'is_calculated' yet so we assume it's always calculating for now, or use the field if it existed.
+                    // Defaulting to always update as per "provide live updates"
+                    if (!isCalculated) {
+                      workOrderForm.setValue("subtotal", calculatedSubtotal);
+                    }
+
+                    // Calc Discount
+                    let dAmt = 0;
+                    if (isDiscount) {
+                      if (discountType === "Percent") dAmt = calculatedSubtotal * (discountAmount / 100);
+                      else dAmt = discountAmount;
+                    }
+
+                    const taxable = Math.max(0, calculatedSubtotal - dAmt);
+                    const t1 = taxable * tax1Rate;
+                    const t2 = taxable * tax2Rate;
+                    const total = taxable + t1 + t2;
+
+                    workOrderForm.setValue("total", total);
+
+                  }, [calculatedSubtotal, isDiscount, discountType, discountAmount, tax1Rate, tax2Rate, isCalculated, workOrderForm.setValue]);
+
+                  return null;
+                })()}
+
                 <div className="flex w-fit items-end">
                   <ComboboxFieldWrapper
                     control={workOrderForm.control}
@@ -1364,6 +1413,151 @@ function EditActualWorkOrderFormContent({
                     </Table>
                   </TabsContent>
                 </Tabs>
+              )}
+
+              {/* Financial Summary */}
+              {workOrderForm.watch("equipment_id") && (
+                <div className="mt-8 border rounded-lg p-6 bg-muted/10 space-y-4 max-w-2xl ml-auto">
+                  <h3 className="font-semibold text-lg mb-4">Financial Summary</h3>
+
+                  {/* Subtotal */}
+                  <div className="flex justify-between items-center py-2 border-b">
+                    <span className="font-medium">Subtotal</span>
+                    <span className="font-bold text-lg">
+                      {workOrderForm.watch("currency")}
+                      {Number(workOrderForm.watch("subtotal") || 0).toFixed(2)}
+                    </span>
+                  </div>
+
+                  {/* Discount */}
+                  <div className="flex flex-col gap-4 py-4 border-b">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Label htmlFor="discount-switch" className="font-medium">Discount</Label>
+                        <Switch
+                          id="discount-switch"
+                          checked={workOrderForm.watch("is_discount")}
+                          onCheckedChange={(val) => {
+                            workOrderForm.setValue("is_discount", val);
+                            if (!val) {
+                              workOrderForm.setValue("discount_amount", 0);
+                            }
+                          }}
+                        />
+                      </div>
+                      {workOrderForm.watch("is_discount") && (
+                        <div className="flex items-center gap-4">
+                          <RadioGroup
+                            value={workOrderForm.watch("discount_type") || "Fixed"}
+                            onValueChange={(val: "Percent" | "Fixed") => workOrderForm.setValue("discount_type", val)}
+                            className="flex gap-4"
+                          >
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="Percent" id="disc-percent" />
+                              <Label htmlFor="disc-percent">Percent</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="Fixed" id="disc-fixed" />
+                              <Label htmlFor="disc-fixed">Fixed</Label>
+                            </div>
+                          </RadioGroup>
+                          <div className="w-32">
+                            <Input
+                              type="number"
+                              placeholder={workOrderForm.watch("discount_type") === "Percent" ? "%" : "Amount"}
+                              {...workOrderForm.register("discount_amount")}
+                              className="h-9"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    {workOrderForm.watch("is_discount") && (
+                      <div className="flex justify-between items-center text-sm text-green-600">
+                        <span>Discount Amount</span>
+                        <span>
+                          - {workOrderForm.watch("currency")}
+                          {(() => {
+                            const sub = Number(workOrderForm.watch("subtotal") || 0);
+                            const type = workOrderForm.watch("discount_type");
+                            const val = Number(workOrderForm.watch("discount_amount") || 0);
+                            let amt = 0;
+                            if (type === "Percent") amt = sub * (val / 100);
+                            else amt = val;
+                            return amt.toFixed(2);
+                          })()}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Taxes */}
+                  <div className="space-y-3 py-4 border-b">
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center gap-2">
+                        <Label>Tax 1 (Rate)</Label>
+                        <Input
+                          type="number"
+                          step="0.0001"
+                          className="w-24 h-8"
+                          placeholder="0.0000"
+                          {...workOrderForm.register("tax_one")}
+                        />
+                      </div>
+                      <span className="text-muted-foreground">
+                        {workOrderForm.watch("currency")}
+                        {(() => {
+                          const sub = Number(workOrderForm.watch("subtotal") || 0);
+                          const discType = workOrderForm.watch("discount_type");
+                          const discVal = Number(workOrderForm.watch("discount_amount") || 0);
+                          let dAmt = 0;
+                          if (workOrderForm.watch("is_discount")) {
+                            if (discType === "Percent") dAmt = sub * (discVal / 100);
+                            else dAmt = discVal;
+                          }
+                          const taxable = Math.max(0, sub - dAmt);
+                          return (taxable * (Number(workOrderForm.watch("tax_one")) || 0)).toFixed(2);
+                        })()}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center gap-2">
+                        <Label>Tax 2 (Rate)</Label>
+                        <Input
+                          type="number"
+                          step="0.0001"
+                          className="w-24 h-8"
+                          placeholder="0.0000"
+                          {...workOrderForm.register("tax_two")}
+                        />
+                      </div>
+                      <span className="text-muted-foreground">
+                        {workOrderForm.watch("currency")}
+                        {(() => {
+                          const sub = Number(workOrderForm.watch("subtotal") || 0);
+                          const discType = workOrderForm.watch("discount_type");
+                          const discVal = Number(workOrderForm.watch("discount_amount") || 0);
+                          let dAmt = 0;
+                          if (workOrderForm.watch("is_discount")) {
+                            if (discType === "Percent") dAmt = sub * (discVal / 100);
+                            else dAmt = discVal;
+                          }
+                          const taxable = Math.max(0, sub - dAmt);
+                          return (taxable * (Number(workOrderForm.watch("tax_two")) || 0)).toFixed(2);
+                        })()}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Total */}
+                  <div className="flex justify-between items-center pt-2">
+                    <span className="text-xl font-bold">Total</span>
+                    <span className="text-xl font-bold text-primary">
+                      {workOrderForm.watch("currency")}
+                      {Number(workOrderForm.watch("total") || 0).toFixed(2)}
+                    </span>
+                  </div>
+                </div>
               )}
             </div>
           </div>

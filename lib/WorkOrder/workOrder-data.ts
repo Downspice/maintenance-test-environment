@@ -140,6 +140,14 @@ export const CreateWorkOrderSchema = z.object({
   notes: z.array(NotesSchema).optional(),
   units: z.array(z.any()).optional(),
   currency: z.string().optional(),
+  subtotal: z.coerce.number().optional(),
+  is_discount: z.boolean().optional(),
+  discount_type: z.enum(["Percent", "Fixed"]).optional().nullable(),
+  discount_amount: z.coerce.number().optional(),
+  tax_one: z.coerce.number().optional(),
+  tax_two: z.coerce.number().optional(),
+  total: z.coerce.number().optional(),
+  is_calculated: z.boolean().optional(),
 });
 
 export type CreateWorkOrderInterface = z.infer<typeof CreateWorkOrderSchema>;
