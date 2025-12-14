@@ -266,6 +266,18 @@ export function useAddWorkOrderUnitPart() {
 }
 
 /**
+ * Updates a Work Order Unit Part. Invalidates the 'work-orders' list and specific work order.
+ */
+export function useUpdateWorkOrderUnitPart() {
+    return useBaseMutation<TEntity, WorkOrderPayload & { id: TId }>(
+        ["update-work-order-unit-part"],
+        (payload) => `/api/update-work-order-unit-part/${payload.id}`,
+        'put',
+        (payload) => [['work-orders'], ['work-order', (payload as any).work_order_id]]
+    );
+}
+
+/**
  * Deletes a Work Order Unit Part. Invalidates the 'work-orders' list.
  */
 export function useDeleteWorkOrderUnitPart() {
