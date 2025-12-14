@@ -911,6 +911,31 @@ function EditActualWorkOrderFormContent({
     }
   }, [selectedEquipmentId, initialEquipmentId]);
 
+  // Calculate tax amounts to sync with form state
+  const taxOneRate = workOrderForm.watch("tax_one");
+  const taxTwoRate = workOrderForm.watch("tax_two");
+  const subTotalValue = workOrderForm.watch("subtotal");
+  const isDiscountValue = workOrderForm.watch("is_discount");
+  const discountTypeValue = workOrderForm.watch("discount_type");
+  const discountAmountValue = workOrderForm.watch("discount_amount");
+
+  useEffect(() => {
+    const sub = Number(subTotalValue) || 0;
+    let dAmt = 0;
+    if (isDiscountValue) {
+      if (discountTypeValue === "Percent") dAmt = sub * ((Number(discountAmountValue) || 0) / 100);
+      else dAmt = Number(discountAmountValue) || 0;
+    }
+    const taxable = Math.max(0, sub - dAmt);
+
+    const t1Amount = taxable * (Number(taxOneRate) || 0);
+    const t2Amount = taxable * (Number(taxTwoRate) || 0);
+
+    // Use setValue with shouldValidate: true if needed, but here simple set is fine as schema allows nulls
+    workOrderForm.setValue("tax_one_amount", Number(t1Amount.toFixed(2)));
+    workOrderForm.setValue("tax_two_amount", Number(t2Amount.toFixed(2)));
+  }, [taxOneRate, taxTwoRate, subTotalValue, isDiscountValue, discountTypeValue, discountAmountValue, workOrderForm]);
+
   async function handleSubmit(data: z.infer<typeof CreateWorkOrderSchema>) {
     const targetId = workOrderId || (initialData as any)?.id;
     if (!targetId) {

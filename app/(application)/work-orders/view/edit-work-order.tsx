@@ -58,6 +58,8 @@ export default function EditWorkOrderForm({
     discount_amount: apiData.discount_amount,
     tax_one: apiData.tax_one,
     tax_two: apiData.tax_two,
+    tax_one_amount: apiData.tax_one_amount,
+    tax_two_amount: apiData.tax_two_amount,
     total: apiData.total,
     is_calculated: apiData.is_calculated,
   } : {};
