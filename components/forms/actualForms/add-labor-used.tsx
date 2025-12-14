@@ -161,7 +161,15 @@ export default function AddLaborUsed({
                         onSubmit={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            form.handleSubmit(handleSubmit)(e);
+                            form.handleSubmit(
+                                (data) => {
+                                    console.log("DEBUG: Form submitted valid", data);
+                                    handleSubmit(data);
+                                },
+                                (errors) => {
+                                    console.error("DEBUG: Form validation errors", errors);
+                                }
+                            )(e);
                         }}
                         className="space-y-4 mt-4"
                     >

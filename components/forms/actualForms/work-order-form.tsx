@@ -71,7 +71,14 @@ import {
 } from "@/services/setups/workOrder";
 import { useGetEquipments } from "@/services/setups/equipments";
 import {
-  useAddWorkOrderUnitMaintenance, useAddWorkOrderUnitLabor, useAddWorkOrderUnitPart, useDeleteWorkOrderUnitLabor, useDeleteWorkOrderUnitPart
+  useAddWorkOrderUnitPart,
+  useAddWorkOrderUnitLabor,
+  useDeleteWorkOrderUnitPart,
+  useDeleteWorkOrderUnitLabor,
+  useAddWorkOrderUnitMaintenance,
+  useUpdateWorkOrderUnitLabor,
+  useUpdateWorkOrderUnitMaintenance,
+  useDeleteWorkOrderUnitMaintenance,
 } from "@/services/setups/workOrder";
 import AddLaborUsed from "./add-labor-used";
 import AddPartUsed from "./add-part-used";
@@ -541,6 +548,17 @@ function EditActualWorkOrderFormContent({
   const [isAddUnitSheetOpen, setIsAddUnitSheetOpen] = useState(false);
   const [status, setStatus] = useState<string>("Open");
   const [assigneeType, setAssigneeType] = useState<"Employee" | "Vendor">("Employee");
+  const [units, setUnits] = useState<any[]>([]);
+
+  // Financial State
+  const [subtotal, setSubtotal] = useState<number | string>(0);
+  const [isDiscount, setIsDiscount] = useState<boolean>(false);
+  const [discountType, setDiscountType] = useState<"Percent" | "Fixed">("Fixed");
+  const [discountAmount, setDiscountAmount] = useState<number | string>(0);
+  const [taxOne, setTaxOne] = useState<number | string>(0);
+  const [taxTwo, setTaxTwo] = useState<number | string>(0);
+  const [total, setTotal] = useState<number | string>(0);
+  const [isCalculated, setIsCalculated] = useState<boolean>(false);
 
   const transformedEmployeeOptions = useMemo(() => {
     return (employeeOptions || []).map((emp: any) => ({
@@ -560,6 +578,9 @@ function EditActualWorkOrderFormContent({
   const { mutate: addMaintenance } = useAddWorkOrderUnitMaintenance();
   const { mutate: addLaborAPI } = useAddWorkOrderUnitLabor();
   const { mutate: addPartAPI } = useAddWorkOrderUnitPart();
+  const { mutate: updateLabor } = useUpdateWorkOrderUnitLabor();
+  const { mutate: updateMaintenance } = useUpdateWorkOrderUnitMaintenance();
+  const { mutate: deleteMaintenance } = useDeleteWorkOrderUnitMaintenance();
 
   function handleAddMaintenanceTask(task: AddMaintenanceInWorkOrderInterface) {
     const unitId = workOrderForm.getValues("equipment_id");
@@ -567,6 +588,8 @@ function EditActualWorkOrderFormContent({
 
     console.log("handleAddMaintenanceTask - equipment_id:", unitId);
     console.log("handleAddMaintenanceTask - units array:", units);
+    console.log("DEBUG: handleAddMaintenanceTask - selectedMaintenance:", selectedMaintenance);
+    console.log("DEBUG: handleAddMaintenanceTask - incoming task:", task);
 
     if (!unitId) {
       toast.error("Please select a unit first.");
@@ -617,34 +640,61 @@ function EditActualWorkOrderFormContent({
       ],
     };
 
-    addMaintenance(payload, {
-      onSuccess: () => {
-        toast.success("Maintenance task added successfully");
-        const taskWithStatus = { ...task, complete: false };
-        setMaintenanceTasks((prev) => {
-          if (selectedMaintenance) {
-            return prev.map((t, i) =>
-              t === selectedMaintenance ? taskWithStatus : t
-            );
-          }
-          return [...prev, taskWithStatus];
-        });
-        setSelectedMaintenance(null);
-        setIsMaintenanceSheetOpen(false);
-      },
-      onError: (error) => {
-        toast.error("Failed to add maintenance task");
-        console.error(error);
-      },
-    });
+    const workOrderData = props as any;
+    const workOrderId = workOrderData.workOrderId || workOrderData.data?.id;
+
+    // derived Id
+    const maintenanceId = selectedMaintenance?.id || (selectedMaintenance as any)?.maintenance_id;
+
+    if (maintenanceId) {
+      // Edit Mode
+      const updatePayload = {
+        id: maintenanceId,
+        unit_id: unitId,
+        work_order_id: workOrderId,
+        ...payload.maintenance[0], // Extract the single maintenance object
+        parts: payload.maintenance[0].parts,
+        labor: payload.maintenance[0].labor,
+      };
+
+      updateMaintenance(updatePayload, {
+        onSuccess: () => {
+          toast.success("Maintenance task updated successfully");
+          setSelectedMaintenance(null);
+          setIsMaintenanceSheetOpen(false);
+        },
+        onError: (error: any) => {
+          toast.error(error?.response?.data?.message || "Failed to update maintenance task");
+          console.error(error);
+        }
+      });
+
+    } else {
+      // Create Mode
+      addMaintenance(payload, {
+        onSuccess: () => {
+          toast.success("Maintenance task added successfully");
+          // Local state update mostly irrelevant if we rely on refetch, but keeping for now if mixed mode
+          const taskWithStatus = { ...task, complete: false };
+          setMaintenanceTasks((prev) => [...prev, taskWithStatus]);
+          setSelectedMaintenance(null);
+          setIsMaintenanceSheetOpen(false);
+        },
+        onError: (error) => {
+          toast.error("Failed to add maintenance task");
+          console.error(error);
+        },
+      });
+    }
   }
 
   const handleAddLabor = async (labor: AddLaborUsedInterface) => {
     const unitId = workOrderForm.getValues("equipment_id");
-    const workOrderData = props as any;
-    const workOrderId = workOrderData.workOrderId || workOrderData.data?.id;
+
+    console.log("DEBUG: handleAddLabor called", { labor, unitId, editingLaborId });
 
     if (!unitId) {
+      console.log("DEBUG: No unitId selected");
       toast.error("Please select a unit first.");
       return;
     }
@@ -654,37 +704,39 @@ function EditActualWorkOrderFormContent({
       labor: [labor],
     };
 
-    try {
-      if (editingLaborId) {
-        // Edit mode: Delete old then Add new
-        await deleteLabor({ id: editingLaborId }, {
-          onSuccess: () => {
-            console.log("Deleted old labor entry");
-          },
-          onError: (err) => {
-            console.error("Failed to delete labor for update", err);
-            toast.error("Failed to update labor (delete step)");
-            return; // Stop if delete fails?
-          }
-        });
-        // Proceed to add
-      }
+    if (editingLaborId) {
+      // Edit mode: Use Update API
+      const updatePayload = {
+        id: editingLaborId,
+        unit_id: unitId, // Preserve context
+        work_order_id: workOrderId, // For cache invalidation
+        ...labor,
+      };
 
-      addLabor(payload, {
+      updateLabor(updatePayload, {
         onSuccess: () => {
-          toast.success(editingLaborId ? "Labor updated successfully" : "Labor added successfully");
+          toast.success("Labor updated successfully");
           setIsAddLaborSheetOpen(false);
           setEditingLaborId(null);
           setEditingLaborData(null);
-          // Refetch happens automatically due to query invalidation
+        },
+        onError: (error: any) => {
+          toast.error(error?.response?.data?.message || "Failed to update labor");
+          console.error(error);
+        },
+      });
+    } else {
+      // Create mode
+      addLabor(payload, {
+        onSuccess: () => {
+          toast.success("Labor added successfully");
+          setIsAddLaborSheetOpen(false);
         },
         onError: (error: any) => {
           toast.error(error?.response?.data?.message || "Failed to add labor");
           console.error(error);
         },
       });
-    } catch (e) {
-      console.error(e);
     }
   };
 
@@ -790,9 +842,53 @@ function EditActualWorkOrderFormContent({
         workOrderForm.setValue(key as any, value);
       });
       console.log("Form initialized with equipment_id:", initialData.equipment_id);
-      console.log("Form initialized with units:", initialData.units);
+      if (initialData.units) {
+        setUnits(initialData.units);
+      }
+      const assignedTo = (initialData as any).assigned_to;
+      if (assignedTo && assignedTo.length > 0) {
+        const type = assignedTo[0].assignee_type_name;
+
+        setAssigneeType(type as "Employee" | "Vendor");
+
+        const ids = assignedTo.map((a: any) => a.assignee_id);
+
+        // Timeout to ensure state updates propagate if needed, though setValue should work
+        setTimeout(() => {
+          workOrderForm.setValue("assignee_ids", ids);
+        }, 0);
+
+      } else if (initialData.assignees && initialData.assignees.length > 0) {
+        // Fallback for assignees object
+        const type = initialData.assignees[0].assignee_type;
+        setAssigneeType(type as "Employee" | "Vendor");
+        const ids = initialData.assignees.map((a: any) => a.assignee_id);
+        workOrderForm.setValue("assignee_ids", ids);
+      } else if (initialData.assignee_ids) {
+        // Fallback for assignee_ids array
+        workOrderForm.setValue("assignee_ids", initialData.assignee_ids);
+      }
+
+      // Handle financial fields
+      if (initialData.subtotal !== undefined) setSubtotal(initialData.subtotal);
+      if (initialData.is_discount !== undefined) setIsDiscount(initialData.is_discount);
+      if (initialData.discount_type !== undefined) setDiscountType(initialData.discount_type as "Percent" | "Fixed");
+      if (initialData.discount_amount !== undefined) setDiscountAmount(initialData.discount_amount);
+      if (initialData.tax_one !== undefined) setTaxOne(initialData.tax_one);
+      if (initialData.tax_two !== undefined) setTaxTwo(initialData.tax_two);
+      if (initialData.total !== undefined) setTotal(initialData.total);
+      if (initialData.is_calculated !== undefined) setIsCalculated(initialData.is_calculated);
+
+      // Handle Status State for UI highlighting
+      if (initialData.status_id && WorkOrderStatuses) {
+        const foundStatus = (WorkOrderStatuses as GenericObject[]).find(s => s.id === initialData.status_id);
+        if (foundStatus) {
+          setStatus(foundStatus.name as string);
+        }
+      }
+
     }
-  }, [initialData, workOrderForm]);
+  }, [initialData, workOrderForm, WorkOrderStatuses]);
 
   // Watch for equipment selection changes
   const selectedEquipmentId = workOrderForm.watch("equipment_id");
@@ -822,7 +918,20 @@ function EditActualWorkOrderFormContent({
       return;
     }
 
-    updateWorkOrder({ ...data, id: targetId }, {
+    // Transform assignee_ids to assignees object array
+    const assignees = (data.assignee_ids || []).map(id => ({
+      assignee_type: assigneeType,
+      assignee_id: id
+    }));
+
+    // Create payload with assignees
+    const payload = {
+      ...data,
+      id: targetId,
+      assignees: assignees
+    };
+
+    updateWorkOrder(payload, {
       onSuccess: () => {
         toast.success("Work Order updated successfully!");
         if (onRefetch) onRefetch();
@@ -1194,9 +1303,23 @@ function EditActualWorkOrderFormContent({
                                     <DropdownMenuItem
                                       className="text-red-600 focus:text-red-600"
                                       onClick={() => {
-                                        const currentMaintenance = workOrderForm.getValues("maintenance") || [];
-                                        const updatedMaintenance = currentMaintenance.filter((_, i) => i !== index);
-                                        workOrderForm.setValue("maintenance", updatedMaintenance);
+                                        if (task.id) {
+                                          if (confirm("Are you sure you want to delete this maintenance task?")) {
+                                            deleteMaintenance({ id: task.id }, {
+                                              onSuccess: () => {
+                                                toast.success("Maintenance task deleted successfully");
+                                              },
+                                              onError: (error) => {
+                                                toast.error("Failed to delete maintenance task");
+                                                console.error(error);
+                                              }
+                                            });
+                                          }
+                                        } else {
+                                          const currentMaintenance = workOrderForm.getValues("maintenance") || [];
+                                          const updatedMaintenance = currentMaintenance.filter((_, i) => i !== index);
+                                          workOrderForm.setValue("maintenance", updatedMaintenance);
+                                        }
                                       }}
                                     >
                                       Delete

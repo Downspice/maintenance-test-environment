@@ -43,12 +43,23 @@ export default function EditWorkOrderForm({
     status_id: apiData.status_id || apiData.status || "",
     others: (apiData.others || []) as { name: string; value: string }[],
     assignee_ids: apiData.assignee_ids || apiData.assigneeIds || (apiData.assignees || []).map((a: any) => a.assignee_id || a.id),
+    assigned_to: apiData.assigned_to || [],
     equipment_id: apiData.units?.[0]?.id || "",
     hours: apiData.units?.[0]?.hours || apiData.hours || 0,
     maintenance: apiData.units?.[0]?.maintenance || [],
     parts: apiData.units?.[0]?.parts || [],
     labor: apiData.units?.[0]?.labors || [],
     notes: apiData.notes || [],
+    units: apiData.units || [],
+    currency: apiData.currency,
+    subtotal: apiData.subtotal,
+    is_discount: apiData.is_discount,
+    discount_type: apiData.discount_type,
+    discount_amount: apiData.discount_amount,
+    tax_one: apiData.tax_one,
+    tax_two: apiData.tax_two,
+    total: apiData.total,
+    is_calculated: apiData.is_calculated,
   } : {};
 
   return (

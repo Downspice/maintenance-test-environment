@@ -161,6 +161,18 @@ export function useUpdateWorkOrder() {
 }
 
 /**
+ * Updates a Work Order Unit Labor. Invalidates the 'work-orders' list and the specific 'work-order' detail query.
+ */
+export function useUpdateWorkOrderUnitLabor() {
+    return useBaseMutation<TEntity, WorkOrderPayload & { id: TId }>(
+        ["update-work-order-unit-labor"],
+        (payload) => `/api/update-work-order-unit-labor/${payload.id}`,
+        'put',
+        (payload) => [['work-orders'], ['work-order', (payload as any).work_order_id]]
+    );
+}
+
+/**
  * Deletes a Work Order. Invalidates the 'work-orders' list and the specific 'work-order' detail query.
  */
 export function useDeleteWorkOrder() {
@@ -211,6 +223,30 @@ export function useAddWorkOrderUnitMaintenance() {
         () => "/api/add-work-order-unit-maintenace",
         'post',
         (payload) => [['work-orders'], ['work-order', (payload as any).work_order_id]]
+    );
+}
+
+/**
+ * Updates a Work Order Unit Maintenance. Invalidates the 'work-orders' list and the specific 'work-order' detail query.
+ */
+export function useUpdateWorkOrderUnitMaintenance() {
+    return useBaseMutation<TEntity, WorkOrderPayload & { id: TId }>(
+        ["update-work-order-unit-maintenance"],
+        (payload) => `/api/update-work-order-unit-maintenace/${payload.id}`,
+        'put',
+        (payload) => [['work-orders'], ['work-order', (payload as any).work_order_id]]
+    );
+}
+
+/**
+ * Deletes a Work Order Unit Maintenance. Invalidates the 'work-orders' list.
+ */
+export function useDeleteWorkOrderUnitMaintenance() {
+    return useBaseMutation<TEntity, { id: TId }>(
+        ["delete-work-order-unit-maintenance"],
+        (payload) => `/api/delete-work-order-unit-maintenace/${payload.id}`,
+        'delete',
+        (payload) => [['work-orders']] // Invalidate work order detail too? Probably yes if it affects totals.
     );
 }
 
@@ -833,7 +869,7 @@ export function useGetNextWorkOrderNumber(options?: UseQueryOptions<ApiResponse<
             const response = await dummyApiClient<ApiResponse<number>>(buildUrl("/api/get-next-work-order-number"));
             return response;
         },
-        select: (response) => response.data,
+        select: (response) => response.data[0],
         staleTime: 0, // Always fetch fresh
         ...options,
     });
