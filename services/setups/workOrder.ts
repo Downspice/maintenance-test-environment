@@ -289,6 +289,42 @@ export function useDeleteWorkOrderUnitPart() {
     );
 }
 
+/**
+ * Adds a Work Order Unit Note. Invalidates the 'work-orders' list and specific work order.
+ */
+export function useAddWorkOrderUnitNote() {
+    return useBaseMutation<TEntity, WorkOrderPayload>(
+        ["add-work-order-unit-note"],
+        () => "/api/add-work-order-unit-note",
+        'post',
+        (payload) => [['work-orders'], ['work-order', (payload as any).work_order_id]]
+    );
+}
+
+/**
+ * Updates a Work Order Unit Note. Invalidates the 'work-orders' list and specific work order.
+ */
+export function useUpdateWorkOrderUnitNote() {
+    return useBaseMutation<TEntity, WorkOrderPayload & { id: TId }>(
+        ["update-work-order-unit-note"],
+        (payload) => `/api/update-work-order-unit-note/${payload.id}`,
+        'put',
+        (payload) => [['work-orders'], ['work-order', (payload as any).work_order_id]]
+    );
+}
+
+/**
+ * Deletes a Work Order Unit Note. Invalidates the 'work-orders' list.
+ */
+export function useDeleteWorkOrderUnitNote() {
+    return useBaseMutation<TEntity, { id: TId }>(
+        ["delete-work-order-unit-note"],
+        (payload) => `/api/delete-work-order-unit-note/${payload.id}`,
+        'delete',
+        () => [['work-orders']]
+    );
+}
+
 
 // --- Work Order Unit Labor Queries/Mutations ---
 
@@ -349,27 +385,6 @@ export function useDeleteWorkOrderUnitAttachment() {
 /**
  * Adds a Work Order Unit Note. Invalidates the 'work-orders' list and the specific 'work-order' detail query.
  */
-export function useAddWorkOrderUnitNote() {
-    return useBaseMutation<TEntity, WorkOrderPayload>(
-        ["add-work-order-unit-note"],
-        () => "/api/add-work-order-unit-note",
-        'post',
-        (payload) => [['work-orders'], ['work-order', (payload as any).work_order_id]]
-    );
-}
-
-/**
- * Deletes a Work Order Unit Note. Invalidates the 'work-orders' list.
- */
-export function useDeleteWorkOrderUnitNote() {
-    return useBaseMutation<TEntity, { id: TId }>(
-        ["delete-work-order-unit-note"],
-        (payload) => `/api/delete-work-order-unit-note/${payload.id}`,
-        'delete',
-        () => [['work-orders']]
-    );
-}
-
 
 // --- Work Order Type Setup Queries/Mutations ---
 

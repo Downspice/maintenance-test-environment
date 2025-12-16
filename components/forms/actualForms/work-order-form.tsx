@@ -90,9 +90,13 @@ import {
   useUpdateWorkOrderUnitPart,
   useUpdateWorkOrderUnitMaintenance,
   useDeleteWorkOrderUnitMaintenance,
+  useAddWorkOrderUnitNote,
+  useUpdateWorkOrderUnitNote,
+  useDeleteWorkOrderUnitNote,
 } from "@/services/setups/workOrder";
 import AddLaborUsed from "./add-labor-used";
 import AddPartUsed from "./add-part-used";
+import AddNote from "./add-note";
 import { GenericObject } from "@/types/types";
 import { useSheet } from "@/lib/sheet-providers";
 import { useConfirmDialog } from "@/lib/confirm-dialog";
@@ -554,6 +558,8 @@ function EditActualWorkOrderFormContent({
   const [editingLaborData, setEditingLaborData] = useState<AddLaborUsedInterface | null>(null);
   const [editingPartId, setEditingPartId] = useState<string | null>(null);
   const [editingPartData, setEditingPartData] = useState<AddPartUsedInterface | null>(null);
+  const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
+  const [editingNoteData, setEditingNoteData] = useState<any | null>(null);
 
   const { mutate: addLabor } = useAddWorkOrderUnitLabor();
   const { mutate: deleteLabor } = useDeleteWorkOrderUnitLabor();
@@ -561,10 +567,14 @@ function EditActualWorkOrderFormContent({
   const { mutate: addPart } = useAddWorkOrderUnitPart();
   const { mutate: updatePart } = useUpdateWorkOrderUnitPart();
   const { mutate: deletePart } = useDeleteWorkOrderUnitPart();
+  const { mutate: addNote } = useAddWorkOrderUnitNote();
+  const { mutate: updateNote } = useUpdateWorkOrderUnitNote();
+  const { mutate: deleteNote } = useDeleteWorkOrderUnitNote();
 
   const [isMaintenanceSheetOpen, setIsMaintenanceSheetOpen] = useState(false);
   const [isAddLaborSheetOpen, setIsAddLaborSheetOpen] = useState(false);
   const [isAddPartSheetOpen, setIsAddPartSheetOpen] = useState(false);
+  const [isAddNoteSheetOpen, setIsAddNoteSheetOpen] = useState(false);
   const [isAddUnitSheetOpen, setIsAddUnitSheetOpen] = useState(false);
   const [status, setStatus] = useState<string>("Open");
   const [assigneeType, setAssigneeType] = useState<"Employee" | "Vendor">("Employee");
@@ -852,6 +862,70 @@ function EditActualWorkOrderFormContent({
     }
   };
 
+  // Note handlers
+  async function handleAddNote(noteData: any) {
+    const unitId = workOrderForm.getValues("equipment_id");
+    if (!unitId) {
+      toast.error("Please select a unit first.");
+      return;
+    }
+
+    if (editingNoteId) {
+      // Edit mode: Use Update API
+      const updatePayload = {
+        id: editingNoteId,
+        unit_id: unitId,
+        work_order_id: workOrderId,
+        ...noteData,
+      };
+
+      updateNote(updatePayload, {
+        onSuccess: () => {
+          toast.success("Note updated successfully");
+          setIsAddNoteSheetOpen(false);
+          setEditingNoteId(null);
+          setEditingNoteData(null);
+        },
+        onError: (error: any) => {
+          toast.error(error?.response?.data?.message || "Failed to update note");
+          console.error(error);
+        },
+      });
+    } else {
+      // Create mode
+      const payload = {
+        unit_id: unitId,
+        work_order_id: workOrderId,
+        ...noteData,
+      };
+
+      addNote(payload, {
+        onSuccess: () => {
+          toast.success("Note added successfully");
+          setIsAddNoteSheetOpen(false);
+        },
+        onError: (error: any) => {
+          toast.error(error?.response?.data?.message || "Failed to add note");
+          console.error(error);
+        },
+      });
+    }
+  }
+
+  const handleDeleteNote = (id: string) => {
+    if (confirm("Are you sure you want to delete this note?")) {
+      deleteNote({ id }, {
+        onSuccess: () => {
+          toast.success("Note deleted successfully");
+        },
+        onError: (error) => {
+          toast.error("Failed to delete note");
+          console.error(error);
+        }
+      });
+    }
+  };
+
   // Use initialData if provided, otherwise fall back to data
   const formData = initialData || data || {};
 
@@ -928,13 +1002,17 @@ function EditActualWorkOrderFormContent({
 
   useEffect(() => {
     if (selectedEquipmentId && selectedEquipmentId !== initialEquipmentId) {
+      // Don't auto-open unit dialog if another dialog is already open
+      if (isAddNoteSheetOpen || isAddLaborSheetOpen || isAddPartSheetOpen || isMaintenanceSheetOpen) {
+        return;
+      }
       // Wait a bit as requested ("wait a while")
       const timer = setTimeout(() => {
         setIsAddUnitSheetOpen(true);
       }, 500);
       return () => clearTimeout(timer);
     }
-  }, [selectedEquipmentId, initialEquipmentId]);
+  }, [selectedEquipmentId, initialEquipmentId, isAddNoteSheetOpen, isAddLaborSheetOpen, isAddPartSheetOpen, isMaintenanceSheetOpen]);
 
   // Calculate tax amounts to sync with form state
   const taxOneRate = workOrderForm.watch("tax_one");
@@ -1231,37 +1309,32 @@ function EditActualWorkOrderFormContent({
                   return null;
                 })()}
 
-                <div className="flex w-fit items-end">
-                  <ComboboxFieldWrapper
-                    control={workOrderForm.control}
-                    name="equipment_id"
-                    label="Unit"
-                    options={equipmentOptions}
-                    required={true}
-                  />
-                </div>
-                <div className="flex w-fit">
-                  <InputWrapper
-                    control={workOrderForm.control}
-                    name="hours"
-                    label="Hours"
-                    type="number"
-                  />
-                </div>
+
               </div>
               {/* Units Tabs - Show tabs for each unit in the units array */}
               {workOrderForm.watch("units") && (workOrderForm.watch("units") || []).length > 0 ? (
                 <Tabs defaultValue={(workOrderForm.watch("units")?.[0] as any)?.id || "0"} className="w-full mt-4">
-                  <TabsList className="grid w-full" style={{ gridTemplateColumns: `repeat(${(workOrderForm.watch("units") || []).length}, minmax(0, 1fr))` }}>
-                    {(workOrderForm.watch("units") || []).map((unit: any, index: number) => {
-                      const equipmentName = equipmentOptions?.find((e) => e.id === unit.unit_id)?.name || `Unit ${index + 1}`;
-                      return (
-                        <TabsTrigger key={unit.id || index} value={unit.id || index.toString()}>
-                          {equipmentName}
-                        </TabsTrigger>
-                      );
-                    })}
-                  </TabsList>
+                  <div className="flex items-center gap-2">
+                    <TabsList className="grid flex-1" style={{ gridTemplateColumns: `repeat(${(workOrderForm.watch("units") || []).length}, minmax(0, 1fr))` }}>
+                      {(workOrderForm.watch("units") || []).map((unit: any, index: number) => {
+                        const equipmentName = equipmentOptions?.find((e) => e.id === unit.unit_id)?.name || `Unit ${index + 1}`;
+                        return (
+                          <TabsTrigger key={unit.id || index} value={unit.id || index.toString()}>
+                            {equipmentName}
+                          </TabsTrigger>
+                        );
+                      })}
+                    </TabsList>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setIsAddUnitSheetOpen(true)}
+                      className="shrink-0"
+                    >
+                      <Plus className="h-4 w-4 mr-1" /> Add Unit
+                    </Button>
+                  </div>
 
                   {/* Content for each unit */}
                   {(workOrderForm.watch("units") || []).map((unit: any, unitIndex: number) => (
@@ -1270,12 +1343,13 @@ function EditActualWorkOrderFormContent({
                         Hours: {unit.hours || 0}
                       </div>
 
-                      {/* Nested tabs for Maintenance, Labor, Parts within each unit */}
+                      {/* Nested tabs for Maintenance, Labor, Parts, Notes within each unit */}
                       <Tabs defaultValue="maintenance" className="w-full">
-                        <TabsList className="grid w-full grid-cols-3">
+                        <TabsList className="grid w-full grid-cols-4">
                           <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
                           <TabsTrigger value="labor">Labor</TabsTrigger>
                           <TabsTrigger value="parts">Parts</TabsTrigger>
+                          <TabsTrigger value="notes">Notes</TabsTrigger>
                         </TabsList>
 
                         <TabsContent value="maintenance" className="mt-2">
@@ -1287,7 +1361,7 @@ function EditActualWorkOrderFormContent({
                               size="sm"
                               onClick={() => {
                                 // Set the current unit context for adding maintenance
-                                workOrderForm.setValue("equipment_id", unit.unit_id);
+                                workOrderForm.setValue("equipment_id", unit.id);
                                 setSelectedMaintenance(null);
                                 setIsMaintenanceSheetOpen(true);
                               }}
@@ -1342,7 +1416,7 @@ function EditActualWorkOrderFormContent({
                                           setSelectedMaintenanceParts(linkedParts);
                                           setSelectedMaintenanceLabor(linkedLabor);
                                           setSelectedMaintenance(task);
-                                          workOrderForm.setValue("equipment_id", unit.unit_id);
+                                          workOrderForm.setValue("equipment_id", unit.id);
                                           setIsMaintenanceSheetOpen(true);
                                         }}
                                       >
@@ -1420,7 +1494,7 @@ function EditActualWorkOrderFormContent({
                               variant="outline"
                               size="sm"
                               onClick={() => {
-                                workOrderForm.setValue("equipment_id", unit.unit_id);
+                                workOrderForm.setValue("equipment_id", unit.id);
                                 setEditingLaborId(null);
                                 setEditingLaborData(null);
                                 setSelectedMaintenance(null);
@@ -1540,7 +1614,7 @@ function EditActualWorkOrderFormContent({
                               variant="outline"
                               size="sm"
                               onClick={() => {
-                                workOrderForm.setValue("equipment_id", unit.unit_id);
+                                workOrderForm.setValue("equipment_id", unit.id);
                                 setSelectedMaintenance(null);
                                 setIsAddPartSheetOpen(true);
                               }}
@@ -1589,7 +1663,7 @@ function EditActualWorkOrderFormContent({
                                               setEditingPartId((partItem as any).id);
                                               setEditingPartData(partItem);
                                               setSelectedMaintenance(null);
-                                              workOrderForm.setValue("equipment_id", unit.unit_id);
+                                              workOrderForm.setValue("equipment_id", unit.id);
                                               setIsAddPartSheetOpen(true);
                                             }}
                                           >
@@ -1622,9 +1696,88 @@ function EditActualWorkOrderFormContent({
                                       .toFixed(2)
                                   }
                                 </TableCell>
-                                <TableCell></TableCell>
                               </TableRow>
                             </TableFooter>
+                          </Table>
+                        </TabsContent>
+
+                        <TabsContent value="notes" className="mt-2">
+                          <div className="flex justify-between items-center mb-4">
+                            <div className="font-semibold text-lg">Notes</div>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                workOrderForm.setValue("equipment_id", unit.id);
+                                setEditingNoteId(null);
+                                setEditingNoteData(null);
+                                setIsAddNoteSheetOpen(true);
+                              }}
+                            >
+                              <Plus className="mr-2 h-4 w-4" /> Add Note
+                            </Button>
+                          </div>
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead>Date</TableHead>
+                                <TableHead>Created By</TableHead>
+                                <TableHead>Note</TableHead>
+                                <TableHead className="w-[100px]">Actions</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {((unit.notes || []) as any[]).length === 0 ? (
+                                <TableRow>
+                                  <TableCell colSpan={4} className="text-center text-muted-foreground">
+                                    No notes added.
+                                  </TableCell>
+                                </TableRow>
+                              ) : (
+                                ((unit.notes || []) as any[]).map((noteItem, index) => {
+                                  // Format date
+                                  const formattedDate = noteItem.date
+                                    ? new Date(noteItem.date).toLocaleDateString()
+                                    : new Date(noteItem.created_at || Date.now()).toLocaleDateString();
+
+                                  return (
+                                    <TableRow key={index}>
+                                      <TableCell>{formattedDate}</TableCell>
+                                      <TableCell>{noteItem.created_by || "Unknown"}</TableCell>
+                                      <TableCell className="max-w-md truncate">{noteItem.note}</TableCell>
+                                      <TableCell>
+                                        <div className="flex items-center gap-2">
+                                          <Button
+                                            type="button"
+                                            variant="secondary"
+                                            size="icon"
+                                            onClick={() => {
+                                              setEditingNoteId((noteItem as any).id);
+                                              setEditingNoteData(noteItem);
+                                              workOrderForm.setValue("equipment_id", unit.id);
+                                              setIsAddNoteSheetOpen(true);
+                                            }}
+                                          >
+                                            <Pen className="h-4 w-4" />
+                                          </Button>
+                                          <Button
+                                            type="button"
+                                            variant="secondary"
+                                            size="icon"
+                                            className="text-red-600"
+                                            onClick={() => handleDeleteNote((noteItem as any).id)}
+                                          >
+                                            <Trash2 className="h-4 w-4" />
+                                          </Button>
+                                        </div>
+                                      </TableCell>
+                                    </TableRow>
+                                  );
+                                })
+                              )}
+                            </TableBody>
                           </Table>
                         </TabsContent>
                       </Tabs>
@@ -1834,6 +1987,12 @@ function EditActualWorkOrderFormContent({
           // Trigger refetch after successful unit addition
           if (onRefetch) onRefetch();
         }}
+      />
+      <AddNote
+        open={isAddNoteSheetOpen}
+        setOpen={setIsAddNoteSheetOpen}
+        onAdd={handleAddNote}
+        data={editingNoteData}
       />
     </Form>
   );

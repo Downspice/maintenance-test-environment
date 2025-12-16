@@ -69,6 +69,15 @@ export const AddLaborUsedSchema = z.object({
 
 export type AddLaborUsedInterface = z.infer<typeof AddLaborUsedSchema>;
 
+// Add Note Schema for unit notes
+export const AddNoteSchema = z.object({
+  note: z.string().min(1, { message: "Note is required" }),
+  created_by: z.string().optional(),
+  date: z.string().optional(),
+});
+
+export type AddNoteInterface = z.infer<typeof AddNoteSchema>;
+
 export const AddMaintenanceInWorkOrderSchema = z.object({
   id: z.string().optional().nullable(),
   category: z.enum(["Preventive", "Repair", "Other"], {
