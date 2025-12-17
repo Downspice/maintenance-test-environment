@@ -139,7 +139,7 @@ export const CreateWorkOrderSchema = z.object({
   po_id: z.string().optional().nullable(),
   invoice_number: z.string().optional().nullable(),
   status_id: z.string().optional().nullable(),
-  others: z.array(z.object({ name: z.string(), value: z.string() })).optional().nullable(),
+  others: z.array(z.object({ id: z.string().optional(), name: z.string(), value: z.string() })).optional().nullable(),
   assignees: z.array(z.object({ assignee_type: z.enum(["Employee", "Vendor"]), assignee_id: z.string() })).optional().nullable(),
   assignee_ids: z.array(z.string()).optional().nullable(),
   hours: z.coerce.number().optional().nullable(),

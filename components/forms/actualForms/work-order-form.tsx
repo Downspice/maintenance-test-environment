@@ -211,7 +211,8 @@ export function ActualWorkOrderForm() {
       po_id: data.po_id || "",
       invoice_number: data.invoice_number || "",
       status_id: data.status_id || "",
-      others: ((data as any).others || []).map((item: { name: string; value: string }) => ({
+      others: ((data as any).others || []).map((item: any) => ({
+        ...(item.id && { id: item.id }),  // Preserve id if it exists
         name: item.name || "",
         value: item.value || "",
       })),
@@ -456,7 +457,11 @@ function EditWorkOrderSheetContent({ workOrderId }: { workOrderId: string }) {
     po_id: apiData?.po_id || apiData?.po || "",
     invoice_number: apiData?.invoice_number || apiData?.invoice || "",
     status_id: apiData?.status_id || apiData?.status || "",
-    others: (apiData?.others || []) as { name: string; value: string }[],
+    others: (apiData?.others || []).map((item: any) => ({
+      ...(item.id && { id: item.id }),
+      name: item.name || "",
+      value: item.value || "",
+    })),
     assignee_ids: apiData?.assignee_ids || apiData?.assigneeIds || (apiData?.assignees || []).map((a: any) => a.assignee_id || a.id),
     equipment_id: apiData?.units?.[0]?.id || "",
     hours: apiData?.units?.[0]?.hours || apiData?.hours || 0,

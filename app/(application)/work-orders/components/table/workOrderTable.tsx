@@ -16,6 +16,8 @@ import {
   AlertTriangle,
   FileTextIcon,
   FilePenIcon,
+  User,
+  Building,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -35,11 +37,11 @@ import {
 import { useState } from "react";
 import React from "react";
 import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-  } from "@/components/ui/tooltip";
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Progress } from "@/components/ui/progress";
 import { useConfirmDialog } from "@/lib/confirm-dialog";
 import { toast } from "sonner";
@@ -306,14 +308,19 @@ export function WorkOrderDataLoader({
           sortable={true}
         />
       ),
-      cell: ({ row }) => (
-        <>
-          <div className="flex  text-destructive items-center gap-1 text-sm">
-            <Calendar className="h-3 w-3 text-destructive" />
-            {row.original.due_date}
-          </div>
-        </>
-      ),
+      cell: ({ row }) => {
+        const dueDate = row.original.due_date;
+        const isPastDue = dueDate ? new Date(dueDate) < new Date() : false;
+
+        return (
+          <>
+            <div className={`flex items-center gap-1 text-sm ${isPastDue ? 'text-destructive font-bold' : ''}`}>
+              <Calendar className={`h-3 w-3 ${isPastDue ? 'text-destructive' : ''}`} />
+              {dueDate}
+            </div>
+          </>
+        );
+      },
     },
     {
       accessorKey: "assignees",
@@ -325,13 +332,26 @@ export function WorkOrderDataLoader({
         />
       ),
       cell: ({ row }) => {
+        const assignees = row.original.assigned_to || [];
+
         return (
-          <div className="space-y-1">
-            {row.original.assigneeIds?.map((assignee, index) => (
-              <div key={assignee} className="flex items-center gap-1 text-sm">
-                {assignee}
-              </div>
-            ))}
+          <div className="flex flex-wrap gap-1">
+            {assignees.map((assignment: any) => {
+              const isVendor = assignment.assignee_type_name === "Vendor";
+              const isEmployee = assignment.assignee_type_name === "Employee";
+
+              return (
+                <Badge
+                  key={assignment.id}
+                  variant="secondary"
+                  className="flex items-center gap-1 text-xs px-2 py-1"
+                >
+                  {isEmployee && <User className="h-3 w-3" />}
+                  {isVendor && <Building className="h-3 w-3" />}
+                  <span>{assignment.assignee_name}</span>
+                </Badge>
+              );
+            })}
           </div>
         );
       },
