@@ -505,7 +505,7 @@ export function useAddEquipment() {
         ["add-equipment"],
         () => "/api/add-equipment",
         'post',
-        () => [['equipments']]
+        () => [['equipments'], ['equipments-paginated']]
     );
 }
 

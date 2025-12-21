@@ -57,11 +57,11 @@ export default function DatePickerWrapper({
       render={({ field }) => (
         <FormItem
           className={cn(
-                      "w-full",
-                      direction === "horizontal"
-                        ? "flex items-center gap-4"
-                        : "flex flex-col"
-                    )}
+            "w-full",
+            direction === "horizontal"
+              ? "flex items-center gap-4"
+              : "flex flex-col"
+          )}
         >
           <FormLabel
             className={cn(

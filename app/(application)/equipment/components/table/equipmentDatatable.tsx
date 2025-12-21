@@ -124,17 +124,13 @@ export function EquipmentTableLoader({ locationId }: { locationId?: string }) {
     updated_by: any;
     created_at: string;
     updated_at: string;
-    type: Type;
+    make_name: string;
+    model_name: string;
+    type_name: string;
+    status_name: string;
+    color_name: string;
+    cost_center_name: string | null;
   };
-
-  interface Type {
-    id: string;
-    name: string;
-    created_by: any;
-    updated_by: any;
-    created_at: string;
-    updated_at: string;
-  }
   interface Task {
     id: string;
     title: string;
@@ -330,25 +326,14 @@ export function EquipmentTableLoader({ locationId }: { locationId?: string }) {
           className="font-medium flex flex-col"
           style={{ paddingLeft: `${row.depth * 20}px` }}
         >
-          <div>{row.getValue("unit_number")}</div>
-          <div>{row.original.name}</div>
+          <span className="font-bold">{row.getValue("unit_number")}</span>
+          <span className="text-muted-foreground text-xs font-normal">
+            {row.original.description}
+          </span>
         </div>
       ),
     },
-    {
-      accessorKey: "serial_number",
-      header: ({ column }) => (
-        <SortableHeader
-          filterOptions={serial_number}
-          column={column}
-          title="Status"
-          sortable={true}
-        />
-      ),
-      filterFn: (row, id, value) => {
-        return value.length === 0 || value.includes(row.getValue(id));
-      },
-    },
+
     {
       accessorKey: "year",
       header: ({ column }) => (
@@ -361,7 +346,7 @@ export function EquipmentTableLoader({ locationId }: { locationId?: string }) {
       ),
     },
     {
-      accessorKey: "type",
+      accessorKey: "type_name",
       header: ({ column }) => (
         <SortableHeader
           column={column}
@@ -370,33 +355,46 @@ export function EquipmentTableLoader({ locationId }: { locationId?: string }) {
           filterOptions={equipmentType}
         />
       ),
-      cell: ({ row }) => <>{row.original.type?.name}</>,
-      filterFn: (row, id, value) => {
-        return value.length === 0 || value.includes(row.getValue(id));
-      },
     },
-    // {
-    //   accessorKey: "meter",
-    //   header: ({ column }) => (
-    //     <SortableHeader
-    //       column={column}
-    //       title="Meter"
-    //       sortable={true}
-    //       filterOptions={meter}
-    //     />
-    //   ),
-    //   filterFn: (row, id, value) => {
-    //     return value.length === 0 || value.includes(row.getValue(id));
-    //   },
-    // },
-
     {
-      accessorKey: "taskStatus",
+      accessorKey: "serial_number",
+      header: ({ column }) => (
+        <SortableHeader
+          filterOptions={serial_number}
+          column={column}
+          title="Serial"
+          sortable={true}
+        />
+      ),
+    },
+    {
+      accessorKey: "status_name",
       header: ({ column }) => (
         <SortableHeader
           filterOptions={taskStatus}
           column={column}
-          title="Due status"
+          title="Status"
+          sortable={true}
+        />
+      ),
+    },
+    {
+      accessorKey: "color_name",
+      header: ({ column }) => (
+        <SortableHeader
+          column={column}
+          title="Color"
+          sortable={true}
+        />
+      ),
+    },
+    {
+      accessorKey: "model_name",
+      header: ({ column }) => (
+        <SortableHeader
+          filterOptions={model}
+          column={column}
+          title="Model"
           sortable={true}
         />
       ),

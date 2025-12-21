@@ -65,6 +65,7 @@ import { useGetEmployees } from "@/services/setups/employee";
 import { convertToOptionList } from "@/lib/utils";
 import { GenericObject } from "@/types/types";
 import debounce from 'debounce';
+import { format } from "date-fns";
 
 interface TriggerVariant {
   variant?: "icon" | "default";
@@ -354,9 +355,37 @@ export function ActualEquipmentForm() {
   const watchOwnership = form.watch("purchase.ownership_id");
 
   async function onSubmit(data: EquipmentFormValues) {
-    console.log("Form submitted with VALUES:", data);
+    const formatDate = (date: any) => {
+      if (!date) return undefined;
+      return format(new Date(date), "yyyy-MM-dd");
+    };
 
-    const res = await mutateAsync(data);
+    const payload = {
+      ...data,
+      purchase: data.purchase
+        ? {
+          ...data.purchase,
+          date: formatDate(data.purchase.date),
+          in_service_date: formatDate(data.purchase.in_service_date),
+          out_of_service_date: formatDate(data.purchase.out_of_service_date),
+          transferred_date: formatDate(data.purchase.transferred_date),
+          sold_date: formatDate(data.purchase.sold_date),
+        }
+        : undefined,
+      expenses: data.expenses?.map((exp) => ({
+        ...exp,
+        last_date: formatDate(exp.last_date),
+        next_date: formatDate(exp.next_date),
+      })),
+      warranty: data.warranty?.map((war) => ({
+        ...war,
+        date: formatDate(war.date),
+      })),
+    };
+
+    console.log("Form submitted with VALUES:", payload);
+
+    const res = await mutateAsync(payload);
     res && toast.success(res?.message);
 
     form.reset();
