@@ -22,20 +22,20 @@ const useBaseMutation = <TResponse = TEntity, TPayload = TParams, TContext = unk
     mutationKey: string[],
     endpoint: (payload: TPayload) => string,
     method: 'post' | 'put' | 'delete',
-    invalidateKeys: (payload: TPayload) => unknown[], 
+    invalidateKeys: (payload: TPayload) => unknown[],
     options?: UseMutationOptions<TResponse, AxiosError<ApiError>, TPayload, TContext>
 ) => {
     const queryClient = useQueryClient();
 
     const mutationFn = async (payload: TPayload) => {
         const url = buildUrl(endpoint(payload));
-        
+
         const response = await dummyApiClient<ApiResponse<TResponse>>(url, {
             method: method,
-            data: (method === 'post' || method === 'put') ? payload : undefined, 
+            data: (method === 'post' || method === 'put') ? payload : undefined,
         });
-        
-        return response.data as TResponse; 
+
+        return response.data as TResponse;
     };
 
     return useMutation<TResponse, AxiosError<ApiError>, TPayload, TContext>({
@@ -451,6 +451,42 @@ export function useGetEquipments<TData = TEntity[]>(options?: UseQueryOptions<Ap
     });
 }
 
+type PaginationParams = {
+    search?: string;
+    location_id?: string;
+    page?: number;
+    size?: number;
+    sort_by?: string;
+    sort_order?: 'asc' | 'desc';
+};
+
+export function useGetEquipmentsPaginated<TData = any>(
+    params: PaginationParams = {},
+    options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>
+) {
+    const queryParams = new URLSearchParams();
+
+    if (params.search) queryParams.set('search', params.search);
+    if (params.location_id) queryParams.set('location_id', params.location_id);
+    if (params.page) queryParams.set('page', String(params.page));
+    if (params.size) queryParams.set('size', String(params.size));
+    if (params.sort_by) queryParams.set('sort_by', params.sort_by);
+    if (params.sort_order) queryParams.set('sort_order', params.sort_order);
+
+    const queryString = queryParams.toString();
+    const url = queryString ? `/api/get-equipments?${queryString}` : '/api/get-equipments';
+
+    return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
+        queryKey: ["equipments-paginated", params],
+        queryFn: async () => {
+            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl(url));
+            return response;
+        },
+        staleTime: 0,
+        ...options,
+    });
+}
+
 export function useGetEquipment<TData = TEntity>(id: TId, options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>) {
     return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
         queryKey: ["equipment", id],
@@ -496,7 +532,7 @@ export function useDeleteEquipmentAttachment() {
         ["delete-equipment-attachment"],
         (payload) => `/api/delete-equipment-attachment/${payload.id}`,
         'delete',
-        (payload) => payload.equipmentId 
+        (payload) => payload.equipmentId
             ? [['equipments'], ['equipment', payload.equipmentId]]
             : [['equipments']]
     );

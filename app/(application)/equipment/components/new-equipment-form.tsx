@@ -58,6 +58,7 @@ import {
   useGetEquipmentStatuses,
   useGetEquipmentTypes,
   useGetExpenseTypes,
+  useGetEquipments,
 } from "@/services/setups/equipments";
 import { useGetEmployees } from "@/services/setups/employee";
 import { convertToOptionList } from "@/lib/utils";
@@ -183,6 +184,7 @@ export function ActualEquipmentForm() {
   const { data: expenseOptions } = useGetExpenseTypes<GenericObject[]>();
   const { data: assigneeOptions } = useGetEmployees<GenericObject[]>();
   const { data: costCenterOptions } = useGetCostCenters<GenericObject[]>();
+  const { data: allEquipments } = useGetEquipments<GenericObject[]>();
 
   const expenseColumns: ColumnDef<ExpenseTableType>[] = [
     {
@@ -466,10 +468,10 @@ export function ActualEquipmentForm() {
                             options={
                               assigneeOptions
                                 ? convertToOptionList(
-                                    assigneeOptions,
-                                    "id",
-                                    "first_name"
-                                  )
+                                  assigneeOptions,
+                                  "id",
+                                  "first_name"
+                                )
                                 : []
                             }
                           />
@@ -488,13 +490,19 @@ export function ActualEquipmentForm() {
                             options={costCenterOptions}
                           />
 
-                          <InputWrapper
+                          <ComboboxFieldWrapper
                             control={form.control}
                             name="parent_id"
                             label="Parent Equipment"
-                            type="text"
-                            placeholder="Enter Parent Equipment"
-                            value=""
+                            options={
+                              allEquipments
+                                ? convertToOptionList(
+                                  allEquipments,
+                                  "id",
+                                  "unit_number"
+                                )
+                                : []
+                            }
                           />
 
                           <SingleCheckboxWrapper

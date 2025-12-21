@@ -73,7 +73,7 @@ export default function EquipmentPage() {
 
   const handleSelectChange = (
     key: "equipment" | "location" | "custom" | "search",
-    id: string
+    value: string
   ) => {
     if (value === "new") {
       console.log("Launching new location modal...");
@@ -140,8 +140,7 @@ export default function EquipmentPage() {
         </div>
       </div>
       <div>
-        {/* <EquipmentPageDataTable realServer={false} /> */}
-        <NewEquipmentDataTable />
+        <NewEquipmentDataTable locationId={filters.location || undefined} />
       </div>
     </div>
   );

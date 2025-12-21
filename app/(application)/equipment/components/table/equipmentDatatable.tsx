@@ -1,6 +1,6 @@
 "use client";
 
-import type { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef, SortingState } from "@tanstack/react-table";
 import { AdvancedDataTable } from "@/components/customUI/advanced-data-table";
 import { SortableHeader } from "@/components/customUI/sortable-header";
 import { Button } from "@/components/ui/button";
@@ -47,35 +47,55 @@ import FluidConsumedForm from "../forms/FluidConsumed";
 import NewMeterReplacementForm from "../forms/MeterReplacement";
 import { ActualEquipmentForm } from "../new-equipment-form";
 import { ActualWorkOrderForm } from "@/components/forms/actualForms/work-order-form";
-import { useGetEquipments } from "@/services/setups/equipments";
+import { useGetEquipmentsPaginated } from "@/services/setups/equipments";
 import { toast } from "sonner";
 import { useConfirmDialog } from "@/lib/confirm-dialog";
 
-export default function DataTableDemo() {
-  const {
-    data: EquipmentData,
-    isLoading,
-    error: vendorTypesError,
-  } = useGetEquipments();
-
-  return EquipmentData ? (
-    <EquipmentTableLoader EquipmentData={EquipmentData} isLoading={isLoading} />
-  ) : (
-    <div>is loading.......</div>
-  );
+export default function DataTableDemo({
+  locationId,
+}: {
+  locationId?: string;
+}) {
+  return <EquipmentTableLoader locationId={locationId} />;
 }
 
-export function EquipmentTableLoader({ EquipmentData, isLoading }) {
-  const [isServerMode, setIsServerMode] = useState(false);
+export function EquipmentTableLoader({ locationId }: { locationId?: string }) {
   const confirmDialog = useConfirmDialog();
-  // const [isLoading, setIsLoading] = useState(false);
-  const [currentData, setCurrentData] = useState(EquipmentData.slice(0, 5)); // Show first 5 for demo
-  const [paginationInfo, setPaginationInfo] = useState({
-    pageIndex: 0,
-    pageSize: 5,
-    totalPages: Math.ceil(EquipmentData.length / 5),
-    totalRows: EquipmentData.length,
+  const [pageIndex, setPageIndex] = useState(0); // 0-based for UI
+  const [pageSize, setPageSize] = useState(10);
+  const [search, setSearch] = useState("");
+  const [sorting, setSorting] = useState<SortingState>([]);
+
+  const currentSort = sorting[0];
+  const mapColumnIdToSortBy = (id?: string): string | undefined => {
+    if (!id) return undefined;
+    // Map nested accessor keys to API fields
+    if (id === "type") return "type";
+    // Fallback: use the id as-is for simple fields
+    return id;
+  };
+
+  const { data: paged, isLoading } = useGetEquipmentsPaginated<any>({
+    search: search || undefined,
+    location_id: locationId || undefined,
+    size: pageSize,
+    page: pageIndex + 1, // API expects 1-based
+    sort_by: mapColumnIdToSortBy(currentSort?.id),
+    sort_order: currentSort ? (currentSort.desc ? "desc" : "asc") : undefined,
   });
+
+  const serverRows = paged?.data ?? [];
+  const currentPage = paged?.current_page ? Number(paged.current_page) : pageIndex + 1;
+  const totalPages = paged?.last_page ? Number(paged.last_page) : 1;
+  const totalRows = paged?.total ? Number(paged.total) : serverRows.length;
+  const effectivePageSize = paged?.per_page ? Number(paged.per_page) : pageSize;
+
+  const paginationInfo = {
+    pageIndex: currentPage - 1,
+    pageSize: effectivePageSize,
+    totalPages: totalPages,
+    totalRows: totalRows,
+  };
 
   // Enhanced data type with sub-rows
   type Employee = {
@@ -136,7 +156,7 @@ export function EquipmentTableLoader({ EquipmentData, isLoading }) {
     return result;
   };
 
-  const flatEmployees = getAllEmployees(EquipmentData);
+  const flatEmployees = getAllEmployees(serverRows);
   const unit_number = [...new Set(flatEmployees.map((emp) => emp.unit_number))];
   const model = [...new Set(flatEmployees.map((emp) => emp.model))];
   const year = [...new Set(flatEmployees.map((emp) => emp.year))];
@@ -144,7 +164,7 @@ export function EquipmentTableLoader({ EquipmentData, isLoading }) {
     ...new Set(flatEmployees.map((emp) => emp.serial_number)),
   ];
 
-  const equipmentType = [...new Set(flatEmployees.map((emp) => emp.type.name))];
+  const equipmentType = [...new Set(flatEmployees.map((emp) => emp.type?.name ?? ""))];
   const meter = [...new Set(flatEmployees.map((emp) => emp.meter))];
   const taskStatus = [...new Set(flatEmployees.map((emp) => emp.taskStatus))];
 
@@ -228,79 +248,32 @@ export function EquipmentTableLoader({ EquipmentData, isLoading }) {
 
   // Server-side pagination handler
   const handlePaginationChange = (action: "next" | "previous" | number) => {
-    console.log(`🔄 Server Pagination Action: ${action}`);
+    if (action === "next") {
+      setPageIndex((p) => Math.min(p + 1, Math.max(0, paginationInfo.totalPages - 1)));
+    } else if (action === "previous") {
+      setPageIndex((p) => Math.max(p - 1, 0));
+    } else if (typeof action === "number") {
+      setPageIndex(action);
+    }
+  };
 
-    // setIsLoading(true);
-
-    // Simulate server delay
-    setTimeout(() => {
-      let newPageIndex = paginationInfo.pageIndex;
-
-      if (action === "next") {
-        newPageIndex = Math.min(
-          paginationInfo.pageIndex + 1,
-          paginationInfo.totalPages - 1
-        );
-      } else if (action === "previous") {
-        newPageIndex = Math.max(paginationInfo.pageIndex - 1, 0);
-      } else if (typeof action === "number") {
-        newPageIndex = action;
-      }
-
-      // Simulate fetching data for the new page
-      const startIndex = newPageIndex * paginationInfo.pageSize;
-      const endIndex = startIndex + paginationInfo.pageSize;
-      const newData = EquipmentData.slice(startIndex, endIndex);
-
-      setCurrentData(newData);
-      setPaginationInfo((prev) => ({
-        ...prev,
-        pageIndex: newPageIndex,
-      }));
-
-      // setIsLoading(false);
-    }, 1000); // 1 second delay to simulate server response
+  // Page size change handler: reset to first page to keep URL consistent
+  const handlePageSizeChange = (size: number) => {
+    setPageIndex(0);
+    setPageSize(size);
   };
 
   // Server-side search handler
-  const handleServerSearch = React.useCallback(
-    (searchid: string) => {
-      console.log(`🔍 Server Search: "${searchValue}"`);
+  const handleServerSearch = React.useCallback((value: string) => {
+    setPageIndex(0);
+    setSearch(value);
+  }, []);
 
-      // setIsLoading(true);
-
-      // Simulate server delay
-      setTimeout(() => {
-        let filteredData = EquipmentData;
-
-        if (searchValue.trim()) {
-          filteredData = EquipmentData.filter(
-            (emp) =>
-              emp.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-              emp.unit_number
-                .toLowerCase()
-                .includes(searchValue.toLowerCase()) ||
-              emp.serial_number
-                .toLowerCase()
-                .includes(searchValue.toLowerCase())
-          );
-        }
-
-        // Reset to first page and update data
-        const newData = filteredData.slice(0, paginationInfo.pageSize);
-        setCurrentData(newData);
-        setPaginationInfo((prev) => ({
-          ...prev,
-          pageIndex: 0,
-          totalPages: Math.ceil(filteredData.length / prev.pageSize),
-          totalRows: filteredData.length,
-        }));
-
-        // setIsLoading(false);
-      }, 800); // 800ms delay to simulate server response
-    },
-    [paginationInfo.pageSize]
-  ); // Add dependencies that actually matter
+  // Server-side sorting handler
+  const handleServerSortingChange = (next: SortingState) => {
+    setPageIndex(0);
+    setSorting(next);
+  };
 
   const getSubRows = (originalRow: Employee) => {
     return originalRow.tasks;
@@ -607,7 +580,7 @@ export function EquipmentTableLoader({ EquipmentData, isLoading }) {
 
       <AdvancedDataTable
         columns={columns}
-        data={isServerMode ? currentData : EquipmentData}
+        data={serverRows}
         defaultVisibleColumns={[
           "unit_number",
           "year",
@@ -631,10 +604,14 @@ export function EquipmentTableLoader({ EquipmentData, isLoading }) {
         renderSubRow={renderSubRow}
         subRowKey="tasks"
         // Server-side props
-        realServerPagination={isServerMode}
-        paginationInfo={isServerMode ? paginationInfo : undefined}
-        onPaginationChange={isServerMode ? handlePaginationChange : undefined}
-        onServerSearch={isServerMode ? handleServerSearch : undefined}
+        realServerPagination={true}
+        paginationInfo={paginationInfo}
+        onPaginationChange={handlePaginationChange}
+        onPageSizeChange={handlePageSizeChange}
+        pageSizeOptions={[10, 20, 30, 50]}
+        onServerSearch={handleServerSearch}
+        serverSorting={sorting}
+        onServerSortingChange={handleServerSortingChange}
         isLoading={isLoading}
       />
     </div>
