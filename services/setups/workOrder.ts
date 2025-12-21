@@ -321,7 +321,7 @@ export function useDeleteWorkOrderUnitNote() {
         ["delete-work-order-unit-note"],
         (payload) => `/api/delete-work-order-unit-note/${payload.id}`,
         'delete',
-        () => [['work-orders']]
+        (payload) => [['work-orders'], ['work-order', (payload as any).work_order_id]]
     );
 }
 

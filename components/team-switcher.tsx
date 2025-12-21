@@ -37,7 +37,6 @@ export function TeamSwitcher({
 
   return (
     <div className="bg-sidebar-accent  text-sidebar-accent-foreground flex p-5">
-       
       <div className="grid flex-1 text-left text-sm leading-tight">
         <span className="truncate font-large">Maintenance test Environment</span>
         <span className="truncate text-xs"> </span>

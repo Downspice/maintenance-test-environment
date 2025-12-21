@@ -900,8 +900,7 @@ function EditActualWorkOrderFormContent({
       // Create mode
       const payload = {
         unit_id: unitId,
-        work_order_id: workOrderId,
-        ...noteData,
+        notes: [noteData],
       };
 
       addNote(payload, {
