@@ -40,6 +40,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import DatePicker from "@/components/ui/date-picker";
 import { ColumnDef } from "@tanstack/react-table";
 // Schema and options imports
 import { periodOptionList } from "@/lib/equipment-schema";
@@ -215,10 +216,13 @@ export function ActualEquipmentForm() {
       accessorKey: "last_date",
       header: "Last Date",
       cell: ({ row, updateRow, rowIndex }: any) => (
-        <Input
-          type="date"
-          value={row.original.last_date}
-          onChange={(e) => updateRow(rowIndex, "last_date", e.target.value)}
+        <DatePicker
+          value={
+            row.original.last_date ? new Date(row.original.last_date) : undefined
+          }
+          onChange={(date) =>
+            updateRow(rowIndex, "last_date", date ? date.toISOString() : "")
+          }
         />
       ),
     },
@@ -226,10 +230,13 @@ export function ActualEquipmentForm() {
       accessorKey: "next_date",
       header: "Next Date",
       cell: ({ row, updateRow, rowIndex }: any) => (
-        <Input
-          type="date"
-          value={row.original.next_date}
-          onChange={(e) => updateRow(rowIndex, "next_date", e.target.value)}
+        <DatePicker
+          value={
+            row.original.next_date ? new Date(row.original.next_date) : undefined
+          }
+          onChange={(date) =>
+            updateRow(rowIndex, "next_date", date ? date.toISOString() : "")
+          }
         />
       ),
     },
