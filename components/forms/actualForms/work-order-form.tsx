@@ -462,6 +462,11 @@ function EditWorkOrderSheetContent({ workOrderId }: { workOrderId: string }) {
       name: item.name || "",
       value: item.value || "",
     })),
+    assignees: (apiData?.assignees || []).map((item: any) => ({
+      ...(item.id && { id: item.id }),
+      assignee_type: item.assignee_type || "Employee",
+      assignee_id: item.assignee_id || ""
+    })),
     assignee_ids: apiData?.assignee_ids || apiData?.assigneeIds || (apiData?.assignees || []).map((a: any) => a.assignee_id || a.id),
     equipment_id: apiData?.units?.[0]?.id || "",
     hours: apiData?.units?.[0]?.hours || apiData?.hours || 0,
@@ -1050,11 +1055,16 @@ function EditActualWorkOrderFormContent({
       return;
     }
 
-    // Transform assignee_ids to assignees object array
-    const assignees = (data.assignee_ids || []).map(id => ({
-      assignee_type: assigneeType,
-      assignee_id: id
-    }));
+    // Transform assignee_ids to assignees object array, preserving existing IDs
+    const currentAssignees = data.assignees || [];
+    const assignees = (data.assignee_ids || []).map(id => {
+      const existingAssignee = currentAssignees.find(a => a.assignee_id === id);
+      return {
+        ...(existingAssignee?.id && { id: existingAssignee.id }),
+        assignee_type: assigneeType,
+        assignee_id: id
+      };
+    });
 
     // Create payload with assignees
     const payload = {
