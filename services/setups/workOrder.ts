@@ -48,7 +48,7 @@ const useBaseMutation = <TResponse = TEntity, TPayload = TParams, TContext = unk
         mutationKey,
         onSuccess: (data, variables, context) => {
             invalidateKeys(variables).forEach(key => {
-                queryClient.invalidateQueries({ queryKey: key as any });
+                queryClient.invalidateQueries({ queryKey: key as any, exact: false });
             });
             options?.onSuccess?.(data, variables, context);
         },
@@ -168,7 +168,7 @@ export function useUpdateWorkOrderUnitLabor() {
         ["update-work-order-unit-labor"],
         (payload) => `/api/update-work-order-unit-labor/${payload.id}`,
         'put',
-        (payload) => [['work-orders'], ['work-order', (payload as any).work_order_id]]
+        (payload) => [['work-order', (payload as any).work_order_id]]
     );
 }
 
@@ -222,7 +222,7 @@ export function useAddWorkOrderUnitMaintenance() {
         ["add-work-order-unit-maintenance"],
         () => "/api/add-work-order-unit-maintenace",
         'post',
-        (payload) => [['work-orders'], ['work-order', (payload as any).work_order_id]]
+        (payload) => [['work-order', (payload as any).work_order_id]]
     );
 }
 
@@ -261,7 +261,7 @@ export function useAddWorkOrderUnitPart() {
         ["add-work-order-unit-part"],
         () => "/api/add-work-order-unit-part",
         'post',
-        (payload) => [['work-orders'], ['work-order', (payload as any).work_order_id]]
+        (payload) => [['work-order', (payload as any).work_order_id]]
     );
 }
 
@@ -273,7 +273,7 @@ export function useUpdateWorkOrderUnitPart() {
         ["update-work-order-unit-part"],
         (payload) => `/api/update-work-order-unit-part/${payload.id}`,
         'put',
-        (payload) => [['work-orders'], ['work-order', (payload as any).work_order_id]]
+        (payload) => [['work-order', (payload as any).work_order_id]]
     );
 }
 
@@ -285,7 +285,7 @@ export function useDeleteWorkOrderUnitPart() {
         ["delete-work-order-unit-part"],
         (payload) => `/api/delete-work-order-unit-part/${payload.id}`,
         'delete',
-        () => [['work-orders']]
+        (payload) => [['work-order', (payload as any).work_order_id]]
     );
 }
 
@@ -336,7 +336,7 @@ export function useAddWorkOrderUnitLabor() {
         ["add-work-order-unit-labor"],
         () => "/api/add-work-order-unit-labor",
         'post',
-        (payload) => [['work-orders'], ['work-order', (payload as any).work_order_id]]
+        (payload) => [['work-order', (payload as any).work_order_id]]
     );
 }
 
@@ -348,7 +348,7 @@ export function useDeleteWorkOrderUnitLabor() {
         ["delete-work-order-unit-labor"],
         (payload) => `/api/delete-work-order-unit-labor/${payload.id}`,
         'delete',
-        () => [['work-orders']]
+        (payload) => [['work-order', (payload as any).work_order_id]]
     );
 }
 

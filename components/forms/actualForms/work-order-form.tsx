@@ -423,11 +423,14 @@ export function ActualWorkOrderForm() {
 }
 
 // Component to fetch and display work order for editing
+// Component to fetch and display work order for editing
 function EditWorkOrderSheetContent({ workOrderId }: { workOrderId: string }) {
-  const { data: workOrderData, isLoading, isError } = useGetWorkOrder(workOrderId);
+  const { data: workOrderData, isLoading, isError, refetch } = useGetWorkOrder(workOrderId);
   const { closeSheet } = useSheet();
 
-  if (isLoading) {
+  // Only show loading spinner if we have NO data. 
+  // If we have data but are refetching (isFetching), we keep the form mounted.
+  if (isLoading && !workOrderData) {
     return (
       <div className="flex items-center justify-center py-8">
         <div className="text-muted-foreground">Loading work order...</div>
@@ -635,34 +638,37 @@ function EditActualWorkOrderFormContent({
       return;
     }
 
+    const effectiveWorkOrderId = workOrderId || (data as any)?.id;
+
     const payload = {
       unit_id: unitId,
+      work_order_id: effectiveWorkOrderId,
       maintenance: [
         {
           category: task.category,
-          task_id: task.task, // Assuming this is the ID
-          type_id: task.taskType, // Assuming this is the ID
-          other_task_name: "", // Handle if "Other" is selected?
-          other_type_name: "",
-          parts_cost: parseFloat(task.partsCost) || 0,
-          labor_cost: parseFloat(task.laborCost) || 0,
+          task_id: task.task_id,
+          type_id: task.type_id,
+          other_task_name: task.other_task_name,
+          other_type_name: task.other_type_name,
+          parts_cost: task.parts_cost || 0,
+          labor_cost: task.labor_cost || 0,
           total: Number(task.total || "0") || 0,
-          notes: "", // Add notes if available in task interface
+          notes: task.notes || "",
           parts: (task.parts || []).map((p) => ({
-            part_id: p.partNumber, // Assuming partNumber is the ID
+            part_id: p.part_id,
             name: p.name,
-            description: "",
-            vendor_id: "",
-            cost_center_id: "",
-            quantity: p.quantityUsed,
+            description: p.description || "",
+            vendor_id: p.vendor_id || "",
+            cost_center_id: p.cost_center_id || "",
+            quantity: p.quantity,
             unit_cost: p.unit_cost,
-            extended_cost: p.totalCost,
-            is_warranty_replaced: false,
-            po_id: "",
-            is_part_under_warranty: false,
-            days: "",
-            hours: "",
-            expiry_date: "",
+            extended_cost: p.extended_cost,
+            is_warranty_replaced: p.is_warranty_replaced || false,
+            po_id: p.po_id || "",
+            is_part_under_warranty: p.is_part_under_warranty || false,
+            days: p.days || "",
+            hours: p.hours || "",
+            expiry_date: p.expiry_date || "",
           })),
           labor: (task.labor || []).map((l) => ({
             performed_by: l.performed_by,
@@ -679,11 +685,6 @@ function EditActualWorkOrderFormContent({
       ],
     };
 
-    // const workOrderData = props as any; // 'props' is not defined here
-    // const workOrderId = workOrderData.workOrderId || workOrderData.data?.id;
-    // We already have 'workOrderId' from component props destructured above.
-    const effectiveWorkOrderId = workOrderId || (data as any)?.id;
-
     // derived Id
     const maintenanceId = selectedMaintenance?.id || (selectedMaintenance as any)?.maintenance_id;
 
@@ -699,10 +700,15 @@ function EditActualWorkOrderFormContent({
       };
 
       updateMaintenance(updatePayload, {
-        onSuccess: () => {
+        onSuccess: async () => {
           toast.success("Maintenance task updated successfully");
+          if (onRefetch) await onRefetch();
           setSelectedMaintenance(null);
           setIsMaintenanceSheetOpen(false);
+
+          // Submit work order update after refetch is complete
+          const formData = workOrderForm.getValues();
+          handleSubmit(formData);
         },
         onError: (error: any) => {
           toast.error(error?.response?.data?.message || "Failed to update maintenance task");
@@ -713,13 +719,16 @@ function EditActualWorkOrderFormContent({
     } else {
       // Create Mode
       addMaintenance(payload, {
-        onSuccess: () => {
+        onSuccess: async () => {
           toast.success("Maintenance task added successfully");
-          // Local state update mostly irrelevant if we rely on refetch, but keeping for now if mixed mode
-          const taskWithStatus = { ...task, complete: false };
-          setMaintenanceTasks((prev) => [...prev, taskWithStatus]);
+          if (onRefetch) await onRefetch();
+          setMaintenanceTasks((prev) => [...prev, { ...task, complete: false }]);
           setSelectedMaintenance(null);
           setIsMaintenanceSheetOpen(false);
+
+          // Submit work order update after refetch is complete
+          const formData = workOrderForm.getValues();
+          handleSubmit(formData);
         },
         onError: (error) => {
           toast.error("Failed to add maintenance task");
@@ -742,6 +751,7 @@ function EditActualWorkOrderFormContent({
 
     const payload = {
       unit_id: unitId,
+      work_order_id: workOrderId,
       labor: [labor],
     };
 
@@ -755,11 +765,16 @@ function EditActualWorkOrderFormContent({
       };
 
       updateLabor(updatePayload, {
-        onSuccess: () => {
+        onSuccess: async () => {
           toast.success("Labor updated successfully");
+          if (onRefetch) await onRefetch();
           setIsAddLaborSheetOpen(false);
           setEditingLaborId(null);
           setEditingLaborData(null);
+
+          // Submit work order update after refetch is complete
+          const formData = workOrderForm.getValues();
+          handleSubmit(formData);
         },
         onError: (error: any) => {
           toast.error(error?.response?.data?.message || "Failed to update labor");
@@ -769,9 +784,14 @@ function EditActualWorkOrderFormContent({
     } else {
       // Create mode
       addLabor(payload, {
-        onSuccess: () => {
+        onSuccess: async () => {
           toast.success("Labor added successfully");
+          if (onRefetch) await onRefetch();
           setIsAddLaborSheetOpen(false);
+
+          // Submit work order update after refetch is complete
+          const formData = workOrderForm.getValues();
+          handleSubmit(formData);
         },
         onError: (error: any) => {
           toast.error(error?.response?.data?.message || "Failed to add labor");
@@ -792,8 +812,13 @@ function EditActualWorkOrderFormContent({
 
     if (confirm("Are you sure you want to delete this labor entry?")) {
       deleteLabor({ id }, {
-        onSuccess: () => {
+        onSuccess: async () => {
           toast.success("Labor deleted successfully");
+          if (onRefetch) await onRefetch();
+
+          // Submit work order update after refetch is complete
+          const formData = workOrderForm.getValues();
+          handleSubmit(formData);
         },
         onError: (error) => {
           toast.error("Failed to delete labor");
@@ -820,11 +845,16 @@ function EditActualWorkOrderFormContent({
       };
 
       updatePart(updatePayload, {
-        onSuccess: () => {
+        onSuccess: async () => {
           toast.success("Part updated successfully");
+          if (onRefetch) await onRefetch();
           setIsAddPartSheetOpen(false);
           setEditingPartId(null);
           setEditingPartData(null);
+
+          // Submit work order update after refetch is complete
+          const formData = workOrderForm.getValues();
+          handleSubmit(formData);
         },
         onError: (error: any) => {
           toast.error(error?.response?.data?.message || "Failed to update part");
@@ -835,13 +865,19 @@ function EditActualWorkOrderFormContent({
       // Create mode
       const payload = {
         unit_id: unitId,
+        work_order_id: workOrderId,
         parts: [partData],
       };
 
       addPart(payload, {
-        onSuccess: () => {
+        onSuccess: async () => {
           toast.success("Part added successfully");
+          if (onRefetch) await onRefetch();
           setIsAddPartSheetOpen(false);
+
+          // Submit work order update after refetch is complete
+          const formData = workOrderForm.getValues();
+          handleSubmit(formData);
         },
         onError: (error: any) => {
           toast.error(error?.response?.data?.message || "Failed to add part");
@@ -861,8 +897,13 @@ function EditActualWorkOrderFormContent({
 
     if (confirm("Are you sure you want to delete this part?")) {
       deletePart({ id }, {
-        onSuccess: () => {
+        onSuccess: async () => {
           toast.success("Part deleted successfully");
+          if (onRefetch) await onRefetch();
+
+          // Submit work order update after refetch is complete
+          const formData = workOrderForm.getValues();
+          handleSubmit(formData);
         },
         onError: (error) => {
           toast.error("Failed to delete part");
@@ -1436,51 +1477,34 @@ function EditActualWorkOrderFormContent({
                                       >
                                         <Pen className="h-4 w-4" />
                                       </Button>
-                                      <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                          <Button variant="secondary" size="icon">
-                                            <MoreVertical className="h-4 w-4" />
-                                          </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                          <DropdownMenuItem
-                                            onClick={() => {
-                                              setSelectedMaintenance({ ...task, id: task.id || task.maintenance_id });
-                                              setIsAddLaborSheetOpen(true);
-                                            }}
-                                          >
-                                            Add Labor
-                                          </DropdownMenuItem>
-                                          <DropdownMenuItem
-                                            onClick={() => {
-                                              setSelectedMaintenance({ ...task, id: task.id || task.maintenance_id });
-                                              setIsAddPartSheetOpen(true);
-                                            }}
-                                          >
-                                            Add Parts
-                                          </DropdownMenuItem>
-                                          <DropdownMenuItem
-                                            className="text-red-600 focus:text-red-600"
-                                            onClick={() => {
-                                              if (task.id) {
-                                                if (confirm("Are you sure you want to delete this maintenance task?")) {
-                                                  deleteMaintenance({ id: task.id }, {
-                                                    onSuccess: () => {
-                                                      toast.success("Maintenance task deleted successfully");
-                                                    },
-                                                    onError: (error) => {
-                                                      toast.error("Failed to delete maintenance task");
-                                                      console.error(error);
-                                                    }
-                                                  });
+                                      <Button
+                                        type="button"
+                                        variant="secondary"
+                                        size="icon"
+                                        className="text-red-600"
+                                        onClick={() => {
+                                          if (task.id) {
+                                            if (confirm("Are you sure you want to delete this maintenance task?")) {
+                                              deleteMaintenance({ id: task.id }, {
+                                                onSuccess: async () => {
+                                                  toast.success("Maintenance task deleted successfully");
+                                                  if (onRefetch) await onRefetch();
+
+                                                  // Submit work order update after refetch is complete
+                                                  const formData = workOrderForm.getValues();
+                                                  handleSubmit(formData);
+                                                },
+                                                onError: (error) => {
+                                                  toast.error("Failed to delete maintenance task");
+                                                  console.error(error);
                                                 }
-                                              }
-                                            }}
-                                          >
-                                            Delete
-                                          </DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                      </DropdownMenu>
+                                              });
+                                            }
+                                          }
+                                        }}
+                                      >
+                                        <Trash2 className="h-4 w-4" />
+                                      </Button>
                                     </div>
                                   </TableCell>
                                 </TableRow>

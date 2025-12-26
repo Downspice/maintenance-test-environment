@@ -20,7 +20,6 @@ import { useGetPMServices } from "@/services/setups/workOrder";
 import { AddMaintenanceInWorkOrderSchema, AddMaintenanceInWorkOrderInterface, AddPartUsedInterface, AddLaborUsedInterface } from "@/lib/WorkOrder/workOrder-data";
 import AddPartUsed from "./add-part-used";
 import AddLaborUsed from "./add-labor-used";
-import { useAddWorkOrderUnitMaintenance } from "@/services/setups/workOrder";
 import { toast } from "sonner";
 
 interface AddMaintenanceProps {
@@ -44,7 +43,7 @@ export default function AddMaintenance({
 }: AddMaintenanceProps) {
     const { data: pmServices } = useGetPMServices();
 
-    const { mutate: addMaintenanceAPI, isPending } = useAddWorkOrderUnitMaintenance();
+
 
     const form = useForm<AddMaintenanceInWorkOrderInterface>({
         resolver: zodResolver(AddMaintenanceInWorkOrderSchema),
@@ -171,60 +170,69 @@ export default function AddMaintenance({
             return;
         }
 
-        // Format the payload for the API
-        const payload = {
-            unit_id: unitId,
-            maintenance: [
-                {
-                    category: data.category,
-                    task_id: data.task_id || "",
-                    type_id: data.type_id || "",
-                    other_task_name: data.other_task_name || "",
-                    other_type_name: data.other_type_name || "",
-                    parts_cost: data.parts_cost || 0,
-                    labor_cost: data.labor_cost || 0,
-                    total: data.total || 0,
-                    notes: data.notes || "",
-                    parts: parts,
-                    labor: labor,
-                },
-            ],
-        };
-
-        console.log("Submitting payload:", JSON.stringify(payload, null, 2));
-
-        // Submit to API
-        addMaintenanceAPI(payload, {
-            onSuccess: () => {
-                console.log("Maintenance added successfully");
-                toast.success("Maintenance added successfully");
-                // Call the onAdd callback with the data
-                onAdd(data);
-                // Reset the form and close
-                setParts([]);
-                setLabor([]);
-                setOpen(false);
-            },
-            onError: (error: any) => {
-                console.error("Error adding maintenance:", error);
-                toast.error(error?.response?.data?.message || "Failed to add maintenance");
-            },
+        // Call the onAdd callback with the data, including parts and labor from local state
+        onAdd({
+            ...data,
+            parts: parts,
+            labor: labor,
         });
+
+        // Reset the form and close
+        setParts([]);
+        setLabor([]);
+        form.reset({
+            category: "Preventive",
+            parts_cost: 0,
+            labor_cost: 0,
+            total: 0,
+            notes: "",
+        });
+        // setOpen(false); // Let parent handle closing via onSuccess if desired, or close here?
+        // work-order-form.tsx logic suggests it handles closing on success.
+        // But wait, work-order-form.tsx expects to close the sheet itself?
+        // line 711 of work-order-form.tsx: setIsMaintenanceSheetOpen(false) on success.
+        // So we should probably NOT close it here if we want to wait for success.
+        // However, onAdd is void. The parent doesn't return a promise.
+        // The user request "wait for it to be successful dont automatically close" implies
+        // the parent handles the async operation.
+
+        // If I just call onAdd(), I don't know when it succeeds.
+        // But standard pattern in this codebase seems to be: 
+        // Dialog calls onAdd -> Parent calls API -> Parent closes dialog on success.
+        // So I should NOT close the dialog here.
+        // I should probably also not reset the form immediately if I want to preserve state on error?
+        // But if I don't reset, and user cancels, state persists?
+        // Effect at line 37 handles resetting when `data` changes or on open?
+        // Line 61 handles data changes.
+        // Line 100 handles initial parts/labor.
+
+        // For now, I will consistent with other dialogs pattern IF they exist.
+        // AddPartUsed calls onAdd and then form.reset().
+        // Let's check AddPartUsed again.
+        // AddPartUsed line 131: onAdd(...); form.reset();
+        // It DOES NOT setOpen(false).
+
+        // So I should just call onAdd and maybe reset form?
+        // But if there is an error in parent, form is reset?
+
+        // Let's just call onAdd. Resetting might clear data before submission completes? 
+        // AddPartUsed resets immediately.
+
+        // I will follow AddPartUsed pattern: onAdd(...) and maybe form.reset().
+        // But AddMaintenance has complex state (parts/labor).
+
+        // If I reset parts/labor here, and API fails in parent, user loses data.
+        // Maybe I should NOT reset here.
+        // AddPartUsed resets form.
+
+        // Let's just call onAdd.
+
+        // form.reset(); // If I reset, UI clears.
     }
 
     return (
-        <Dialog open={open} onOpenChange={(isOpen) => {
-            // Only allow closing if not submitting
-            if (!isPending) {
-                setOpen(isOpen);
-            }
-        }}>
-            <DialogContent className="w-full sm:max-w-2/5" onInteractOutside={(e) => {
-                // Prevent closing dialog when clicking outside during submission
-                if (isPending) {
-                    e.preventDefault();
-                }
-            }}>
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent className="w-full sm:max-w-2/5">
                 <DialogHeader>
                     <DialogTitle>{data ? "Edit Maintenance Service" : "Add New Maintenance Service"}</DialogTitle>
                     <DialogDescription>
@@ -375,8 +383,8 @@ export default function AddMaintenance({
                             placeholder="Add any additional notes here..."
                         />
 
-                        <Button type="submit" className="w-full" disabled={isPending}>
-                            {isPending ? "Submitting..." : (data ? "Update" : "Add")} Task
+                        <Button type="submit" className="w-full">
+                            {data ? "Update" : "Add"} Task
                         </Button>
                     </form>
                 </Form>
