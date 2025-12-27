@@ -15,7 +15,7 @@ interface InputWrapperProps {
   control: Control<any>;
   label: string;
   name: string;
-  type: string;
+  type?: string;
   className?: string;
   value?: any;
   placeholder?: string;
@@ -63,7 +63,7 @@ export default function InputWrapper({
           <div className="flex-1 flex flex-col">
             <FormControl>
               <Input
-                type={type}
+                type={type??"text"}
                 placeholder={placeholder || `Enter ${label.toLowerCase()}`}
                 className={className}
                 disabled={disabled}

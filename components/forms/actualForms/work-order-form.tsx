@@ -811,7 +811,7 @@ function EditActualWorkOrderFormContent({
     }
 
     if (confirm("Are you sure you want to delete this labor entry?")) {
-      deleteLabor({ id }, {
+      deleteLabor({ id, work_order_id: workOrderId }, {
         onSuccess: async () => {
           toast.success("Labor deleted successfully");
           if (onRefetch) await onRefetch();
@@ -896,7 +896,7 @@ function EditActualWorkOrderFormContent({
     }
 
     if (confirm("Are you sure you want to delete this part?")) {
-      deletePart({ id }, {
+      deletePart({ id, work_order_id: workOrderId }, {
         onSuccess: async () => {
           toast.success("Part deleted successfully");
           if (onRefetch) await onRefetch();
