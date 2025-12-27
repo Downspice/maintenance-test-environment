@@ -370,23 +370,23 @@ export function AdvancedDataTable<TData, TValue>({
   // }
 
   const renderCustomSubRows = (row: Row<TData>) => {
-  if (!renderSubRow || !row.getIsExpanded()) return null
+    if (!renderSubRow || !row.getIsExpanded()) return null
 
-  const parentData = row.original as any
-  const subRowsData = parentData[subRowKey]
+    const parentData = row.original as any
+    const subRowsData = parentData[subRowKey]
 
-  if (!Array.isArray(subRowsData) || subRowsData.length === 0) return null
+    if (!Array.isArray(subRowsData) || subRowsData.length === 0) return null
 
-  return subRowsData.map((subRowData, index) => (
-    <TableRow key={`${row.id}-sub-${index}`} className="bg-muted/30">
-      <TableCell colSpan={columnsWithSelection.length} className="p-0">
-        <div className="p-4" style={{ paddingLeft: `${(row.depth + 1) * 20 + 16}px` }}>
-          {renderSubRow(subRowData, row, row.depth + 1)}
-        </div>
-      </TableCell>
-    </TableRow>
-  ))
-}
+    return subRowsData.map((subRowData, index) => (
+      <TableRow key={`${row.id}-sub-${index}`} className="bg-muted/30">
+        <TableCell colSpan={columnsWithSelection.length} className="p-0">
+          <div className="p-4" style={{ paddingLeft: `${(row.depth + 1) * 20 + 16}px` }}>
+            {renderSubRow(subRowData, row, row.depth + 1)}
+          </div>
+        </TableCell>
+      </TableRow>
+    ))
+  }
 
 
   const exportToCSV = () => {
@@ -625,7 +625,13 @@ export function AdvancedDataTable<TData, TValue>({
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead
+                      key={header.id}
+                      style={header.column.columnDef.size ? {
+                        minWidth: `${header.column.columnDef.size}px`,
+                        maxWidth: `${header.column.columnDef.size}px`,
+                      } : undefined}
+                    >
                       {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
                   )
@@ -652,36 +658,36 @@ export function AdvancedDataTable<TData, TValue>({
               table
                 .getRowModel()
                 .rows.filter((row) => row.depth === 0)
-  .map((row) => (
-                <React.Fragment key={row.id}>
+                .map((row) => (
+                  <React.Fragment key={row.id}>
                     <TableRow
                       data-state={row.getIsSelected() && "selected"}
                       className={`cursor-pointer hover:bg-muted/50 ${getRowClassName ? getRowClassName(row) : ""}`}
-                    onClick={() => onRowClick?.(row)}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell
-                        key={cell.id}
-                        style={{
-                          paddingLeft: cell.column.id === "select" && row.depth > 0 ? `${row.depth * 20}px` : undefined,
-                        }}
-                      >
-                        <div
-                          className="cursor-pointer  rounded px-1 py-0.5 -mx-1 -my-0.5"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            onCellClick?.(cell, row)
+                      onClick={() => onRowClick?.(row)}
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell
+                          key={cell.id}
+                          style={{
+                            paddingLeft: cell.column.id === "select" && row.depth > 0 ? `${row.depth * 20}px` : undefined,
                           }}
                         >
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </div>
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                  {/* Custom sub-row rendering */}
-                  {renderSubRow && renderCustomSubRows(row)}
-                </React.Fragment>
-              ))
+                          <div
+                            className="cursor-pointer  rounded px-1 py-0.5 -mx-1 -my-0.5"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              onCellClick?.(cell, row)
+                            }}
+                          >
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </div>
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                    {/* Custom sub-row rendering */}
+                    {renderSubRow && renderCustomSubRows(row)}
+                  </React.Fragment>
+                ))
             ) : (
               <TableRow>
                 <TableCell colSpan={columnsWithSelection.length} className="h-24 text-center">

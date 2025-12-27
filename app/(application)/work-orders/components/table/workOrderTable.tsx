@@ -368,7 +368,7 @@ export function WorkOrderDataLoader({
       cell: ({ row }) => (
         <>
           <div className="flex  items-end gap-1 text-sm">
-            {row.original.currency} {row.original.subtotal}
+            {row.original.currency} {row.original.total}
           </div>
         </>
       ),
@@ -376,6 +376,7 @@ export function WorkOrderDataLoader({
     {
       id: "actions",
       header: "Actions",
+      size: 60,
       cell: ({ row }) => {
         const handleDeleteRow = (row: any) => {
           console.log("Delete row:", row.original);
@@ -438,7 +439,7 @@ export function WorkOrderDataLoader({
         );
 
         return (
-          <div className="flex flex-row gap-2 justify-between ">
+          <div className="flex flex-row gap-2 justify-between">
             <EditWorkOrderForm
               children={
                 <Button variant={"secondary"} size={"icon"}>

@@ -352,7 +352,7 @@ export function EmployeeTableLoader({ locationId, typeId }: { locationId?: strin
 
         const isActive = row.original?.status?.is_active !== false
         return (
-          <div className="flex flex-row gap-2 justify-end">
+          <div className="flex gap-2 w-fit">
             {isActive ? (
               <>
                 <EditEmployee
