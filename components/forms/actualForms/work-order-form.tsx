@@ -1202,7 +1202,7 @@ function EditActualWorkOrderFormContent({
         setIsWorkOrderUpdating(false);
         toast.success("Work Order updated successfully!");
         if (onRefetch) onRefetch();
-        if (onClose) onClose();
+        // Sheet stays open after update
       },
       onError: (error: any) => {
         setIsWorkOrderUpdating(false);
