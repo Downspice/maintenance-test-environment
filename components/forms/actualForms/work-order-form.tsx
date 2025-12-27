@@ -59,6 +59,7 @@ import {
   TableFooter,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { WorkOrderUpdateLoader } from "@/components/ui/work-order-update-loader";
 import NewEmployeeForm from "./new-employee-form";
 import NewVendor from "./new-vendor-form";
 import {
@@ -528,7 +529,7 @@ function EditActualWorkOrderFormContent({
   workOrderId?: string;
   initialData?: Partial<z.infer<typeof CreateWorkOrderSchema>>;
   onClose?: () => void;
-  onRefetch?: () => void;
+  onRefetch?: () => Promise<any>;
 }) {
   const confirmDialog = useConfirmDialog();
 
@@ -602,6 +603,9 @@ function EditActualWorkOrderFormContent({
   const [taxTwo, setTaxTwo] = useState<number | string>(0);
   const [total, setTotal] = useState<number | string>(0);
   const [isCalculated, setIsCalculated] = useState<boolean>(false);
+
+  // Work order update loader state
+  const [isWorkOrderUpdating, setIsWorkOrderUpdating] = useState<boolean>(false);
 
   const transformedEmployeeOptions = useMemo(() => {
     return (employeeOptions || []).map((emp: any) => ({
@@ -702,13 +706,23 @@ function EditActualWorkOrderFormContent({
       updateMaintenance(updatePayload, {
         onSuccess: async () => {
           toast.success("Maintenance task updated successfully");
-          if (onRefetch) await onRefetch();
+
+          // Refetch and get fresh data
+          let freshData = null;
+          if (onRefetch) {
+            const result = await onRefetch();
+            freshData = result?.data;
+          }
+
           setSelectedMaintenance(null);
           setIsMaintenanceSheetOpen(false);
 
-          // Submit work order update after refetch is complete
-          const formData = workOrderForm.getValues();
-          handleSubmit(formData);
+          // Submit work order update with fresh data after refetch
+          if (freshData) {
+            workOrderForm.reset(freshData);
+          }
+          // Trigger work order update with loader
+          triggerWorkOrderUpdate();
         },
         onError: (error: any) => {
           toast.error(error?.response?.data?.message || "Failed to update maintenance task");
@@ -721,14 +735,25 @@ function EditActualWorkOrderFormContent({
       addMaintenance(payload, {
         onSuccess: async () => {
           toast.success("Maintenance task added successfully");
-          if (onRefetch) await onRefetch();
+
+          // Refetch and get fresh data
+          let freshData = null;
+          if (onRefetch) {
+            const result = await onRefetch();
+            freshData = result?.data;
+          }
+
           setMaintenanceTasks((prev) => [...prev, { ...task, complete: false }]);
           setSelectedMaintenance(null);
           setIsMaintenanceSheetOpen(false);
 
-          // Submit work order update after refetch is complete
-          const formData = workOrderForm.getValues();
-          handleSubmit(formData);
+          // Submit work order update with fresh data after refetch
+          if (freshData) {
+            // Reset form with fresh data so handleSubmit uses updated values
+            workOrderForm.reset(freshData);
+          }
+          // Trigger work order update with loader
+          triggerWorkOrderUpdate();
         },
         onError: (error) => {
           toast.error("Failed to add maintenance task");
@@ -767,14 +792,24 @@ function EditActualWorkOrderFormContent({
       updateLabor(updatePayload, {
         onSuccess: async () => {
           toast.success("Labor updated successfully");
-          if (onRefetch) await onRefetch();
+
+          // Refetch and get fresh data
+          let freshData = null;
+          if (onRefetch) {
+            const result = await onRefetch();
+            freshData = result?.data;
+          }
+
           setIsAddLaborSheetOpen(false);
           setEditingLaborId(null);
           setEditingLaborData(null);
 
-          // Submit work order update after refetch is complete
-          const formData = workOrderForm.getValues();
-          handleSubmit(formData);
+          // Submit work order update with fresh data after refetch
+          if (freshData) {
+            workOrderForm.reset(freshData);
+          }
+          // Trigger work order update with loader
+          triggerWorkOrderUpdate();
         },
         onError: (error: any) => {
           toast.error(error?.response?.data?.message || "Failed to update labor");
@@ -786,12 +821,22 @@ function EditActualWorkOrderFormContent({
       addLabor(payload, {
         onSuccess: async () => {
           toast.success("Labor added successfully");
-          if (onRefetch) await onRefetch();
+
+          // Refetch and get fresh data
+          let freshData = null;
+          if (onRefetch) {
+            const result = await onRefetch();
+            freshData = result?.data;
+          }
+
           setIsAddLaborSheetOpen(false);
 
-          // Submit work order update after refetch is complete
-          const formData = workOrderForm.getValues();
-          handleSubmit(formData);
+          // Submit work order update with fresh data after refetch
+          if (freshData) {
+            workOrderForm.reset(freshData);
+          }
+          // Trigger work order update with loader
+          triggerWorkOrderUpdate();
         },
         onError: (error: any) => {
           toast.error(error?.response?.data?.message || "Failed to add labor");
@@ -814,11 +859,20 @@ function EditActualWorkOrderFormContent({
       deleteLabor({ id, work_order_id: workOrderId }, {
         onSuccess: async () => {
           toast.success("Labor deleted successfully");
-          if (onRefetch) await onRefetch();
 
-          // Submit work order update after refetch is complete
-          const formData = workOrderForm.getValues();
-          handleSubmit(formData);
+          // Refetch and get fresh data
+          let freshData = null;
+          if (onRefetch) {
+            const result = await onRefetch();
+            freshData = result?.data;
+          }
+
+          // Submit work order update with fresh data after refetch
+          if (freshData) {
+            workOrderForm.reset(freshData);
+          }
+          // Trigger work order update with loader
+          triggerWorkOrderUpdate();
         },
         onError: (error) => {
           toast.error("Failed to delete labor");
@@ -847,14 +901,24 @@ function EditActualWorkOrderFormContent({
       updatePart(updatePayload, {
         onSuccess: async () => {
           toast.success("Part updated successfully");
-          if (onRefetch) await onRefetch();
+
+          // Refetch and get fresh data
+          let freshData = null;
+          if (onRefetch) {
+            const result = await onRefetch();
+            freshData = result?.data;
+          }
+
           setIsAddPartSheetOpen(false);
           setEditingPartId(null);
           setEditingPartData(null);
 
-          // Submit work order update after refetch is complete
-          const formData = workOrderForm.getValues();
-          handleSubmit(formData);
+          // Submit work order update with fresh data after refetch
+          if (freshData) {
+            workOrderForm.reset(freshData);
+          }
+          // Trigger work order update with loader
+          triggerWorkOrderUpdate();
         },
         onError: (error: any) => {
           toast.error(error?.response?.data?.message || "Failed to update part");
@@ -872,12 +936,22 @@ function EditActualWorkOrderFormContent({
       addPart(payload, {
         onSuccess: async () => {
           toast.success("Part added successfully");
-          if (onRefetch) await onRefetch();
+
+          // Refetch and get fresh data
+          let freshData = null;
+          if (onRefetch) {
+            const result = await onRefetch();
+            freshData = result?.data;
+          }
+
           setIsAddPartSheetOpen(false);
 
-          // Submit work order update after refetch is complete
-          const formData = workOrderForm.getValues();
-          handleSubmit(formData);
+          // Submit work order update with fresh data after refetch
+          if (freshData) {
+            workOrderForm.reset(freshData);
+          }
+          // Trigger work order update with loader
+          triggerWorkOrderUpdate();
         },
         onError: (error: any) => {
           toast.error(error?.response?.data?.message || "Failed to add part");
@@ -899,11 +973,20 @@ function EditActualWorkOrderFormContent({
       deletePart({ id, work_order_id: workOrderId }, {
         onSuccess: async () => {
           toast.success("Part deleted successfully");
-          if (onRefetch) await onRefetch();
 
-          // Submit work order update after refetch is complete
-          const formData = workOrderForm.getValues();
-          handleSubmit(formData);
+          // Refetch and get fresh data
+          let freshData = null;
+          if (onRefetch) {
+            const result = await onRefetch();
+            freshData = result?.data;
+          }
+
+          // Submit work order update with fresh data after refetch
+          if (freshData) {
+            workOrderForm.reset(freshData);
+          }
+          // Trigger work order update with loader
+          triggerWorkOrderUpdate();
         },
         onError: (error) => {
           toast.error("Failed to delete part");
@@ -1116,923 +1199,952 @@ function EditActualWorkOrderFormContent({
 
     updateWorkOrder(payload, {
       onSuccess: () => {
+        setIsWorkOrderUpdating(false);
         toast.success("Work Order updated successfully!");
         if (onRefetch) onRefetch();
         if (onClose) onClose();
       },
       onError: (error: any) => {
+        setIsWorkOrderUpdating(false);
         toast.error(error?.response?.data?.message || "Failed to update Work Order");
         console.error("Update Error:", error);
       }
     });
   }
 
+  /**
+   * Triggers work order update with a 2000ms delay.
+   * Shows a full-screen loader during the delay to allow
+   * derived state calculations to complete before submitting.
+   */
+  function triggerWorkOrderUpdate() {
+    setIsWorkOrderUpdating(true);
+    setTimeout(() => {
+      const formData = workOrderForm.getValues();
+      handleSubmit(formData);
+    }, 2000);
+  }
+
   // If used directly (without Sheet wrapper), render just the form
 
   return (
-    <Form {...workOrderForm}>
-      <form
-        onSubmit={workOrderForm.handleSubmit(
-          (data) => handleSubmit(data),
-          (errors) => {
-            console.error("Form Validation Errors:", errors);
-            toast.error("Please fix the errors in the form");
-          }
-        )}
-      >
-        <div className="grid grid-cols-7 space-x-2">
-          <div className="col-span-2 space-y-1">
-            <Fieldset
-              content={
-                <>
-                  <InputWrapper
-                    control={workOrderForm.control}
-                    name="wo_number"
-                    label="WO Number"
-                    type="number"
-                    value={""}
-                    required
-                  />
-                  <ComboboxFieldWrapper
-                    control={workOrderForm.control}
-                    name="priority_id"
-                    label="Priority"
-                    options={(priorityOptions || []) as GenericObject[]}
-                    required={true}
-                  />
-                </>
-              }
-            />
+    <>
+      {/* Full-screen loader overlay for work order updates */}
+      <WorkOrderUpdateLoader isOpen={isWorkOrderUpdating} />
 
-            <Fieldset
-              legend="Dates"
-              content={
-                <>
-                  <DatePickerWrapper
-                    control={workOrderForm.control}
-                    name="scheduled_date"
-                    label="Scheduled"
-                  />
+      <Form {...workOrderForm}>
+        <form
+          onSubmit={workOrderForm.handleSubmit(
+            (data) => handleSubmit(data),
+            (errors) => {
+              console.error("Form Validation Errors:", errors);
+              toast.error("Please fix the errors in the form");
+            }
+          )}
+        >
+          <div className="grid grid-cols-7 space-x-2">
+            <div className="col-span-2 space-y-1">
+              <Fieldset
+                content={
+                  <>
+                    <InputWrapper
+                      control={workOrderForm.control}
+                      name="wo_number"
+                      label="WO Number"
+                      type="number"
+                      value={""}
+                      required
+                    />
+                    <ComboboxFieldWrapper
+                      control={workOrderForm.control}
+                      name="priority_id"
+                      label="Priority"
+                      options={(priorityOptions || []) as GenericObject[]}
+                      required={true}
+                    />
+                  </>
+                }
+              />
 
-                  <DatePickerWrapper
-                    control={workOrderForm.control}
-                    name="due_date"
-                    label="Due"
-                  />
-                  <DatePickerWrapper
-                    control={workOrderForm.control}
-                    name="started_date"
-                    label="Started On"
-                  />
-                  <DatePickerWrapper
-                    control={workOrderForm.control}
-                    name="completed_date"
-                    label="Completed On"
-                  />
-                </>
-              }
-            />
-            <Fieldset
-              legend="Assignees"
-              content={
-                <>
-                  <div className="space-y-4">
-                    <RadioGroup
-                      defaultValue="Employee"
-                      onValueChange={(val) => setAssigneeType(val as "Employee" | "Vendor")}
-                      className="flex flex-row space-x-4"
-                    >
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="Employee" id="edit-r1" />
-                        <Label htmlFor="edit-r1">Employee</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="Vendor" id="edit-r2" />
-                        <Label htmlFor="edit-r2">Vendor</Label>
-                      </div>
-                    </RadioGroup>
-                    <div className="flex items-center gap-2">
-                      <div className="flex-1">
-                        <MultiComboboxWrapper
-                          control={workOrderForm.control}
-                          name="assignee_ids"
-                          label=""
-                          options={assigneeType === "Employee" ? transformedEmployeeOptions : transformedVendorOptions}
-                          placeholder={`Select ${assigneeType}s`}
-                          searchPlaceholder={`Search ${assigneeType}s...`}
-                          maxSelections={assigneeType === "Employee" ? 2 : 1}
-                        />
-                      </div>
-                      <Button
-                        variant="secondary"
-                        size="icon"
-                        type="button"
-                        onClick={() => {
-                          if (assigneeType === "Employee") {
-                            // Logic to open new employee sheet if needed
-                            toast.info("Add new employee feature coming soon");
-                          } else {
-                            // Logic to open new vendor sheet if needed
-                            toast.info("Add new vendor feature coming soon");
-                          }
-                        }}
+              <Fieldset
+                legend="Dates"
+                content={
+                  <>
+                    <DatePickerWrapper
+                      control={workOrderForm.control}
+                      name="scheduled_date"
+                      label="Scheduled"
+                    />
+
+                    <DatePickerWrapper
+                      control={workOrderForm.control}
+                      name="due_date"
+                      label="Due"
+                    />
+                    <DatePickerWrapper
+                      control={workOrderForm.control}
+                      name="started_date"
+                      label="Started On"
+                    />
+                    <DatePickerWrapper
+                      control={workOrderForm.control}
+                      name="completed_date"
+                      label="Completed On"
+                    />
+                  </>
+                }
+              />
+              <Fieldset
+                legend="Assignees"
+                content={
+                  <>
+                    <div className="space-y-4">
+                      <RadioGroup
+                        defaultValue="Employee"
+                        onValueChange={(val) => setAssigneeType(val as "Employee" | "Vendor")}
+                        className="flex flex-row space-x-4"
                       >
-                        <Plus className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </>
-              }
-            />
-
-            <Fieldset
-              legend="Misc. Details"
-              content={
-                <>
-                  <ComboboxFieldWrapper
-                    control={workOrderForm.control}
-                    name="type_id"
-                    label="Type"
-                    options={(workOrderTypeOptions || []) as GenericObject[]}
-                  />
-
-                  <ComboboxFieldWrapper
-                    control={workOrderForm.control}
-                    name="cost_center_id"
-                    label="Cost center"
-                    options={(costCenterOptions || []) as GenericObject[]}
-                  />
-
-                  <ComboboxFieldWrapper
-                    control={workOrderForm.control}
-                    name="po_id"
-                    label="PO#"
-                    options={convertToOptionList(PurchaseOrderOptions ?? [], "id", "po_number")}
-                  />
-                  <ComboboxFieldWrapper
-                    control={workOrderForm.control}
-                    name="invoice_number"
-                    label="Invoice"
-                    options={convertToOptionList(InvoiceOptions ?? [], "id", "invoice_number")}
-                  />
-                  <CustomFieldsWrapper
-                    control={workOrderForm.control}
-                    name="others"
-                    label={"Custom Fields"}
-                  />
-                </>
-              }
-            />
-          </div>
-          <div className="col-span-5 space-y-2">
-            <div className="flex justify-end space-x-1 border border-b-black/20">
-              <div className="flex gap-2">
-                {((WorkOrderStatuses || []) as GenericObject[]).map((stat: GenericObject) => (
-                  <button
-                    key={stat?.id}
-                    type="button"
-                    className={`p-3 h-fit rounded-md border text-sm font-medium ${status === (stat?.name as string)
-                      ? (stat?.name as string).toLowerCase().includes("open")
-                        ? "bg-green-500 text-white"
-                        : (stat?.name as string).toLowerCase().includes("progress")
-                          ? "bg-blue-500 text-white"
-                          : (stat?.name as string).toLowerCase().includes("hold")
-                            ? "bg-yellow-400 text-white"
-                            : (stat?.name as string).toLowerCase().includes("complete")
-                              ? "bg-purple-600 text-white"
-                              : (stat?.name as string).toLowerCase().includes("cancelled")
-                                ? "bg-red-600 text-white"
-                                : "bg-gray-400 text-white"
-                      : "bg-white text-gray-700 border border-gray-300"
-                      }`}
-                    onClick={() => {
-                      workOrderForm.setValue("status_id", stat?.id);
-                      setStatus((stat?.name as string) ?? "");
-                    }}
-                  >
-                    {stat?.name as string}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div>
-              <div className="flex flex-row justify-between pb-2">
-                {/* Logic for live calculations */}
-                {(() => {
-                  const maintenance = workOrderForm.watch("maintenance") || [];
-                  const labor = workOrderForm.watch("labor") || [];
-                  const parts = workOrderForm.watch("parts") || [];
-                  const isDiscount = workOrderForm.watch("is_discount");
-                  const discountType = workOrderForm.watch("discount_type");
-                  const discountAmount = Number(workOrderForm.watch("discount_amount") || 0);
-                  const tax1Rate = Number(workOrderForm.watch("tax_one") || 0);
-                  const tax2Rate = Number(workOrderForm.watch("tax_two") || 0);
-                  const isCalculated = workOrderForm.watch("is_calculated");
-
-                  // Calculate Subtotal
-                  const mTotal = maintenance.reduce((sum, task) => sum + (Number(task.total) || 0), 0);
-                  const lTotal = labor.filter((l: any) => !l.maintenance_id).reduce((sum, l: any) => sum + (Number(l.total_cost) || 0), 0);
-                  const pTotal = parts.filter((p: any) => !p.maintenance_id).reduce((sum, p: any) => sum + (Number(p.extended_cost) || ((Number(p.quantity) || 0) * (Number(p.unit_cost) || 0)) || 0), 0);
-
-                  const calculatedSubtotal = mTotal + lTotal + pTotal;
-
-                  useEffect(() => {
-                    // Update subtotal if not manually overridden (User said: when is calculated is false use totals)
-                    // Assuming 'calculated' means auto-sum from tables.
-                    // We don't have a UI to toggle 'is_calculated' yet so we assume it's always calculating for now, or use the field if it existed.
-                    // Defaulting to always update as per "provide live updates"
-                    if (!isCalculated) {
-                      workOrderForm.setValue("subtotal", calculatedSubtotal);
-                    }
-
-                    // Calc Discount
-                    let dAmt = 0;
-                    if (isDiscount) {
-                      if (discountType === "Percent") dAmt = calculatedSubtotal * (discountAmount / 100);
-                      else dAmt = discountAmount;
-                    }
-
-                    const taxable = Math.max(0, calculatedSubtotal - dAmt);
-                    const t1 = taxable * tax1Rate;
-                    const t2 = taxable * tax2Rate;
-                    const total = taxable + t1 + t2;
-
-                    workOrderForm.setValue("total", total);
-
-                  }, [calculatedSubtotal, isDiscount, discountType, discountAmount, tax1Rate, tax2Rate, isCalculated, workOrderForm.setValue]);
-
-                  return null;
-                })()}
-
-
-              </div>
-              {/* Units Tabs - Show tabs for each unit in the units array */}
-              {workOrderForm.watch("units") && (workOrderForm.watch("units") || []).length > 0 ? (
-                <Tabs defaultValue={(workOrderForm.watch("units")?.[0] as any)?.id || "0"} className="w-full mt-4">
-                  <div className="flex items-center gap-2">
-                    <TabsList className="grid flex-1" style={{ gridTemplateColumns: `repeat(${(workOrderForm.watch("units") || []).length}, minmax(0, 1fr))` }}>
-                      {(workOrderForm.watch("units") || []).map((unit: any, index: number) => {
-                        const equipmentName = equipmentOptions?.find((e) => e.id === unit.unit_id)?.name || `Unit ${index + 1}`;
-                        return (
-                          <TabsTrigger key={unit.id || index} value={unit.id || index.toString()}>
-                            {equipmentName}
-                          </TabsTrigger>
-                        );
-                      })}
-                    </TabsList>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setIsAddUnitSheetOpen(true)}
-                      className="shrink-0"
-                    >
-                      <Plus className="h-4 w-4 mr-1" /> Add Unit
-                    </Button>
-                  </div>
-
-                  {/* Content for each unit */}
-                  {(workOrderForm.watch("units") || []).map((unit: any, unitIndex: number) => (
-                    <TabsContent key={unit.id || unitIndex} value={unit.id || unitIndex.toString()}>
-                      <div className="mb-2 text-sm text-muted-foreground">
-                        Hours: {unit.hours || 0}
-                      </div>
-
-                      {/* Nested tabs for Maintenance, Labor, Parts, Notes within each unit */}
-                      <Tabs defaultValue="maintenance" className="w-full">
-                        <TabsList className="grid w-full grid-cols-4">
-                          <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
-                          <TabsTrigger value="labor">Labor</TabsTrigger>
-                          <TabsTrigger value="parts">Parts</TabsTrigger>
-                          <TabsTrigger value="notes">Notes</TabsTrigger>
-                        </TabsList>
-
-                        <TabsContent value="maintenance" className="mt-2">
-                          <div className="flex justify-between items-center mb-4">
-                            <div className="font-semibold text-lg">Maintenance List</div>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => {
-                                // Set the current unit context for adding maintenance
-                                workOrderForm.setValue("equipment_id", unit.id);
-                                setSelectedMaintenance(null);
-                                setIsMaintenanceSheetOpen(true);
-                              }}
-                            >
-                              <Plus className="mr-2 h-4 w-4" /> Add Maintenance
-                            </Button>
-                          </div>
-
-                          <Table>
-                            <TableHeader>
-                              <TableRow>
-                                <TableHead>Maintenance</TableHead>
-                                <TableHead>Total</TableHead>
-                                <TableHead>Complete</TableHead>
-                                <TableHead className="w-[100px]">Actions</TableHead>
-                              </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                              {((unit.maintenance || []) as any[]).map((task, index) => (
-                                <TableRow key={index}>
-                                  <TableCell>
-                                    {task.other_task_name ||
-                                      (task.task_id
-                                        ? task.task_name
-                                        : "Unknown Task")}
-                                  </TableCell>
-                                  <TableCell>
-                                    {workOrderForm.watch("currency")}{Number(task.total).toFixed(2)}
-                                  </TableCell>
-                                  <TableCell>
-                                    <input
-                                      type="checkbox"
-                                      className="h-4 w-4"
-                                      checked={task.complete}
-                                      onChange={() => { }}
-                                    />
-                                  </TableCell>
-                                  <TableCell>
-                                    <div className="flex items-center gap-2">
-                                      <Button
-                                        type="button"
-                                        variant="secondary"
-                                        size="icon"
-                                        onClick={() => {
-                                          const maintenanceId = task.id || task.maintenance_id;
-                                          const allParts = unit.parts || [];
-                                          const allLabor = unit.labors || [];
-
-                                          const linkedParts = allParts.filter((p: any) => p.maintenance_id === maintenanceId);
-                                          const linkedLabor = allLabor.filter((l: any) => l.maintenance_id === maintenanceId);
-
-                                          setSelectedMaintenanceParts(linkedParts);
-                                          setSelectedMaintenanceLabor(linkedLabor);
-                                          setSelectedMaintenance(task);
-                                          workOrderForm.setValue("equipment_id", unit.id);
-                                          setIsMaintenanceSheetOpen(true);
-                                        }}
-                                      >
-                                        <Pen className="h-4 w-4" />
-                                      </Button>
-                                      <Button
-                                        type="button"
-                                        variant="secondary"
-                                        size="icon"
-                                        className="text-red-600"
-                                        onClick={() => {
-                                          if (task.id) {
-                                            if (confirm("Are you sure you want to delete this maintenance task?")) {
-                                              deleteMaintenance({ id: task.id }, {
-                                                onSuccess: async () => {
-                                                  toast.success("Maintenance task deleted successfully");
-                                                  if (onRefetch) await onRefetch();
-
-                                                  // Submit work order update after refetch is complete
-                                                  const formData = workOrderForm.getValues();
-                                                  handleSubmit(formData);
-                                                },
-                                                onError: (error) => {
-                                                  toast.error("Failed to delete maintenance task");
-                                                  console.error(error);
-                                                }
-                                              });
-                                            }
-                                          }
-                                        }}
-                                      >
-                                        <Trash2 className="h-4 w-4" />
-                                      </Button>
-                                    </div>
-                                  </TableCell>
-                                </TableRow>
-                              ))}
-                            </TableBody>
-                            <TableFooter>
-                              <TableRow>
-                                <TableCell className="text-right font-bold">Total</TableCell>
-                                <TableCell className="font-bold">
-                                  {workOrderForm.watch("currency")}{
-                                    ((unit.maintenance || []) as any[]).reduce((sum, task) => sum + (Number(task.total) || 0), 0).toFixed(2)
-                                  }
-                                </TableCell>
-                                <TableCell colSpan={2}></TableCell>
-                              </TableRow>
-                            </TableFooter>
-                          </Table>
-                        </TabsContent>
-
-                        <TabsContent value="labor" className="mt-2">
-                          <div className="flex justify-between items-center mb-4">
-                            <div className="font-semibold text-lg">Standalone Labor</div>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => {
-                                workOrderForm.setValue("equipment_id", unit.id);
-                                setEditingLaborId(null);
-                                setEditingLaborData(null);
-                                setSelectedMaintenance(null);
-                                setIsAddLaborSheetOpen(true);
-                              }}
-                            >
-                              <Plus className="mr-2 h-4 w-4" /> Add Labor
-                            </Button>
-                          </div>
-                          <Table>
-                            <TableHeader>
-                              <TableRow>
-                                <TableHead>Technician</TableHead>
-                                <TableHead>Comments</TableHead>
-                                <TableHead>Rate</TableHead>
-                                <TableHead>Hours</TableHead>
-                                <TableHead>Total</TableHead>
-                                <TableHead className="w-[100px]">Actions</TableHead>
-                              </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                              {((unit.labors || []) as any[]).filter((l: any) => !l.maintenance_id).length === 0 ? (
-                                <TableRow>
-                                  <TableCell colSpan={6} className="text-center text-muted-foreground">
-                                    No standalone labor added.
-                                  </TableCell>
-                                </TableRow>
-                              ) : (
-                                ((unit.labors || []) as any[]).map((laborItem, index) => {
-                                  if (laborItem.maintenance_id) return null;
-
-                                  const technicianId = laborItem.technician_id;
-                                  const employee = employeeOptions?.find((e) => e.id === technicianId);
-                                  const vendor = vendorOptions?.find((v) => v.id === technicianId);
-
-                                  let technicianName = "Unknown";
-                                  if (employee) {
-                                    technicianName = `${(employee as any).last_name || ''}, ${(employee as any).first_name || ''}`.trim().replace(/^, /, "").replace(/,$/, "");
-                                  } else if (vendor) {
-                                    technicianName = vendor.name || "Vendor";
-                                  }
-
-                                  return (
-                                    <TableRow key={index}>
-                                      <TableCell>{technicianName}</TableCell>
-                                      <TableCell>{laborItem.work_performed || "-"}</TableCell>
-                                      <TableCell>{workOrderForm.watch("currency")}{Number(laborItem.labor_rate).toFixed(2)}</TableCell>
-                                      <TableCell>{laborItem.hours}</TableCell>
-                                      <TableCell>{workOrderForm.watch("currency")}{Number(laborItem.total_cost).toFixed(2)}</TableCell>
-                                      <TableCell>
-                                        <div className="flex items-center gap-2">
-                                          <Button
-                                            type="button"
-                                            variant="secondary"
-                                            size="icon"
-                                            onClick={() => {
-                                              setEditingLaborId((laborItem as any).id);
-                                              setEditingLaborData(laborItem);
-                                              setSelectedMaintenance(null);
-                                              setIsAddLaborSheetOpen(true);
-                                            }}
-                                          >
-                                            <Pen className="h-4 w-4" />
-                                          </Button>
-                                          <Button
-                                            type="button"
-                                            variant="secondary"
-                                            size="icon"
-                                            className="text-red-600"
-                                            onClick={() => {
-                                              if ((laborItem as any).id) {
-                                                if (confirm("Are you sure you want to delete this labor entry?")) {
-                                                  deleteLabor({ id: (laborItem as any).id }, {
-                                                    onSuccess: () => {
-                                                      toast.success("Labor entry deleted successfully");
-                                                    },
-                                                    onError: (error) => {
-                                                      toast.error("Failed to delete labor entry");
-                                                      console.error(error);
-                                                    }
-                                                  });
-                                                }
-                                              }
-                                            }}
-                                          >
-                                            <Trash2 className="h-4 w-4" />
-                                          </Button>
-                                        </div>
-                                      </TableCell>
-                                    </TableRow>
-                                  );
-                                })
-                              )}
-                            </TableBody>
-                            <TableFooter>
-                              <TableRow>
-                                <TableCell colSpan={4} className="text-right font-bold">Total</TableCell>
-                                <TableCell className="font-bold">
-                                  {workOrderForm.watch("currency")}{
-                                    ((unit.labors || []) as any[])
-                                      .filter((l: any) => !l.maintenance_id)
-                                      .reduce((sum, l: any) => sum + (Number(l.total_cost) || 0), 0)
-                                      .toFixed(2)
-                                  }
-                                </TableCell>
-                                <TableCell></TableCell>
-                              </TableRow>
-                            </TableFooter>
-                          </Table>
-                        </TabsContent>
-
-                        <TabsContent value="parts" className="mt-2">
-                          <div className="flex justify-between items-center mb-4">
-                            <div className="font-semibold text-lg">Standalone Parts</div>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => {
-                                workOrderForm.setValue("equipment_id", unit.id);
-                                setSelectedMaintenance(null);
-                                setIsAddPartSheetOpen(true);
-                              }}
-                            >
-                              <Plus className="mr-2 h-4 w-4" /> Add Part
-                            </Button>
-                          </div>
-                          <Table>
-                            <TableHeader>
-                              <TableRow>
-                                <TableHead>Part</TableHead>
-                                <TableHead>Quantity</TableHead>
-                                <TableHead>Unit Cost</TableHead>
-                                <TableHead>Total</TableHead>
-                                <TableHead className="w-[100px]">Actions</TableHead>
-                              </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                              {((unit.parts || []) as any[]).filter((p: any) => !p.maintenance_id).length === 0 ? (
-                                <TableRow>
-                                  <TableCell colSpan={5} className="text-center text-muted-foreground">
-                                    No standalone parts added.
-                                  </TableCell>
-                                </TableRow>
-                              ) : (
-                                ((unit.parts || []) as any[]).map((partItem, index) => {
-                                  if (partItem.maintenance_id) return null;
-
-                                  const partId = partItem.part_id;
-                                  const partOption = partOptions?.find((p) => p.id === partId);
-                                  const partName = partOption ? partOption.name : "Unknown Part";
-
-                                  return (
-                                    <TableRow key={index}>
-                                      <TableCell>{partName}</TableCell>
-                                      <TableCell>{partItem.quantity}</TableCell>
-                                      <TableCell>{workOrderForm.watch("currency")}{Number(partItem.unit_cost).toFixed(2)}</TableCell>
-                                      <TableCell>{workOrderForm.watch("currency")}{Number(partItem.extended_cost).toFixed(2)}</TableCell>
-                                      <TableCell>
-                                        <div className="flex items-center gap-2">
-                                          <Button
-                                            type="button"
-                                            variant="secondary"
-                                            size="icon"
-                                            onClick={() => {
-                                              setEditingPartId((partItem as any).id);
-                                              setEditingPartData(partItem);
-                                              setSelectedMaintenance(null);
-                                              workOrderForm.setValue("equipment_id", unit.id);
-                                              setIsAddPartSheetOpen(true);
-                                            }}
-                                          >
-                                            <Pen className="h-4 w-4" />
-                                          </Button>
-                                          <Button
-                                            type="button"
-                                            variant="secondary"
-                                            size="icon"
-                                            className="text-red-600"
-                                            onClick={() => handleDeletePart((partItem as any).id, index)}
-                                          >
-                                            <Trash2 className="h-4 w-4" />
-                                          </Button>
-                                        </div>
-                                      </TableCell>
-                                    </TableRow>
-                                  );
-                                })
-                              )}
-                            </TableBody>
-                            <TableFooter>
-                              <TableRow>
-                                <TableCell colSpan={4} className="text-right font-bold">Total</TableCell>
-                                <TableCell className="font-bold">
-                                  {workOrderForm.watch("currency")}{
-                                    ((unit.parts || []) as any[])
-                                      .filter((p: any) => !p.maintenance_id)
-                                      .reduce((sum, p: any) => sum + (Number(p.extended_cost) || ((Number(p.quantity) || 0) * (Number(p.unit_cost) || 0)) || 0), 0)
-                                      .toFixed(2)
-                                  }
-                                </TableCell>
-                              </TableRow>
-                            </TableFooter>
-                          </Table>
-                        </TabsContent>
-
-                        <TabsContent value="notes" className="mt-2">
-                          <div className="flex justify-between items-center mb-4">
-                            <div className="font-semibold text-lg">Notes</div>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                workOrderForm.setValue("equipment_id", unit.id);
-                                setEditingNoteId(null);
-                                setEditingNoteData(null);
-                                setIsAddNoteSheetOpen(true);
-                              }}
-                            >
-                              <Plus className="mr-2 h-4 w-4" /> Add Note
-                            </Button>
-                          </div>
-                          <Table>
-                            <TableHeader>
-                              <TableRow>
-                                <TableHead>Date</TableHead>
-                                <TableHead>Created By</TableHead>
-                                <TableHead>Note</TableHead>
-                                <TableHead className="w-[100px]">Actions</TableHead>
-                              </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                              {((unit.notes || []) as any[]).length === 0 ? (
-                                <TableRow>
-                                  <TableCell colSpan={4} className="text-center text-muted-foreground">
-                                    No notes added.
-                                  </TableCell>
-                                </TableRow>
-                              ) : (
-                                ((unit.notes || []) as any[]).map((noteItem, index) => {
-                                  // Format date
-                                  const formattedDate = noteItem.date
-                                    ? new Date(noteItem.date).toLocaleDateString()
-                                    : new Date(noteItem.created_at || Date.now()).toLocaleDateString();
-
-                                  return (
-                                    <TableRow key={index}>
-                                      <TableCell>{formattedDate}</TableCell>
-                                      <TableCell>{noteItem.created_by || "Unknown"}</TableCell>
-                                      <TableCell className="max-w-md truncate">{noteItem.note}</TableCell>
-                                      <TableCell>
-                                        <div className="flex items-center gap-2">
-                                          <Button
-                                            type="button"
-                                            variant="secondary"
-                                            size="icon"
-                                            onClick={() => {
-                                              setEditingNoteId((noteItem as any).id);
-                                              setEditingNoteData(noteItem);
-                                              workOrderForm.setValue("equipment_id", unit.id);
-                                              setIsAddNoteSheetOpen(true);
-                                            }}
-                                          >
-                                            <Pen className="h-4 w-4" />
-                                          </Button>
-                                          <Button
-                                            type="button"
-                                            variant="secondary"
-                                            size="icon"
-                                            className="text-red-600"
-                                            onClick={() => handleDeleteNote((noteItem as any).id)}
-                                          >
-                                            <Trash2 className="h-4 w-4" />
-                                          </Button>
-                                        </div>
-                                      </TableCell>
-                                    </TableRow>
-                                  );
-                                })
-                              )}
-                            </TableBody>
-                          </Table>
-                        </TabsContent>
-                      </Tabs>
-                    </TabsContent>
-                  ))}
-                </Tabs>
-              ) : (
-                <div className="flex flex-col items-center justify-center py-10 border border-dashed rounded-lg bg-gray-50 mt-4">
-                  <div className="text-center space-y-2">
-                    <h3 className="text-lg font-medium">No Unit Selected</h3>
-                    <p className="text-sm text-gray-500">There are no maintenance items for this work order yet.</p>
-                  </div>
-                  <Button
-                    type="button"
-                    variant="default"
-                    className="mt-4"
-                    onClick={() => setIsAddUnitSheetOpen(true)}
-                  >
-                    Add your first unit
-                  </Button>
-                </div>
-              )}
-
-              {/* Financial Summary */}
-              {workOrderForm.watch("equipment_id") && (
-                <div className="mt-8 border rounded-lg p-6 bg-muted/10 space-y-4 max-w-2xl ml-auto">
-                  <h3 className="font-semibold text-lg mb-4">Financial Summary</h3>
-
-                  {/* Subtotal */}
-                  <div className="flex justify-between items-center py-2 border-b">
-                    <span className="font-medium">Subtotal</span>
-                    <span className="font-bold text-lg">
-                      {workOrderForm.watch("currency")}
-                      {Number(workOrderForm.watch("subtotal") || 0).toFixed(2)}
-                    </span>
-                  </div>
-
-                  {/* Discount */}
-                  <div className="flex flex-col gap-4 py-4 border-b">
-                    <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="Employee" id="edit-r1" />
+                          <Label htmlFor="edit-r1">Employee</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="Vendor" id="edit-r2" />
+                          <Label htmlFor="edit-r2">Vendor</Label>
+                        </div>
+                      </RadioGroup>
                       <div className="flex items-center gap-2">
-                        <Label htmlFor="discount-switch" className="font-medium">Discount</Label>
-                        <Switch
-                          id="discount-switch"
-                          checked={workOrderForm.watch("is_discount")}
-                          onCheckedChange={(val) => {
-                            workOrderForm.setValue("is_discount", val);
-                            if (!val) {
-                              workOrderForm.setValue("discount_amount", 0);
+                        <div className="flex-1">
+                          <MultiComboboxWrapper
+                            control={workOrderForm.control}
+                            name="assignee_ids"
+                            label=""
+                            options={assigneeType === "Employee" ? transformedEmployeeOptions : transformedVendorOptions}
+                            placeholder={`Select ${assigneeType}s`}
+                            searchPlaceholder={`Search ${assigneeType}s...`}
+                            maxSelections={assigneeType === "Employee" ? 2 : 1}
+                          />
+                        </div>
+                        <Button
+                          variant="secondary"
+                          size="icon"
+                          type="button"
+                          onClick={() => {
+                            if (assigneeType === "Employee") {
+                              // Logic to open new employee sheet if needed
+                              toast.info("Add new employee feature coming soon");
+                            } else {
+                              // Logic to open new vendor sheet if needed
+                              toast.info("Add new vendor feature coming soon");
                             }
                           }}
-                        />
+                        >
+                          <Plus className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </>
+                }
+              />
+
+              <Fieldset
+                legend="Misc. Details"
+                content={
+                  <>
+                    <ComboboxFieldWrapper
+                      control={workOrderForm.control}
+                      name="type_id"
+                      label="Type"
+                      options={(workOrderTypeOptions || []) as GenericObject[]}
+                    />
+
+                    <ComboboxFieldWrapper
+                      control={workOrderForm.control}
+                      name="cost_center_id"
+                      label="Cost center"
+                      options={(costCenterOptions || []) as GenericObject[]}
+                    />
+
+                    <ComboboxFieldWrapper
+                      control={workOrderForm.control}
+                      name="po_id"
+                      label="PO#"
+                      options={convertToOptionList(PurchaseOrderOptions ?? [], "id", "po_number")}
+                    />
+                    <ComboboxFieldWrapper
+                      control={workOrderForm.control}
+                      name="invoice_number"
+                      label="Invoice"
+                      options={convertToOptionList(InvoiceOptions ?? [], "id", "invoice_number")}
+                    />
+                    <CustomFieldsWrapper
+                      control={workOrderForm.control}
+                      name="others"
+                      label={"Custom Fields"}
+                    />
+                  </>
+                }
+              />
+            </div>
+            <div className="col-span-5 space-y-2">
+              <div className="flex justify-end space-x-1 border border-b-black/20">
+                <div className="flex gap-2">
+                  {((WorkOrderStatuses || []) as GenericObject[]).map((stat: GenericObject) => (
+                    <button
+                      key={stat?.id}
+                      type="button"
+                      className={`p-3 h-fit rounded-md border text-sm font-medium ${status === (stat?.name as string)
+                        ? (stat?.name as string).toLowerCase().includes("open")
+                          ? "bg-green-500 text-white"
+                          : (stat?.name as string).toLowerCase().includes("progress")
+                            ? "bg-blue-500 text-white"
+                            : (stat?.name as string).toLowerCase().includes("hold")
+                              ? "bg-yellow-400 text-white"
+                              : (stat?.name as string).toLowerCase().includes("complete")
+                                ? "bg-purple-600 text-white"
+                                : (stat?.name as string).toLowerCase().includes("cancelled")
+                                  ? "bg-red-600 text-white"
+                                  : "bg-gray-400 text-white"
+                        : "bg-white text-gray-700 border border-gray-300"
+                        }`}
+                      onClick={() => {
+                        workOrderForm.setValue("status_id", stat?.id);
+                        setStatus((stat?.name as string) ?? "");
+                      }}
+                    >
+                      {stat?.name as string}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <div className="flex flex-row justify-between pb-2">
+                  {/* Logic for live calculations */}
+                  {(() => {
+                    const maintenance = workOrderForm.watch("maintenance") || [];
+                    const labor = workOrderForm.watch("labor") || [];
+                    const parts = workOrderForm.watch("parts") || [];
+                    const isDiscount = workOrderForm.watch("is_discount");
+                    const discountType = workOrderForm.watch("discount_type");
+                    const discountAmount = Number(workOrderForm.watch("discount_amount") || 0);
+                    const tax1Rate = Number(workOrderForm.watch("tax_one") || 0);
+                    const tax2Rate = Number(workOrderForm.watch("tax_two") || 0);
+                    const isCalculated = workOrderForm.watch("is_calculated");
+
+                    // Calculate Subtotal
+                    const mTotal = maintenance.reduce((sum, task) => sum + (Number(task.total) || 0), 0);
+                    const lTotal = labor.filter((l: any) => !l.maintenance_id).reduce((sum, l: any) => sum + (Number(l.total_cost) || 0), 0);
+                    const pTotal = parts.filter((p: any) => !p.maintenance_id).reduce((sum, p: any) => sum + (Number(p.extended_cost) || ((Number(p.quantity) || 0) * (Number(p.unit_cost) || 0)) || 0), 0);
+
+                    const calculatedSubtotal = mTotal + lTotal + pTotal;
+
+                    useEffect(() => {
+                      // Update subtotal if not manually overridden (User said: when is calculated is false use totals)
+                      // Assuming 'calculated' means auto-sum from tables.
+                      // We don't have a UI to toggle 'is_calculated' yet so we assume it's always calculating for now, or use the field if it existed.
+                      // Defaulting to always update as per "provide live updates"
+                      if (!isCalculated) {
+                        workOrderForm.setValue("subtotal", calculatedSubtotal);
+                      }
+
+                      // Calc Discount
+                      let dAmt = 0;
+                      if (isDiscount) {
+                        if (discountType === "Percent") dAmt = calculatedSubtotal * (discountAmount / 100);
+                        else dAmt = discountAmount;
+                      }
+
+                      const taxable = Math.max(0, calculatedSubtotal - dAmt);
+                      const t1 = taxable * tax1Rate;
+                      const t2 = taxable * tax2Rate;
+                      const total = taxable + t1 + t2;
+
+                      workOrderForm.setValue("total", total);
+
+                    }, [calculatedSubtotal, isDiscount, discountType, discountAmount, tax1Rate, tax2Rate, isCalculated, workOrderForm.setValue]);
+
+                    return null;
+                  })()}
+
+
+                </div>
+                {/* Units Tabs - Show tabs for each unit in the units array */}
+                {workOrderForm.watch("units") && (workOrderForm.watch("units") || []).length > 0 ? (
+                  <Tabs defaultValue={(workOrderForm.watch("units")?.[0] as any)?.id || "0"} className="w-full mt-4">
+                    <div className="flex items-center gap-2">
+                      <TabsList className="grid flex-1" style={{ gridTemplateColumns: `repeat(${(workOrderForm.watch("units") || []).length}, minmax(0, 1fr))` }}>
+                        {(workOrderForm.watch("units") || []).map((unit: any, index: number) => {
+                          const equipmentName = equipmentOptions?.find((e) => e.id === unit.unit_id)?.name || `Unit ${index + 1}`;
+                          return (
+                            <TabsTrigger key={unit.id || index} value={unit.id || index.toString()}>
+                              {equipmentName}
+                            </TabsTrigger>
+                          );
+                        })}
+                      </TabsList>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setIsAddUnitSheetOpen(true)}
+                        className="shrink-0"
+                      >
+                        <Plus className="h-4 w-4 mr-1" /> Add Unit
+                      </Button>
+                    </div>
+
+                    {/* Content for each unit */}
+                    {(workOrderForm.watch("units") || []).map((unit: any, unitIndex: number) => (
+                      <TabsContent key={unit.id || unitIndex} value={unit.id || unitIndex.toString()}>
+                        <div className="mb-2 text-sm text-muted-foreground">
+                          Hours: {unit.hours || 0}
+                        </div>
+
+                        {/* Nested tabs for Maintenance, Labor, Parts, Notes within each unit */}
+                        <Tabs defaultValue="maintenance" className="w-full">
+                          <TabsList className="grid w-full grid-cols-4">
+                            <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
+                            <TabsTrigger value="labor">Labor</TabsTrigger>
+                            <TabsTrigger value="parts">Parts</TabsTrigger>
+                            <TabsTrigger value="notes">Notes</TabsTrigger>
+                          </TabsList>
+
+                          <TabsContent value="maintenance" className="mt-2">
+                            <div className="flex justify-between items-center mb-4">
+                              <div className="font-semibold text-lg">Maintenance List</div>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  // Set the current unit context for adding maintenance
+                                  workOrderForm.setValue("equipment_id", unit.id);
+                                  setSelectedMaintenance(null);
+                                  setIsMaintenanceSheetOpen(true);
+                                }}
+                              >
+                                <Plus className="mr-2 h-4 w-4" /> Add Maintenance
+                              </Button>
+                            </div>
+
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead>Maintenance</TableHead>
+                                  <TableHead>Total</TableHead>
+                                  <TableHead>Complete</TableHead>
+                                  <TableHead className="w-[100px]">Actions</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {((unit.maintenance || []) as any[]).map((task, index) => (
+                                  <TableRow key={index}>
+                                    <TableCell>
+                                      {task.other_task_name ||
+                                        (task.task_id
+                                          ? task.task_name
+                                          : "Unknown Task")}
+                                    </TableCell>
+                                    <TableCell>
+                                      {workOrderForm.watch("currency")}{Number(task.total).toFixed(2)}
+                                    </TableCell>
+                                    <TableCell>
+                                      <input
+                                        type="checkbox"
+                                        className="h-4 w-4"
+                                        checked={task.complete}
+                                        onChange={() => { }}
+                                      />
+                                    </TableCell>
+                                    <TableCell>
+                                      <div className="flex items-center gap-2">
+                                        <Button
+                                          type="button"
+                                          variant="secondary"
+                                          size="icon"
+                                          onClick={() => {
+                                            const maintenanceId = task.id || task.maintenance_id;
+                                            const allParts = unit.parts || [];
+                                            const allLabor = unit.labors || [];
+
+                                            const linkedParts = allParts.filter((p: any) => p.maintenance_id === maintenanceId);
+                                            const linkedLabor = allLabor.filter((l: any) => l.maintenance_id === maintenanceId);
+
+                                            setSelectedMaintenanceParts(linkedParts);
+                                            setSelectedMaintenanceLabor(linkedLabor);
+                                            setSelectedMaintenance(task);
+                                            workOrderForm.setValue("equipment_id", unit.id);
+                                            setIsMaintenanceSheetOpen(true);
+                                          }}
+                                        >
+                                          <Pen className="h-4 w-4" />
+                                        </Button>
+                                        <Button
+                                          type="button"
+                                          variant="secondary"
+                                          size="icon"
+                                          className="text-red-600"
+                                          onClick={() => {
+                                            if (task.id) {
+                                              if (confirm("Are you sure you want to delete this maintenance task?")) {
+                                                deleteMaintenance({ id: task.id }, {
+                                                  onSuccess: async () => {
+                                                    toast.success("Maintenance task deleted successfully");
+
+                                                    // Refetch and get fresh data
+                                                    let freshData = null;
+                                                    if (onRefetch) {
+                                                      const result = await onRefetch();
+                                                      freshData = result?.data;
+                                                    }
+
+                                                    // Submit work order update with fresh data after refetch
+                                                    if (freshData) {
+                                                      workOrderForm.reset(freshData);
+                                                    }
+                                                    // Trigger work order update with loader
+                                                    triggerWorkOrderUpdate();
+                                                  },
+                                                  onError: (error) => {
+                                                    toast.error("Failed to delete maintenance task");
+                                                    console.error(error);
+                                                  }
+                                                });
+                                              }
+                                            }
+                                          }}
+                                        >
+                                          <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                      </div>
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                              <TableFooter>
+                                <TableRow>
+                                  <TableCell className="text-right font-bold">Total</TableCell>
+                                  <TableCell className="font-bold">
+                                    {workOrderForm.watch("currency")}{
+                                      ((unit.maintenance || []) as any[]).reduce((sum, task) => sum + (Number(task.total) || 0), 0).toFixed(2)
+                                    }
+                                  </TableCell>
+                                  <TableCell colSpan={2}></TableCell>
+                                </TableRow>
+                              </TableFooter>
+                            </Table>
+                          </TabsContent>
+
+                          <TabsContent value="labor" className="mt-2">
+                            <div className="flex justify-between items-center mb-4">
+                              <div className="font-semibold text-lg">Standalone Labor</div>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  workOrderForm.setValue("equipment_id", unit.id);
+                                  setEditingLaborId(null);
+                                  setEditingLaborData(null);
+                                  setSelectedMaintenance(null);
+                                  setIsAddLaborSheetOpen(true);
+                                }}
+                              >
+                                <Plus className="mr-2 h-4 w-4" /> Add Labor
+                              </Button>
+                            </div>
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead>Technician</TableHead>
+                                  <TableHead>Comments</TableHead>
+                                  <TableHead>Rate</TableHead>
+                                  <TableHead>Hours</TableHead>
+                                  <TableHead>Total</TableHead>
+                                  <TableHead className="w-[100px]">Actions</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {((unit.labors || []) as any[]).filter((l: any) => !l.maintenance_id).length === 0 ? (
+                                  <TableRow>
+                                    <TableCell colSpan={6} className="text-center text-muted-foreground">
+                                      No standalone labor added.
+                                    </TableCell>
+                                  </TableRow>
+                                ) : (
+                                  ((unit.labors || []) as any[]).map((laborItem, index) => {
+                                    if (laborItem.maintenance_id) return null;
+
+                                    const technicianId = laborItem.technician_id;
+                                    const employee = employeeOptions?.find((e) => e.id === technicianId);
+                                    const vendor = vendorOptions?.find((v) => v.id === technicianId);
+
+                                    let technicianName = "Unknown";
+                                    if (employee) {
+                                      technicianName = `${(employee as any).last_name || ''}, ${(employee as any).first_name || ''}`.trim().replace(/^, /, "").replace(/,$/, "");
+                                    } else if (vendor) {
+                                      technicianName = vendor.name || "Vendor";
+                                    }
+
+                                    return (
+                                      <TableRow key={index}>
+                                        <TableCell>{technicianName}</TableCell>
+                                        <TableCell>{laborItem.work_performed || "-"}</TableCell>
+                                        <TableCell>{workOrderForm.watch("currency")}{Number(laborItem.labor_rate).toFixed(2)}</TableCell>
+                                        <TableCell>{laborItem.hours}</TableCell>
+                                        <TableCell>{workOrderForm.watch("currency")}{Number(laborItem.total_cost).toFixed(2)}</TableCell>
+                                        <TableCell>
+                                          <div className="flex items-center gap-2">
+                                            <Button
+                                              type="button"
+                                              variant="secondary"
+                                              size="icon"
+                                              onClick={() => {
+                                                setEditingLaborId((laborItem as any).id);
+                                                setEditingLaborData(laborItem);
+                                                setSelectedMaintenance(null);
+                                                setIsAddLaborSheetOpen(true);
+                                              }}
+                                            >
+                                              <Pen className="h-4 w-4" />
+                                            </Button>
+                                            <Button
+                                              type="button"
+                                              variant="secondary"
+                                              size="icon"
+                                              className="text-red-600"
+                                              onClick={() => {
+                                                if ((laborItem as any).id) {
+                                                  if (confirm("Are you sure you want to delete this labor entry?")) {
+                                                    deleteLabor({ id: (laborItem as any).id }, {
+                                                      onSuccess: () => {
+                                                        toast.success("Labor entry deleted successfully");
+                                                      },
+                                                      onError: (error) => {
+                                                        toast.error("Failed to delete labor entry");
+                                                        console.error(error);
+                                                      }
+                                                    });
+                                                  }
+                                                }
+                                              }}
+                                            >
+                                              <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                          </div>
+                                        </TableCell>
+                                      </TableRow>
+                                    );
+                                  })
+                                )}
+                              </TableBody>
+                              <TableFooter>
+                                <TableRow>
+                                  <TableCell colSpan={4} className="text-right font-bold">Total</TableCell>
+                                  <TableCell className="font-bold">
+                                    {workOrderForm.watch("currency")}{
+                                      ((unit.labors || []) as any[])
+                                        .filter((l: any) => !l.maintenance_id)
+                                        .reduce((sum, l: any) => sum + (Number(l.total_cost) || 0), 0)
+                                        .toFixed(2)
+                                    }
+                                  </TableCell>
+                                  <TableCell></TableCell>
+                                </TableRow>
+                              </TableFooter>
+                            </Table>
+                          </TabsContent>
+
+                          <TabsContent value="parts" className="mt-2">
+                            <div className="flex justify-between items-center mb-4">
+                              <div className="font-semibold text-lg">Standalone Parts</div>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  workOrderForm.setValue("equipment_id", unit.id);
+                                  setSelectedMaintenance(null);
+                                  setIsAddPartSheetOpen(true);
+                                }}
+                              >
+                                <Plus className="mr-2 h-4 w-4" /> Add Part
+                              </Button>
+                            </div>
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead>Part</TableHead>
+                                  <TableHead>Quantity</TableHead>
+                                  <TableHead>Unit Cost</TableHead>
+                                  <TableHead>Total</TableHead>
+                                  <TableHead className="w-[100px]">Actions</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {((unit.parts || []) as any[]).filter((p: any) => !p.maintenance_id).length === 0 ? (
+                                  <TableRow>
+                                    <TableCell colSpan={5} className="text-center text-muted-foreground">
+                                      No standalone parts added.
+                                    </TableCell>
+                                  </TableRow>
+                                ) : (
+                                  ((unit.parts || []) as any[]).map((partItem, index) => {
+                                    if (partItem.maintenance_id) return null;
+
+                                    const partId = partItem.part_id;
+                                    const partOption = partOptions?.find((p) => p.id === partId);
+                                    const partName = partOption ? partOption.name : "Unknown Part";
+
+                                    return (
+                                      <TableRow key={index}>
+                                        <TableCell>{partName}</TableCell>
+                                        <TableCell>{partItem.quantity}</TableCell>
+                                        <TableCell>{workOrderForm.watch("currency")}{Number(partItem.unit_cost).toFixed(2)}</TableCell>
+                                        <TableCell>{workOrderForm.watch("currency")}{Number(partItem.extended_cost).toFixed(2)}</TableCell>
+                                        <TableCell>
+                                          <div className="flex items-center gap-2">
+                                            <Button
+                                              type="button"
+                                              variant="secondary"
+                                              size="icon"
+                                              onClick={() => {
+                                                setEditingPartId((partItem as any).id);
+                                                setEditingPartData(partItem);
+                                                setSelectedMaintenance(null);
+                                                workOrderForm.setValue("equipment_id", unit.id);
+                                                setIsAddPartSheetOpen(true);
+                                              }}
+                                            >
+                                              <Pen className="h-4 w-4" />
+                                            </Button>
+                                            <Button
+                                              type="button"
+                                              variant="secondary"
+                                              size="icon"
+                                              className="text-red-600"
+                                              onClick={() => handleDeletePart((partItem as any).id, index)}
+                                            >
+                                              <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                          </div>
+                                        </TableCell>
+                                      </TableRow>
+                                    );
+                                  })
+                                )}
+                              </TableBody>
+                              <TableFooter>
+                                <TableRow>
+                                  <TableCell colSpan={4} className="text-right font-bold">Total</TableCell>
+                                  <TableCell className="font-bold">
+                                    {workOrderForm.watch("currency")}{
+                                      ((unit.parts || []) as any[])
+                                        .filter((p: any) => !p.maintenance_id)
+                                        .reduce((sum, p: any) => sum + (Number(p.extended_cost) || ((Number(p.quantity) || 0) * (Number(p.unit_cost) || 0)) || 0), 0)
+                                        .toFixed(2)
+                                    }
+                                  </TableCell>
+                                </TableRow>
+                              </TableFooter>
+                            </Table>
+                          </TabsContent>
+
+                          <TabsContent value="notes" className="mt-2">
+                            <div className="flex justify-between items-center mb-4">
+                              <div className="font-semibold text-lg">Notes</div>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  workOrderForm.setValue("equipment_id", unit.id);
+                                  setEditingNoteId(null);
+                                  setEditingNoteData(null);
+                                  setIsAddNoteSheetOpen(true);
+                                }}
+                              >
+                                <Plus className="mr-2 h-4 w-4" /> Add Note
+                              </Button>
+                            </div>
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead>Date</TableHead>
+                                  <TableHead>Created By</TableHead>
+                                  <TableHead>Note</TableHead>
+                                  <TableHead className="w-[100px]">Actions</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {((unit.notes || []) as any[]).length === 0 ? (
+                                  <TableRow>
+                                    <TableCell colSpan={4} className="text-center text-muted-foreground">
+                                      No notes added.
+                                    </TableCell>
+                                  </TableRow>
+                                ) : (
+                                  ((unit.notes || []) as any[]).map((noteItem, index) => {
+                                    // Format date
+                                    const formattedDate = noteItem.date
+                                      ? new Date(noteItem.date).toLocaleDateString()
+                                      : new Date(noteItem.created_at || Date.now()).toLocaleDateString();
+
+                                    return (
+                                      <TableRow key={index}>
+                                        <TableCell>{formattedDate}</TableCell>
+                                        <TableCell>{noteItem.created_by || "Unknown"}</TableCell>
+                                        <TableCell className="max-w-md truncate">{noteItem.note}</TableCell>
+                                        <TableCell>
+                                          <div className="flex items-center gap-2">
+                                            <Button
+                                              type="button"
+                                              variant="secondary"
+                                              size="icon"
+                                              onClick={() => {
+                                                setEditingNoteId((noteItem as any).id);
+                                                setEditingNoteData(noteItem);
+                                                workOrderForm.setValue("equipment_id", unit.id);
+                                                setIsAddNoteSheetOpen(true);
+                                              }}
+                                            >
+                                              <Pen className="h-4 w-4" />
+                                            </Button>
+                                            <Button
+                                              type="button"
+                                              variant="secondary"
+                                              size="icon"
+                                              className="text-red-600"
+                                              onClick={() => handleDeleteNote((noteItem as any).id)}
+                                            >
+                                              <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                          </div>
+                                        </TableCell>
+                                      </TableRow>
+                                    );
+                                  })
+                                )}
+                              </TableBody>
+                            </Table>
+                          </TabsContent>
+                        </Tabs>
+                      </TabsContent>
+                    ))}
+                  </Tabs>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-10 border border-dashed rounded-lg bg-gray-50 mt-4">
+                    <div className="text-center space-y-2">
+                      <h3 className="text-lg font-medium">No Unit Selected</h3>
+                      <p className="text-sm text-gray-500">There are no maintenance items for this work order yet.</p>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="default"
+                      className="mt-4"
+                      onClick={() => setIsAddUnitSheetOpen(true)}
+                    >
+                      Add your first unit
+                    </Button>
+                  </div>
+                )}
+
+                {/* Financial Summary */}
+                {workOrderForm.watch("equipment_id") && (
+                  <div className="mt-8 border rounded-lg p-6 bg-muted/10 space-y-4 max-w-2xl ml-auto">
+                    <h3 className="font-semibold text-lg mb-4">Financial Summary</h3>
+
+                    {/* Subtotal */}
+                    <div className="flex justify-between items-center py-2 border-b">
+                      <span className="font-medium">Subtotal</span>
+                      <span className="font-bold text-lg">
+                        {workOrderForm.watch("currency")}
+                        {Number(workOrderForm.watch("subtotal") || 0).toFixed(2)}
+                      </span>
+                    </div>
+
+                    {/* Discount */}
+                    <div className="flex flex-col gap-4 py-4 border-b">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Label htmlFor="discount-switch" className="font-medium">Discount</Label>
+                          <Switch
+                            id="discount-switch"
+                            checked={workOrderForm.watch("is_discount")}
+                            onCheckedChange={(val) => {
+                              workOrderForm.setValue("is_discount", val);
+                              if (!val) {
+                                workOrderForm.setValue("discount_amount", 0);
+                              }
+                            }}
+                          />
+                        </div>
+                        {workOrderForm.watch("is_discount") && (
+                          <div className="flex items-center gap-4">
+                            <RadioGroup
+                              value={workOrderForm.watch("discount_type") || "Fixed"}
+                              onValueChange={(val: "Percent" | "Fixed") => workOrderForm.setValue("discount_type", val)}
+                              className="flex gap-4"
+                            >
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="Percent" id="disc-percent" />
+                                <Label htmlFor="disc-percent">Percent</Label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="Fixed" id="disc-fixed" />
+                                <Label htmlFor="disc-fixed">Fixed</Label>
+                              </div>
+                            </RadioGroup>
+                            <div className="w-32">
+                              <Input
+                                type="number"
+                                placeholder={workOrderForm.watch("discount_type") === "Percent" ? "%" : "Amount"}
+                                {...workOrderForm.register("discount_amount")}
+                                className="h-9"
+                              />
+                            </div>
+                          </div>
+                        )}
                       </div>
                       {workOrderForm.watch("is_discount") && (
-                        <div className="flex items-center gap-4">
-                          <RadioGroup
-                            value={workOrderForm.watch("discount_type") || "Fixed"}
-                            onValueChange={(val: "Percent" | "Fixed") => workOrderForm.setValue("discount_type", val)}
-                            className="flex gap-4"
-                          >
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="Percent" id="disc-percent" />
-                              <Label htmlFor="disc-percent">Percent</Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="Fixed" id="disc-fixed" />
-                              <Label htmlFor="disc-fixed">Fixed</Label>
-                            </div>
-                          </RadioGroup>
-                          <div className="w-32">
-                            <Input
-                              type="number"
-                              placeholder={workOrderForm.watch("discount_type") === "Percent" ? "%" : "Amount"}
-                              {...workOrderForm.register("discount_amount")}
-                              className="h-9"
-                            />
-                          </div>
+                        <div className="flex justify-between items-center text-sm text-green-600">
+                          <span>Discount Amount</span>
+                          <span>
+                            - {workOrderForm.watch("currency")}
+                            {(() => {
+                              const sub = Number(workOrderForm.watch("subtotal") || 0);
+                              const type = workOrderForm.watch("discount_type");
+                              const val = Number(workOrderForm.watch("discount_amount") || 0);
+                              let amt = 0;
+                              if (type === "Percent") amt = sub * (val / 100);
+                              else amt = val;
+                              return amt.toFixed(2);
+                            })()}
+                          </span>
                         </div>
                       )}
                     </div>
-                    {workOrderForm.watch("is_discount") && (
-                      <div className="flex justify-between items-center text-sm text-green-600">
-                        <span>Discount Amount</span>
-                        <span>
-                          - {workOrderForm.watch("currency")}
+
+                    {/* Taxes */}
+                    <div className="space-y-3 py-4 border-b">
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                          <Label>Tax 1 (Rate)</Label>
+                          <Input
+                            type="number"
+                            step="0.0001"
+                            className="w-24 h-8"
+                            placeholder="0.0000"
+                            {...workOrderForm.register("tax_one")}
+                          />
+                        </div>
+                        <span className="text-muted-foreground">
+                          {workOrderForm.watch("currency")}
                           {(() => {
                             const sub = Number(workOrderForm.watch("subtotal") || 0);
-                            const type = workOrderForm.watch("discount_type");
-                            const val = Number(workOrderForm.watch("discount_amount") || 0);
-                            let amt = 0;
-                            if (type === "Percent") amt = sub * (val / 100);
-                            else amt = val;
-                            return amt.toFixed(2);
+                            const discType = workOrderForm.watch("discount_type");
+                            const discVal = Number(workOrderForm.watch("discount_amount") || 0);
+                            let dAmt = 0;
+                            if (workOrderForm.watch("is_discount")) {
+                              if (discType === "Percent") dAmt = sub * (discVal / 100);
+                              else dAmt = discVal;
+                            }
+                            const taxable = Math.max(0, sub - dAmt);
+                            return (taxable * (Number(workOrderForm.watch("tax_one")) || 0)).toFixed(2);
                           })()}
                         </span>
                       </div>
-                    )}
-                  </div>
-
-                  {/* Taxes */}
-                  <div className="space-y-3 py-4 border-b">
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-2">
-                        <Label>Tax 1 (Rate)</Label>
-                        <Input
-                          type="number"
-                          step="0.0001"
-                          className="w-24 h-8"
-                          placeholder="0.0000"
-                          {...workOrderForm.register("tax_one")}
-                        />
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                          <Label>Tax 2 (Rate)</Label>
+                          <Input
+                            type="number"
+                            step="0.0001"
+                            className="w-24 h-8"
+                            placeholder="0.0000"
+                            {...workOrderForm.register("tax_two")}
+                          />
+                        </div>
+                        <span className="text-muted-foreground">
+                          {workOrderForm.watch("currency")}
+                          {(() => {
+                            const sub = Number(workOrderForm.watch("subtotal") || 0);
+                            const discType = workOrderForm.watch("discount_type");
+                            const discVal = Number(workOrderForm.watch("discount_amount") || 0);
+                            let dAmt = 0;
+                            if (workOrderForm.watch("is_discount")) {
+                              if (discType === "Percent") dAmt = sub * (discVal / 100);
+                              else dAmt = discVal;
+                            }
+                            const taxable = Math.max(0, sub - dAmt);
+                            return (taxable * (Number(workOrderForm.watch("tax_two")) || 0)).toFixed(2);
+                          })()}
+                        </span>
                       </div>
-                      <span className="text-muted-foreground">
-                        {workOrderForm.watch("currency")}
-                        {(() => {
-                          const sub = Number(workOrderForm.watch("subtotal") || 0);
-                          const discType = workOrderForm.watch("discount_type");
-                          const discVal = Number(workOrderForm.watch("discount_amount") || 0);
-                          let dAmt = 0;
-                          if (workOrderForm.watch("is_discount")) {
-                            if (discType === "Percent") dAmt = sub * (discVal / 100);
-                            else dAmt = discVal;
-                          }
-                          const taxable = Math.max(0, sub - dAmt);
-                          return (taxable * (Number(workOrderForm.watch("tax_one")) || 0)).toFixed(2);
-                        })()}
-                      </span>
                     </div>
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-2">
-                        <Label>Tax 2 (Rate)</Label>
-                        <Input
-                          type="number"
-                          step="0.0001"
-                          className="w-24 h-8"
-                          placeholder="0.0000"
-                          {...workOrderForm.register("tax_two")}
-                        />
-                      </div>
-                      <span className="text-muted-foreground">
+
+                    {/* Total */}
+                    <div className="flex justify-between items-center pt-2">
+                      <span className="text-xl font-bold">Total</span>
+                      <span className="text-xl font-bold text-primary">
                         {workOrderForm.watch("currency")}
-                        {(() => {
-                          const sub = Number(workOrderForm.watch("subtotal") || 0);
-                          const discType = workOrderForm.watch("discount_type");
-                          const discVal = Number(workOrderForm.watch("discount_amount") || 0);
-                          let dAmt = 0;
-                          if (workOrderForm.watch("is_discount")) {
-                            if (discType === "Percent") dAmt = sub * (discVal / 100);
-                            else dAmt = discVal;
-                          }
-                          const taxable = Math.max(0, sub - dAmt);
-                          return (taxable * (Number(workOrderForm.watch("tax_two")) || 0)).toFixed(2);
-                        })()}
+                        {Number(workOrderForm.watch("total") || 0).toFixed(2)}
                       </span>
                     </div>
                   </div>
-
-                  {/* Total */}
-                  <div className="flex justify-between items-center pt-2">
-                    <span className="text-xl font-bold">Total</span>
-                    <span className="text-xl font-bold text-primary">
-                      {workOrderForm.watch("currency")}
-                      {Number(workOrderForm.watch("total") || 0).toFixed(2)}
-                    </span>
-                  </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </div>
-        </div>
-        {/* Duplicate table and buttons removed from here */}
-        <div className="flex justify-between gap-x-4 my-8 w-full">
-          <Button className=" w-full">
-            <GitPullRequestArrow className="mr-2" /> Update Work Order
-          </Button>
-        </div>
-      </form>
+          {/* Duplicate table and buttons removed from here */}
+          <div className="flex justify-between gap-x-4 my-8 w-full">
+            <Button className=" w-full">
+              <GitPullRequestArrow className="mr-2" /> Update Work Order
+            </Button>
+          </div>
+        </form>
 
-      <AddMaintenance
-        open={isMaintenanceSheetOpen}
-        setOpen={setIsMaintenanceSheetOpen}
-        onAdd={handleAddMaintenanceTask}
-        data={selectedMaintenance}
-        unitId={workOrderForm.watch("equipment_id")}
-        initialParts={selectedMaintenanceParts}
-        initialLabor={selectedMaintenanceLabor}
-      />
-      <AddLaborUsed
-        open={isAddLaborSheetOpen}
-        setOpen={setIsAddLaborSheetOpen}
-        onAdd={handleAddLabor}
-        maintenanceId={selectedMaintenance?.id || (selectedMaintenance as any)?.maintenance_id}
-        data={editingLaborData}
-      />
-      <AddPartUsed
-        open={isAddPartSheetOpen}
-        setOpen={setIsAddPartSheetOpen}
-        onAdd={handleAddPart}
-        maintenanceId={selectedMaintenance?.id || (selectedMaintenance as any)?.maintenance_id}
-        data={editingPartData}
-      />
-      <AddUnitDialog
-        open={isAddUnitSheetOpen}
-        onOpenChange={setIsAddUnitSheetOpen}
-        workOrderId={workOrderId}
-        onSuccess={() => {
-          // Trigger refetch after successful unit addition
-          if (onRefetch) onRefetch();
-        }}
-      />
-      <AddNote
-        open={isAddNoteSheetOpen}
-        setOpen={setIsAddNoteSheetOpen}
-        onAdd={handleAddNote}
-        data={editingNoteData}
-      />
-    </Form>
+        <AddMaintenance
+          open={isMaintenanceSheetOpen}
+          setOpen={setIsMaintenanceSheetOpen}
+          onAdd={handleAddMaintenanceTask}
+          data={selectedMaintenance}
+          unitId={workOrderForm.watch("equipment_id")}
+          initialParts={selectedMaintenanceParts}
+          initialLabor={selectedMaintenanceLabor}
+        />
+        <AddLaborUsed
+          open={isAddLaborSheetOpen}
+          setOpen={setIsAddLaborSheetOpen}
+          onAdd={handleAddLabor}
+          maintenanceId={selectedMaintenance?.id || (selectedMaintenance as any)?.maintenance_id}
+          data={editingLaborData}
+        />
+        <AddPartUsed
+          open={isAddPartSheetOpen}
+          setOpen={setIsAddPartSheetOpen}
+          onAdd={handleAddPart}
+          maintenanceId={selectedMaintenance?.id || (selectedMaintenance as any)?.maintenance_id}
+          data={editingPartData}
+        />
+        <AddUnitDialog
+          open={isAddUnitSheetOpen}
+          onOpenChange={setIsAddUnitSheetOpen}
+          workOrderId={workOrderId}
+          onSuccess={() => {
+            // Trigger refetch after successful unit addition
+            if (onRefetch) onRefetch();
+          }}
+        />
+        <AddNote
+          open={isAddNoteSheetOpen}
+          setOpen={setIsAddNoteSheetOpen}
+          onAdd={handleAddNote}
+          data={editingNoteData}
+        />
+      </Form>
+    </>
   );
 }
 
