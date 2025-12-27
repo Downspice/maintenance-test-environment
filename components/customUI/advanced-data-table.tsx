@@ -241,6 +241,7 @@ export function AdvancedDataTable<TData, TValue>({
       },
       enableSorting: false,
       enableHiding: false,
+      size: 40,
     }
 
     const expandColumn: ColumnDef<TData, TValue> = {
