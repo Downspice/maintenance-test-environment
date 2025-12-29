@@ -1164,8 +1164,9 @@ function EditActualWorkOrderFormContent({
     }
     const taxable = Math.max(0, sub - dAmt);
 
-    const t1Amount = taxable * (Number(taxOneRate) || 0);
-    const t2Amount = taxable * (Number(taxTwoRate) || 0);
+    // Tax rates are entered as whole numbers (e.g., 15 for 15%), so divide by 100
+    const t1Amount = taxable * ((Number(taxOneRate) || 0) / 100);
+    const t2Amount = taxable * ((Number(taxTwoRate) || 0) / 100);
 
     // Use setValue with shouldValidate: true if needed, but here simple set is fine as schema allows nulls
     workOrderForm.setValue("tax_one_amount", Number(t1Amount.toFixed(2)));
