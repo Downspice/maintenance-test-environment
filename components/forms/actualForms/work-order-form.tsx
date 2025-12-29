@@ -1456,8 +1456,9 @@ function EditActualWorkOrderFormContent({
                       }
 
                       const taxable = Math.max(0, calculatedSubtotal - dAmt);
-                      const t1 = taxable * tax1Rate;
-                      const t2 = taxable * tax2Rate;
+                      // Tax rates are entered as whole numbers (e.g., 15 for 15%), so divide by 100
+                      const t1 = taxable * (tax1Rate / 100);
+                      const t2 = taxable * (tax2Rate / 100);
                       const total = taxable + t1 + t2;
 
                       workOrderForm.setValue("total", total);
@@ -2052,7 +2053,7 @@ function EditActualWorkOrderFormContent({
                               else dAmt = discVal;
                             }
                             const taxable = Math.max(0, sub - dAmt);
-                            return (taxable * (Number(workOrderForm.watch("tax_one")) || 0)).toFixed(2);
+                            return (taxable * ((Number(workOrderForm.watch("tax_one")) || 0) / 100)).toFixed(2);
                           })()}
                         </span>
                       </div>
@@ -2079,7 +2080,7 @@ function EditActualWorkOrderFormContent({
                               else dAmt = discVal;
                             }
                             const taxable = Math.max(0, sub - dAmt);
-                            return (taxable * (Number(workOrderForm.watch("tax_two")) || 0)).toFixed(2);
+                            return (taxable * ((Number(workOrderForm.watch("tax_two")) || 0) / 100)).toFixed(2);
                           })()}
                         </span>
                       </div>
