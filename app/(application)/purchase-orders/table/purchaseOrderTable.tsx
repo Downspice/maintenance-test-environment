@@ -472,7 +472,7 @@ export function PurchaseOrderDataLoader({
         onPrintRow={handlePrintRow}
         storageKey="purchase-table-visibility"
         getSubRows={getSubRows}
-        enableExpanding={true}
+        enableExpanding={false}
         // Custom sub-row rendering
         renderSubRow={renderSubRow}
         subRowKey="items"

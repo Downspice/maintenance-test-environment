@@ -241,7 +241,7 @@ export function InventoryDataLoader({
           sortable={true}
         />
       ),
-      cell: ({ row }) => <>{row.original?.inventory_trackings?.[0]?.vendor_id ?? ""}</>,
+      cell: ({ row }) => <>{row.original?.inventory_trackings?.[0]?.vendor_name?? ""}</>,
     },
     {
       accessorKey: "quantity",

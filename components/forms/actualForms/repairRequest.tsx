@@ -166,7 +166,7 @@ export default function ActualRepairRequestForm({ variant }: triggerVariant) {
             warning="(meter)"
           />
 
-          <Fieldset
+          {/* <Fieldset
             legend="Repairs Needed"
             content={
               <EditableDataTable
@@ -178,7 +178,7 @@ export default function ActualRepairRequestForm({ variant }: triggerVariant) {
                 }}
               />
             }
-          />
+          /> */}
         </div>
         <div className="flex justify-end">
           <Button

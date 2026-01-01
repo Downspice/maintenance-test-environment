@@ -402,9 +402,9 @@ export function EmployeeTableLoader({ locationId, typeId }: { locationId?: strin
         columns={columns}
         data={serverRows}
         defaultVisibleColumns={[
-          "id",
+          "employee_number",
           "name",
-          "type",
+          "type.name",
           "driver_license_number",
           "cell",
           "actions",
@@ -417,7 +417,7 @@ export function EmployeeTableLoader({ locationId, typeId }: { locationId?: strin
         onPrintRow={handlePrintRow}
         storageKey="employee-table-visibility"
         getSubRows={getSubRows}
-        enableExpanding={true}
+        enableExpanding={false}
         // Custom sub-row rendering
         renderSubRow={renderSubRow}
         subRowKey="renewals"

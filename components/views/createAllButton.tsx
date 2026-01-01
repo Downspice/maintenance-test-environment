@@ -72,7 +72,7 @@ export default function CreateAllButton() {
   ];
 
   const formComponents = {
-    "Equipment":<ActualEquipmentForm/>,
+    "Equipment": <ActualEquipmentForm />,
     "Repair Request": <ActualRepairRequestForm />,
     "Daily Inspection": <InspectionForm />,
     "Work Order": <ActualWorkOrderForm />,
@@ -92,11 +92,11 @@ export default function CreateAllButton() {
     return SelectedComponent ? SelectedComponent : null;
   };
 
-  const selectedType = [
-    ...dropdownItems1,
-    ...dropdownItems2,
-    ...dropdownItems3,
-  ].find((type) => type.label === selectedProjectType);
+  // const selectedType = [
+  //   ...dropdownItems1,
+  //   ...dropdownItems2,
+  //   ...dropdownItems3,
+  // ].find((type) => type.label === selectedProjectType);
   // const currentForm = getCurrentForm();
   return (
     <>
@@ -109,8 +109,8 @@ export default function CreateAllButton() {
         </DropdownMenuTrigger>
         <DropdownMenuContent
           className="w-64 rounded-lg"
-          // side={isMobile ? "bottom" : "right"}
-          // align={isMobile ? "end" : "start"}
+        // side={isMobile ? "bottom" : "right"}
+        // align={isMobile ? "end" : "start"}
         >
           <div className="w-full  *:p-3 items-end flex justify-between">
             <div className="text-md font-semibold">Create New</div>
@@ -151,7 +151,9 @@ export default function CreateAllButton() {
           <SheetHeader>
             <SheetTitle className="flex items-center gap-2">
               {/* {selectedType && <selectedType.icon className="h-5 w-5" />} */}
-              Create New {selectedType?.label || "Project"}
+              {selectedProjectType?.startsWith("Receive")
+                ? selectedProjectType
+                : `Create New ${selectedProjectType || "Project"}`}
             </SheetTitle>
             <SheetDescription>
               {/* {selectedType?.label ||

@@ -598,7 +598,7 @@ export function EquipmentTableLoader({ locationId }: { locationId?: string }) {
         onPrintRow={handlePrintRow}
         storageKey="equipment-table-visibility"
         getSubRows={getSubRows}
-        enableExpanding={true}
+        enableExpanding={false}
         // Custom sub-row rendering
         renderSubRow={renderSubRow}
         subRowKey="tasks"
