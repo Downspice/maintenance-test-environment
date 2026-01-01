@@ -40,6 +40,7 @@ interface BaseFieldProps {
   emptyText?: string;
   searchPlaceholder?: string;
   direction?: "horizontal" | "vertical";
+  showLabel?: boolean;
 }
 
 interface ComboboxFieldProps extends BaseFieldProps {
@@ -59,6 +60,7 @@ export function ComboboxFieldWrapper({
   emptyText = "No option found.",
   searchPlaceholder = "Search...",
   direction = "horizontal",
+  showLabel = true,
 }: ComboboxFieldProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -95,14 +97,16 @@ export function ComboboxFieldWrapper({
                 : "flex flex-col"
             )}
           >
-            <FormLabel
-              className={cn(
-                direction === "horizontal" ? "w-[10rem] text-right" : "mb-1"
-              )}
-            >
-              {required && <span className="text-red-500 mr-1">*</span>}
-              {label}
-            </FormLabel>
+            {showLabel && (
+              <FormLabel
+                className={cn(
+                  direction === "horizontal" ? "w-[10rem] text-right" : "mb-1"
+                )}
+              >
+                {required && <span className="text-red-500 mr-1">*</span>}
+                {label}
+              </FormLabel>
+            )}
 
             <div className="flex-1 flex flex-col">
               <Popover
@@ -203,6 +207,7 @@ export function MultiComboboxWrapper({
   minSelections,
   maxSelections,
   direction = "horizontal",
+  showLabel = true,
 }: MultiComboboxFieldProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -243,13 +248,11 @@ export function MultiComboboxWrapper({
         const getValidationMessage = () => {
           const count = selectedValues.length;
           if (minSelections && count < minSelections)
-            return `Please select at least ${minSelections} option${
-              minSelections > 1 ? "s" : ""
-            }.`;
+            return `Please select at least ${minSelections} option${minSelections > 1 ? "s" : ""
+              }.`;
           if (maxSelections && count > maxSelections)
-            return `Please select no more than ${maxSelections} option${
-              maxSelections > 1 ? "s" : ""
-            }.`;
+            return `Please select no more than ${maxSelections} option${maxSelections > 1 ? "s" : ""
+              }.`;
           return null;
         };
 
@@ -262,14 +265,16 @@ export function MultiComboboxWrapper({
                 : "flex flex-col"
             )}
           >
-            <FormLabel
-              className={cn(
-                direction === "horizontal" ? "w-[10rem] text-right" : "mb-1"
-              )}
-            >
-              {required && <span className="text-red-500 mr-1">*</span>}
-              {label}
-            </FormLabel>
+            {showLabel && (
+              <FormLabel
+                className={cn(
+                  direction === "horizontal" ? "w-[10rem] text-right" : "mb-1"
+                )}
+              >
+                {required && <span className="text-red-500 mr-1">*</span>}
+                {label}
+              </FormLabel>
+            )}
 
             <div className="flex-1 flex flex-col">
               {selectedOptions.length > 0 && (

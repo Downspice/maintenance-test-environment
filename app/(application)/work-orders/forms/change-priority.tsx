@@ -9,55 +9,80 @@ import { GitPullRequestArrow } from "lucide-react";
 import { toast } from "sonner";
 import SelectWrapper from "@/components/forms/wrappers/SelectWrapper";
 import { priorityOptions } from "./newWorkOrderFormSheet";
+import { useUpdateWorkOrderPriority } from "@/services/setups/workOrder";
 
 // Define the form schema with Zod
 export const ChangePrioritySchema = z.object({
-   priority: z.string().optional(), 
+    priority_id: z.string().optional(),
 });
 
 export type ChangePriorityInterface = z.infer<typeof ChangePrioritySchema>;
 
 export default function ChangePriorityForm({
-  data,
+    data,
+    onSuccess
 }: {
-  data: ChangePriorityInterface;
+    data: any;
+    onSuccess?: () => void;
 }) {
-  const ChangePriorityForm = useForm<z.infer<typeof ChangePrioritySchema>>({
-    resolver: zodResolver(ChangePrioritySchema),
-    defaultValues: { ...data },
-  });
+    const { mutate: updatePriority, isPending } = useUpdateWorkOrderPriority();
 
-  async function handleSubmit(data: z.infer<typeof ChangePrioritySchema>) {
-    console.log(data);
-    // Here you would typically send the data to your API
-    toast.success("change priority submitted successfully!");
-  }
+    const form = useForm<ChangePriorityInterface>({
+        resolver: zodResolver(ChangePrioritySchema),
+        defaultValues: {
+            priority_id: data.priority_id
+        },
+    });
 
-  return (
-    <div className="w-full">
-      <Form {...ChangePriorityForm}>
-        <form
-          onSubmit={ChangePriorityForm.handleSubmit((data) => handleSubmit(data))}
-          className="w-full"
-        >
-          <div className="flex flex-col">
-            <>
-              <SelectWrapper
-                control={ChangePriorityForm.control}
-                name={`priority`}
-                label="Priority"
-                options={priorityOptions}
-                required
-              /> 
-            </>
-          </div>
-          <div className="flex justify-between gap-x-4 my-8 w-full">
-            <Button className=" w-full">
-              <GitPullRequestArrow className="mr-2" /> Save
-            </Button>
-          </div>
-        </form>
-      </Form>
-    </div>
-  );
+    async function handleSubmit(formData: ChangePriorityInterface) {
+        if (!formData.priority_id) {
+            toast.error("Please select a priority");
+            return;
+        }
+
+        const payload = {
+            id: data.id,
+            priority_id: formData.priority_id,
+        };
+
+        updatePriority(payload, {
+            onSuccess: () => {
+                toast.success("Priority updated successfully!");
+                onSuccess?.();
+            },
+            onError: (error: any) => {
+                toast.error(error?.response?.data?.message || "Failed to update priority");
+                console.error(error);
+            }
+        });
+    }
+
+    return (
+        <div className="w-full">
+            <Form {...form}>
+                <form
+                    onSubmit={form.handleSubmit((data) => handleSubmit(data))}
+                    className="w-full"
+                >
+                    <div className="flex flex-col">
+                        <>
+                            <SelectWrapper
+                                control={form.control}
+                                name={`priority_id`}
+                                label="Priority"
+                                options={priorityOptions}
+                                required
+                            />
+                        </>
+                    </div>
+                    <div className="flex justify-between gap-x-4 my-8 w-full">
+                        <Button className="w-full" disabled={isPending}>
+                            <GitPullRequestArrow className="mr-2" />
+                            {isPending ? "Saving..." : "Save"}
+                        </Button>
+                    </div>
+                </form>
+            </Form>
+        </div>
+    );
 }

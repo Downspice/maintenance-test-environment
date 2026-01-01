@@ -34,6 +34,12 @@ import {
   SheetDescription,
   Sheet,
 } from "@/components/ui/sheet";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { useState } from "react";
 import React from "react";
 import {
@@ -50,6 +56,7 @@ import ChangePriorityForm from "../../forms/change-priority";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import ChangeAssigneesForm from "../../forms/change-assignee";
 import ChangeCostCenterForm from "../../forms/change-cost-center";
+import ChangeStatusForm from "../../forms/change-status";
 import { useGetWorkOrdersPaginated } from "@/services/setups/workOrder";
 
 const getStatusColor = (status: string) => {
@@ -407,36 +414,33 @@ export function WorkOrderDataLoader({
           })()
         };
 
-        const [open, setOpen] = useState(false);
-        const [selectedProjectType, setSelectedProjectType] = useState<
-          string | null
-        >(null);
+        const [assigneeDialogOpen, setAssigneeDialogOpen] = useState(false);
+        const [priorityDialogOpen, setPriorityDialogOpen] = useState(false);
+        const [costCenterDialogOpen, setCostCenterDialogOpen] = useState(false);
+        const [statusDialogOpen, setStatusDialogOpen] = useState(false);
 
-        const genericDropdown = (x: string) => {
-          console.log("did something", x);
-          setSelectedProjectType(x);
-          setOpen(true);
+        const openAssigneeDialog = () => {
+          setAssigneeDialogOpen(true);
         };
+
+        const openPriorityDialog = () => {
+          setPriorityDialogOpen(true);
+        };
+
+        const openCostCenterDialog = () => {
+          setCostCenterDialogOpen(true);
+        };
+
+        const openStatusDialog = () => {
+          setStatusDialogOpen(true);
+        };
+
         const dropdownItems = [
-          { name: "Change Assignee", onSelect: genericDropdown },
-          { name: "Change Priority", onSelect: genericDropdown },
-          { name: "Change Cost Center", onSelect: genericDropdown },
+          { name: "Change Assignee", onSelect: openAssigneeDialog },
+          { name: "Change Priority", onSelect: openPriorityDialog },
+          { name: "Change Cost Center", onSelect: openCostCenterDialog },
+          { name: "Change Status", onSelect: openStatusDialog },
         ];
-
-        const formComponents = {
-          "Change Assignee": <ChangeAssigneesForm data={row.original} />,
-          "Change Priority": <ChangePriorityForm data={row.original} />,
-          "Change Cost Center": <ChangeCostCenterForm data={row.original} />,
-        };
-        const renderFormContent = () => {
-          const SelectedComponent = formComponents[selectedProjectType || ""];
-          console.log("new selected", SelectedComponent);
-          return SelectedComponent ? SelectedComponent : null;
-        };
-
-        const selectedType = dropdownItems.find(
-          (type) => type.label === selectedProjectType
-        );
 
         return (
           <div className="flex flex-row gap-2 justify-between">
@@ -470,25 +474,12 @@ export function WorkOrderDataLoader({
                   {dropdownItems.map((item) => (
                     <DropdownMenuItem
                       key={item.name}
-                      onClick={() => item.onSelect(item.name)}
+                      onClick={() => item.onSelect()}
                     >
                       <span>{item.name}</span>
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={() => handleStatus("Open", row)}
-                  disabled={row.original.status === "open"}
-                >
-                  Change Status (Open)
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => handleStatus("Closed", row)}
-                  disabled={row.original.status === "closed"}
-                >
-                  Change Status (Close)
-                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={(e) => {
@@ -502,24 +493,65 @@ export function WorkOrderDataLoader({
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <Sheet open={open} onOpenChange={setOpen}>
-              <SheetContent className="w-[400px] sm:w-2/3">
-                <SheetHeader>
-                  <SheetTitle className="flex items-center gap-2">
-                    {selectedType?.label}
-                    {/* Receive Purchase Order */}
-                  </SheetTitle>
-                  <SheetDescription>
-                    {/* {selectedType?.label ||
-                                        "Fill out the form below to set up your new development project."} */}
-                  </SheetDescription>
-                </SheetHeader>
+            {/* Change Status Dialog */}
+            <Dialog open={statusDialogOpen} onOpenChange={setStatusDialogOpen}>
+              <DialogContent className="sm:max-w-[500px]">
+                <DialogHeader>
+                  <DialogTitle>
+                    Change Status for Work Order {row.original.wo_number || row.original.workOrderNumber}
+                  </DialogTitle>
+                </DialogHeader>
+                <ChangeStatusForm
+                  data={row.original}
+                  onSuccess={() => setStatusDialogOpen(false)}
+                />
+              </DialogContent>
+            </Dialog>
 
-                <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
-                  {renderFormContent() || "nothing else"}
-                </ScrollArea>
-              </SheetContent>
-            </Sheet>
+            {/* Change Cost Center Dialog */}
+            <Dialog open={costCenterDialogOpen} onOpenChange={setCostCenterDialogOpen}>
+              <DialogContent className="sm:max-w-[500px]">
+                <DialogHeader>
+                  <DialogTitle>
+                    Change Cost Center for Work Order {row.original.wo_number || row.original.workOrderNumber}
+                  </DialogTitle>
+                </DialogHeader>
+                <ChangeCostCenterForm
+                  data={row.original}
+                  onSuccess={() => setCostCenterDialogOpen(false)}
+                />
+              </DialogContent>
+            </Dialog>
+
+            {/* Change Assignee Dialog */}
+            <Dialog open={assigneeDialogOpen} onOpenChange={setAssigneeDialogOpen}>
+              <DialogContent className="sm:max-w-[500px]">
+                <DialogHeader>
+                  <DialogTitle>
+                    Change Assignee for Work Order {row.original.wo_number || row.original.workOrderNumber}
+                  </DialogTitle>
+                </DialogHeader>
+                <ChangeAssigneesForm
+                  data={row.original}
+                  onSuccess={() => setAssigneeDialogOpen(false)}
+                />
+              </DialogContent>
+            </Dialog>
+
+            {/* Change Priority Dialog */}
+            <Dialog open={priorityDialogOpen} onOpenChange={setPriorityDialogOpen}>
+              <DialogContent className="sm:max-w-[500px]">
+                <DialogHeader>
+                  <DialogTitle>
+                    Change Priority for Work Order {row.original.wo_number || row.original.workOrderNumber}
+                  </DialogTitle>
+                </DialogHeader>
+                <ChangePriorityForm
+                  data={row.original}
+                  onSuccess={() => setPriorityDialogOpen(false)}
+                />
+              </DialogContent>
+            </Dialog>
           </div>
         );
       },

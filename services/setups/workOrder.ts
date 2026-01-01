@@ -161,6 +161,54 @@ export function useUpdateWorkOrder() {
 }
 
 /**
+ * Updates Work Order Assignees. Invalidates the 'work-orders' list and the specific 'work-order' detail query.
+ */
+export function useUpdateWorkOrderAssignee() {
+    return useBaseMutation<TEntity, WorkOrderPayload & { id: TId }>(
+        ["update-work-order-assignee"],
+        (payload) => `/api/update-work-order-assignee/${payload.id}`,
+        'put',
+        (payload) => [['work-orders'], ['work-order', payload.id]]
+    );
+}
+
+/**
+ * Updates Work Order Priority. Invalidates the 'work-orders' list and the specific 'work-order' detail query.
+ */
+export function useUpdateWorkOrderPriority() {
+    return useBaseMutation<TEntity, WorkOrderPayload & { id: TId }>(
+        ["update-work-order-priority"],
+        (payload) => `/api/update-work-order-priority/${payload.id}`,
+        'put',
+        (payload) => [['work-orders'], ['work-order', payload.id]]
+    );
+}
+
+/**
+ * Updates Work Order Cost Center. Invalidates the 'work-orders' list and the specific 'work-order' detail query.
+ */
+export function useUpdateWorkOrderCostCenter() {
+    return useBaseMutation<TEntity, WorkOrderPayload & { id: TId }>(
+        ["update-work-order-cost-center"],
+        (payload) => `/api/update-work-order-cost-center/${payload.id}`,
+        'put',
+        (payload) => [['work-orders'], ['work-order', payload.id]]
+    );
+}
+
+/**
+ * Updates Work Order Status. Invalidates the 'work-orders' list and the specific 'work-order' detail query.
+ */
+export function useUpdateWorkOrderCurrentStatus() {
+    return useBaseMutation<TEntity, WorkOrderPayload & { id: TId }>(
+        ["update-work-order-status"],
+        (payload) => `/api/update-work-order-status/${payload.id}`,
+        'put',
+        (payload) => [['work-orders'], ['work-order', payload.id]]
+    );
+}
+
+/**
  * Updates a Work Order Unit Labor. Invalidates the 'work-orders' list and the specific 'work-order' detail query.
  */
 export function useUpdateWorkOrderUnitLabor() {
