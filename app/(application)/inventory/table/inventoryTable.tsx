@@ -295,6 +295,7 @@ export function InventoryDataLoader({
     {
       id: "actions",
       header: "Actions",
+      size: 60,
       cell: ({ row }) => {
         const handleDeleteRow = (row: any) => {
           console.log("Delete row:", row.original);

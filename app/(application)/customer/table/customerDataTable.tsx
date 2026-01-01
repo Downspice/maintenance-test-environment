@@ -194,7 +194,7 @@ export function CustomerTableLoader({ locationId, typeId }: { locationId?: strin
           column={column}
           title="Name"
           sortable={true}
-          // filterOptions={name}
+        // filterOptions={name}
         />
       ),
       cell: ({ row }) => (
@@ -210,7 +210,7 @@ export function CustomerTableLoader({ locationId, typeId }: { locationId?: strin
           column={column}
           title="Type"
           sortable={true}
-          // filterOptions={type}
+        // filterOptions={type}
         />
       ),
     },
@@ -221,7 +221,7 @@ export function CustomerTableLoader({ locationId, typeId }: { locationId?: strin
           column={column}
           title="Address #1"
           sortable={true}
-          // filterOptions={address1}
+        // filterOptions={address1}
         />
       ),
       filterFn: (row, id, value) => {
@@ -235,7 +235,7 @@ export function CustomerTableLoader({ locationId, typeId }: { locationId?: strin
           column={column}
           title="City"
           sortable={true}
-          // filterOptions={city}
+        // filterOptions={city}
         />
       ),
       cell: ({ row }) => <>{row.original.city}</>,
@@ -250,7 +250,7 @@ export function CustomerTableLoader({ locationId, typeId }: { locationId?: strin
           column={column}
           title="State/Prov"
           sortable={true}
-          // filterOptions={state_prov}
+        // filterOptions={state_prov}
         />
       ),
       filterFn: (row, id, value) => {
@@ -264,7 +264,7 @@ export function CustomerTableLoader({ locationId, typeId }: { locationId?: strin
           column={column}
           title="Postal Code"
           sortable={true}
-          // filterOptions={postal_code}
+        // filterOptions={postal_code}
         />
       ),
     },
@@ -275,7 +275,7 @@ export function CustomerTableLoader({ locationId, typeId }: { locationId?: strin
           column={column}
           title="Email"
           sortable={true}
-          // filterOptions={email}
+        // filterOptions={email}
         />
       ),
       filterFn: (row, id, value) => {
@@ -285,9 +285,10 @@ export function CustomerTableLoader({ locationId, typeId }: { locationId?: strin
     {
       id: "actions",
       header: "Actions",
+      size: 60,
       cell: ({ row }) => {
         const handleDeleteRow = (row: any) => {
-          ;(async () => {
+          ; (async () => {
             const isActive = row.original?.is_active === true
             const ok = await confirmDialog({
               title: isActive ? "Deactivate customer?" : "Restore customer?",

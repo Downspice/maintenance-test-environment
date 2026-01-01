@@ -1,6 +1,6 @@
 "use client";
 
-import {  Plus, type LucideIcon } from "lucide-react";
+import { Plus, type LucideIcon } from "lucide-react";
 
 import {
   Collapsible,
@@ -35,7 +35,7 @@ export function NavMain({
     }[];
   }[];
 }) {
-    const { isMobile } = useSidebar();
+  const { isMobile } = useSidebar();
 
   return (
     <SidebarGroup>
@@ -48,13 +48,13 @@ export function NavMain({
           //   defaultOpen={item.isActive}
           //   className="group/collapsible"
           // >
-            <SidebarMenuItem key={item.title}> 
-                <SidebarMenuButton isActive={item.isActive} tooltip={item.title} >
-                  {item.icon && <item.icon />}
-                  <span>{item.title}</span>
-                  {/* <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" /> */}
-                </SidebarMenuButton> 
-               {item.title !== "Home" && (
+          <SidebarMenuItem key={item.title}>
+            <SidebarMenuButton isActive={item.isActive} tooltip={item.title} >
+              {item.icon && <item.icon />}
+              <span>{item.title}</span>
+              {/* <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" /> */}
+            </SidebarMenuButton>
+            {item.title !== "Home" && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <SidebarMenuAction showOnHover>
@@ -73,8 +73,8 @@ export function NavMain({
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-             )} 
-            </SidebarMenuItem>
+            )}
+          </SidebarMenuItem>
           // </Collapsible>
         ))}
       </SidebarMenu>

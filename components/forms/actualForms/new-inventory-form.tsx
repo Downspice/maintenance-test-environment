@@ -287,7 +287,7 @@ export default function NewInventory() {
                         control={inventoryForm.control}
                         name={`markUp`}
                         label="Markup Type"
-                        options={[...markupTypeOptions,{id:"none",name:"none"}]}
+                        options={[...markupTypeOptions??[],{id:"none",name:"none"}]}
                         required
                       />
                       {inventoryForm.watch("markUp") ===

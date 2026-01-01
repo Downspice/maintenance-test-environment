@@ -12,7 +12,7 @@ import {
   Cog,
   Settings2,
   SquareTerminal,
-  File,Smartphone,ChartArea,Building,Users,ShoppingCart,Boxes,CalendarRange
+  File, Smartphone, ChartArea, Building, Users, ShoppingCart, Boxes, CalendarRange
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -150,7 +150,7 @@ const data = {
       title: "Equipment",
       url: "#",
       icon: Cog,
-    },{
+    }, {
       title: "Work Orders",
       url: "#",
       icon: File,
@@ -185,9 +185,9 @@ const data = {
       url: "#",
       icon: Building,
     },
-     
-     
-    
+
+
+
   ],
 }
 

@@ -246,7 +246,7 @@ export function EmployeeTableLoader({ locationId, typeId }: { locationId?: strin
           column={column}
           title="Employee#"
           sortable={true}
-          // filterOptions={employeeId}
+        // filterOptions={employeeId}
         />
       ),
       cell: ({ row }) => (
@@ -263,7 +263,7 @@ export function EmployeeTableLoader({ locationId, typeId }: { locationId?: strin
           column={column}
           title="Name"
           sortable={true}
-          // filterOptions={name}
+        // filterOptions={name}
         />
       ),
       cell: ({ row }) => (
@@ -283,7 +283,7 @@ export function EmployeeTableLoader({ locationId, typeId }: { locationId?: strin
           column={column}
           title="Type"
           sortable={true}
-          // filterOptions={type}
+        // filterOptions={type}
         />
       ),
       filterFn: (row, id, value) => {
@@ -297,7 +297,7 @@ export function EmployeeTableLoader({ locationId, typeId }: { locationId?: strin
           column={column}
           title="Driver's License#"
           sortable={true}
-          // filterOptions={drivers_license_number}
+        // filterOptions={drivers_license_number}
         />
       ),
       filterFn: (row, id, value) => {
@@ -311,7 +311,7 @@ export function EmployeeTableLoader({ locationId, typeId }: { locationId?: strin
           column={column}
           title="Contact"
           sortable={true}
-          // filterOptions={contact}
+        // filterOptions={contact}
         />
       ),
       filterFn: (row, id, value) => {
@@ -321,6 +321,7 @@ export function EmployeeTableLoader({ locationId, typeId }: { locationId?: strin
     {
       id: "actions",
       header: "Actions",
+      size: 60,
       cell: ({ row }) => {
         const handleDeleteRow = (row: any) => {
           const currentStatusId: string | undefined = row.original?.status?.id
@@ -328,26 +329,26 @@ export function EmployeeTableLoader({ locationId, typeId }: { locationId?: strin
             ? employeeStatuses.find((s: any) => s?.id !== currentStatusId)?.id
             : undefined
 
-          ;(async () => {
-            const isActive = row.original?.status?.is_active !== false
-            const ok = await confirmDialog({
-              title: isActive ? "Deactivate employee?" : "Restore employee?",
-              description: isActive
-                ? `This will deactivate ${row.original.last_name + " " + row.original.first_name + " " + (row.original.middle_name ?? "")}.`
-                : `This will restore ${row.original.last_name + " " + row.original.first_name + " " + (row.original.middle_name ?? "")}.`,
-              confirmText: isActive ? "Deactivate" : "Restore",
-              variant: isActive ? "destructive" : "default",
-              tone: isActive ? "danger" : "success",
-            })
-            if (ok) {
-              if (!row.original?.id || !otherStatusId) {
-                toast.error("Unable to determine target status")
-                return
+            ; (async () => {
+              const isActive = row.original?.status?.is_active !== false
+              const ok = await confirmDialog({
+                title: isActive ? "Deactivate employee?" : "Restore employee?",
+                description: isActive
+                  ? `This will deactivate ${row.original.last_name + " " + row.original.first_name + " " + (row.original.middle_name ?? "")}.`
+                  : `This will restore ${row.original.last_name + " " + row.original.first_name + " " + (row.original.middle_name ?? "")}.`,
+                confirmText: isActive ? "Deactivate" : "Restore",
+                variant: isActive ? "destructive" : "default",
+                tone: isActive ? "danger" : "success",
+              })
+              if (ok) {
+                if (!row.original?.id || !otherStatusId) {
+                  toast.error("Unable to determine target status")
+                  return
+                }
+                await patchIsActive.mutateAsync({ id: row.original.id, status_id: otherStatusId })
+                toast.success(`Status updated`)
               }
-              await patchIsActive.mutateAsync({ id: row.original.id, status_id: otherStatusId })
-              toast.success(`Status updated`)
-            }
-          })()
+            })()
         };
 
         const isActive = row.original?.status?.is_active !== false

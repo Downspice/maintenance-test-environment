@@ -192,7 +192,7 @@ export function VendorTableLoader({ locationId, typeId }: { locationId?: string;
           column={column}
           title="Name"
           sortable={true}
-          // filterOptions={name}
+        // filterOptions={name}
         />
       ),
       cell: ({ row }) => (
@@ -213,7 +213,7 @@ export function VendorTableLoader({ locationId, typeId }: { locationId?: string;
           column={column}
           title="Type"
           sortable={true}
-          // filterOptions={type}
+        // filterOptions={type}
         />
       ),
     },
@@ -224,7 +224,7 @@ export function VendorTableLoader({ locationId, typeId }: { locationId?: string;
           column={column}
           title="Contact"
           sortable={true}
-          // filterOptions={contact}
+        // filterOptions={contact}
         />
       ),
       filterFn: (row, id, value) => {
@@ -238,7 +238,7 @@ export function VendorTableLoader({ locationId, typeId }: { locationId?: string;
           column={column}
           title="Address"
           sortable={true}
-          // filterOptions={address1}
+        // filterOptions={address1}
         />
       ),
       filterFn: (row, id, value) => {
@@ -252,7 +252,7 @@ export function VendorTableLoader({ locationId, typeId }: { locationId?: string;
           column={column}
           title="City"
           sortable={true}
-          // filterOptions={city}
+        // filterOptions={city}
         />
       ),
       cell: ({ row }) => <>{row.original.city}</>,
@@ -267,7 +267,7 @@ export function VendorTableLoader({ locationId, typeId }: { locationId?: string;
           column={column}
           title="State"
           sortable={true}
-          // filterOptions={state_prov}
+        // filterOptions={state_prov}
         />
       ),
       filterFn: (row, id, value) => {
@@ -281,7 +281,7 @@ export function VendorTableLoader({ locationId, typeId }: { locationId?: string;
           column={column}
           title="Postal Code"
           sortable={true}
-          // filterOptions={postal_code}
+        // filterOptions={postal_code}
         />
       ),
     },
@@ -292,7 +292,7 @@ export function VendorTableLoader({ locationId, typeId }: { locationId?: string;
           column={column}
           title="Email"
           sortable={true}
-          // filterOptions={email}
+        // filterOptions={email}
         />
       ),
       filterFn: (row, id, value) => {
@@ -302,6 +302,7 @@ export function VendorTableLoader({ locationId, typeId }: { locationId?: string;
     {
       id: "actions",
       header: "Actions",
+      size: 60,
       cell: ({ row }) => {
         const handleDeleteRow = (row: any) => {
           const currentStatusId: string | undefined = row.original?.status?.id
@@ -309,26 +310,26 @@ export function VendorTableLoader({ locationId, typeId }: { locationId?: string;
             ? statusOnes.find((s: any) => s?.id !== currentStatusId)?.id
             : undefined
 
-          ;(async () => {
-            const isActive = row.original?.status?.is_active !== false
-            const ok = await confirmDialog({
-              title: isActive ? "Deactivate vendor?" : "Restore vendor?",
-              description: isActive
-                ? `This will deactivate ${row.original.name}.`
-                : `This will restore ${row.original.name}.`,
-              confirmText: isActive ? "Deactivate" : "Restore",
-              variant: isActive ? "destructive" : "default",
-              tone: isActive ? "danger" : "success",
-            })
-            if (ok) {
-              if (!row.original?.id || !otherStatusId) {
-                toast.error("Unable to determine target status")
-                return
+            ; (async () => {
+              const isActive = row.original?.status?.is_active !== false
+              const ok = await confirmDialog({
+                title: isActive ? "Deactivate vendor?" : "Restore vendor?",
+                description: isActive
+                  ? `This will deactivate ${row.original.name}.`
+                  : `This will restore ${row.original.name}.`,
+                confirmText: isActive ? "Deactivate" : "Restore",
+                variant: isActive ? "destructive" : "default",
+                tone: isActive ? "danger" : "success",
+              })
+              if (ok) {
+                if (!row.original?.id || !otherStatusId) {
+                  toast.error("Unable to determine target status")
+                  return
+                }
+                await patchIsActive.mutateAsync({ id: row.original.id, status_id: otherStatusId })
+                toast.success(`Status updated`)
               }
-              await patchIsActive.mutateAsync({ id: row.original.id, status_id: otherStatusId })
-              toast.success(`Status updated`)
-            }
-          })()
+            })()
         };
 
         const isActive = row.original?.status?.is_active !== false

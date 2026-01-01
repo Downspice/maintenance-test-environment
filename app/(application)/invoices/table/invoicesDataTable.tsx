@@ -37,7 +37,7 @@ export default function InvoicesDataTable() {
     isLoading,
     error: InvoiceDataError,
   } = useGetInvoices<InvoiceTableInterface[]>();
-  console.log("InvoiceData",InvoiceData)
+  console.log("InvoiceData", InvoiceData)
 
   return InvoiceData ? (
     <InvoicesTableLoader InvoiceData={InvoiceData} isLoading={isLoading} />
@@ -320,6 +320,7 @@ export function InvoicesTableLoader({ InvoiceData, isLoading }: { InvoiceData: I
     {
       id: "actions",
       header: "Actions",
+      size: 60,
       cell: ({ row }) => {
         const handleDeleteRow = (row: any) => {
           console.log("Delete row:", row.original);

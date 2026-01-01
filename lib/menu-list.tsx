@@ -14,6 +14,13 @@ import {
 import React from "react";
 import AddEquipmentsButton from "@/components/sideBarButtons/add-equipments-buttons";
 import EquipmentForm from "@/app/(application)/equipment/components/new-equipment-form";
+import WorkOrderFormWrapper from "@/components/forms/wrappers/work-order-form-wrapper";
+import InventoryFormWrapper from "@/components/forms/wrappers/inventory-form-wrapper";
+import PurchaseOrderFormWrapper from "@/components/forms/wrappers/purchase-order-form-wrapper";
+import EmployeeFormWrapper from "@/components/forms/wrappers/employee-form-wrapper";
+import VendorFormWrapper from "@/components/forms/wrappers/vendor-form-wrapper";
+import InvoiceFormWrapper from "@/components/forms/wrappers/invoice-form-wrapper";
+import CustomerFormWrapper from "@/components/forms/wrappers/customer-form-wrapper";
 type Submenu = {
   href: string;
   label: string;
@@ -26,8 +33,8 @@ type Menu = {
   active?: boolean;
   icon: LucideIcon;
   submenus?: Submenu[];
-  button?:React.JSX.Element; 
-   
+  button?: React.JSX.Element;
+
 };
 
 type Group = {
@@ -54,31 +61,35 @@ export function getMenuList(pathname: string): Group[] {
           label: "Equipment",
           icon: Cog,
           submenus: [],
-          button: <EquipmentForm variant="icon"/> 
+          button: <EquipmentForm variant="icon" />
         },
         {
           href: "/work-orders",
           label: "Work Orders",
           icon: File,
           submenus: [],
+          button: <WorkOrderFormWrapper variant="icon" />
         },
         {
           href: "/inventory",
           label: "Inventory",
           icon: Boxes,
           submenus: [],
+          button: <InventoryFormWrapper variant="icon" />
         },
         {
           href: "/purchase-orders",
           label: "Purchase Orders",
           icon: ShoppingCart,
           submenus: [],
+          button: <PurchaseOrderFormWrapper variant="icon" />
         },
         {
           href: "/customer",
           label: "Customer",
           icon: Users,
           submenus: [],
+          button: <CustomerFormWrapper variant="icon" />
         },
         // {
         //   href: "/inspections",
@@ -91,18 +102,21 @@ export function getMenuList(pathname: string): Group[] {
           label: "Invoices",
           icon: ListTodo,
           submenus: [],
+          button: <InvoiceFormWrapper variant="icon" />
         },
         {
           href: "/employees",
           label: "Employees",
           icon: Users,
           submenus: [],
+          button: <EmployeeFormWrapper variant="icon" />
         },
         {
           href: "/vendors",
           label: "Vendors",
           icon: Building,
           submenus: [],
+          button: <VendorFormWrapper variant="icon" />
         },
         {
           href: "/calendars",

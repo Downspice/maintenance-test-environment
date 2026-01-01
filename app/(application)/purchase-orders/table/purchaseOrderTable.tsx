@@ -242,12 +242,12 @@ export function PurchaseOrderDataLoader({
       cell: ({ row }) => (
         // <ViewPurchaseOrder
         //   children={
-            <div
-              className="font-bold text-primary flex flex-col cursor-pointer"
-              style={{ paddingLeft: `${row.depth * 20}px` }}
-            >
-              <div>{row.original.po_number}</div>
-            </div>
+        <div
+          className="font-bold text-primary flex flex-col cursor-pointer"
+          style={{ paddingLeft: `${row.depth * 20}px` }}
+        >
+          <div>{row.original.po_number}</div>
+        </div>
         //   }
         //   purchaseOrderId={row.original.id}
         // />
@@ -318,6 +318,7 @@ export function PurchaseOrderDataLoader({
     {
       id: "actions",
       header: "Actions",
+      size: 60,
       cell: ({ row }) => {
         const handleDeleteRow = (row: any) => {
           console.log("Delete row:", row.original);
