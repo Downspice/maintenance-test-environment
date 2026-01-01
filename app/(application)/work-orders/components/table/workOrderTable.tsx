@@ -57,7 +57,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import ChangeAssigneesForm from "../../forms/change-assignee";
 import ChangeCostCenterForm from "../../forms/change-cost-center";
 import ChangeStatusForm from "../../forms/change-status";
-import { useGetWorkOrdersPaginated } from "@/services/setups/workOrder";
+import { useDeleteWorkOrder, useGetWorkOrdersPaginated } from "@/services/setups/workOrder";
 
 const getStatusColor = (status: string) => {
   switch (status.toLowerCase()) {
@@ -385,6 +385,8 @@ export function WorkOrderDataLoader({
       header: "Actions",
       size: 60,
       cell: ({ row }) => {
+        const { mutate: deleteWorkOrder } = useDeleteWorkOrder();
+
         const handleDeleteRow = (row: any) => {
           console.log("Delete row:", row.original);
           (async () => {
@@ -392,9 +394,17 @@ export function WorkOrderDataLoader({
               title: "Delete work order?",
               description: `Are you sure you want to delete ${row.original.wo_number}?`,
               confirmText: "Delete",
+              variant: "destructive",
             })
             if (ok) {
-              toast.success(`Deleted ${row.original.wo_number}`)
+              deleteWorkOrder({ id: row.original.id }, {
+                onSuccess: () => {
+                  toast.success(`Deleted ${row.original.wo_number || "Work Order"}`)
+                },
+                onError: (error) => {
+                  toast.error(error?.response?.data?.message || "Failed to delete work order")
+                }
+              })
             }
           })()
         };
