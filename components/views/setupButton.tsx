@@ -84,19 +84,19 @@ export default function HeaderSettingsButton() {
     // aiForm.reset()
   };
 
-  const selectedType = [
-    ...dropdownItemsSection1,
-    ...dropdownItemsSection2,
-    ...dropdownItemsSection3,
-  ].find((type) => type.label === selectedProjectType);
+  // const selectedType = [
+  //   ...dropdownItemsSection1,
+  //   ...dropdownItemsSection2,
+  //   ...dropdownItemsSection3,
+  // ].find((type) => type.label === selectedProjectType);
 
   const renderFormContent = () => {
-    const SelectedComponent = formComponents[selectedProjectType ??""];
+    const SelectedComponent = formComponents[selectedProjectType ?? ""];
     console.log("new selected", SelectedComponent);
     return SelectedComponent ? SelectedComponent : null;
   };
 
-  const formComponents:any = {
+  const formComponents: any = {
     Settings: <CompanySettings />,
     Locations: <LocationView />,
     Warehouses: <WarehouseSetup />,
@@ -123,8 +123,8 @@ export default function HeaderSettingsButton() {
         </DropdownMenuTrigger>
         <DropdownMenuContent
           className="w-64 rounded-lg"
-          // side={isMobile ? "bottom" : "right"}
-          // align={isMobile ? "end" : "start"}
+        // side={isMobile ? "bottom" : "right"}
+        // align={isMobile ? "end" : "start"}
         >
           <span className="font-bold">Company</span>
           {dropdownItemsSection1.map((item) => (
@@ -163,7 +163,7 @@ export default function HeaderSettingsButton() {
           <SheetHeader>
             <SheetTitle className="flex items-center gap-2">
               {/* {selectedType && <selectedType.icon className="h-5 w-5" />} */}
-              Create New {selectedType?.label || "Project"}
+              {selectedProjectType || "Setup"}
             </SheetTitle>
             <SheetDescription>
               {/* {selectedType?.label ||
