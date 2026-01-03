@@ -51,6 +51,19 @@ import {
 } from "@/services/setups/invoice";
 import { convertToOptionList } from "@/lib/utils";
 
+type Customer = {
+  id: string;
+  company_name: string;
+  address: string;
+  phone?: string;
+  country?: string;
+  customer_shipping: {
+    address: string;
+    phone?: string;
+    country?: string;
+  };
+};
+
 // Schema definitions (matching the creation form)
 export const InvoiceSchema = z.object({
   id: z.string().optional(),
@@ -146,7 +159,7 @@ export default function EditInvoice({ children, invoiceId }: EditInvoiceProps) {
   const { data: warehouseOptionsList } = useGetWarehouses<Array<{ id: string; name: string }>>();
   const { data: itemTypesOptionsList } = useGetItemTypes<Array<{ id: string; name: string }>>();
   const { data: paymentMethodOptionsList } = useGetPaymentMethods<Array<{ id: string; name: string }>>();
-  const { data: customersOptionsList } = useGetCustomers<Array<{ id: string; company_name: string }>>();
+  const { data: customersOptionsList } = useGetCustomers<Customer[]>();
   const { data: termsOptionsList } = useGetPurchaseOrderTerms<Array<{ id: string; name: string }>>();
 
   const [items, setItems] = useState<InvoiceItemInterface[]>([]);
@@ -373,6 +386,34 @@ export default function EditInvoice({ children, invoiceId }: EditInvoiceProps) {
   }
 
   const watchDiscountType = form.watch("discount_type");
+
+  const customerId = form.watch("customer_id");
+
+  useEffect(() => {
+    if (customerId && customersOptionsList) {
+      const customer = customersOptionsList.find((c) => c.id === customerId);
+      if (customer) {
+        const billingDetails = [
+          customer.address,
+          customer.phone && `Phone: ${customer.phone}`,
+          customer.country && `Country: ${customer.country}`,
+        ]
+          .filter(Boolean)
+          .join("\n");
+
+        const shippingDetails = [
+          customer.customer_shipping?.address,
+          customer.customer_shipping?.phone && `Phone: ${customer.customer_shipping.phone}`,
+          customer.customer_shipping?.country && `Country: ${customer.customer_shipping.country}`,
+        ]
+          .filter(Boolean)
+          .join("\n");
+
+        form.setValue("customer_billing", billingDetails);
+        form.setValue("customer_shipping", shippingDetails);
+      }
+    }
+  }, [customerId, customersOptionsList, form]);
 
   if (isLoadingInvoice) {
     return <div>Loading...</div>;

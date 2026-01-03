@@ -49,8 +49,12 @@ type Customer = {
   id: string;
   company_name: string;
   address: string;
+  phone_one?: string;
+  country?: string;
   customer_shipping: {
     address: string;
+    phone_one?: string;
+    country?: string;
   };
 };
 
@@ -270,11 +274,24 @@ export default function NewInvoiceForm() {
     if (customerId && customersOptionsList) {
       const customer = customersOptionsList.find((c) => c.id === customerId);
       if (customer) {
-        form.setValue("customer_billing", customer.address || "");
-        form.setValue(
-          "customer_shipping",
-          customer.customer_shipping?.address || ""
-        );
+        const billingDetails = [
+          customer.address,
+          customer.phone_one && `Phone: ${customer.phone_one}`,
+          customer.country && `Country: ${customer.country}`,
+        ]
+          .filter(Boolean)
+          .join("\n");
+
+        const shippingDetails = [
+          customer.customer_shipping?.address,
+          customer.customer_shipping?.phone_one && `Phone: ${customer.customer_shipping.phone_one}`,
+          customer.customer_shipping?.country && `Country: ${customer.customer_shipping.country}`,
+        ]
+          .filter(Boolean)
+          .join("\n");
+
+        form.setValue("customer_billing", billingDetails);
+        form.setValue("customer_shipping", shippingDetails);
       }
     }
   }, [customerId, customersOptionsList, form]);
