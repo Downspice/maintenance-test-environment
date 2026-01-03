@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useSheet } from "@/lib/sheet-providers";
 import WorkOrderDataTable from "./components/table/workOrderTable";
-import NewWorkOrderForm from "@/components/forms/actualForms/work-order-form";
+import { ActualWorkOrderForm } from "@/components/forms/actualForms/work-order-form";
 import { useGetLocations } from "@/services/setups/vendor";
 import { useGetWorkOrderStatuses } from "@/services/setups/workOrder";
 
@@ -79,7 +79,7 @@ export default function WorkOrdersPage() {
     openSheet({
       title: "Create New Work Order",
       description: "Fill out the form below to create a new work order.",
-      content: <NewWorkOrderForm />,
+      content: <ActualWorkOrderForm />,
     });
   };
 

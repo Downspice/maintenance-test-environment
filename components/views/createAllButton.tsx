@@ -21,7 +21,7 @@ import InspectionForm from "../forms/actualForms/new-inspection";
 import NewVendor from "../forms/actualForms/new-vendor-form";
 import NewPurchaseOrderForm from "../forms/actualForms/new-purchase-order-form";
 import GeneralExpense from "../forms/actualForms/new-general-expense";
-import NewWorkOrderForm, { ActualWorkOrderForm } from "../forms/actualForms/work-order-form";
+import { ActualWorkOrderForm } from "../forms/actualForms/work-order-form";
 import EquipmentAssignment from "../forms/actualForms/assign-equipment";
 import NewAccident from "../forms/actualForms/new-accident";
 import AdjustInventoryForm from "../forms/actualForms/adjust-inventory-form";

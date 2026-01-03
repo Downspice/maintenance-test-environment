@@ -12,7 +12,7 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import NewWorkOrderForm from "@/components/forms/actualForms/work-order-form";
+import { ActualWorkOrderForm } from "@/components/forms/actualForms/work-order-form";
 
 interface TriggerVariant {
     variant?: "icon" | "default";
@@ -44,7 +44,7 @@ export default function WorkOrderFormWrapper({ variant }: TriggerVariant) {
                 </SheetHeader>
 
                 <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
-                    <NewWorkOrderForm />
+                    <ActualWorkOrderForm />
                 </ScrollArea>
             </SheetContent>
         </Sheet>
