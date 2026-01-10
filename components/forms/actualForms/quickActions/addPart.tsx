@@ -28,12 +28,12 @@ import { useGetCostCenters, useGetInventoryCategories, useGetInventoryManufactur
 import { useGetVendorOptions } from "@/services/setups/vendor";
 
 export default function NewPart() {
-    const { data: equipmentManufacturerOptions } = useGetInventoryManufacturers();
-    const { data:   unitOptions } = useGetInventoryUnitTypes();
+  const { data: equipmentManufacturerOptions } = useGetInventoryManufacturers();
+  const { data: unitOptions } = useGetInventoryUnitTypes();
   const { data: costCenterOptions } = useGetCostCenters();
-    const { data: vendorOptions } = useGetVendorOptions();
-      const{data:markupTypeOptions}=useGetMarkupTypes();
-    
+  const { data: vendorOptions } = useGetVendorOptions();
+  const { data: markupTypeOptions } = useGetMarkupTypes();
+
 
   const inventoryForm = useForm<z.infer<typeof InventorySchema>>({
     resolver: zodResolver(InventorySchema),
@@ -135,7 +135,7 @@ export default function NewPart() {
                   control={inventoryForm.control}
                   name="customFields"
                   label="Custom Fields"
-                  maxFields={2}
+                  fieldsCount={2}
                 />
               </div>
               <SingleCheckboxWrapper

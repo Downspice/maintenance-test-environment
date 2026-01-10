@@ -88,7 +88,7 @@ export default function EditInventory({
           key: item.name,
           id: item.value,
         })) || [];
-        console.log( data.others)
+      console.log(data.others)
 
       // Transform inventory trackings
       const trackings =
@@ -342,37 +342,37 @@ export default function EditInventory({
                             />
                             {inventoryForm.watch("markUp") ===
                               "1a6f57d9-e764-406e-9366-601e1fe4a1fd" && (
-                              <InputWrapper
-                                control={inventoryForm.control}
-                                name="percent_markup"
-                                label="% Markup"
-                                type="number"
-                                required
-                                value=""
-                              />
-                            )}
+                                <InputWrapper
+                                  control={inventoryForm.control}
+                                  name="percent_markup"
+                                  label="% Markup"
+                                  type="number"
+                                  required
+                                  value=""
+                                />
+                              )}
                             {inventoryForm.watch("markUp") ===
                               "1034cc78-6c2d-46cc-8f7f-210d08061d37" && (
-                              <InputWrapper
-                                control={inventoryForm.control}
-                                name="markup_value"
-                                label="Markup Value"
-                                type="number"
-                                required
-                                value=""
-                              />
-                            )}
+                                <InputWrapper
+                                  control={inventoryForm.control}
+                                  name="markup_value"
+                                  label="Markup Value"
+                                  type="number"
+                                  required
+                                  value=""
+                                />
+                              )}
                             {inventoryForm.watch("markUp") ===
                               "218ba36b-3919-4bf7-91d5-fb0ca90fab12" && (
-                              <InputWrapper
-                                control={inventoryForm.control}
-                                name="markup_price"
-                                label="Markup Price"
-                                type="number"
-                                required
-                                value=""
-                              />
-                            )}
+                                <InputWrapper
+                                  control={inventoryForm.control}
+                                  name="markup_price"
+                                  label="Markup Price"
+                                  type="number"
+                                  required
+                                  value=""
+                                />
+                              )}
                           </>
                         }
                       />

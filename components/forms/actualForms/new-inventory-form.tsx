@@ -34,7 +34,7 @@ import { GenericObject } from "@/types/types";
 
 // Updated schema to match backend structure
 export const InventorySchema = z.object({
-  id:z.string().optional(),
+  id: z.string().optional(),
   part_number: z.string().min(1, "Part Number is required"),
   name: z.string().min(1, "Name is required"),
   description: z.string().min(1, "Description is required"),
@@ -255,7 +255,7 @@ export default function NewInventory() {
                   control={inventoryForm.control}
                   name="others"
                   label="Custom Fields"
-                  maxFields={2}
+                  fieldsCount={2}
                 />
               </div>
               <SingleCheckboxWrapper
@@ -287,42 +287,42 @@ export default function NewInventory() {
                         control={inventoryForm.control}
                         name={`markUp`}
                         label="Markup Type"
-                        options={[...markupTypeOptions??[],{id:"none",name:"none"}]}
+                        options={[...markupTypeOptions ?? [], { id: "none", name: "none" }]}
                         required
                       />
                       {inventoryForm.watch("markUp") ===
                         "1a6f57d9-e764-406e-9366-601e1fe4a1fd" && (
-                        <InputWrapper
-                          control={inventoryForm.control}
-                          name="percentMarkup"
-                          label="% Markup"
-                          type="number"
-                          required
-                          value=""
-                        />
-                      )}
+                          <InputWrapper
+                            control={inventoryForm.control}
+                            name="percentMarkup"
+                            label="% Markup"
+                            type="number"
+                            required
+                            value=""
+                          />
+                        )}
                       {inventoryForm.watch("markUp") ===
                         "1034cc78-6c2d-46cc-8f7f-210d08061d37" && (
-                        <InputWrapper
-                          control={inventoryForm.control}
-                          name="markup_value"
-                          label="Markup Value"
-                          type="number"
-                          required
-                          value=""
-                        />
-                      )}
+                          <InputWrapper
+                            control={inventoryForm.control}
+                            name="markup_value"
+                            label="Markup Value"
+                            type="number"
+                            required
+                            value=""
+                          />
+                        )}
                       {inventoryForm.watch("markUp") ===
                         "218ba36b-3919-4bf7-91d5-fb0ca90fab12" && (
-                        <InputWrapper
-                          control={inventoryForm.control}
-                          name="markup_price"
-                          label="Markup Price"
-                          type="number"
-                          required
-                          value=""
-                        />
-                      )}
+                          <InputWrapper
+                            control={inventoryForm.control}
+                            name="markup_price"
+                            label="Markup Price"
+                            type="number"
+                            required
+                            value=""
+                          />
+                        )}
                     </>
                   }
                 />
