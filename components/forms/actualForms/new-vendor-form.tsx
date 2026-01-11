@@ -111,25 +111,25 @@ export default function NewVendor() {
     },
   });
 
-  const {
-    mutateAsync,
-    isPending,
-  } = useAddVendor();
+  const { 
+    mutateAsync, 
+    isPending, 
+  } = useAddVendor(); 
 
   // 3. Define the mutation handler that receives validated data
   const handleSubmit = async (data: VendorFormValues) => {
     console.log("Submitting data:", data);
-
+    
     // try {
-    // 4. AWAIT the mutateAsync call, passing the validated 'data' object
-    const res = await mutateAsync(data);
+      // 4. AWAIT the mutateAsync call, passing the validated 'data' object
+      const res = await mutateAsync(data); 
 
-    // 5. Handle success and feedback
-    // Assuming 'res' contains a success message or the created object
-    toast.success(res?.message);
-    vendorForm.reset(); // Reset form state on success
+      // 5. Handle success and feedback
+      // Assuming 'res' contains a success message or the created object
+      toast.success(res?.message); 
+      vendorForm.reset(); // Reset form state on success
 
-    // In a real application, you would likely close the sheet/modal here
+      // In a real application, you would likely close the sheet/modal here
 
     // } catch (error: any) {
     //   // 6. Handle error and feedback using the try/catch block
@@ -194,7 +194,7 @@ export default function NewVendor() {
                   type="text"
                 />
 
-
+                 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="col-span-1">
                     <InputWrapper
@@ -235,7 +235,7 @@ export default function NewVendor() {
                   name="location_id"
                   label="Location "
                   required
-                  options={locationOptionsList ?? []}
+                  options={locationOptionsList??[]}
                 />
 
                 <SelectWrapper
@@ -243,7 +243,7 @@ export default function NewVendor() {
                   name="status_id"
                   label="Status "
                   required
-                  options={statusOptions ?? []}
+                  options={statusOptions??[]}
                 />
 
                 <SelectWrapper
@@ -251,7 +251,7 @@ export default function NewVendor() {
                   name="type_id"
                   label="Type "
                   required
-                  options={vendorTypeOptions ?? []}
+                  options={vendorTypeOptions??[]}
                 />
                 <SelectWrapper
                   control={vendorForm.control}

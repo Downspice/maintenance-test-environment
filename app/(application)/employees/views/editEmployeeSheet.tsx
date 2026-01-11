@@ -128,7 +128,7 @@ export default function EditEmployee({
 
   const handleAddRenewal = (newRenewal: RenewalData) => {
     let updated: RenewalData[];
-
+    
     if (editingRenewalId) {
       updated = renewals.map((r) =>
         r.id === editingRenewalId ? newRenewal : r
@@ -138,7 +138,7 @@ export default function EditEmployee({
       updated = [...renewals, newRenewal];
       toast.success("Renewal added");
     }
-
+    
     setRenewals(updated);
     employeeForm.setValue("renewals", updated, { shouldDirty: true });
     setEditingRenewalId(null);
@@ -472,8 +472,8 @@ export default function EditEmployee({
                                 editingRenewal={
                                   editingRenewalId
                                     ? renewals.find(
-                                      (r) => r.id === editingRenewalId
-                                    )
+                                        (r) => r.id === editingRenewalId
+                                      )
                                     : undefined
                                 }
                               />

@@ -224,7 +224,7 @@ export interface InventoryInterface {
   updated_at: string
 }
 
-
+ 
 
 export const StockAdjustmentHistory = [
   {
@@ -313,8 +313,8 @@ export const purchaseColumns = [
   { accessorKey: "price", header: "Price" },
 ];
 
-export interface InventoryTableInterface {
-  id: string
+export interface InventoryTableInterface{
+id: string
   part_number: string
   name: string
   description: string

@@ -210,12 +210,12 @@ export default function NewEmployeeForm() {
               <div className="flex flex-col gap-1">
                 <FormSubheader header={"Employment"} />
                 <InputWrapper
-                  control={employeeForm.control}
-                  name="employee_number"
-                  label="Employee Number"
-                  type="text"
-                  value={""}
-                />
+                    control={employeeForm.control}
+                    name="employee_number"
+                    label="Employee Number"
+                    type="text"
+                    value={""}
+                  />
                 <div className="flex flex-row">
                   <InputWrapper
                     control={employeeForm.control}
@@ -331,7 +331,7 @@ export default function NewEmployeeForm() {
                   control={employeeForm.control}
                   name="miscellaneous"
                   label="Custom Fields"
-                  fieldsCount={2}
+                  maxFields={2}
                 />
               </div>
             </TabsContent>
@@ -547,11 +547,11 @@ function RenewalFormContent({
   onSubmit,
   editingRenewal,
 }: RenewalFormContentProps) {
-  const { data: renewalOptionsList } = useGetEmployeeRenewals()
+    const{data:renewalOptionsList}=useGetEmployeeRenewals()
 
   const form = useForm({
     defaultValues: editingRenewal || {
-
+      
       renewal_id: "",
       issued_date: new Date(),
       expiry_date: new Date(),
@@ -576,7 +576,7 @@ function RenewalFormContent({
           control={form.control}
           name="renewal_id"
           label="Renewal Type"
-          options={renewalOptionsList ?? []}
+          options={renewalOptionsList??[]}
         />
         <DatePickerWrapper
           control={form.control}

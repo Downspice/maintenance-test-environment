@@ -11,8 +11,6 @@ import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import InputWrapper from "@/components/forms/wrappers/InputWrapper";
 import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
-import SwitchWrapper from "@/components/forms/wrappers/SwitchWrapper";
-import CustomFieldsWrapper from "@/components/forms/wrappers/CustomFieldsWrapper";
 import {
   Sheet,
   SheetContent,
@@ -29,10 +27,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-  TableFooter,
 } from "@/components/ui/table";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
 import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
 import Fieldset from "@/components/customUI/fieldset";
 import {
@@ -54,7 +49,6 @@ import {
   useGetPaymentMethods,
   useUpdateInvoice,
 } from "@/services/setups/invoice";
-import { useGetWorkOrders } from "@/services/setups/workOrder";
 import { convertToOptionList } from "@/lib/utils";
 
 type Customer = {
@@ -73,7 +67,7 @@ type Customer = {
 // Schema definitions (matching the creation form)
 export const InvoiceSchema = z.object({
   id: z.string().optional(),
-  invoice_number: z.coerce.number().min(1, "Invoice number is required"),
+  invoice_number: z.string().min(1, "Invoice number is required"),
   invoice_date: z.date({
     required_error: "Invoice date is required",
   }),
@@ -97,7 +91,6 @@ export const InvoiceSchema = z.object({
   tax_two: z.coerce.number().optional(),
   tax_two_amount: z.coerce.number().optional(),
   shipping: z.coerce.number().optional(),
-  subtotal: z.coerce.number().optional(),
   total: z.coerce.number().optional(),
   payments: z.coerce.number().optional(),
   balance_due: z.coerce.number().optional(),
@@ -105,8 +98,7 @@ export const InvoiceSchema = z.object({
     .array(
       z.object({
         name: z.string(),
-        value: z.string(),
-        id: z.string().optional(),
+        id: z.string(),
       })
     )
     .optional(),
@@ -123,7 +115,6 @@ export const InvoiceItemSchema = z.object({
   tax_two: z.coerce.number().optional(),
   discount: z.coerce.number().optional(),
   warehouse_id: z.string().min(1, "Warehouse is required"),
-  work_order_id: z.string().optional(),
 });
 
 export type InvoiceItemInterface = z.infer<typeof InvoiceItemSchema>;
@@ -170,7 +161,6 @@ export default function EditInvoice({ children, invoiceId }: EditInvoiceProps) {
   const { data: paymentMethodOptionsList } = useGetPaymentMethods<Array<{ id: string; name: string }>>();
   const { data: customersOptionsList } = useGetCustomers<Customer[]>();
   const { data: termsOptionsList } = useGetPurchaseOrderTerms<Array<{ id: string; name: string }>>();
-  const { data: workOrdersList } = useGetWorkOrders<Array<any>>();
 
   const [items, setItems] = useState<InvoiceItemInterface[]>([]);
   const [editItems, setEditItems] = useState<InvoiceItemInterface | null>(null);
@@ -211,25 +201,6 @@ export default function EditInvoice({ children, invoiceId }: EditInvoiceProps) {
       discount: 0,
     },
   });
-
-  // Watch for Work Order selection and update cost
-  const watchItemTypeId = Itemsform.watch("item_type_id");
-  const watchWorkOrderId = Itemsform.watch("work_order_id");
-
-  useEffect(() => {
-    if (watchWorkOrderId && workOrdersList && itemTypesOptionsList) {
-      const selectedType = itemTypesOptionsList.find(
-        (t) => t.id === watchItemTypeId
-      );
-      // Only proceed if Item Type is "Work Order"
-      if (selectedType && selectedType.name.toLowerCase() === "work order") {
-        const wo = workOrdersList.find((w: any) => w.id === watchWorkOrderId);
-        if (wo) {
-          Itemsform.setValue("cost", Number(wo.total || 0));
-        }
-      }
-    }
-  }, [watchWorkOrderId, workOrdersList, itemTypesOptionsList, watchItemTypeId, Itemsform]);
 
   const PaymentsForm = useForm<PaymentFormValues>({
     resolver: zodResolver(InvoicePaymentSchema),
@@ -415,67 +386,6 @@ export default function EditInvoice({ children, invoiceId }: EditInvoiceProps) {
   }
 
   const watchDiscountType = form.watch("discount_type");
-  const isDiscount = form.watch("is_discount");
-
-  const [invoiceItems, setInvoiceItems] = useState<InvoiceItemInterface[]>([]);
-
-  // Keep local invoiceItems state in sync with items prop just in case, but usually we use 'items' state if available or form.watch
-  // However, edit-invoice.tsx uses 'items' state. Let's verify usage.
-  // Viewing file showed: const [items, setItems] = useState<InvoiceItemInterface[]>([]); around line 161
-  // So we should depend on 'items' state from line 161.
-
-  // Calculate subtotal when items change
-  useEffect(() => {
-    const sub = items.reduce((acc, item) => acc + (item.amount || 0), 0);
-    form.setValue("subtotal", sub);
-  }, [items, form]);
-
-  const subTotalValue = form.watch("subtotal");
-  const isDiscountValue = form.watch("is_discount");
-  const discountTypeValue = form.watch("discount_type");
-  const discountAmountValue = form.watch("discount_amount");
-  const taxOneRate = form.watch("tax_one");
-  const taxTwoRate = form.watch("tax_two");
-  const shippingValue = form.watch("shipping");
-
-  useEffect(() => {
-    const sub = Number(subTotalValue) || 0;
-    let dAmt = 0;
-
-    // Calculate Discount
-    if (isDiscountValue) {
-      if (discountTypeValue === "Percent") dAmt = sub * ((Number(discountAmountValue) || 0) / 100);
-      else dAmt = Number(discountAmountValue) || 0;
-    } else {
-      if (discountAmountValue !== 0) form.setValue("discount_amount", 0);
-      if (discountTypeValue !== "") form.setValue("discount_type", "");
-    }
-
-    const taxable = Math.max(0, sub - dAmt);
-
-    // Calculate Taxes
-    const t1Amount = taxable * ((Number(taxOneRate) || 0) / 100);
-    const t2Amount = taxable * ((Number(taxTwoRate) || 0) / 100);
-
-    // Update calculated fields
-    form.setValue("tax_one_amount", Number(t1Amount.toFixed(2)));
-    form.setValue("tax_two_amount", Number(t2Amount.toFixed(2)));
-    form.setValue("discount", Number(dAmt.toFixed(2)));
-
-    // Calculate Total
-    const total = taxable + t1Amount + t2Amount + (Number(shippingValue) || 0);
-    form.setValue("total", Number(total.toFixed(2)));
-
-  }, [
-    subTotalValue,
-    isDiscountValue,
-    discountTypeValue,
-    discountAmountValue,
-    taxOneRate,
-    taxTwoRate,
-    shippingValue,
-    form
-  ]);
 
   const customerId = form.watch("customer_id");
 
@@ -610,122 +520,50 @@ export default function EditInvoice({ children, invoiceId }: EditInvoiceProps) {
                                   </DialogTitle>
                                 </DialogHeader>
                                 <div className="grid gap-4 mt-4">
+                                  <div className="grid grid-cols-2 gap-2">
+                                    <InputWrapper
+                                      control={Itemsform.control}
+                                      name="quantity"
+                                      label="Quantity"
+                                      type="number"
+                                      value=""
+                                    />
+                                    <InputWrapper
+                                      control={Itemsform.control}
+                                      name="item"
+                                      label="Item Name"
+                                      type="text"
+                                      value=""
+                                    />
+                                  </div>
                                   <ComboboxFieldWrapper
                                     control={Itemsform.control}
                                     name="item_type_id"
                                     label="Item Type"
                                     options={itemTypesOptionsList ?? []}
                                   />
-                                  {itemTypesOptionsList?.find(
-                                    (t) =>
-                                      t.id === Itemsform.watch("item_type_id") &&
-                                      t.name.toLowerCase() === "work order"
-                                  ) ? (
-                                    <>
-                                      <ComboboxFieldWrapper
-                                        control={Itemsform.control}
-                                        name="work_order_id"
-                                        label="Work Order"
-                                        options={
-                                          workOrdersList?.map((wo: any) => ({
-                                            id: wo.id,
-                                            name: wo.wo_number,
-                                          })) ?? []
-                                        }
-                                      />
-
-                                      <InputWrapper
-                                        control={Itemsform.control}
-                                        name="cost"
-                                        label="Cost"
-                                        type="number"
-                                        value=""
-                                        disabled
-                                      />
-                                      <div className="col-span-2 flex gap-4">
-                                        <div className="flex items-center space-x-2">
-                                          <SwitchWrapper
-                                            control={Itemsform.control}
-                                            name="tax_one"
-                                            label="Tax 1"
-                                            onChange={(checked) => {
-                                              const val = checked ? 1 : 0;
-                                              Itemsform.setValue("tax_one", val);
-                                              Itemsform.setValue("tax_two", val);
-                                              Itemsform.setValue("discount", val);
-                                            }}
-                                          />
-                                        </div>
-                                        <div className="flex items-center space-x-2">
-                                          <SwitchWrapper
-                                            control={Itemsform.control}
-                                            name="tax_two"
-                                            label="Tax 2"
-                                            onChange={(checked) => {
-                                              const val = checked ? 1 : 0;
-                                              Itemsform.setValue("tax_one", val);
-                                              Itemsform.setValue("tax_two", val);
-                                              Itemsform.setValue("discount", val);
-                                            }}
-                                          />
-                                        </div>
-                                        <div className="flex items-center space-x-2">
-                                          <SwitchWrapper
-                                            control={Itemsform.control}
-                                            name="discount"
-                                            label="Apply Discount"
-                                            onChange={(checked) => {
-                                              const val = checked ? 1 : 0;
-                                              Itemsform.setValue("tax_one", val);
-                                              Itemsform.setValue("tax_two", val);
-                                              Itemsform.setValue("discount", val);
-                                            }}
-                                          />
-                                        </div>
-                                      </div>
-                                    </>
-                                  ) : (
-                                    <>
-                                      <div className="grid grid-cols-2 gap-2">
-                                        <InputWrapper
-                                          control={Itemsform.control}
-                                          name="quantity"
-                                          label="Quantity"
-                                          type="number"
-                                          value=""
-                                        />
-                                        <InputWrapper
-                                          control={Itemsform.control}
-                                          name="item"
-                                          label="Item Name"
-                                          type="text"
-                                          value=""
-                                        />
-                                      </div>
-                                      <ComboboxFieldWrapper
-                                        control={Itemsform.control}
-                                        name="warehouse_id"
-                                        label="Warehouse"
-                                        options={warehouseOptionsList ?? []}
-                                      />
-                                      <div className="grid grid-cols-2 gap-2">
-                                        <InputWrapper
-                                          control={Itemsform.control}
-                                          name="cost"
-                                          label="Unit Cost"
-                                          type="number"
-                                          value=""
-                                        />
-                                        <InputWrapper
-                                          control={Itemsform.control}
-                                          name="discount"
-                                          label="Discount"
-                                          type="number"
-                                          value=""
-                                        />
-                                      </div>
-                                    </>
-                                  )}
+                                  <ComboboxFieldWrapper
+                                    control={Itemsform.control}
+                                    name="warehouse_id"
+                                    label="Warehouse"
+                                    options={warehouseOptionsList ?? []}
+                                  />
+                                  <div className="grid grid-cols-2 gap-2">
+                                    <InputWrapper
+                                      control={Itemsform.control}
+                                      name="cost"
+                                      label="Unit Cost"
+                                      type="number"
+                                      value=""
+                                    />
+                                    <InputWrapper
+                                      control={Itemsform.control}
+                                      name="discount"
+                                      label="Discount"
+                                      type="number"
+                                      value=""
+                                    />
+                                  </div>
                                   <Button
                                     type="button"
                                     onClick={Itemsform.handleSubmit(onSubmitItems)}
@@ -777,14 +615,6 @@ export default function EditInvoice({ children, invoiceId }: EditInvoiceProps) {
                                 </TableRow>
                               ))}
                             </TableBody>
-                            <TableFooter>
-                              <TableRow>
-                                <TableCell colSpan={4} className="text-right font-bold">Total Amount</TableCell>
-                                <TableCell className="font-bold">
-                                  ${items.reduce((sum, item) => sum + (item.amount || 0), 0).toFixed(2)}
-                                </TableCell>
-                              </TableRow>
-                            </TableFooter>
                           </Table>
                         </TabsContent>
                         <TabsContent value="Payments">
@@ -891,14 +721,6 @@ export default function EditInvoice({ children, invoiceId }: EditInvoiceProps) {
                                 </TableRow>
                               ))}
                             </TableBody>
-                            <TableFooter>
-                              <TableRow>
-                                <TableCell colSpan={2} className="text-right font-bold">Total Amount</TableCell>
-                                <TableCell className="font-bold">
-                                  ${paymentsList.reduce((sum, item) => sum + (Number(item.amount_received) || 0), 0).toFixed(2)}
-                                </TableCell>
-                              </TableRow>
-                            </TableFooter>
                           </Table>
                         </TabsContent>
                         <TabsContent value="Notes">
@@ -942,12 +764,6 @@ export default function EditInvoice({ children, invoiceId }: EditInvoiceProps) {
                             label="Location"
                             options={locationOptionsList ?? []}
                           />
-                          <CustomFieldsWrapper
-                            control={form.control}
-                            name="others"
-                            label="Custom Fields"
-                            maxCount={2}
-                          />
                         </>
                       }
                     />
@@ -955,18 +771,12 @@ export default function EditInvoice({ children, invoiceId }: EditInvoiceProps) {
                       legend="Totals"
                       content={
                         <>
-                          <SwitchWrapper
-                            control={form.control}
-                            name="is_discount"
-                            label="Apply Discount?"
-                          />
                           <InputWrapper
                             control={form.control}
                             name="discount_type"
                             label="Discount Type"
                             value=""
                             type="text"
-                            disabled={!isDiscount}
                           />
                           <InputWrapper
                             control={form.control}
@@ -974,7 +784,6 @@ export default function EditInvoice({ children, invoiceId }: EditInvoiceProps) {
                             label="Discount Amount"
                             value=""
                             type="number"
-                            disabled={!isDiscount}
                           />
                           <InputWrapper
                             control={form.control}

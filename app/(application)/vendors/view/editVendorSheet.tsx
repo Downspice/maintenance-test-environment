@@ -250,7 +250,7 @@ export default function EditVendor({
                       name="location_id"
                       label="Location "
                       required
-                      options={locationOptionsList ?? []}
+                      options={locationOptionsList??[]}
                     />
 
                     <SelectWrapper
@@ -258,7 +258,7 @@ export default function EditVendor({
                       name="status_id"
                       label="Status "
                       required
-                      options={statusOptions ?? []}
+                      options={statusOptions??[]}
                     />
 
                     <SelectWrapper
@@ -266,14 +266,14 @@ export default function EditVendor({
                       name="type_id"
                       label="Type "
                       required
-                      options={vendorTypeOptions ?? []}
+                      options={vendorTypeOptions??[]}
                     />
                     <SelectWrapper
                       control={vendorForm.control}
                       name="term_id"
                       label="Term "
                       required
-                      options={termsOptionsList ?? []}
+                      options={termsOptionsList??[]}
                     />
                     <InputWrapper
                       control={vendorForm.control}
