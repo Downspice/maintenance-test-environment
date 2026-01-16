@@ -106,13 +106,15 @@ export default function AddMaintenance({
     const selectedTaskId = form.watch("task_id");
     const selectedCategory = form.watch("category");
 
-    // Sync task name when task_id changes
+    // Sync task name and type when task_id changes
     useEffect(() => {
-        const selectedTask = taskOptions.find((t: { id: string; name: string }) => t.id === selectedTaskId);
-        if (selectedTask) {
-            form.setValue("task", selectedTask.name);
+        if (!pmServices) return;
+        const selectedService = pmServices.find((s: any) => s.id === selectedTaskId);
+        if (selectedService) {
+            form.setValue("task", selectedService.pm_service);
+            form.setValue("type_id", selectedService.type?.name || "");
         }
-    }, [selectedTaskId, taskOptions, form]);
+    }, [selectedTaskId, pmServices, form]);
 
     const otherTaskName = form.watch("other_task_name");
     useEffect(() => {
@@ -282,6 +284,7 @@ export default function AddMaintenance({
                                     name="type_id"
                                     label="Type"
                                     placeholder="Enter type"
+                                    readOnly
                                 />
                             </>
                         )}
