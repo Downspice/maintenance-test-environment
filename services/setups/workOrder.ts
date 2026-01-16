@@ -944,7 +944,7 @@ export function useGetNextWorkOrderNumber(options?: UseQueryOptions<ApiResponse<
             const response = await dummyApiClient<ApiResponse<number>>(buildUrl("/api/get-next-work-order-number"));
             return response;
         },
-        select: (response) => response.data[0],
+        select: (response) => response.data,
         staleTime: 0, // Always fetch fresh
         ...options,
     });

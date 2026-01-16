@@ -332,6 +332,7 @@ export function ActualWorkOrderForm() {
                     <div className="flex items-center gap-2">
                       <div className="flex-1">
                         <MultiComboboxWrapper
+                          showLabel={false}
                           control={workOrderForm.control}
                           name="assignee_ids"
                           label=""
@@ -1173,7 +1174,7 @@ function EditActualWorkOrderFormContent({
     workOrderForm.setValue("tax_two_amount", Number(t2Amount.toFixed(2)));
   }, [taxOneRate, taxTwoRate, subTotalValue, isDiscountValue, discountTypeValue, discountAmountValue, workOrderForm]);
 
-  async function handleSubmit(data: z.infer<typeof CreateWorkOrderSchema>) {
+  async function performWorkOrderUpdate(data: z.infer<typeof CreateWorkOrderSchema>) {
     const targetId = workOrderId || (initialData as any)?.id;
     if (!targetId) {
       toast.error("Cannot update: Missing Work Order ID");
@@ -1213,6 +1214,22 @@ function EditActualWorkOrderFormContent({
     });
   }
 
+  async function handleSubmit(data: z.infer<typeof CreateWorkOrderSchema>) {
+    const isConfirmed = await confirmDialog({
+      title: "Update Work Order?",
+      description: "This will apply all pending changes and may overwrite existing data. Are you sure you want to proceed?",
+      confirmText: "Yes, Update Work Order",
+      cancelText: "Cancel",
+      variant: "default",
+      tone: "info"
+    });
+
+    if (isConfirmed) {
+      await performWorkOrderUpdate(data);
+    }
+  }
+
+  const { openSheet } = useSheet();
   /**
    * Triggers work order update with a 2000ms delay.
    * Shows a full-screen loader during the delay to allow
@@ -1222,7 +1239,7 @@ function EditActualWorkOrderFormContent({
     setIsWorkOrderUpdating(true);
     setTimeout(() => {
       const formData = workOrderForm.getValues();
-      handleSubmit(formData);
+      performWorkOrderUpdate(formData);
     }, 2000);
   }
 
@@ -1317,6 +1334,7 @@ function EditActualWorkOrderFormContent({
                       <div className="flex items-center gap-2">
                         <div className="flex-1">
                           <MultiComboboxWrapper
+                            showLabel={false}
                             control={workOrderForm.control}
                             name="assignee_ids"
                             label=""
@@ -1332,11 +1350,17 @@ function EditActualWorkOrderFormContent({
                           type="button"
                           onClick={() => {
                             if (assigneeType === "Employee") {
-                              // Logic to open new employee sheet if needed
-                              toast.info("Add new employee feature coming soon");
+                              openSheet({
+                                title: "Add New Employee",
+                                description: "Create a new employee record",
+                                content: <NewEmployeeForm />,
+                              });
                             } else {
-                              // Logic to open new vendor sheet if needed
-                              toast.info("Add new vendor feature coming soon");
+                              openSheet({
+                                title: "Add New Vendor",
+                                description: "Create a new vendor record",
+                                content: <NewVendor />,
+                              });
                             }
                           }}
                         >
