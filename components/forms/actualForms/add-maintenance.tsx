@@ -277,11 +277,11 @@ export default function AddMaintenance({
                                     options={taskOptions}
                                 />
 
-                                <ComboboxFieldWrapper
+                                <InputWrapper
                                     control={form.control}
                                     name="type_id"
                                     label="Type"
-                                    options={[]}
+                                    placeholder="Enter type"
                                 />
                             </>
                         )}
