@@ -38,7 +38,7 @@ const getMaxWidthClass = (size?: string) => {
   }
 }
 
-export function DialogProvider({ children }: { children: ReactNode }) {
+export function DialogProvider({ children, onOpenChange }: { children: ReactNode; onOpenChange?: (open: boolean) => void }) {
   const [open, setOpen] = useState(false)
   const [content, setContent] = useState<DialogContentType | null>(null)
   const isMobile = useMediaQuery("(max-width: 640px)")
@@ -46,10 +46,12 @@ export function DialogProvider({ children }: { children: ReactNode }) {
   const openDialog = (dialogContent: DialogContentType) => {
     setContent(dialogContent)
     setOpen(true)
+    onOpenChange?.(true)
   }
 
   const closeDialog = () => {
     setOpen(false)
+    onOpenChange?.(false)
     // We don't immediately clear content so the dialog can animate out nicely
     setTimeout(() => {
       setContent(null)
@@ -76,7 +78,7 @@ export function DialogProvider({ children }: { children: ReactNode }) {
         </Sheet>
       ) : (
         // Use Dialog on desktop
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog modal={false} open={open} onOpenChange={setOpen}>
           <DialogContent className={content?.size ? getMaxWidthClass(content.size) : "max-w-lg"}>
             {content && (
               <>

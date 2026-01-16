@@ -607,6 +607,8 @@ function EditActualWorkOrderFormContent({
 
   // Work order update loader state
   const [isWorkOrderUpdating, setIsWorkOrderUpdating] = useState<boolean>(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState<boolean>(false);
+  const [pendingFormData, setPendingFormData] = useState<z.infer<typeof CreateWorkOrderSchema> | null>(null);
 
   const transformedEmployeeOptions = useMemo(() => {
     return (employeeOptions || []).map((emp: any) => ({
@@ -1214,19 +1216,23 @@ function EditActualWorkOrderFormContent({
     });
   }
 
-  async function handleSubmit(data: z.infer<typeof CreateWorkOrderSchema>) {
-    const isConfirmed = await confirmDialog({
-      title: "Update Work Order?",
-      description: "This will apply all pending changes and may overwrite existing data. Are you sure you want to proceed?",
-      confirmText: "Yes, Update Work Order",
-      cancelText: "Cancel",
-      variant: "default",
-      tone: "info"
-    });
+  function handleSubmit(data: z.infer<typeof CreateWorkOrderSchema>) {
+    // Show confirmation dialog and store pending data
+    setPendingFormData(data);
+    setShowConfirmDialog(true);
+  }
 
-    if (isConfirmed) {
-      await performWorkOrderUpdate(data);
+  function handleConfirmUpdate() {
+    if (pendingFormData) {
+      performWorkOrderUpdate(pendingFormData);
+      setShowConfirmDialog(false);
+      setPendingFormData(null);
     }
+  }
+
+  function handleCancelUpdate() {
+    setShowConfirmDialog(false);
+    setPendingFormData(null);
   }
 
   const { openSheet } = useSheet();
@@ -2169,6 +2175,36 @@ function EditActualWorkOrderFormContent({
           onAdd={handleAddNote}
           data={editingNoteData}
         />
+
+
+        {/* Confirmation Dialog for Update Work Order */}
+        <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+          <DialogContent className="max-w-2xl p-8">
+            <DialogHeader className="mb-4">
+              <DialogTitle className="text-2xl font-semibold text-foreground leading-relaxed">
+                Confirm Work Order Update
+              </DialogTitle>
+              <DialogDescription className="text-muted-foreground leading-relaxed mt-3">
+                Updating the work order will apply all pending changes and overwrite existing values if applicable.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex justify-end gap-4 mt-8">
+              <Button
+                variant="outline"
+                onClick={handleCancelUpdate}
+                className="glass-hover"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleConfirmUpdate}
+                className="bg-primary text-primary-foreground hover:bg-primary/90"
+              >
+                Yes, Update Work Order
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </Form>
     </>
   );

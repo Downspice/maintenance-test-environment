@@ -86,12 +86,10 @@
 :root {
   --radius: 0.625rem;
 
-  --gradient-background: linear-gradient(
-    135deg,
-    #cae7ee 0%,
-    #e3e8ee 50%,
-    #ffffff 100%
-  );
+  --gradient-background: linear-gradient(135deg,
+      #cae7ee 0%,
+      #e3e8ee 50%,
+      #ffffff 100%);
 
   /* Base Theme */
   --background: #ffffff;
@@ -119,8 +117,8 @@
   --destructive-foreground: #ffffff;
 
   --border: rgba(255, 255, 255, 0.3);
-  --input:#7ca3b0;
-;
+  --input: #7ca3b0;
+  ;
   --ring: #55b2c9;
 
   --sidebar: rgba(255, 255, 255, 0.15);
@@ -138,6 +136,12 @@
   --chart-3: #122c32;
   --chart-4: #a6c7d3;
   --chart-5: #7ca3b0;
+
+  /* Glassmorphic effect */
+  --glass-bg: rgba(255, 255, 255, 0.75);
+  --glass-blur: blur(12px);
+  --glass-border: rgba(255, 255, 255, 0.4);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
 }
 
 .dark {
@@ -183,15 +187,24 @@
   --chart-3: #e3e8ee;
   --chart-4: #7ca3b0;
   --chart-5: #ffffff;
+
+  /* Glassmorphic effect - dark mode */
+  --glass-bg: rgba(18, 44, 50, 0.6);
+  --glass-blur: blur(12px);
+  --glass-border: rgba(255, 255, 255, 0.15);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
   html {
-    font-size: 0.75rem; /* All rem units now based on 0.6rem = 9.6px */
+    font-size: 0.75rem;
+    /* All rem units now based on 0.6rem = 9.6px */
   }
+
   body {
     @apply bg-background text-foreground;
 

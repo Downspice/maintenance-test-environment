@@ -29,6 +29,7 @@ const SheetContext = createContext<SheetContextType | undefined>(undefined);
 export function SheetProvider({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
   const [content, setContent] = useState<SheetContentType | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const openSheet = (sheetContent: SheetContentType) => {
     setContent(sheetContent);
@@ -47,8 +48,15 @@ export function SheetProvider({ children }: { children: ReactNode }) {
     <SheetContext.Provider value={{ open, content, openSheet, closeSheet }}>
       {children}
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent>
-          <DialogProvider>
+        <SheetContent
+          onInteractOutside={(e) => {
+            // Prevent closing the sheet if the dialog is open
+            if (isDialogOpen) {
+              e.preventDefault();
+            }
+          }}
+        >
+          <DialogProvider onOpenChange={setIsDialogOpen}>
             <ScrollArea className="h-full px-5">
               {content && (
                 <>
