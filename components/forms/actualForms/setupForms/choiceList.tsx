@@ -58,6 +58,8 @@ import { useAddPurchaseOrderShipVia, useDeletePurchaseOrderShipVia, useGetPurcha
 import { useAddWorkOrderType, useDeleteWorkOrderType, useGetWorkOrderTypes, useUpdateWorkOrderType } from "@/services/setups/workOrder";
 import { useAddEquipmentColor, useAddEquipmentMake, useAddEquipmentMeterType, useAddEquipmentModel, useAddEquipmentRenewal, useAddEquipmentStatus, useAddEquipmentType, useAddExpenseType, useDeleteEquipmentColor, useDeleteEquipmentMake, useDeleteEquipmentMeterType, useDeleteEquipmentModel, useDeleteEquipmentRenewal, useDeleteEquipmentStatus, useDeleteEquipmentType, useDeleteExpenseType, useGetEquipmentColors, useGetEquipmentMakes, useGetEquipmentMeterTypes, useGetEquipmentModels, useGetEquipmentRenewals, useGetEquipmentStatuses, useGetEquipmentTypes, useGetExpenseTypes, useUpdateEquipmentColor, useUpdateEquipmentMake, useUpdateEquipmentMeterType, useUpdateEquipmentModel, useUpdateEquipmentRenewal, useUpdateEquipmentStatus, useUpdateEquipmentType, useUpdateExpenseType } from "@/services/setups/equipments";
 
+import { useAddMaintenanceRepair, useAddMaintenanceRepairType, useAddMaintenanceTaskType, useDeleteMaintenanceRepair, useDeleteMaintenanceRepairType, useDeleteMaintenanceTaskType, useGetMaintenanceRepairs, useGetMaintenanceRepairTypes, useGetMaintenanceTaskTypes, useUpdateMaintenanceRepair, useUpdateMaintenanceRepairType, useUpdateMaintenanceTaskType } from "@/services/setups/maintenance";
+
 // ==============================
 // CONTENTS OBJECT WITH SERVICES
 // ==============================
@@ -154,7 +156,7 @@ const tabData = [
   },
 ];
 export const contents = {
-    generalExpenseTypes: {
+  generalExpenseTypes: {
     name: "General Expense Types",
     component: () => (
       <GenericTab
@@ -178,7 +180,7 @@ export const contents = {
       />
     ),
   },
-              "equipments:status": {
+  "equipments:status": {
     name: "Equipment Status",
     component: () => (
       <GenericTab
@@ -190,7 +192,7 @@ export const contents = {
       />
     ),
   },
-            "equipments:renewals": {
+  "equipments:renewals": {
     name: "Equipment Renewals",
     component: () => (
       <GenericTab
@@ -202,7 +204,7 @@ export const contents = {
       />
     ),
   },
-          "equipments:models": {
+  "equipments:models": {
     name: "Equipment Models",
     component: () => (
       <GenericTab
@@ -214,7 +216,7 @@ export const contents = {
       />
     ),
   },
-        "equipments:meterTypes": {
+  "equipments:meterTypes": {
     name: "Equipment Meter Types",
     component: () => (
       <GenericTab
@@ -226,7 +228,7 @@ export const contents = {
       />
     ),
   },
-      "equipments:colors": {
+  "equipments:colors": {
     name: "Equipment Colors",
     component: () => (
       <GenericTab
@@ -238,7 +240,7 @@ export const contents = {
       />
     ),
   },
-    "equipments:makes": {
+  "equipments:makes": {
     name: "Equipment makes",
     component: () => (
       <GenericTab
@@ -250,7 +252,7 @@ export const contents = {
       />
     ),
   },
-   "workOrders:types": {
+  "workOrders:types": {
     name: "Work Orders Types",
     component: () => (
       <GenericTab
@@ -347,7 +349,7 @@ export const contents = {
     ),
   },
 
-   "purchaseOrders:shippingMethods" :{
+  "purchaseOrders:shippingMethods": {
     name: "Shipping Methods",
     component: () => (
       <GenericTab
@@ -359,7 +361,7 @@ export const contents = {
       />
     ),
   },
-    "inventory:manufacturers" :{
+  "inventory:manufacturers": {
     name: "Manufacturers",
     component: () => (
       <GenericTab
@@ -371,7 +373,7 @@ export const contents = {
       />
     ),
   },
-     "inventory:categories" :{
+  "inventory:categories": {
     name: "Category",
     component: () => (
       <GenericTab
@@ -383,7 +385,7 @@ export const contents = {
       />
     ),
   },
-       "inventory:unitTypes" :{
+  "inventory:unitTypes": {
     name: "Unit Types",
     component: () => (
       <GenericTab
@@ -392,6 +394,42 @@ export const contents = {
         useAdd={useAddInventoryUnitType}
         useUpdate={useUpdateInventoryUnitType}
         useDelete={useDeleteInventoryUnitType}
+      />
+    ),
+  },
+  "maintenance:repairTypes": {
+    name: "Repair Types",
+    component: () => (
+      <GenericTab
+        label="Repair Types"
+        useGet={useGetMaintenanceRepairs}
+        useAdd={useAddMaintenanceRepair}
+        useUpdate={useUpdateMaintenanceRepair}
+        useDelete={useDeleteMaintenanceRepair}
+      />
+    ),
+  },
+  "maintenance:repairs": {
+    name: "Repairs",
+    component: () => (
+      <GenericTab
+        label="Repairs"
+        useGet={useGetMaintenanceRepairTypes}
+        useAdd={useAddMaintenanceRepairType}
+        useUpdate={useUpdateMaintenanceRepairType}
+        useDelete={useDeleteMaintenanceRepairType}
+      />
+    ),
+  },
+  "maintenance:taskTypes": {
+    name: "Task Types",
+    component: () => (
+      <GenericTab
+        label="Task Types"
+        useGet={useGetMaintenanceTaskTypes}
+        useAdd={useAddMaintenanceTaskType}
+        useUpdate={useUpdateMaintenanceTaskType}
+        useDelete={useDeleteMaintenanceTaskType}
       />
     ),
   },
@@ -562,7 +600,7 @@ export function TabbedMenuEditor({ tabs, contents }: Props) {
                           "w-full text-left py-1.5 px-2 rounded-md text-sm transition-colors",
                           "hover:bg-primary/10 focus:outline-none focus:ring-2 focus:ring-primary",
                           activeTab === `${tab.id}:${sub.id}` &&
-                            "bg-primary/20 text-primary font-medium"
+                          "bg-primary/20 text-primary font-medium"
                         )}
                         onClick={() => setActiveTab(`${tab.id}:${sub.id}`)}
                       >
