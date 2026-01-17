@@ -16,11 +16,17 @@ import RadioGroupWrapper from "../wrappers/RadioGroupWrapper";
 import InputWrapper from "../wrappers/InputWrapper";
 import TextareaWrapper from "../wrappers/TextareaWrapper";
 import { ComboboxFieldWrapper } from "../wrappers/ComboboxWrapper";
-import { useGetPMServices } from "@/services/setups/workOrder";
+import {
+    useGetMaintenanceTaskTypes,
+    useGetMaintenanceRepairs,
+    useGetMaintenanceRepairTypes,
+} from "@/services/setups/maintenance";
 import { AddMaintenanceInWorkOrderSchema, AddMaintenanceInWorkOrderInterface, AddPartUsedInterface, AddLaborUsedInterface } from "@/lib/WorkOrder/workOrder-data";
 import AddPartUsed from "./add-part-used";
 import AddLaborUsed from "./add-labor-used";
 import { toast } from "sonner";
+import { GenericObject } from "@/types/types";
+import { useGetPMServices } from "@/services/setups/workOrder";
 
 interface AddMaintenanceProps {
     open: boolean;
@@ -42,8 +48,9 @@ export default function AddMaintenance({
     initialLabor = [],
 }: AddMaintenanceProps) {
     const { data: pmServices } = useGetPMServices();
-
-
+    const { data: taskTypes } = useGetMaintenanceTaskTypes<GenericObject[]>();
+    const { data: repairTypes } = useGetMaintenanceRepairs<GenericObject[]>(); // "Repair Types" from choice list
+    const { data: repairs } = useGetMaintenanceRepairTypes<GenericObject[]>(); // "Repairs" from choice list
 
     const form = useForm<AddMaintenanceInWorkOrderInterface>({
         resolver: zodResolver(AddMaintenanceInWorkOrderSchema),
@@ -98,7 +105,7 @@ export default function AddMaintenance({
         }
     }, [data, initialParts, initialLabor]);
 
-    const taskOptions = pmServices?.map((service: any) => ({
+    const pmServiceOptions = pmServices?.map((service: any) => ({
         id: service.id,
         name: service.pm_service,
     })) || [];
@@ -106,7 +113,11 @@ export default function AddMaintenance({
     const selectedTaskId = form.watch("task_id");
     const selectedCategory = form.watch("category");
 
-    // Sync task name and type when task_id changes
+    // Sync task name and type when task_id changes ONLY for Preventive (if we want auto-fill behavior)
+    // The user requirement says "change the type to combobox...". 
+    // This implies manual selection might be desired or primary.
+    // Existing logic was:
+    /*
     useEffect(() => {
         if (!pmServices) return;
         const selectedService = pmServices.find((s: any) => s.id === selectedTaskId);
@@ -115,6 +126,23 @@ export default function AddMaintenance({
             form.setValue("type_id", selectedService.type?.name || "");
         }
     }, [selectedTaskId, pmServices, form]);
+    */
+    // I will remove the auto-set of type_id since it is now a combobox.
+    // But I should still set the "task" name for display purposes if needed by API,
+    // though the API likely uses task_id.
+
+    useEffect(() => {
+        if (selectedCategory === "Preventive" && pmServices) {
+            const selectedService = pmServices.find((s: any) => s.id === selectedTaskId);
+            if (selectedService) {
+                form.setValue("task", selectedService.pm_service);
+            }
+        }
+        // Logic for Repair category task name if needed?
+        // The Schema likely expects 'task_id' and backend handles name, or 'task' hidden field.
+        // Let's assume standard behavior is fine.
+    }, [selectedTaskId, pmServices, selectedCategory, form]);
+
 
     const otherTaskName = form.watch("other_task_name");
     useEffect(() => {
@@ -189,47 +217,6 @@ export default function AddMaintenance({
             total: 0,
             notes: "",
         });
-        // setOpen(false); // Let parent handle closing via onSuccess if desired, or close here?
-        // work-order-form.tsx logic suggests it handles closing on success.
-        // But wait, work-order-form.tsx expects to close the sheet itself?
-        // line 711 of work-order-form.tsx: setIsMaintenanceSheetOpen(false) on success.
-        // So we should probably NOT close it here if we want to wait for success.
-        // However, onAdd is void. The parent doesn't return a promise.
-        // The user request "wait for it to be successful dont automatically close" implies
-        // the parent handles the async operation.
-
-        // If I just call onAdd(), I don't know when it succeeds.
-        // But standard pattern in this codebase seems to be: 
-        // Dialog calls onAdd -> Parent calls API -> Parent closes dialog on success.
-        // So I should NOT close the dialog here.
-        // I should probably also not reset the form immediately if I want to preserve state on error?
-        // But if I don't reset, and user cancels, state persists?
-        // Effect at line 37 handles resetting when `data` changes or on open?
-        // Line 61 handles data changes.
-        // Line 100 handles initial parts/labor.
-
-        // For now, I will consistent with other dialogs pattern IF they exist.
-        // AddPartUsed calls onAdd and then form.reset().
-        // Let's check AddPartUsed again.
-        // AddPartUsed line 131: onAdd(...); form.reset();
-        // It DOES NOT setOpen(false).
-
-        // So I should just call onAdd and maybe reset form?
-        // But if there is an error in parent, form is reset?
-
-        // Let's just call onAdd. Resetting might clear data before submission completes? 
-        // AddPartUsed resets immediately.
-
-        // I will follow AddPartUsed pattern: onAdd(...) and maybe form.reset().
-        // But AddMaintenance has complex state (parts/labor).
-
-        // If I reset parts/labor here, and API fails in parent, user loses data.
-        // Maybe I should NOT reset here.
-        // AddPartUsed resets form.
-
-        // Let's just call onAdd.
-
-        // form.reset(); // If I reset, UI clears.
     }
 
     return (
@@ -255,7 +242,41 @@ export default function AddMaintenance({
                             orientation="horizontal"
                         />
 
-                        {selectedCategory === "Other" ? (
+                        {selectedCategory === "Preventive" && (
+                            <>
+                                <ComboboxFieldWrapper
+                                    control={form.control}
+                                    name="task_id"
+                                    label="Task"
+                                    options={pmServiceOptions}
+                                />
+                                <ComboboxFieldWrapper
+                                    control={form.control}
+                                    name="type_id"
+                                    label="Type"
+                                    options={taskTypes || []}
+                                />
+                            </>
+                        )}
+
+                        {selectedCategory === "Repair" && (
+                            <>
+                                <ComboboxFieldWrapper
+                                    control={form.control}
+                                    name="task_id"
+                                    label="Task"
+                                    options={(repairs || []).map((r: any) => ({ id: r.id, name: r.name }))}
+                                />
+                                <ComboboxFieldWrapper
+                                    control={form.control}
+                                    name="type_id"
+                                    label="Type"
+                                    options={repairTypes || []}
+                                />
+                            </>
+                        )}
+
+                        {selectedCategory === "Other" && (
                             <>
                                 <InputWrapper
                                     control={form.control}
@@ -268,23 +289,6 @@ export default function AddMaintenance({
                                     name="other_type_name"
                                     label="Type Name"
                                     placeholder="Enter type name"
-                                />
-                            </>
-                        ) : (
-                            <>
-                                <ComboboxFieldWrapper
-                                    control={form.control}
-                                    name="task_id"
-                                    label="Task"
-                                    options={taskOptions}
-                                />
-
-                                <InputWrapper
-                                    control={form.control}
-                                    name="type_id"
-                                    label="Type"
-                                    placeholder="Enter type"
-                                    readOnly
                                 />
                             </>
                         )}
