@@ -195,7 +195,7 @@ export function ActualWorkOrderForm() {
       const isEmployee = transformedEmployeeOptions.find(opt => opt.id === assigneeId);
       const assigneeType = isEmployee ? "Employee" : "Vendor";
       return {
-        assignee: assigneeType,
+        assignee_type: assigneeType,
         assignee_id: assigneeId,
       };
     });
