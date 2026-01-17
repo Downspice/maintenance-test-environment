@@ -268,7 +268,7 @@ export function useDeleteWorkOrderUnit() {
 export function useAddWorkOrderUnitMaintenance() {
     return useBaseMutation<TEntity, WorkOrderPayload>(
         ["add-work-order-unit-maintenance"],
-        () => "/api/add-work-order-unit-maintenace",
+        () => "/api/add-work-order-unit-maintenance",
         'post',
         (payload) => [['work-order', (payload as any).work_order_id]]
     );
@@ -280,7 +280,7 @@ export function useAddWorkOrderUnitMaintenance() {
 export function useUpdateWorkOrderUnitMaintenance() {
     return useBaseMutation<TEntity, WorkOrderPayload & { id: TId }>(
         ["update-work-order-unit-maintenance"],
-        (payload) => `/api/update-work-order-unit-maintenace/${payload.id}`,
+        (payload) => `/api/update-work-order-unit-maintenance/${payload.id}`,
         'put',
         (payload) => [['work-orders'], ['work-order', (payload as any).work_order_id]]
     );
@@ -292,7 +292,7 @@ export function useUpdateWorkOrderUnitMaintenance() {
 export function useDeleteWorkOrderUnitMaintenance() {
     return useBaseMutation<TEntity, { id: TId }>(
         ["delete-work-order-unit-maintenance"],
-        (payload) => `/api/delete-work-order-unit-maintenace/${payload.id}`,
+        (payload) => `/api/delete-work-order-unit-maintenance/${payload.id}`,
         'delete',
         (payload) => [['work-orders']] // Invalidate work order detail too? Probably yes if it affects totals.
     );
