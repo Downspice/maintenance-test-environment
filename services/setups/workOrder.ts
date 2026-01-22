@@ -156,7 +156,8 @@ export function useUpdateWorkOrder() {
         ["update-work-order"],
         (payload) => `/api/update-work-order/${payload.id}`,
         'put',
-        (payload) => [['work-orders'], ['work-order', payload.id]]
+        // (payload) => [['work-orders'], ['work-order', payload.id]]
+        (payload) => [['work-order', payload.id]]
     );
 }
 
@@ -270,7 +271,7 @@ export function useAddWorkOrderUnitMaintenance() {
         ["add-work-order-unit-maintenance"],
         () => "/api/add-work-order-unit-maintenance",
         'post',
-        (payload) => [['work-order', (payload as any).work_order_id]]
+        (payload) => []
     );
 }
 
@@ -282,7 +283,7 @@ export function useUpdateWorkOrderUnitMaintenance() {
         ["update-work-order-unit-maintenance"],
         (payload) => `/api/update-work-order-unit-maintenance/${payload.id}`,
         'put',
-        (payload) => [['work-orders'], ['work-order', (payload as any).work_order_id]]
+        (payload) => []
     );
 }
 
@@ -294,7 +295,7 @@ export function useDeleteWorkOrderUnitMaintenance() {
         ["delete-work-order-unit-maintenance"],
         (payload) => `/api/delete-work-order-unit-maintenance/${payload.id}`,
         'delete',
-        (payload) => [['work-orders']] // Invalidate work order detail too? Probably yes if it affects totals.
+        (payload) => [] // Invalidate work order detail too? Probably yes if it affects totals.
     );
 }
 
@@ -309,7 +310,7 @@ export function useAddWorkOrderUnitPart() {
         ["add-work-order-unit-part"],
         () => "/api/add-work-order-unit-part",
         'post',
-        (payload) => [['work-order', (payload as any).work_order_id]]
+        (payload) => []
     );
 }
 
@@ -321,7 +322,7 @@ export function useUpdateWorkOrderUnitPart() {
         ["update-work-order-unit-part"],
         (payload) => `/api/update-work-order-unit-part/${payload.id}`,
         'put',
-        (payload) => [['work-order', (payload as any).work_order_id]]
+        (payload) => []
     );
 }
 
@@ -333,7 +334,7 @@ export function useDeleteWorkOrderUnitPart() {
         ["delete-work-order-unit-part"],
         (payload) => `/api/delete-work-order-unit-part/${payload.id}`,
         'delete',
-        (payload) => [['work-order', (payload as any).work_order_id]]
+        (payload) => []
     );
 }
 
@@ -345,7 +346,7 @@ export function useAddWorkOrderUnitNote() {
         ["add-work-order-unit-note"],
         () => "/api/add-work-order-unit-note",
         'post',
-        (payload) => [['work-orders'], ['work-order', (payload as any).work_order_id]]
+        (payload) => []
     );
 }
 
@@ -357,7 +358,7 @@ export function useUpdateWorkOrderUnitNote() {
         ["update-work-order-unit-note"],
         (payload) => `/api/update-work-order-unit-note/${payload.id}`,
         'put',
-        (payload) => [['work-orders'], ['work-order', (payload as any).work_order_id]]
+        (payload) => []
     );
 }
 
@@ -369,7 +370,7 @@ export function useDeleteWorkOrderUnitNote() {
         ["delete-work-order-unit-note"],
         (payload) => `/api/delete-work-order-unit-note/${payload.id}`,
         'delete',
-        (payload) => [['work-orders'], ['work-order', (payload as any).work_order_id]]
+        (payload) => []
     );
 }
 
@@ -384,7 +385,7 @@ export function useAddWorkOrderUnitLabor() {
         ["add-work-order-unit-labor"],
         () => "/api/add-work-order-unit-labor",
         'post',
-        (payload) => [['work-order', (payload as any).work_order_id]]
+        (payload) => []
     );
 }
 
@@ -396,7 +397,7 @@ export function useDeleteWorkOrderUnitLabor() {
         ["delete-work-order-unit-labor"],
         (payload) => `/api/delete-work-order-unit-labor/${payload.id}`,
         'delete',
-        (payload) => [['work-order', (payload as any).work_order_id]]
+        (payload) => []
     );
 }
 

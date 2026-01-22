@@ -647,52 +647,20 @@ function EditActualWorkOrderFormContent({
 
     const effectiveWorkOrderId = workOrderId || (data as any)?.id;
 
-    const payload = {
+    // Construct the maintenance task object for local state update
+    const maintenanceTaskForState = {
+      ...task,
       unit_id: unitId,
       work_order_id: effectiveWorkOrderId,
-      maintenance: [
-        {
-          category: task.category,
-          task_id: task.task_id,
-          type_id: task.type_id,
-          other_task_name: task.other_task_name,
-          other_type_name: task.other_type_name,
-          parts_cost: task.parts_cost || 0,
-          labor_cost: task.labor_cost || 0,
-          total: Number(task.total || "0") || 0,
-          notes: task.notes || "",
-          parts: (task.parts || []).map((p) => ({
-            part_id: p.part_id,
-            name: p.name,
-            description: p.description || "",
-            vendor_id: p.vendor_id || "",
-            cost_center_id: p.cost_center_id || "",
-            quantity: p.quantity,
-            unit_cost: p.unit_cost,
-            extended_cost: p.extended_cost,
-            is_warranty_replaced: p.is_warranty_replaced || false,
-            po_id: p.po_id || "",
-            is_part_under_warranty: p.is_part_under_warranty || false,
-            days: p.days || "",
-            hours: p.hours || "",
-            expiry_date: p.expiry_date || "",
-          })),
-          labor: (task.labor || []).map((l) => ({
-            performed_by: l.performed_by,
-            technician_id: l.technician_id,
-            work_performed: l.work_performed,
-            cost_center_id: l.cost_center_id,
-            labor_rate: l.labor_rate,
-            hours: l.hours,
-            total_cost: l.total_cost,
-            maintenance_id: "",
-            is_under_warranty: l.is_under_warranty,
-          })),
-        },
-      ],
+      // Ensure numeric values for calculations
+      parts_cost: Number(task.parts_cost || 0),
+      labor_cost: Number(task.labor_cost || 0),
+      total: Number(task.total || 0),
+      // We might need an ID. 
+      // Ideally the API returns it. We'll handle it in onSuccess.
     };
 
-    // derived Id
+    // Derived Id
     const maintenanceId = selectedMaintenance?.id || (selectedMaintenance as any)?.maintenance_id;
 
     if (maintenanceId) {
@@ -707,24 +675,42 @@ function EditActualWorkOrderFormContent({
       };
 
       updateMaintenance(updatePayload, {
-        onSuccess: async () => {
+        onSuccess: (responseData: any) => {
           toast.success("Maintenance task updated successfully");
 
-          // Refetch and get fresh data
-          let freshData = null;
-          if (onRefetch) {
-            const result = await onRefetch();
-            freshData = result?.data;
-          }
+          // Manual State Sync
+          const updatedTask = {
+            ...maintenanceTaskForState,
+            id: maintenanceId, // Ensure ID is preserved
+            maintenance_id: maintenanceId,
+            complete: selectedMaintenance?.complete || false, // Preserve status
+          };
+
+          // 1. Update Units Array (for UI List)
+          const currentUnits = workOrderForm.getValues("units") || [];
+          const updatedUnits = currentUnits.map((u: any) => {
+            if (u.id === unitId || u.unit_id === unitId || (u.id && u.id === unitId)) { // Robust ID check
+              const currentMaintenance = u.maintenance || [];
+              return {
+                ...u,
+                maintenance: currentMaintenance.map((m: any) =>
+                  (m.id === maintenanceId || m.maintenance_id === maintenanceId) ? updatedTask : m
+                )
+              };
+            }
+            return u;
+          });
+          workOrderForm.setValue("units", updatedUnits);
+
+          // 2. Update Maintenance Array (for Calculations)
+          const currentMaintenanceList = workOrderForm.getValues("maintenance") || [];
+          const updatedMaintenanceList = currentMaintenanceList.map((m: any) =>
+            (m.id === maintenanceId || m.maintenance_id === maintenanceId) ? updatedTask : m
+          );
+          workOrderForm.setValue("maintenance", updatedMaintenanceList);
 
           setSelectedMaintenance(null);
           setIsMaintenanceSheetOpen(false);
-
-          // Submit work order update with fresh data after refetch
-          if (freshData) {
-            workOrderForm.reset(freshData);
-          }
-          // Trigger work order update with loader
           triggerWorkOrderUpdate();
         },
         onError: (error: any) => {
@@ -736,26 +722,42 @@ function EditActualWorkOrderFormContent({
     } else {
       // Create Mode
       addMaintenance(payload, {
-        onSuccess: async () => {
+        onSuccess: (responseData: any) => {
           toast.success("Maintenance task added successfully");
 
-          // Refetch and get fresh data
-          let freshData = null;
-          if (onRefetch) {
-            const result = await onRefetch();
-            freshData = result?.data;
-          }
+          // The API response likely contains the created ID. 
+          // If responseData is the object, use its ID.
+          // Fallback to a temp ID if needed, but risky for updates.
+          const newId = responseData?.id || responseData?.data?.id;
+
+          const newTask = {
+            ...maintenanceTaskForState,
+            id: newId,
+            maintenance_id: newId,
+            complete: false,
+          };
+
+          // 1. Update Units Array
+          const currentUnits = workOrderForm.getValues("units") || [];
+          const updatedUnits = currentUnits.map((u: any) => {
+            if (u.id === unitId || u.unit_id === unitId) {
+              return {
+                ...u,
+                maintenance: [...(u.maintenance || []), newTask]
+              };
+            }
+            return u;
+          });
+          workOrderForm.setValue("units", updatedUnits);
+
+          // 2. Update Maintenance Array
+          const currentMaintenanceList = workOrderForm.getValues("maintenance") || [];
+          workOrderForm.setValue("maintenance", [...currentMaintenanceList, newTask]);
 
           setMaintenanceTasks((prev) => [...prev, { ...task, complete: false }]);
           setSelectedMaintenance(null);
           setIsMaintenanceSheetOpen(false);
 
-          // Submit work order update with fresh data after refetch
-          if (freshData) {
-            // Reset form with fresh data so handleSubmit uses updated values
-            workOrderForm.reset(freshData);
-          }
-          // Trigger work order update with loader
           triggerWorkOrderUpdate();
         },
         onError: (error) => {
@@ -783,35 +785,61 @@ function EditActualWorkOrderFormContent({
       labor: [labor],
     };
 
+    // Construct labor object for local state
+    const laborForState = {
+      ...labor,
+      unit_id: unitId,
+      work_order_id: workOrderId,
+      total_cost: Number(labor.total_cost || 0),
+      labor_rate: Number(labor.labor_rate || 0),
+      hours: Number(labor.hours || 0),
+    };
+
     if (editingLaborId) {
       // Edit mode: Use Update API
       const updatePayload = {
         id: editingLaborId,
-        unit_id: unitId, // Preserve context
-        work_order_id: workOrderId, // For cache invalidation
+        unit_id: unitId,
+        work_order_id: workOrderId,
         ...labor,
       };
 
       updateLabor(updatePayload, {
-        onSuccess: async () => {
+        onSuccess: (responseData: any) => {
           toast.success("Labor updated successfully");
 
-          // Refetch and get fresh data
-          let freshData = null;
-          if (onRefetch) {
-            const result = await onRefetch();
-            freshData = result?.data;
-          }
+          // Manual State Sync
+          const updatedLabor = {
+            ...laborForState,
+            id: editingLaborId,
+          };
+
+          // Update Units Array (labors within unit)
+          const currentUnits = workOrderForm.getValues("units") || [];
+          const updatedUnits = currentUnits.map((u: any) => {
+            if (u.id === unitId || u.unit_id === unitId) {
+              const currentLabors = u.labors || [];
+              return {
+                ...u,
+                labors: currentLabors.map((l: any) =>
+                  l.id === editingLaborId ? updatedLabor : l
+                ),
+              };
+            }
+            return u;
+          });
+          workOrderForm.setValue("units", updatedUnits);
+
+          // Update Labor Global Array (for calculations)
+          const currentLaborList = workOrderForm.getValues("labor") || [];
+          const updatedLaborList = currentLaborList.map((l: any) =>
+            l.id === editingLaborId ? updatedLabor : l
+          );
+          workOrderForm.setValue("labor", updatedLaborList);
 
           setIsAddLaborSheetOpen(false);
           setEditingLaborId(null);
           setEditingLaborData(null);
-
-          // Submit work order update with fresh data after refetch
-          if (freshData) {
-            workOrderForm.reset(freshData);
-          }
-          // Trigger work order update with loader
           triggerWorkOrderUpdate();
         },
         onError: (error: any) => {
@@ -822,23 +850,33 @@ function EditActualWorkOrderFormContent({
     } else {
       // Create mode
       addLabor(payload, {
-        onSuccess: async () => {
+        onSuccess: (responseData: any) => {
           toast.success("Labor added successfully");
 
-          // Refetch and get fresh data
-          let freshData = null;
-          if (onRefetch) {
-            const result = await onRefetch();
-            freshData = result?.data;
-          }
+          const newId = responseData?.id || responseData?.data?.id;
+          const newLabor = {
+            ...laborForState,
+            id: newId,
+          };
+
+          // Update Units Array
+          const currentUnits = workOrderForm.getValues("units") || [];
+          const updatedUnits = currentUnits.map((u: any) => {
+            if (u.id === unitId || u.unit_id === unitId) {
+              return {
+                ...u,
+                labors: [...(u.labors || []), newLabor],
+              };
+            }
+            return u;
+          });
+          workOrderForm.setValue("units", updatedUnits);
+
+          // Update Labor Global Array
+          const currentLaborList = workOrderForm.getValues("labor") || [];
+          workOrderForm.setValue("labor", [...currentLaborList, newLabor]);
 
           setIsAddLaborSheetOpen(false);
-
-          // Submit work order update with fresh data after refetch
-          if (freshData) {
-            workOrderForm.reset(freshData);
-          }
-          // Trigger work order update with loader
           triggerWorkOrderUpdate();
         },
         onError: (error: any) => {
@@ -850,31 +888,39 @@ function EditActualWorkOrderFormContent({
   };
 
   const handleDeleteLabor = (id: string, index: number) => {
+    const unitId = workOrderForm.getValues("equipment_id");
+
     if (!id) {
-      // Fallback for local-only items (shouldn't happen if everything is via API)
+      // Fallback for local-only items
       const currentLabor = workOrderForm.getValues("labor") || [];
-      const updatedLabor = currentLabor.filter((_, i) => i !== index);
+      const updatedLabor = currentLabor.filter((_: any, i: number) => i !== index);
       workOrderForm.setValue("labor", updatedLabor);
       return;
     }
 
     if (confirm("Are you sure you want to delete this labor entry?")) {
       deleteLabor({ id, work_order_id: workOrderId }, {
-        onSuccess: async () => {
+        onSuccess: () => {
           toast.success("Labor deleted successfully");
 
-          // Refetch and get fresh data
-          let freshData = null;
-          if (onRefetch) {
-            const result = await onRefetch();
-            freshData = result?.data;
-          }
+          // Manual State Sync - Remove from Units
+          const currentUnits = workOrderForm.getValues("units") || [];
+          const updatedUnits = currentUnits.map((u: any) => {
+            if (u.labors?.some((l: any) => l.id === id)) {
+              return {
+                ...u,
+                labors: u.labors.filter((l: any) => l.id !== id),
+              };
+            }
+            return u;
+          });
+          workOrderForm.setValue("units", updatedUnits);
 
-          // Submit work order update with fresh data after refetch
-          if (freshData) {
-            workOrderForm.reset(freshData);
-          }
-          // Trigger work order update with loader
+          // Manual State Sync - Remove from Labor Global Array
+          const currentLaborList = workOrderForm.getValues("labor") || [];
+          const updatedLaborList = currentLaborList.filter((l: any) => l.id !== id);
+          workOrderForm.setValue("labor", updatedLaborList);
+
           triggerWorkOrderUpdate();
         },
         onError: (error) => {
@@ -892,6 +938,16 @@ function EditActualWorkOrderFormContent({
       return;
     }
 
+    // Construct part object for local state
+    const partForState = {
+      ...partData,
+      unit_id: unitId,
+      work_order_id: workOrderId,
+      quantity: Number(partData.quantity || 0),
+      unit_cost: Number(partData.unit_cost || 0),
+      extended_cost: Number(partData.extended_cost || 0) || (Number(partData.quantity || 0) * Number(partData.unit_cost || 0)),
+    };
+
     if (editingPartId) {
       // Edit mode: Use Update API
       const updatePayload = {
@@ -902,25 +958,41 @@ function EditActualWorkOrderFormContent({
       };
 
       updatePart(updatePayload, {
-        onSuccess: async () => {
+        onSuccess: (responseData: any) => {
           toast.success("Part updated successfully");
 
-          // Refetch and get fresh data
-          let freshData = null;
-          if (onRefetch) {
-            const result = await onRefetch();
-            freshData = result?.data;
-          }
+          // Manual State Sync
+          const updatedPart = {
+            ...partForState,
+            id: editingPartId,
+          };
+
+          // Update Units Array (parts within unit)
+          const currentUnits = workOrderForm.getValues("units") || [];
+          const updatedUnits = currentUnits.map((u: any) => {
+            if (u.id === unitId || u.unit_id === unitId) {
+              const currentParts = u.parts || [];
+              return {
+                ...u,
+                parts: currentParts.map((p: any) =>
+                  p.id === editingPartId ? updatedPart : p
+                ),
+              };
+            }
+            return u;
+          });
+          workOrderForm.setValue("units", updatedUnits);
+
+          // Update Parts Global Array (for calculations)
+          const currentPartsList = workOrderForm.getValues("parts") || [];
+          const updatedPartsList = currentPartsList.map((p: any) =>
+            p.id === editingPartId ? updatedPart : p
+          );
+          workOrderForm.setValue("parts", updatedPartsList);
 
           setIsAddPartSheetOpen(false);
           setEditingPartId(null);
           setEditingPartData(null);
-
-          // Submit work order update with fresh data after refetch
-          if (freshData) {
-            workOrderForm.reset(freshData);
-          }
-          // Trigger work order update with loader
           triggerWorkOrderUpdate();
         },
         onError: (error: any) => {
@@ -937,23 +1009,33 @@ function EditActualWorkOrderFormContent({
       };
 
       addPart(payload, {
-        onSuccess: async () => {
+        onSuccess: (responseData: any) => {
           toast.success("Part added successfully");
 
-          // Refetch and get fresh data
-          let freshData = null;
-          if (onRefetch) {
-            const result = await onRefetch();
-            freshData = result?.data;
-          }
+          const newId = responseData?.id || responseData?.data?.id;
+          const newPart = {
+            ...partForState,
+            id: newId,
+          };
+
+          // Update Units Array
+          const currentUnits = workOrderForm.getValues("units") || [];
+          const updatedUnits = currentUnits.map((u: any) => {
+            if (u.id === unitId || u.unit_id === unitId) {
+              return {
+                ...u,
+                parts: [...(u.parts || []), newPart],
+              };
+            }
+            return u;
+          });
+          workOrderForm.setValue("units", updatedUnits);
+
+          // Update Parts Global Array
+          const currentPartsList = workOrderForm.getValues("parts") || [];
+          workOrderForm.setValue("parts", [...currentPartsList, newPart]);
 
           setIsAddPartSheetOpen(false);
-
-          // Submit work order update with fresh data after refetch
-          if (freshData) {
-            workOrderForm.reset(freshData);
-          }
-          // Trigger work order update with loader
           triggerWorkOrderUpdate();
         },
         onError: (error: any) => {
@@ -967,28 +1049,34 @@ function EditActualWorkOrderFormContent({
   const handleDeletePart = (id: string, index: number) => {
     if (!id) {
       const currentParts = workOrderForm.getValues("parts") || [];
-      const updatedParts = currentParts.filter((_, i) => i !== index);
+      const updatedParts = currentParts.filter((_: any, i: number) => i !== index);
       workOrderForm.setValue("parts", updatedParts);
       return;
     }
 
     if (confirm("Are you sure you want to delete this part?")) {
       deletePart({ id, work_order_id: workOrderId }, {
-        onSuccess: async () => {
+        onSuccess: () => {
           toast.success("Part deleted successfully");
 
-          // Refetch and get fresh data
-          let freshData = null;
-          if (onRefetch) {
-            const result = await onRefetch();
-            freshData = result?.data;
-          }
+          // Manual State Sync - Remove from Units
+          const currentUnits = workOrderForm.getValues("units") || [];
+          const updatedUnits = currentUnits.map((u: any) => {
+            if (u.parts?.some((p: any) => p.id === id)) {
+              return {
+                ...u,
+                parts: u.parts.filter((p: any) => p.id !== id),
+              };
+            }
+            return u;
+          });
+          workOrderForm.setValue("units", updatedUnits);
 
-          // Submit work order update with fresh data after refetch
-          if (freshData) {
-            workOrderForm.reset(freshData);
-          }
-          // Trigger work order update with loader
+          // Manual State Sync - Remove from Parts Global Array
+          const currentPartsList = workOrderForm.getValues("parts") || [];
+          const updatedPartsList = currentPartsList.filter((p: any) => p.id !== id);
+          workOrderForm.setValue("parts", updatedPartsList);
+
           triggerWorkOrderUpdate();
         },
         onError: (error) => {
@@ -1007,6 +1095,13 @@ function EditActualWorkOrderFormContent({
       return;
     }
 
+    // Construct note object for local state
+    const noteForState = {
+      ...noteData,
+      unit_id: unitId,
+      work_order_id: workOrderId,
+    };
+
     if (editingNoteId) {
       // Edit mode: Use Update API
       const updatePayload = {
@@ -1017,11 +1112,42 @@ function EditActualWorkOrderFormContent({
       };
 
       updateNote(updatePayload, {
-        onSuccess: () => {
+        onSuccess: (responseData: any) => {
           toast.success("Note updated successfully");
+
+          // Manual State Sync
+          const updatedNote = {
+            ...noteForState,
+            id: editingNoteId,
+          };
+
+          // Update Units Array (notes within unit)
+          const currentUnits = workOrderForm.getValues("units") || [];
+          const updatedUnits = currentUnits.map((u: any) => {
+            if (u.id === unitId || u.unit_id === unitId) {
+              const currentNotes = u.notes || [];
+              return {
+                ...u,
+                notes: currentNotes.map((n: any) =>
+                  n.id === editingNoteId ? updatedNote : n
+                ),
+              };
+            }
+            return u;
+          });
+          workOrderForm.setValue("units", updatedUnits);
+
+          // Update Notes Global Array
+          const currentNotesList = workOrderForm.getValues("notes") || [];
+          const updatedNotesList = currentNotesList.map((n: any) =>
+            n.id === editingNoteId ? updatedNote : n
+          );
+          workOrderForm.setValue("notes", updatedNotesList);
+
           setIsAddNoteSheetOpen(false);
           setEditingNoteId(null);
           setEditingNoteData(null);
+          triggerWorkOrderUpdate();
         },
         onError: (error: any) => {
           toast.error(error?.response?.data?.message || "Failed to update note");
@@ -1032,13 +1158,39 @@ function EditActualWorkOrderFormContent({
       // Create mode
       const payload = {
         unit_id: unitId,
+        work_order_id: workOrderId,
         notes: [noteData],
       };
 
       addNote(payload, {
-        onSuccess: () => {
+        onSuccess: (responseData: any) => {
           toast.success("Note added successfully");
+
+          const newId = responseData?.id || responseData?.data?.id;
+          const newNote = {
+            ...noteForState,
+            id: newId,
+          };
+
+          // Update Units Array
+          const currentUnits = workOrderForm.getValues("units") || [];
+          const updatedUnits = currentUnits.map((u: any) => {
+            if (u.id === unitId || u.unit_id === unitId) {
+              return {
+                ...u,
+                notes: [...(u.notes || []), newNote],
+              };
+            }
+            return u;
+          });
+          workOrderForm.setValue("units", updatedUnits);
+
+          // Update Notes Global Array
+          const currentNotesList = workOrderForm.getValues("notes") || [];
+          workOrderForm.setValue("notes", [...currentNotesList, newNote]);
+
           setIsAddNoteSheetOpen(false);
+          triggerWorkOrderUpdate();
         },
         onError: (error: any) => {
           toast.error(error?.response?.data?.message || "Failed to add note");
@@ -1050,9 +1202,29 @@ function EditActualWorkOrderFormContent({
 
   const handleDeleteNote = (id: string) => {
     if (confirm("Are you sure you want to delete this note?")) {
-      deleteNote({ id }, {
+      deleteNote({ id, work_order_id: workOrderId }, {
         onSuccess: () => {
           toast.success("Note deleted successfully");
+
+          // Manual State Sync - Remove from Units
+          const currentUnits = workOrderForm.getValues("units") || [];
+          const updatedUnits = currentUnits.map((u: any) => {
+            if (u.notes?.some((n: any) => n.id === id)) {
+              return {
+                ...u,
+                notes: u.notes.filter((n: any) => n.id !== id),
+              };
+            }
+            return u;
+          });
+          workOrderForm.setValue("units", updatedUnits);
+
+          // Manual State Sync - Remove from Notes Global Array
+          const currentNotesList = workOrderForm.getValues("notes") || [];
+          const updatedNotesList = currentNotesList.filter((n: any) => n.id !== id);
+          workOrderForm.setValue("notes", updatedNotesList);
+
+          triggerWorkOrderUpdate();
         },
         onError: (error) => {
           toast.error("Failed to delete note");
@@ -1623,18 +1795,24 @@ function EditActualWorkOrderFormContent({
                                                   onSuccess: async () => {
                                                     toast.success("Maintenance task deleted successfully");
 
-                                                    // Refetch and get fresh data
-                                                    let freshData = null;
-                                                    if (onRefetch) {
-                                                      const result = await onRefetch();
-                                                      freshData = result?.data;
-                                                    }
+                                                    // Manual State Sync - Remove from Units
+                                                    const currentUnits = workOrderForm.getValues("units") || [];
+                                                    const updatedUnits = currentUnits.map((u: any) => {
+                                                      if (u.maintenance?.some((m: any) => m.id === task.id || m.maintenance_id === task.id)) {
+                                                        return {
+                                                          ...u,
+                                                          maintenance: u.maintenance.filter((m: any) => m.id !== task.id && m.maintenance_id !== task.id)
+                                                        };
+                                                      }
+                                                      return u;
+                                                    });
+                                                    workOrderForm.setValue("units", updatedUnits);
 
-                                                    // Submit work order update with fresh data after refetch
-                                                    if (freshData) {
-                                                      workOrderForm.reset(freshData);
-                                                    }
-                                                    // Trigger work order update with loader
+                                                    // Manual State Sync - Remove from Maintenance Global Array
+                                                    const currentMaintenanceList = workOrderForm.getValues("maintenance") || [];
+                                                    const updatedMaintenanceList = currentMaintenanceList.filter((m: any) => m.id !== task.id && m.maintenance_id !== task.id);
+                                                    workOrderForm.setValue("maintenance", updatedMaintenanceList);
+
                                                     triggerWorkOrderUpdate();
                                                   },
                                                   onError: (error) => {
