@@ -1,7 +1,8 @@
 "use client";
 
 import { z } from "zod";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   Sheet,
   SheetContent,
@@ -21,11 +22,20 @@ export default function EditWorkOrderForm({
   children: React.ReactNode;
   data: WorkOrderInterface;
 }) {
+  const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const workOrderId = (data as any).id; // Access id from data which might not be in WorkOrderInterface
   const { data: workOrderData, isLoading, isError } = useGetWorkOrder(workOrderId, {
     enabled: open && !!workOrderId, // Only fetch when sheet is open
   });
+
+  // Refetch work orders when sheet closes
+  useEffect(() => {
+    if (!open) {
+      // Invalidate all work-orders queries to refetch the list
+      queryClient.invalidateQueries({ queryKey: ["work-orders"] });
+    }
+  }, [open, queryClient]);
 
   // Transform API data to form format
   const apiData = workOrderData as any;
