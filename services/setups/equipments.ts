@@ -537,3 +537,70 @@ export function useDeleteEquipmentAttachment() {
             : [['equipments']]
     );
 }
+
+// --- 11. Equipment Profile Task Tab Data ---
+
+export function useGetEquipmentPMs<TData = TEntity[]>(id: TId, options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>) {
+    return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
+        queryKey: ["equipment-pms", id],
+        queryFn: async () => {
+            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl(`/api/get-equipment-pms/${id}`));
+            return response;
+        },
+        select: (response) => response.data as TData,
+        enabled: !!id,
+        ...options,
+    });
+}
+
+export function useGetEquipmentRepairs<TData = TEntity[]>(id: TId, options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>) {
+    return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
+        queryKey: ["equipment-repairs", id],
+        queryFn: async () => {
+            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl(`/api/get-equipment-repairs/${id}`));
+            return response;
+        },
+        select: (response) => response.data as TData,
+        enabled: !!id,
+        ...options,
+    });
+}
+
+export function useGetEquipmentRenewalsByEquipmentId<TData = TEntity[]>(id: TId, options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>) {
+    return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
+        queryKey: ["equipment-renewals-by-id", id],
+        queryFn: async () => {
+            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl(`/api/get-equipment-renewals/${id}`));
+            return response;
+        },
+        select: (response) => response.data as TData,
+        enabled: !!id,
+        ...options,
+    });
+}
+
+export function useGetEquipmentCommonParts<TData = TEntity[]>(id: TId, options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>) {
+    return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
+        queryKey: ["equipment-common-parts", id],
+        queryFn: async () => {
+            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl(`/api/get-equipment-common-parts/${id}`));
+            return response;
+        },
+        select: (response) => response.data as TData,
+        enabled: !!id,
+        ...options,
+    });
+}
+
+export function useGetEquipmentNotes<TData = TEntity[]>(id: TId, options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>) {
+    return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
+        queryKey: ["equipment-notes", id],
+        queryFn: async () => {
+            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl(`/api/get-equipment-notes/${id}`));
+            return response;
+        },
+        select: (response) => response.data as TData,
+        enabled: !!id,
+        ...options,
+    });
+}

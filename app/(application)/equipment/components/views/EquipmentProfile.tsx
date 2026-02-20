@@ -106,8 +106,15 @@ import InspectionForm, {
   EditInspectionForm,
 } from "@/components/forms/actualForms/new-inspection";
 import EquipmentPMServiceForm, { UpdateEquipmentPMServiceForm } from "../forms/equipmentPMServiceform";
+import {
+  useGetEquipmentPMs,
+  useGetEquipmentRepairs,
+  useGetEquipmentRenewalsByEquipmentId,
+  useGetEquipmentCommonParts,
+  useGetEquipmentNotes
+} from "@/services/setups/equipments";
 
-const MaintenanceHistoryComponent = () => {
+const MaintenanceHistoryComponent = ({ equipmentId }: { equipmentId: string }) => {
   const [filter, setFilter] = useState("outstanding");
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
@@ -181,10 +188,10 @@ const MaintenanceHistoryComponent = () => {
                       </Button>
                     }
                     data={wo}
-                    // onEdit={(wo) => {
-                    //   // Handle edit logic
-                    //   console.log("Edited data:", fuel);
-                    // }}
+                  // onEdit={(wo) => {
+                  //   // Handle edit logic
+                  //   console.log("Edited data:", fuel);
+                  // }}
                   />
 
                   <Button size="icon" variant="destructive">
@@ -1272,10 +1279,10 @@ function InspectionTab() {
                       </Button>
                     }
                     data={item}
-                    // onEdit={(fuel) => {
-                    //   // Handle edit logic
-                    //   console.log("Edited data:", fuel);
-                    // }}
+                  // onEdit={(fuel) => {
+                  //   // Handle edit logic
+                  //   console.log("Edited data:", fuel);
+                  // }}
                   />
                   <Button size="icon" variant="destructive">
                     <Trash2 className="w-4 h-4 text-white" />
@@ -1616,49 +1623,17 @@ const WorkOrdersComponent = () => {
   );
 };
 
-const pmData = [
-  {
-    id: 1,
-    service: "Oil Change",
-    frequency: "3 months",
-    lastDate: "2025-06-15",
-  },
-  {
-    id: 2,
-    service: "Filter Check",
-    frequency: "6 months",
-    lastDate: "2025-04-20",
-  },
-];
 
-const repairData = [
-  {
-    id: 1,
-    repair: "Brake Failure",
-    dueOn: "2025-08-01",
-    dueAt: "08:00",
-    requestedBy: "John Doe",
-    wo: "WO-1234",
-  },
-  {
-    id: 2,
-    repair: "Engine Overheat",
-    dueOn: "2025-08-05",
-    dueAt: "13:30",
-    requestedBy: "Jane Smith",
-    wo: "WO-5678",
-  },
-];
 
-const renewalData = [
-  { id: 1, renewal: "Vehicle License", dueOn: "2025-09-10" },
-  { id: 2, renewal: "Insurance", dueOn: "2025-09-20" },
-];
-
-export function Tasks() {
+export function Tasks({ equipmentId }: { equipmentId?: string | number }) {
   const [openPM, setOpenPM] = useState(false);
   const [openRepair, setOpenRepair] = useState(false);
   const [openRenewal, setOpenRenewal] = useState(false);
+
+  // Fetch data from API
+  const { data: pmData = [], isLoading: isPMLoading } = useGetEquipmentPMs(equipmentId || "");
+  const { data: repairData = [], isLoading: isRepairLoading } = useGetEquipmentRepairs(equipmentId || "");
+  const { data: renewalData = [], isLoading: isRenewalLoading } = useGetEquipmentRenewalsByEquipmentId(equipmentId || "");
 
   return (
     <Tabs defaultValue="preventive" className="w-full">
@@ -1688,39 +1663,51 @@ export function Tasks() {
           </Sheet>
         </div>
 
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>PM Service</TableHead>
-              <TableHead>Frequency</TableHead>
-              <TableHead>Last Service Date</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {pmData.map((item) => (
-              <TableRow key={item.id}>
-                <TableCell>{item.service}</TableCell>
-                <TableCell>{item.frequency}</TableCell>
-                <TableCell>{item.lastDate}</TableCell>
-                <TableCell className="text-right space-x-2">
-                  
-                  <UpdateEquipmentPMServiceForm
-                    children={
-                      <Button size="icon" variant="outline">
-                        <Pencil className="w-4 h-4" />
-                      </Button>
-                    }
-                    data={item}
-                  />
-                  <Button size="icon" variant="destructive">
-                    <Trash2 className="w-4 h-4 text-white" />
-                  </Button>
-                </TableCell>
+        {isPMLoading ? (
+          <div className="text-center py-4">Loading...</div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>PM Service</TableHead>
+                <TableHead>Frequency</TableHead>
+                <TableHead>Last Service Date</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {pmData.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center">
+                    No PM services found
+                  </TableCell>
+                </TableRow>
+              ) : (
+                pmData.map((item: any) => (
+                  <TableRow key={item.id}>
+                    <TableCell>{item.service}</TableCell>
+                    <TableCell>{item.frequency}</TableCell>
+                    <TableCell>{item.lastDate}</TableCell>
+                    <TableCell className="text-right space-x-2">
+
+                      <UpdateEquipmentPMServiceForm
+                        children={
+                          <Button size="icon" variant="outline">
+                            <Pencil className="w-4 h-4" />
+                          </Button>
+                        }
+                        data={item}
+                      />
+                      <Button size="icon" variant="destructive">
+                        <Trash2 className="w-4 h-4 text-white" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        )}
       </TabsContent>
 
       {/* --- Repair Requests Tab --- */}
@@ -1741,44 +1728,56 @@ export function Tasks() {
           </Sheet>
         </div>
 
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Repair</TableHead>
-              <TableHead>Due On</TableHead>
-              <TableHead>Due At</TableHead>
-              <TableHead>Requested By</TableHead>
-              <TableHead>WO#</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {repairData.map((item) => (
-              <TableRow key={item.id}>
-                <TableCell>{item.repair}</TableCell>
-                <TableCell>{item.dueOn}</TableCell>
-                <TableCell>{item.dueAt}</TableCell>
-                <TableCell>{item.requestedBy}</TableCell>
-                <TableCell>{item.wo}</TableCell>
-
-                <TableCell className="text-right space-x-2">
-                  <EditActualUpdateRepairRequestForm
-                    children={
-                      <Button size="icon" variant="outline">
-                        <Pencil className="w-4 h-4" />
-                      </Button>
-                    }
-                    data={item}
-                  />
-
-                  <Button size="icon" variant="destructive">
-                    <Trash2 className="w-4 h-4 text-white" />
-                  </Button>
-                </TableCell>
+        {isRepairLoading ? (
+          <div className="text-center py-4">Loading...</div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Repair</TableHead>
+                <TableHead>Due On</TableHead>
+                <TableHead>Due At</TableHead>
+                <TableHead>Requested By</TableHead>
+                <TableHead>WO#</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {repairData.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center">
+                    No repair requests found
+                  </TableCell>
+                </TableRow>
+              ) : (
+                repairData.map((item: any) => (
+                  <TableRow key={item.id}>
+                    <TableCell>{item.repair}</TableCell>
+                    <TableCell>{item.dueOn}</TableCell>
+                    <TableCell>{item.dueAt}</TableCell>
+                    <TableCell>{item.requestedBy}</TableCell>
+                    <TableCell>{item.wo}</TableCell>
+
+                    <TableCell className="text-right space-x-2">
+                      <EditActualUpdateRepairRequestForm
+                        children={
+                          <Button size="icon" variant="outline">
+                            <Pencil className="w-4 h-4" />
+                          </Button>
+                        }
+                        data={item}
+                      />
+
+                      <Button size="icon" variant="destructive">
+                        <Trash2 className="w-4 h-4 text-white" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        )}
       </TabsContent>
 
       {/* --- Renewals Tab --- */}
@@ -1799,37 +1798,49 @@ export function Tasks() {
           </Sheet>
         </div>
 
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Renewal</TableHead>
-              <TableHead>Due On</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {renewalData.map((item) => (
-              <TableRow key={item.id}>
-                <TableCell>{item.renewal}</TableCell>
-                <TableCell>{item.dueOn}</TableCell>
-                <TableCell className="text-right space-x-2">
-                  <UpdateEquipmentRenewalForm
-                    children={
-                      <Button variant={"secondary"} size={"icon"}>
-                        <FilePenIcon />
-                      </Button>
-                    }
-                    data={item}
-                  />
-
-                  <Button size="icon" variant="destructive">
-                    <Trash2 className="w-4 h-4 text-white" />
-                  </Button>
-                </TableCell>
+        {isRenewalLoading ? (
+          <div className="text-center py-4">Loading...</div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Renewal</TableHead>
+                <TableHead>Due On</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {renewalData.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={3} className="text-center">
+                    No renewals found
+                  </TableCell>
+                </TableRow>
+              ) : (
+                renewalData.map((item: any) => (
+                  <TableRow key={item.id}>
+                    <TableCell>{item.renewal}</TableCell>
+                    <TableCell>{item.dueOn}</TableCell>
+                    <TableCell className="text-right space-x-2">
+                      <UpdateEquipmentRenewalForm
+                        children={
+                          <Button variant={"secondary"} size={"icon"}>
+                            <FilePenIcon />
+                          </Button>
+                        }
+                        data={item}
+                      />
+
+                      <Button size="icon" variant="destructive">
+                        <Trash2 className="w-4 h-4 text-white" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        )}
       </TabsContent>
     </Tabs>
   );
@@ -1968,18 +1979,21 @@ type PartForm = z.infer<typeof partSchema>;
 type PartRecord = PartForm & { id: string };
 
 type PartsProps = {
-  equipment: string;
+  equipmentId?: string | number;
 };
 
-export function PartsManager({ equipment }: PartsProps) {
-  const [parts, setParts] = useState<PartRecord[]>([]);
+export function PartsManager({ equipmentId }: PartsProps) {
+  console.log("equipomen....", equipmentId)
+  // Fetch common parts from API
+  const { data: parts = [], isLoading } = useGetEquipmentCommonParts(equipmentId || "");
+
   const [open, setOpen] = useState(false);
   const [editingPart, setEditingPart] = useState<PartRecord | null>(null);
 
   const form = useForm<PartForm>({
     resolver: zodResolver(partSchema),
     defaultValues: {
-      equipment: equipment,
+      equipment: equipmentId?.toString() || "",
       mode: "assigned",
     },
   });
@@ -1993,11 +2007,11 @@ export function PartsManager({ equipment }: PartsProps) {
       reset(editingPart);
     } else {
       reset({
-        equipment: equipment,
+        equipment: equipmentId?.toString() || "",
         mode: "assigned",
       });
     }
-  }, [editingPart, reset, equipment]);
+  }, [editingPart, reset, equipmentId]);
 
   useEffect(() => {
     if (mode === "assigned" && partNumber) {
@@ -2011,18 +2025,8 @@ export function PartsManager({ equipment }: PartsProps) {
   }, [partNumber, mode, setValue]);
 
   const onSubmit = (data: PartForm) => {
-    if (editingPart) {
-      setParts((prev) =>
-        prev.map((p) =>
-          p.id === editingPart.id
-            ? { ...p, quantity: data.quantity, cost: data.cost }
-            : p
-        )
-      );
-    } else {
-      setParts((prev) => [...prev, { ...data, id: crypto.randomUUID() }]);
-    }
-
+    // TODO: Implement API calls to add/update common part
+    console.log("Submit part:", data);
     setOpen(false);
     setEditingPart(null);
     reset();
@@ -2034,60 +2038,82 @@ export function PartsManager({ equipment }: PartsProps) {
   };
 
   const onDelete = (id: string) => {
-    setParts((prev) => prev.filter((p) => p.id !== id));
+    // TODO: Implement API call to delete common part
+    console.log("Delete part:", id);
+  };
+
+  const handleAddNew = () => {
+    setEditingPart(null);
+    reset({
+      equipment: equipmentId?.toString() || "",
+      mode: "assigned",
+    });
+    setOpen(true);
   };
 
   return (
     <div className="space-y-4">
       {/* Add Button */}
       <div className="flex justify-end">
-        <Button onClick={() => setOpen(true)}>+ Add Part</Button>
+        <Button onClick={handleAddNew}>+ Add Part</Button>
       </div>
 
       {/* Table */}
-      <div className="border rounded-md overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Part#</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead>Task</TableHead>
-              <TableHead>Qty</TableHead>
-              <TableHead>Cost</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {parts.map((part) => (
-              <TableRow key={part.id}>
-                <TableCell>{part.partNumber ?? "N/A"}</TableCell>
-                <TableCell>{part.name ?? "N/A"}</TableCell>
-                <TableCell>{part.description ?? "N/A"}</TableCell>
-                <TableCell>{part.equipment ?? "N/A"}</TableCell>
-                <TableCell>{part.quantity ?? "N/A"}</TableCell>
-                <TableCell>{part.cost ?? "N/A"}</TableCell>
-                <TableCell className="text-right space-x-2">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => onEdit(part)}
-                  >
-                    <Pencil className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => onDelete(part.id)}
-                  >
-                    <Trash2 className="w-4 h-4 text-red-500" />
-                  </Button>
-                </TableCell>
+      {isLoading ? (
+        <div className="text-center py-8">Loading common parts...</div>
+      ) : (
+        <div className="border rounded-md overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Part#</TableHead>
+                <TableHead>Name</TableHead>
+                <TableHead>Description</TableHead>
+                <TableHead>Task</TableHead>
+                <TableHead>Qty</TableHead>
+                <TableHead>Cost</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+            </TableHeader>
+            <TableBody>
+              {parts.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-4">
+                    No common parts found
+                  </TableCell>
+                </TableRow>
+              ) : (
+                parts.map((part: any) => (
+                  <TableRow key={part.id}>
+                    <TableCell>{part.partNumber ?? "N/A"}</TableCell>
+                    <TableCell>{part.name ?? "N/A"}</TableCell>
+                    <TableCell>{part.description ?? "N/A"}</TableCell>
+                    <TableCell>{part.equipment ?? "N/A"}</TableCell>
+                    <TableCell>{part.quantity ?? "N/A"}</TableCell>
+                    <TableCell>{part.cost ?? "N/A"}</TableCell>
+                    <TableCell className="text-right space-x-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => onEdit(part)}
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => onDelete(part.id)}
+                      >
+                        <Trash2 className="w-4 h-4 text-red-500" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      )}
 
       {/* Dialog Form */}
       <Dialog open={open} onOpenChange={setOpen}>
@@ -2185,7 +2211,7 @@ export function PartsManager({ equipment }: PartsProps) {
           </Form>
         </DialogContent>
       </Dialog>
-    </div>
+    </div >
   );
 }
 
@@ -2495,9 +2521,8 @@ const CollapsibleSection = ({
           <CollapsibleTrigger asChild>
             <Button variant="ghost" size="icon">
               <ChevronDown
-                className={`transition-transform duration-300 ${
-                  open ? "rotate-180" : ""
-                }`}
+                className={`transition-transform duration-300 ${open ? "rotate-180" : ""
+                  }`}
               />
             </Button>
           </CollapsibleTrigger>
@@ -2562,6 +2587,44 @@ const EquipmentDetailsSection = () => {
   );
 };
 
+// Notes Section Component
+function NotesSection({ equipmentId }: { equipmentId?: string | number }) {
+  const { data: notes = [], isLoading } = useGetEquipmentNotes(equipmentId || "");
+
+  if (isLoading) {
+    return <div className="text-center py-8">Loading notes...</div>;
+  }
+
+  return (
+    <div className="space-y-4">
+      {notes.length === 0 ? (
+        <div className="text-center py-8 text-gray-500">
+          No notes available for this equipment.
+        </div>
+      ) : (
+        notes.map((note: any) => (
+          <div
+            key={note.id}
+            className="p-4 border border-gray-200 rounded-md bg-gray-50"
+          >
+            <div className="flex justify-between items-start mb-2">
+              <div className="text-sm font-medium text-gray-700">
+                {note.createdBy || "Unknown"}
+              </div>
+              <div className="text-xs text-gray-500">
+                {note.createdAt || note.date}
+              </div>
+            </div>
+            <div className="text-sm text-gray-800 whitespace-pre-wrap">
+              {note.content || note.note || note.text}
+            </div>
+          </div>
+        ))
+      )}
+    </div>
+  );
+}
+
 export default function EquipmentProfile({
   children,
   data,
@@ -2588,7 +2651,7 @@ export default function EquipmentProfile({
       id: "tasks",
       name: "Tasks",
       icon: <ListChecks size={20} />,
-      content: <Tasks />,
+      content: <Tasks equipmentId={data?.id} />,
     },
     {
       id: "workOrders",
@@ -2606,7 +2669,7 @@ export default function EquipmentProfile({
       id: "commonParts",
       name: "Common Parts",
       icon: <BookText size={20} />,
-      content: <PartsManager equipment={data.name} />,
+      content: <PartsManager equipmentId={data?.id} />,
     },
     {
       id: "images",
@@ -2624,12 +2687,7 @@ export default function EquipmentProfile({
       id: "notes",
       name: "Notes",
       icon: <StickyNote size={20} />,
-      content: (
-        <Textarea
-          className="w-full h-full resize-none rounded-md border border-gray-300 p-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Add notes here..."
-        />
-      ),
+      content: <NotesSection equipmentId={data?.id} />,
     },
   ];
   return (
