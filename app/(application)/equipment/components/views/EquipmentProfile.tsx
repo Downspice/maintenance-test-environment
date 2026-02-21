@@ -107,6 +107,7 @@ import InspectionForm, {
 } from "@/components/forms/actualForms/new-inspection";
 import EquipmentPMServiceForm, { UpdateEquipmentPMServiceForm } from "../forms/equipmentPMServiceform";
 import {
+  useGetEquipment,
   useGetEquipmentPMs,
   useGetEquipmentRepairs,
   useGetEquipmentRenewalsByEquipmentId,
@@ -2538,51 +2539,98 @@ const CollapsibleSection = ({
   );
 };
 
-const EquipmentDetailsSection = () => {
+const EquipmentDetailsSection = ({ data }: { data: any }) => {
   return (
     <div className="space-y-6">
       {/* Details */}
       <CollapsibleSection title="Details">
         <div className="grid grid-cols-2 gap-x-6 gap-y-2">
           <p>
-            <span className="font-medium">Unit #:</span> EQ-045
+            <span className="font-medium">Unit #:</span> {data?.unit_number}
           </p>
           <p>
-            <span className="font-medium">Make:</span> Komatsu
+            <span className="font-medium">Make:</span> {data?.make_name ?? data?.make}
           </p>
           <p>
-            <span className="font-medium">Model:</span> PC210LC
+            <span className="font-medium">Model:</span> {data?.model_name ?? data?.model}
           </p>
           <p>
-            <span className="font-medium">Serial:</span> 1234XYZ
+            <span className="font-medium">Year:</span> {data?.year}
           </p>
           <p>
-            <span className="font-medium">Type:</span> Excavator
+            <span className="font-medium">Serial:</span> {data?.serial_number}
+          </p>
+          <p>
+            <span className="font-medium">Type:</span> {data?.type_name ?? data?.equipmentType}
+          </p>
+          <p>
+            <span className="font-medium">Color:</span> {data?.color_name ?? data?.color}
+          </p>
+          <p>
+            <span className="font-medium">License:</span> {data?.license}
+          </p>
+          <p>
+            <span className="font-medium">Status:</span> {data?.status_name ?? data?.status}
+          </p>
+          <p>
+            <span className="font-medium">Ownership:</span> {data?.ownership_name ?? data?.ownership}
           </p>
         </div>
       </CollapsibleSection>
 
-      {/* User Defined Location Info */}
-      <CollapsibleSection title="User Location Info">
+      {/* Meters */}
+      {/* <CollapsibleSection title="Meters">
         <div className="grid grid-cols-2 gap-x-6 gap-y-2">
           <p>
-            <span className="font-medium">Fabrication:</span> Site A
+            <span className="font-medium">Primary Meter:</span> {data?.primary_meter} {data?.primary_meter_units ?? data?.primaryMeterUnits}
           </p>
           <p>
-            <span className="font-medium">Voltage/Phase:</span> 480/3P
-          </p>
-          <p>
-            <span className="font-medium">Pallet Size:</span> 40x19
+            <span className="font-medium">Secondary Meter:</span> {data?.secondary_meter} {data?.secondary_meter_units ?? data?.secondaryMeterUnits}
           </p>
         </div>
-      </CollapsibleSection>
+      </CollapsibleSection> */}
 
       {/* Purchase */}
       <CollapsibleSection title="Purchase">
-        <p>
-          <span className="font-medium">Price:</span> $45,000
-        </p>
+        <div className="grid grid-cols-2 gap-x-6 gap-y-2">
+          <p>
+            <span className="font-medium">Purchase Date:</span> {data?.purchase_date ?? data?.purchaseDate}
+          </p>
+          <p>
+            <span className="font-medium">Purchase Price:</span> {data?.purchase_price != null ? `$${Number(data.purchase_price ?? data.purchasePrice).toLocaleString()}` : "—"}
+          </p>
+          <p>
+            <span className="font-medium">Vendor:</span> {data?.vendor_name ?? data?.vendorId}
+          </p>
+          <p>
+            <span className="font-medium">Salvage Price:</span> {data?.salvage_price != null ? `$${Number(data.salvage_price ?? data.salvagePrice).toLocaleString()}` : "—"}
+          </p>
+        </div>
       </CollapsibleSection>
+
+      {/* Engine & Specs */}
+      {/* <CollapsibleSection title="Engine & Specs">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-2">
+          <p>
+            <span className="font-medium">Engine:</span> {data?.engine}
+          </p>
+          <p>
+            <span className="font-medium">Transmission:</span> {data?.transmission}
+          </p>
+          <p>
+            <span className="font-medium">Fuel Type:</span> {data?.fuel_type ?? data?.fuelType}
+          </p>
+          <p>
+            <span className="font-medium">Fuel Capacity:</span> {data?.fuel_capacity ?? data?.fuelCapacity} {data?.fuel_volume_units ?? data?.fuelVolumeUnits}
+          </p>
+          <p>
+            <span className="font-medium">Weight:</span> {data?.weight}
+          </p>
+          <p>
+            <span className="font-medium">Gross Weight:</span> {data?.gross_weight ?? data?.grossWeight}
+          </p>
+        </div>
+      </CollapsibleSection> */}
     </div>
   );
 };
@@ -2634,6 +2682,7 @@ export default function EquipmentProfile({
 }) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { data: equipmentData, isLoading: isLoadingEquipment } = useGetEquipment(data?.id);
   const sidebarMenu = [
     {
       id: "summary",
@@ -2645,7 +2694,7 @@ export default function EquipmentProfile({
       id: "details",
       name: "Details",
       icon: <ClipboardList size={20} />,
-      content: <EquipmentDetailsSection />,
+      content: <EquipmentDetailsSection data={equipmentData} />,
     },
     {
       id: "tasks",
@@ -2708,7 +2757,7 @@ export default function EquipmentProfile({
               defaultActiveId="summary"
               headerItem={
                 <>
-                  <span>Equipment 100- Fully functional</span>
+                  <span>{(equipmentData as any)?.unit_number} - {(equipmentData as any)?.type_name}</span>
                   <div className=" pb-1 border-b border-gray-300 grid grid-cols-1 md:grid-cols-2 gap-1 bg-white ">
                     {/* Vehicle Image */}
                     <div className="w-full h-32 md:h-auto flex items-center justify-center bg-gray-100 rounded-lg overflow-hidden">
@@ -2722,14 +2771,11 @@ export default function EquipmentProfile({
                     <div className="flex text-sm flex-col justify-center space-y-1 text-gray-800">
                       <div>
                         <span className="font-semibold text-gray-600">
-                          Equipment Name
+                          {(equipmentData as any)?.type_name}
                         </span>{" "}
                       </div>
                       <div>
-                        <span className="font-semibold text-gray-600">
-                          Serial:
-                        </span>{" "}
-                        <span>SN-44983-21A</span>
+                        <span>{(equipmentData as any)?.serial_number}</span>
                       </div>
                       <div className="flex flex-wrap gap-1 mt-2">
                         <div>
@@ -2743,7 +2789,7 @@ export default function EquipmentProfile({
                             Status:
                           </span>
                           <span className="text-green-600 font-semibold">
-                            Active
+                            {(equipmentData as any)?.status_name}
                           </span>
                         </div>
                       </div>
