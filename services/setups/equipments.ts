@@ -604,3 +604,12 @@ export function useGetEquipmentNotes<TData = TEntity[]>(id: TId, options?: UseQu
         ...options,
     });
 }
+
+export function useUpdateEquipmentNotes() {
+    return useBaseMutation<TEntity, { id: TId; notes: string }>(
+        ["update-equipment-notes"],
+        (payload) => `/api/update-equipment-notes/${payload.id}`,
+        'put',
+        (payload) => [['equipment-notes', payload.id]]
+    );
+}

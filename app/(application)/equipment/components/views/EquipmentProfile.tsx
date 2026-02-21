@@ -112,7 +112,8 @@ import {
   useGetEquipmentRepairs,
   useGetEquipmentRenewalsByEquipmentId,
   useGetEquipmentCommonParts,
-  useGetEquipmentNotes
+  useGetEquipmentNotes,
+  useUpdateEquipmentNotes,
 } from "@/services/setups/equipments";
 
 const MaintenanceHistoryComponent = ({ equipmentId }: { equipmentId: string }) => {
@@ -2636,39 +2637,34 @@ const EquipmentDetailsSection = ({ data }: { data: any }) => {
 };
 
 // Notes Section Component
-function NotesSection({ equipmentId }: { equipmentId?: string | number }) {
-  const { data: notes = [], isLoading } = useGetEquipmentNotes(equipmentId || "");
+function NotesSection({ equipmentId, equipmentNotes }: { equipmentId?: string | number, equipmentNotes?: string }) {
+  const { mutate: updateNotes, isPending } = useUpdateEquipmentNotes();
+  const [noteText, setNoteText] = useState("");
 
-  if (isLoading) {
-    return <div className="text-center py-8">Loading notes...</div>;
-  }
+  // Pre-fill textarea when data loads
+  useEffect(() => {
+    const existing = equipmentNotes ??  "" ;
+    if (existing) setNoteText(existing);
+  }, [equipmentNotes]);
+
+  const handleSave = () => {
+    if (!equipmentId) return;
+    updateNotes({ id: equipmentId, notes: noteText });
+  };
 
   return (
-    <div className="space-y-4">
-      {notes.length === 0 ? (
-        <div className="text-center py-8 text-gray-500">
-          No notes available for this equipment.
-        </div>
-      ) : (
-        notes.map((note: any) => (
-          <div
-            key={note.id}
-            className="p-4 border border-gray-200 rounded-md bg-gray-50"
-          >
-            <div className="flex justify-between items-start mb-2">
-              <div className="text-sm font-medium text-gray-700">
-                {note.createdBy || "Unknown"}
-              </div>
-              <div className="text-xs text-gray-500">
-                {note.createdAt || note.date}
-              </div>
-            </div>
-            <div className="text-sm text-gray-800 whitespace-pre-wrap">
-              {note.content || note.note || note.text}
-            </div>
-          </div>
-        ))
-      )}
+    <div className="space-y-3">
+      <Textarea
+        value={noteText}
+        onChange={(e) => setNoteText(e.target.value)}
+        placeholder="Type your notes here..."
+        className="min-h-[200px] resize-y"
+      />
+      <div className="flex justify-end">
+        <Button onClick={handleSave} disabled={isPending}>
+          {isPending ? "Saving..." : "Save Note"}
+        </Button>
+      </div>
     </div>
   );
 }
@@ -2736,7 +2732,7 @@ export default function EquipmentProfile({
       id: "notes",
       name: "Notes",
       icon: <StickyNote size={20} />,
-      content: <NotesSection equipmentId={data?.id} />,
+      content: <NotesSection equipmentId={data?.id} equipmentNotes={data?.notes} />,
     },
   ];
   return (
