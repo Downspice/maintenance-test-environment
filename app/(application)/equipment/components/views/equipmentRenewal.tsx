@@ -18,38 +18,67 @@ import { useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
 import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";
-import { useGetEquipmentRenewals } from "@/services/setups/equipments";
+import { useGetEquipmentRenewals, useUpdateEquipmentRenewals } from "@/services/setups/equipments";
 
 // Define the form schema with Zod
 export const updateEquipmentSchema = z.object({
-  issued_on: z.date({
-    required_error: "Date is required",
-  }),
-  expires_on: z.date({
-    required_error: "Date is required",
-  }),
+  renewal_id: z.string().optional(),
+  due_on: z.date().optional(),
 });
+
+type RenewalFormValues = z.infer<typeof updateEquipmentSchema>;
+
+// ─── Edit Renewal Form ────────────────────────────────────────────────────────
 
 export default function UpdateEquipmentRenewalForm({
   children,
   data,
+  equipmentId,
 }: {
   children: React.ReactNode;
   data: any;
+  equipmentId?: string | number;
 }) {
   const [open, setOpen] = useState(false);
   const { data: renewalOptionsList } = useGetEquipmentRenewals();
-  
-  const updateEquipment = useForm<z.infer<typeof updateEquipmentSchema>>({
+  const { mutate: updateRenewal, isPending } = useUpdateEquipmentRenewals();
+
+  const form = useForm<RenewalFormValues>({
     resolver: zodResolver(updateEquipmentSchema),
-    defaultValues: data,
+    defaultValues: {
+      renewal_id: data?.renewal_id ?? data?.renewal ?? "",
+      due_on: data?.due_on ? new Date(data.due_on) : undefined,
+    },
   });
 
-  async function handleSubmit(data: z.infer<typeof updateEquipmentSchema>) {
-    console.log(data);
-    // Here you would typically send the data to your API
-
-    toast.success("Work Order submitted successfully!");
+  function handleSubmit(values: RenewalFormValues) {
+    if (!equipmentId) {
+      toast.error("Equipment ID is missing.");
+      return;
+    }
+    updateRenewal(
+      {
+        id: equipmentId,
+        renewals: [
+          {
+            id: data?.id,
+            renewal_id: values.renewal_id,
+            due_on: values.due_on
+              ? new Date(values.due_on).toISOString().split("T")[0]
+              : null,
+          },
+        ],
+      },
+      {
+        onSuccess: () => {
+          toast.success("Renewal updated successfully!");
+          setOpen(false);
+        },
+        onError: () => {
+          toast.error("Failed to update renewal.");
+        },
+      }
+    );
   }
 
   return (
@@ -65,24 +94,20 @@ export default function UpdateEquipmentRenewalForm({
         </SheetHeader>
         <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
           <div>
-            <Form {...updateEquipment}>
-              <form
-                onSubmit={updateEquipment.handleSubmit((data) =>
-                  handleSubmit(data)
-                )}
-              >
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(handleSubmit)}>
                 <div id="fields">
                   <div className="pt-4">
                     <div className="grid grid-cols-1 gap-4 ">
                       <ComboboxFieldWrapper
-                        control={updateEquipment.control}
-                        name="Renewal"
+                        control={form.control}
+                        name="renewal_id"
                         label="Name"
                         options={renewalOptionsList}
                       />
                       <DatePickerWrapper
-                        control={updateEquipment.control}
-                        name="dueOn"
+                        control={form.control}
+                        name="due_on"
                         required={true}
                         label="Expires"
                       />
@@ -91,8 +116,9 @@ export default function UpdateEquipmentRenewalForm({
                 </div>
 
                 <div className="flex justify-between gap-x-4 mt-8 w-full">
-                  <Button className="  w-full">
-                    <UserRoundCheck className="mr-2" /> Update Equipment
+                  <Button className="w-full" disabled={isPending}>
+                    <UserRoundCheck className="mr-2" />
+                    {isPending ? "Saving..." : "Update Renewal"}
                   </Button>
                 </div>
               </form>
@@ -104,37 +130,69 @@ export default function UpdateEquipmentRenewalForm({
   );
 }
 
-export function NewEquipmentRenewalForm() {
-  const { data: renewalOptionsList } = useGetEquipmentRenewals();
+// ─── New Renewal Form ─────────────────────────────────────────────────────────
 
-  const updateEquipment = useForm<z.infer<typeof updateEquipmentSchema>>({
+export function NewEquipmentRenewalForm({
+  equipmentId,
+  onSuccess,
+}: {
+  equipmentId?: string | number;
+  onSuccess?: () => void;
+}) {
+  const { data: renewalOptionsList } = useGetEquipmentRenewals();
+  const { mutate: updateRenewal, isPending } = useUpdateEquipmentRenewals();
+
+  const form = useForm<RenewalFormValues>({
     resolver: zodResolver(updateEquipmentSchema),
     defaultValues: {},
   });
 
-  async function handleSubmit(data: z.infer<typeof updateEquipmentSchema>) {
-    console.log(data);
-    toast.success("Work Order submitted successfully!");
+  function handleSubmit(values: RenewalFormValues) {
+    if (!equipmentId) {
+      toast.error("Equipment ID is missing.");
+      return;
+    }
+    updateRenewal(
+      {
+        id: equipmentId,
+        renewals: [
+          {
+            renewal_id: values.renewal_id,
+            due_on: values.due_on
+              ? new Date(values.due_on).toISOString().split("T")[0]
+              : null,
+          },
+        ],
+      },
+      {
+        onSuccess: () => {
+          toast.success("Renewal created successfully!");
+          form.reset();
+          onSuccess?.();
+        },
+        onError: () => {
+          toast.error("Failed to create renewal.");
+        },
+      }
+    );
   }
 
   return (
     <div>
-      <Form {...updateEquipment}>
-        <form
-          onSubmit={updateEquipment.handleSubmit((data) => handleSubmit(data))}
-        >
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(handleSubmit)}>
           <div id="fields">
             <div className="pt-4">
               <div className="grid grid-cols-1 gap-4 ">
                 <ComboboxFieldWrapper
-                  control={updateEquipment.control}
-                  name="renewal"
+                  control={form.control}
+                  name="renewal_id"
                   label="Name"
-                  options={renewalOptionsList}
+                  options={renewalOptionsList ?? []}
                 />
                 <DatePickerWrapper
-                  control={updateEquipment.control}
-                  name="expires_on"
+                  control={form.control}
+                  name="due_on"
                   required={true}
                   label="Expires"
                 />
@@ -143,8 +201,9 @@ export function NewEquipmentRenewalForm() {
           </div>
 
           <div className="flex justify-between gap-x-4 mt-8 w-full">
-            <Button className="  w-full">
-              <UserRoundCheck className="mr-2" /> Update Equipment
+            <Button className="w-full" disabled={isPending}>
+              <UserRoundCheck className="mr-2" />
+              {isPending ? "Saving..." : "Add Renewal"}
             </Button>
           </div>
         </form>

@@ -1796,7 +1796,7 @@ export function Tasks({ equipmentId }: { equipmentId?: string | number }) {
               <SheetHeader>
                 <SheetTitle>Add Renewal</SheetTitle>
               </SheetHeader>
-              <NewEquipmentRenewalForm />
+              <NewEquipmentRenewalForm equipmentId={equipmentId} onSuccess={() => setOpenRenewal(false)} />
             </SheetContent>
           </Sheet>
         </div>
@@ -1822,8 +1822,8 @@ export function Tasks({ equipmentId }: { equipmentId?: string | number }) {
               ) : (
                 renewalData.map((item: any) => (
                   <TableRow key={item.id}>
-                    <TableCell>{item.renewal}</TableCell>
-                    <TableCell>{item.dueOn}</TableCell>
+                    <TableCell>{item.renewal_name}</TableCell>
+                    <TableCell>{item.due_on}</TableCell>
                     <TableCell className="text-right space-x-2">
                       <UpdateEquipmentRenewalForm
                         children={
@@ -1832,6 +1832,7 @@ export function Tasks({ equipmentId }: { equipmentId?: string | number }) {
                           </Button>
                         }
                         data={item}
+                        equipmentId={equipmentId}
                       />
 
                       <Button size="icon" variant="destructive">
