@@ -1725,7 +1725,7 @@ export function Tasks({ equipmentId }: { equipmentId?: string | number }) {
               <SheetHeader>
                 <SheetTitle>Add Repair Request</SheetTitle>
               </SheetHeader>
-              <ActualRepairRequestForm />
+              <ActualRepairRequestForm equipmentId={equipmentId} />
             </SheetContent>
           </Sheet>
         </div>
@@ -1754,10 +1754,10 @@ export function Tasks({ equipmentId }: { equipmentId?: string | number }) {
               ) : (
                 repairData.map((item: any) => (
                   <TableRow key={item.id}>
-                    <TableCell>{item.repair}</TableCell>
-                    <TableCell>{item.dueOn}</TableCell>
-                    <TableCell>{item.dueAt}</TableCell>
-                    <TableCell>{item.requestedBy}</TableCell>
+                    <TableCell>{item.repairs[0].repair_name}</TableCell>
+                    <TableCell>{item.due_date}</TableCell>
+                    <TableCell>{item.repair_by}</TableCell>
+                    <TableCell>{item.employee_name}</TableCell>
                     <TableCell>{item.wo}</TableCell>
 
                     <TableCell className="text-right space-x-2">
@@ -1768,6 +1768,7 @@ export function Tasks({ equipmentId }: { equipmentId?: string | number }) {
                           </Button>
                         }
                         data={item}
+                        equipmentId={equipmentId}
                       />
 
                       <Button size="icon" variant="destructive">
@@ -2643,7 +2644,7 @@ function NotesSection({ equipmentId, equipmentNotes }: { equipmentId?: string | 
 
   // Pre-fill textarea when data loads
   useEffect(() => {
-    const existing = equipmentNotes ??  "" ;
+    const existing = equipmentNotes ?? "";
     if (existing) setNoteText(existing);
   }, [equipmentNotes]);
 

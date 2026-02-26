@@ -613,3 +613,12 @@ export function useUpdateEquipmentNotes() {
         (payload) => [['equipment-notes', payload.id]]
     );
 }
+
+export function useUpdateEquipmentRepairRequest() {
+    return useBaseMutation<TEntity, { id: TId;[key: string]: any }>(
+        ["update-equipment-repair-request"],
+        (payload) => `/api/update-equipment-repair-request/${payload.id}`,
+        'put',
+        (payload) => [['equipment-repairs', payload.id]]
+    );
+}

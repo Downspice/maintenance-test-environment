@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
@@ -13,7 +13,6 @@ import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";
 // Schema and types
 import { assigneeOptions } from "@/lib/equipment-schema";
 import Fieldset from "@/components/customUI/fieldset";
-import { equipmentOptionsList } from "@/lib/option-list";
 import { toast } from "sonner";
 import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
 import { EditableDataTable } from "@/components/customUI/editableTable";
@@ -25,7 +24,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { priorityOptions } from "../../../app/(application)/work-orders/forms/newWorkOrderFormSheet";
 import { z } from "zod";
 import {
   Sheet,
@@ -36,6 +34,12 @@ import {
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useGetLocations } from "@/services/setups/vendor";
+import { useGetEquipments, useUpdateEquipmentRepairRequest } from "@/services/setups/equipments";
+import { convertToOptionList } from "@/lib/utils";
+import { GenericObject } from "@/types/types";
+import { useGetEmployees } from "@/services/setups/employee";
+import { useGetMaintenanceRepairs } from "@/services/setups/maintenance";
+import { useGetPriorities } from "@/services/setups/workOrder";
 
 // Table row type
 export type RepairRequestTableRow = {
@@ -43,8 +47,8 @@ export type RepairRequestTableRow = {
   repair: string;
   type: string;
   priority: string;
-  laborTime: number;
-  notes: string;
+  laborTime?: number;
+  notes?: string;
 };
 
 // Main form type
@@ -52,8 +56,8 @@ export type RepairRequestType = {
   equipment: string;
   requestedBy: string;
   dueDate: string;
-  repairBy: number;
-  repairsNeeded: RepairRequestTableRow[];
+  repairBy?: number;
+  repairsNeeded?: RepairRequestTableRow[];
 };
 
 // Zod schema
@@ -61,7 +65,7 @@ export const repairRequestSchema = z.object({
   id: z.any().optional(),
   equipment: z.string().min(1, "Equipment is required"),
   requestedBy: z.string().min(1, "Requested By is required"),
-  dueDate: z.string().min(1, "Due Date is required"),
+  dueDate: z.coerce.string().min(1, "Due Date is required"),
   repairBy: z.coerce.number().optional(),
   repairsNeeded: z
     .array(
@@ -79,43 +83,197 @@ export const repairRequestSchema = z.object({
 
 interface triggerVariant {
   variant?: "icon" | "default";
+  equipmentId?: string | number;
 }
-export default function ActualRepairRequestForm({ variant }: triggerVariant) {
+export default function ActualRepairRequestForm({ variant, equipmentId }: triggerVariant) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const {
-    data: locationOptionsList,
-    isLoading: locationOptionsListLoading,
-    error: locationOptionsListError,
-  } = useGetLocations<Array<{ id: string; name: string }>>();
+  const { mutate: updateRepairRequest, isPending } = useUpdateEquipmentRepairRequest();
+  const { data: repairOptionsList } = useGetMaintenanceRepairs<Array<{ id: string; name: string }>>();
+  const { data: allEquipments } = useGetEquipments<GenericObject[]>();
+  const { data: employeeOptions } = useGetEmployees<GenericObject[]>();
+  const { data: priorityOptions } = useGetPriorities<GenericObject[]>();
 
+  const transformedEmployeeOptions = useMemo(() => {
+    return (employeeOptions || []).map((emp: any) => ({
+      id: emp.id,
+      name: `${emp.first_name} ${emp.last_name}`,
+      group: "Employees",
+    }));
+  }, [employeeOptions]);
+
+  const columns: ColumnDef<RepairRequestInterface>[] = [
+    {
+      accessorKey: "repair",
+      header: "Repair",
+      cell: ({ row, updateRow, rowIndex }: any) => (
+        <Select
+          value={row.original.repair}
+          onValueChange={(e) => updateRow(rowIndex, "repair", e)}
+        >
+          <SelectTrigger className=" ">
+            <SelectValue placeholder="Select Repair" />
+          </SelectTrigger>
+          <SelectContent>
+            {repairOptionsList?.map((item) => (
+              <SelectItem value={item.id} key={item.id}>
+                {item.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      ),
+      enableSorting: true,
+      enableHiding: true,
+    },
+    {
+      accessorKey: "type",
+      header: "Type",
+      cell: ({ row, updateRow, rowIndex }: any) => (
+        <Select
+          value={row.original.type}
+          onValueChange={(e) => updateRow(rowIndex, "type", e)}
+        >
+          <SelectTrigger className=" ">
+            <SelectValue placeholder="Select Type" />
+          </SelectTrigger>
+          <SelectContent>
+            {[].map((item) => (
+              <SelectItem value={item.id} key={item.id}>
+                {item.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      ),
+      enableSorting: true,
+      enableHiding: true,
+    },
+    {
+      accessorKey: "priority",
+      header: "Priority",
+      cell: ({ row, updateRow, rowIndex }: any) => (
+        <Select
+          value={row.original.priority}
+          onValueChange={(e) => updateRow(rowIndex, "priority", e)}
+        >
+          <SelectTrigger className=" ">
+            <SelectValue placeholder="All Locations" />
+          </SelectTrigger>
+          <SelectContent>
+            {priorityOptions?.map((item) => (
+              <SelectItem value={item.id} key={item.id}>
+                {item.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      ),
+      enableSorting: true,
+      enableHiding: true,
+    },
+    {
+      accessorKey: "laborTime",
+      header: "Labor Time",
+      cell: ({ row, updateRow, rowIndex }: any) => (
+        <Input
+          value={row.original.laborTime}
+          onChange={(e) => updateRow(rowIndex, "laborTime", e.target.value)}
+          type="number"
+        />
+      ),
+      enableSorting: true,
+      enableHiding: true,
+    },
+    {
+      accessorKey: "notes",
+      header: "Notes",
+      cell: ({ row, updateRow, rowIndex }: any) => (
+        <Input
+          value={row.original.notes}
+          onChange={(e) => updateRow(rowIndex, "notes", e.target.value)}
+        />
+      ),
+      enableSorting: true,
+      enableHiding: true,
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      cell: ({ row }) => {
+        const person = row.original;
+        return (
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => alert(`Upload image here`)}
+            >
+              <Camera />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => alert(`Delete ${person.notes}`)}
+            >
+              <LucideTrash2 className="text-destructive" />
+            </Button>
+          </div>
+        );
+      },
+      enableSorting: false,
+      enableHiding: false,
+    },
+  ];
   const form = useForm<RepairRequestType>({
     resolver: zodResolver(repairRequestSchema),
     defaultValues: {},
   });
+  const [repairRows, setRepairRows] = useState<RepairRequestInterface[]>([]);
 
-  function onSubmit(data: RepairRequestType) {
-    console.log("Form submitted with VALUES:", data);
-    toast("Project created successfully!", {
-      duration: 10000,
+  function onSubmit(values: RepairRequestType) {
+    if (!equipmentId) {
+      toast.error("Equipment ID is missing.");
+      return;
+    }
+    const payload = {
+      id: equipmentId,
+      repair_request: [
+        {
+          employee_id: values.requestedBy,
+          due_date: values.dueDate
+            ? new Date(values.dueDate).toISOString().split("T")[0]
+            : null,
+          repair_by: values.repairBy ?? null,
+          repairs: repairRows.map((row) => ({
+            repair_id: row.repair,
+            type: row.type,
+            priority: row.priority,
+            Labor_time: row.laborTime,
+            notes: row.notes ?? "",
+          })),
+        },
+      ],
+    };
+    updateRepairRequest(payload, {
+      onSuccess: () => {
+        toast.success("Repair request created successfully!");
+        setOpen(false);
+        form.reset();
+      },
+      onError: () => {
+        toast.error("Failed to create repair request.");
+      },
     });
-
-    setOpen(false);
-    form.reset();
   }
 
   function onError(errors: any) {
-    // Get all error messages
     const errorMessages = Object.entries(errors).map(
       ([field, error]: [string, any]) => {
-        const fieldLabels: Record<string, string> = {
-          unit: "Project Name",
-        };
-
+        const fieldLabels: Record<string, string> = { unit: "Project Name" };
         return `${fieldLabels[field] || field}: ${error.message}`;
       }
     );
-
     toast.error("Please fix the following errors:", {
       description: (
         <div className="mt-2">
@@ -141,14 +299,20 @@ export default function ActualRepairRequestForm({ variant }: triggerVariant) {
             control={form.control}
             name="equipment"
             label="Equipment"
-            options={equipmentOptionsList}
+            options={allEquipments
+              ? convertToOptionList(
+                allEquipments,
+                "id",
+                "unit_number"
+              )
+              : []}
           />
 
           <ComboboxFieldWrapper
             control={form.control}
             name="requestedBy"
             label="Requested By"
-            options={assigneeOptions}
+            options={transformedEmployeeOptions}
           />
 
           <DatePickerWrapper
@@ -166,28 +330,28 @@ export default function ActualRepairRequestForm({ variant }: triggerVariant) {
             warning="(meter)"
           />
 
-          {/* <Fieldset
+          <Fieldset
             legend="Repairs Needed"
             content={
               <EditableDataTable
-                data={people}
+                data={repairRows}
                 columns={columns}
-                defaultRow={{ id: Date.now(), repair: "", email: "" }}
+                defaultRow={{ id: Date.now(), repair: "", type: "", priority: "", laborTime: 0, notes: "" }}
                 onDataChange={(newData) => {
-                  console.log("Updated Data:", newData);
+                  setRepairRows(newData as RepairRequestInterface[]);
                 }}
               />
             }
-          /> */}
+          />
         </div>
         <div className="flex justify-end">
           <Button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isPending}
             className="min-w-32 my-4 w-full"
           >
-            {isSubmitting ? (
-              "Creating..."
+            {isPending ? (
+              "Submitting..."
             ) : (
               <>
                 <Save className="mr-2 h-4 w-4" />
@@ -204,15 +368,27 @@ export default function ActualRepairRequestForm({ variant }: triggerVariant) {
 export function EditActualUpdateRepairRequestForm({
   children,
   data,
+  equipmentId,
 }: {
   children: React.ReactNode;
   data: any;
+  equipmentId?: string | number;
 }) {
-  const {
-    data: locationOptionsList,
-    isLoading: locationOptionsListLoading,
-    error: locationOptionsListError,
-  } = useGetLocations<Array<{ id: string; name: string }>>();
+  const { mutate: updateRepairRequest, isPending } = useUpdateEquipmentRepairRequest();
+  const { data: repairOptionsList } = useGetMaintenanceRepairs<Array<{ id: string; name: string }>>();
+  const { data: allEquipments } = useGetEquipments<GenericObject[]>();
+  const { data: employeeOptions } = useGetEmployees<GenericObject[]>();
+  const { data: priorityOptions } = useGetPriorities<GenericObject[]>();
+
+
+  const transformedEmployeeOptions = useMemo(() => {
+    return (employeeOptions || []).map((emp: any) => ({
+      id: emp.id,
+      name: `${emp.first_name} ${emp.last_name}`,
+      group: "Employees",
+    }));
+  }, [employeeOptions]);
+
   const columns: ColumnDef<RepairRequestInterface>[] = [
     {
       accessorKey: "repair",
@@ -226,7 +402,7 @@ export function EditActualUpdateRepairRequestForm({
             <SelectValue placeholder="All Locations" />
           </SelectTrigger>
           <SelectContent>
-            {locationOptionsList?.map((item) => (
+            {repairOptionsList?.map((item) => (
               <SelectItem value={item.id} key={item.id}>
                 {item.name}
               </SelectItem>
@@ -249,7 +425,7 @@ export function EditActualUpdateRepairRequestForm({
             <SelectValue placeholder="All Locations" />
           </SelectTrigger>
           <SelectContent>
-            {locationOptionsList.map((item) => (
+            {[].map((item) => (
               <SelectItem value={item.id} key={item.id}>
                 {item.name}
               </SelectItem>
@@ -338,35 +514,71 @@ export function EditActualUpdateRepairRequestForm({
   ];
 
   const [open, setOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [repairRows, setRepairRows] = useState<RepairRequestInterface[]>(
+    (data?.repairs ?? []).map((r: any, i: number) => ({
+      id: r.id ?? i,
+      repair: r.repair_id ?? r.repair ?? "",
+      type: r.type ?? "",
+      priority: r.priority ?? "",
+      laborTime: r.Labor_time ?? r.laborTime ?? 0,
+      notes: r.notes ?? "",
+    }))
+  );
 
   const form = useForm<RepairRequestType>({
     resolver: zodResolver(repairRequestSchema),
-    defaultValues: data,
+    defaultValues: {
+      equipment: data?.equipment_id ?? data?.equipment ?? "",
+      requestedBy: data?.employee_id ?? data?.requestedBy ?? "",
+      dueDate: data?.due_date ?? data?.dueDate ?? "",
+      repairBy: data?.repair_by ?? data?.repairBy ?? undefined,
+    },
   });
 
-  function onSubmit(data: RepairRequestType) {
-    console.log("Form submitted with VALUES:", data);
-    toast("Project created successfully!", {
-      duration: 10000,
+  function onSubmit(values: RepairRequestType) {
+    if (!equipmentId) {
+      toast.error("Equipment ID is missing.");
+      return;
+    }
+    const payload = {
+      id: equipmentId,
+      repair_request: [
+        {
+          id: data?.id,
+          employee_id: values.requestedBy,
+          due_date: values.dueDate
+            ? new Date(values.dueDate).toISOString().split("T")[0]
+            : null,
+          repair_by: values.repairBy ?? null,
+          repairs: repairRows.map((row) => ({
+            repair_id: row.repair,
+            type: row.type,
+            priority: row.priority,
+            Labor_time: row.laborTime,
+            notes: row.notes ?? "",
+          })),
+        },
+      ],
+    };
+    updateRepairRequest(payload, {
+      onSuccess: () => {
+        toast.success("Repair request updated successfully!");
+        setOpen(false);
+        form.reset();
+      },
+      onError: () => {
+        toast.error("Failed to update repair request.");
+      },
     });
-
-    setOpen(false);
-    form.reset();
   }
 
   function onError(errors: any) {
-    // Get all error messages
     const errorMessages = Object.entries(errors).map(
       ([field, error]: [string, any]) => {
-        const fieldLabels: Record<string, string> = {
-          unit: "Project Name",
-        };
-
+        const fieldLabels: Record<string, string> = { unit: "Project Name" };
         return `${fieldLabels[field] || field}: ${error.message}`;
       }
     );
-
     toast.error("Please fix the following errors:", {
       description: (
         <div className="mt-2">
@@ -404,14 +616,20 @@ export function EditActualUpdateRepairRequestForm({
                     control={form.control}
                     name="equipment"
                     label="Equipment"
-                    options={equipmentOptionsList}
+                    options={allEquipments
+                      ? convertToOptionList(
+                        allEquipments,
+                        "id",
+                        "unit_number"
+                      )
+                      : []}
                   />
 
                   <ComboboxFieldWrapper
                     control={form.control}
                     name="requestedBy"
                     label="Requested By"
-                    options={assigneeOptions}
+                    options={transformedEmployeeOptions}
                   />
 
                   <DatePickerWrapper
@@ -433,11 +651,11 @@ export function EditActualUpdateRepairRequestForm({
                     legend="Repairs Needed"
                     content={
                       <EditableDataTable
-                        data={people}
+                        data={repairRows}
                         columns={columns}
-                        defaultRow={{ id: Date.now(), repair: "", email: "" }}
+                        defaultRow={{ id: Date.now(), repair: "", type: "", priority: "", laborTime: 0, notes: "" }}
                         onDataChange={(newData) => {
-                          console.log("Updated Data:", newData);
+                          setRepairRows(newData as RepairRequestInterface[]);
                         }}
                       />
                     }
@@ -446,15 +664,15 @@ export function EditActualUpdateRepairRequestForm({
                 <div className="flex justify-end">
                   <Button
                     type="submit"
-                    disabled={isSubmitting}
+                    disabled={isPending}
                     className="min-w-32 my-4 w-full"
                   >
-                    {isSubmitting ? (
-                      "Creating..."
+                    {isPending ? (
+                      "Saving..."
                     ) : (
                       <>
                         <Save className="mr-2 h-4 w-4" />
-                        Update Equipment
+                        Update Request
                       </>
                     )}
                   </Button>
