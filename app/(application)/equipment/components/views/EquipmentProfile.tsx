@@ -1924,14 +1924,14 @@ export function HistoryTabs({ defaultTab = "maintenance" }: Props) {
     <Tabs defaultValue={defaultTab} className="w-full space-y-4">
       <TabsList className="flex flex-wrap justify-start gap-2">
         {tabItems.map((tab) => (
-          <TabsTrigger key={tab.value} value={tab.value}>
-            {tab.label}
+          <TabsTrigger key={tab.id} value={tab.id}>
+            {tab.name}
           </TabsTrigger>
         ))}
       </TabsList>
 
       {tabItems.map((tab) => (
-        <TabsContent key={tab.value} value={tab.value}>
+        <TabsContent key={tab.id} value={tab.id}>
           {tab.content}
         </TabsContent>
       ))}
