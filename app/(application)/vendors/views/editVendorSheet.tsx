@@ -10,7 +10,7 @@ import { GitPullRequestArrow } from "lucide-react";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import InputWrapper from "@/components/forms/fields/InputWrapper";
-import SelectWrapper from "@/components/forms/fields/SelectWrapper";
+import { ChoiceListComboboxField } from "@/components/forms/fields/ChoiceListComboboxWrapper";
 import TextareaWrapper from "@/components/forms/fields/TextareaWrapper";
 import CustomFieldsWrapper from "@/components/forms/fields/CustomFieldsWrapper";
 import FileUploadWrapper from "@/components/forms/fields/FileUploadWrapper";
@@ -22,12 +22,6 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  useGetLocations,
-  useGetPurchaseOrderTerms,
-  useGetStatusOnes,
-  useGetVendorTypes,
-} from "@/services/setups/lookups";
 import {
   useGetVendor,
   useUpdateVendor,
@@ -46,26 +40,6 @@ export default function EditVendor({
   data: VendorTableInterface;
 }) {
   const [open, setOpen] = useState(false);
-  const {
-    data: termsOptionsList,
-    isLoading: termsOptionsListLoading,
-    error: termsOptionsListError,
-  } = useGetPurchaseOrderTerms<Array<{ id: string; name: string }>>();
-  const {
-    data: statusOptions,
-    isLoading: statusOptionsLoading,
-    error: statusOptionsError,
-  } = useGetStatusOnes<Array<{ id: string; name: string }>>();
-  const {
-    data: vendorTypeOptions,
-    isLoading,
-    error: vendorTypesError,
-  } = useGetVendorTypes<Array<{ id: string; name: string }>>();
-  const {
-    data: locationOptionsList,
-    isLoading: locationOptionsListLoading,
-    error: locationOptionsListError,
-  } = useGetLocations<Array<{ id: string; name: string }>>();
 
   const vendorForm = useForm<z.infer<typeof vendorSchema>>({
     resolver: zodResolver(vendorSchema),
@@ -247,35 +221,35 @@ export default function EditVendor({
                       </div>
                       <div className="col-span-1"></div>
                     </div>
-                    <SelectWrapper
+                    <ChoiceListComboboxField
                       control={vendorForm.control}
                       name="location_id"
-                      label="Location "
+                      label="Location"
+                      choiceList="locations"
                       required
-                      options={locationOptionsList??[]}
                     />
 
-                    <SelectWrapper
+                    <ChoiceListComboboxField
                       control={vendorForm.control}
                       name="status_id"
-                      label="Status "
+                      label="Status"
+                      choiceList="statusOnes"
                       required
-                      options={statusOptions??[]}
                     />
 
-                    <SelectWrapper
+                    <ChoiceListComboboxField
                       control={vendorForm.control}
                       name="type_id"
-                      label="Type "
+                      label="Type"
+                      choiceList="vendorTypes"
                       required
-                      options={vendorTypeOptions??[]}
                     />
-                    <SelectWrapper
+                    <ChoiceListComboboxField
                       control={vendorForm.control}
                       name="term_id"
-                      label="Term "
+                      label="Term"
+                      choiceList="purchaseOrders:terms"
                       required
-                      options={termsOptionsList??[]}
                     />
                     <InputWrapper
                       control={vendorForm.control}

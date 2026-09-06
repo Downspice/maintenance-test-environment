@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, type Control } from "react-hook-form";
 import { useState } from "react";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
@@ -10,21 +10,14 @@ import { GitPullRequestArrow } from "lucide-react";
 import TextareaWrapper from "../fields/TextareaWrapper";
 import { toast } from "sonner";
 import InputWrapper from "../fields/InputWrapper";
-import SelectWrapper from "../fields/SelectWrapper";
+import { ChoiceListComboboxField } from "../fields/ChoiceListComboboxWrapper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CustomFieldsWrapper from "../fields/CustomFieldsWrapper";
 import FileUploadWrapper from "../fields/FileUploadWrapper";
-import {
-  useGetVendorTypes,
-  useGetLocations,
-  useGetStatusOnes,
-  useGetPurchaseOrderTerms,
-} from "@/services/setups/lookups";
-import {
-  useAddVendor,
-} from "@/services/setups/vendor";
+import { useAddVendor } from "@/services/setups/vendor";
 
-export type VendorFormValues = z.infer<typeof vendorSchema>;
+export type VendorFormInput = z.input<typeof vendorSchema>;
+export type VendorFormValues = z.output<typeof vendorSchema>;
 
 // Define the form schema with Zod
 export const vendorSchema = z.object({
@@ -45,10 +38,9 @@ export const vendorSchema = z.object({
   type_id: z.string().min(1, { message: "Vendor type is required" }),
   term_id: z.string().min(1, { message: "Payment term is required" }),
 
-  billing_rate: z
-    .string({ invalid_type_error: "Billing rate must be a number" })
-    .optional()
-    .transform((val) => (typeof val === "string" ? parseFloat(val) : val)),
+  billing_rate: z.coerce
+    .number({ error: "Billing rate must be a number" })
+    .optional(),
 
   notes: z.coerce.string().optional(),
 
@@ -81,37 +73,17 @@ export const vendorSchema = z.object({
 });
 
 export default function NewVendor() {
-  const {
-    data: termsOptionsList,
-    isLoading: termsOptionsListLoading,
-    error: termsOptionsListError,
-  } = useGetPurchaseOrderTerms<Array<{ id: string; name: string }>>();
-  const {
-    data: statusOptions,
-    isLoading: statusOptionsLoading,
-    error: statusOptionsError,
-  } = useGetStatusOnes<Array<{ id: string; name: string }>>();
-  const {
-    data: vendorTypeOptions,
-    isLoading,
-    error: vendorTypesError,
-  } = useGetVendorTypes<Array<{ id: string; name: string }>>();
-  const {
-    data: locationOptionsList,
-    isLoading: locationOptionsListLoading,
-    error: locationOptionsListError,
-  } = useGetLocations<Array<{ id: string; name: string }>>();
-
   const [customFields, setCustomFields] = useState<
     { name: string; id: string }[]
   >([]);
 
-  const vendorForm = useForm<z.infer<typeof vendorSchema>>({
+  const vendorForm = useForm<VendorFormInput, unknown, VendorFormValues>({
     resolver: zodResolver(vendorSchema),
     defaultValues: {
       name: "",
     },
   });
+  const formControl = vendorForm.control as Control<any>;
 
   const { 
     mutateAsync, 
@@ -124,11 +96,8 @@ export default function NewVendor() {
     
     // try {
       // 4. AWAIT the mutateAsync call, passing the validated 'data' object
-      const res = await mutateAsync(data); 
-
-      // 5. Handle success and feedback
-      // Assuming 'res' contains a success message or the created object
-      toast.success(res?.message); 
+      const res = (await mutateAsync(data)) as { message?: string };
+      toast.success(res?.message ?? "Vendor created.");
       vendorForm.reset(); // Reset form state on success
 
       // In a real application, you would likely close the sheet/modal here
@@ -151,7 +120,12 @@ export default function NewVendor() {
         <form
           onSubmit={vendorForm.handleSubmit(handleSubmit, (errors) => {
             const firstErrorField = Object.values(errors)[0];
-            const message = firstErrorField?.message;
+            const message =
+              firstErrorField &&
+              typeof firstErrorField === "object" &&
+              "message" in firstErrorField
+                ? String(firstErrorField.message)
+                : undefined;
 
             if (message) {
               toast.error(message);
@@ -169,28 +143,28 @@ export default function NewVendor() {
             <TabsContent value="general">
               <div className="flex flex-col gap-1">
                 <InputWrapper
-                  control={vendorForm.control}
+                  control={formControl}
                   name="name"
                   label="Name"
                   type="text"
                   required
                 />
                 <InputWrapper
-                  control={vendorForm.control} required
+                  control={formControl} required
                   name="vendor_number"
                   label="Vendor #"
                   type="text"
                 />
 
                 <InputWrapper
-                  control={vendorForm.control}
+                  control={formControl}
                   name="contact"
                   label="Contact"
                   type="text"
                 />
 
                 <InputWrapper
-                  control={vendorForm.control}
+                  control={formControl}
                   name="address"
                   label="Address"
                   type="text"
@@ -200,7 +174,7 @@ export default function NewVendor() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="col-span-1">
                     <InputWrapper
-                      control={vendorForm.control}
+                      control={formControl}
                       name="city"
                       label="City"
                       type="text"
@@ -208,7 +182,7 @@ export default function NewVendor() {
                   </div>
                   <div className="col-span-1">
                     <InputWrapper
-                      control={vendorForm.control} required
+                      control={formControl} required
                       name="state"
                       label="State /Province"
                       type="text"
@@ -216,7 +190,7 @@ export default function NewVendor() {
                   </div>
                   <div className="col-span-1">
                     <InputWrapper
-                      control={vendorForm.control}
+                      control={formControl}
                       name="postal_code"
                       label="Postal Code"
                       type="text" required
@@ -224,7 +198,7 @@ export default function NewVendor() {
                   </div>
                   <div className="col-span-1">
                     <InputWrapper
-                      control={vendorForm.control}
+                      control={formControl}
                       name="country"
                       label="Country"
                       type="text"
@@ -232,52 +206,52 @@ export default function NewVendor() {
                   </div>
                   <div className="col-span-1"></div>
                 </div>
-                <SelectWrapper
-                  control={vendorForm.control}
+                <ChoiceListComboboxField
+                  control={formControl}
                   name="location_id"
-                  label="Location "
+                  label="Location"
+                  choiceList="locations"
                   required
-                  options={locationOptionsList??[]}
                 />
 
-                <SelectWrapper
-                  control={vendorForm.control}
+                <ChoiceListComboboxField
+                  control={formControl}
                   name="status_id"
-                  label="Status "
+                  label="Status"
+                  choiceList="statusOnes"
                   required
-                  options={statusOptions??[]}
                 />
 
-                <SelectWrapper
-                  control={vendorForm.control}
+                <ChoiceListComboboxField
+                  control={formControl}
                   name="type_id"
-                  label="Type "
+                  label="Type"
+                  choiceList="vendorTypes"
                   required
-                  options={vendorTypeOptions??[]}
                 />
-                <SelectWrapper
-                  control={vendorForm.control}
+                <ChoiceListComboboxField
+                  control={formControl}
                   name="term_id"
-                  label="Term "
+                  label="Term"
+                  choiceList="purchaseOrders:terms"
                   required
-                  options={termsOptionsList ?? []}
                 />
                 <InputWrapper
-                  control={vendorForm.control}
+                  control={formControl}
                   name="billing_rate"
                   label="Billing Rate"
                   type="number"
                 />
                 <div className="flex flex-col gap-4">
                   <TextareaWrapper
-                    control={vendorForm.control}
+                    control={formControl}
                     name="notes"
                     label="Notes"
                     rows={4}
                   />
                 </div>
                 <CustomFieldsWrapper
-                  control={vendorForm.control}
+                  control={formControl}
                   name="others"
                   label="Custom Fields"
                 />
@@ -286,32 +260,32 @@ export default function NewVendor() {
             <TabsContent value="contact">
               <div className="flex flex-col gap-1">
                 <InputWrapper
-                  control={vendorForm.control}
+                  control={formControl}
                   name="phone_one"
                   label="Phone 1:"
                   type="text"
                   required
                 />
                 <InputWrapper
-                  control={vendorForm.control}
+                  control={formControl}
                   name="phone_two"
                   label="Phone 2:"
                   type="text"
                 />
                 <InputWrapper
-                  control={vendorForm.control}
+                  control={formControl}
                   name="fax"
                   label="Fax:"
                   type="text"
                 />
                 <InputWrapper
-                  control={vendorForm.control}
+                  control={formControl}
                   name="email"
                   label="Email:"
                   type="text"
                 />
                 <InputWrapper
-                  control={vendorForm.control}
+                  control={formControl}
                   name="website"
                   label="Website:"
                   type="text"
@@ -321,7 +295,7 @@ export default function NewVendor() {
             <TabsContent value="attachment">
               <FileUploadWrapper
                 multiple={true}
-                control={vendorForm.control}
+                control={formControl}
                 name={"Attachments"}
                 label={"Attachments"}
               />
