@@ -3,26 +3,25 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { GitPullRequestArrow } from "lucide-react";
-import TextareaWrapper from "../wrappers/TextareaWrapper";
+import TextareaWrapper from "../fields/TextareaWrapper";
 import { toast } from "sonner";
-import InputWrapper from "../wrappers/InputWrapper";
+import InputWrapper from "../fields/InputWrapper";
 import {
   substituteOptions,
-} from "@/lib/equipment-schema";
-import SelectWrapper from "../wrappers/SelectWrapper";
+} from "@/lib/schemas/equipment-schema";
+import SelectWrapper from "../fields/SelectWrapper";
 import {
   inventoryAdjustmentType,
-} from "@/lib/option-list";
-import DatePickerWrapper from "../wrappers/DatePickerWrapper";
-import { ComboboxFieldWrapper } from "../wrappers/ComboboxWrapper";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { ScrollArea } from "@/components/ui/scroll-area";
+} from "@/lib/shared/option-list";
+import DatePickerWrapper from "../fields/DatePickerWrapper";
+import { ComboboxFieldWrapper } from "../fields/ComboboxWrapper";
 import { useGetWarehouses } from "@/services/setups/inventory";
-import { useGetVendors } from "@/services/setups/vendor";
+import {
+  useGetVendors,
+} from "@/services/setups/vendor";
 
 // Define the form schema with Zod
 export const AdjustInventorySchema = z.object({ 

@@ -6,16 +6,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
- import RadioGroupWrapper from "@/components/forms/wrappers/RadioGroupWrapper";
-import InputWrapper from "@/components/forms/wrappers/InputWrapper";
-import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
-import FileUploadWrapper from "@/components/forms/wrappers/FileUploadWrapper";
-import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";
-import SingleCheckboxWrapper from "@/components/forms/wrappers/SingleCheckboxWrapper";
+ import InputWrapper from "@/components/forms/fields/InputWrapper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
-import { Trash2, Pencil } from "lucide-react";
-import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
+import { ComboboxFieldWrapper } from "@/components/forms/fields/ComboboxWrapper";
 
 const partOptions = [
   { name: "Oil Filter (PN-123)", id: "PN-123" },

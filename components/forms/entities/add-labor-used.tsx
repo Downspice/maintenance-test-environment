@@ -1,7 +1,7 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
@@ -12,15 +12,17 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import InputWrapper from "../wrappers/InputWrapper";
-import TextareaWrapper from "../wrappers/TextareaWrapper";
-import { ComboboxFieldWrapper } from "../wrappers/ComboboxWrapper";
-import RadioGroupWrapper from "../wrappers/RadioGroupWrapper";
-import SingleCheckboxWrapper from "../wrappers/SingleCheckboxWrapper";
+import InputWrapper from "../fields/InputWrapper";
+import TextareaWrapper from "../fields/TextareaWrapper";
+import { ComboboxFieldWrapper } from "../fields/ComboboxWrapper";
+import RadioGroupWrapper from "../fields/RadioGroupWrapper";
+import SingleCheckboxWrapper from "../fields/SingleCheckboxWrapper";
 import { useGetCostCenters } from "@/services/setups/inventory";
-import { AddLaborUsedSchema, AddLaborUsedInterface } from "@/lib/WorkOrder/workOrder-data";
+import { AddLaborUsedSchema, AddLaborUsedInterface } from "@/lib/domains/work-order/workOrder-data";
 import { useGetEmployees } from "@/services/setups/employee";
-import { useGetVendorOptions } from "@/services/setups/vendor";
+import {
+  useGetVendorOptions,
+} from "@/services/setups/vendor";
 import { GenericObject } from "@/types/types";
 
 interface AddLaborUsedProps {

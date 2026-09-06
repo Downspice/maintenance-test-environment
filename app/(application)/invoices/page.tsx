@@ -10,12 +10,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { useSheet } from "@/lib/sheet-providers";
-import InvoicesDataTable from "./table/invoicesDataTable";
+import { useSheet } from "@/lib/providers/sheet-providers";
+import InvoicesDataTable from "./table/invoices-data-table";
 
-import NewInvoiceForm from "@/components/forms/actualForms/new-invoice-form";
-import PaymentReceivedTable from "./view/payments-received-dataTable";
-import { useGetLocations } from "@/services/setups/vendor";
+import NewInvoiceForm from "@/components/forms/entities/new-invoice-form";
+import PaymentReceivedTable from "./views/payments-received-data-table";
+import {
+  useGetLocations,
+} from "@/services/setups/lookups";
 
 const ActiveDropdown = [
   {

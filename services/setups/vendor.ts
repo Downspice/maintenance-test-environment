@@ -1,742 +1,168 @@
-'use client'
-import { useQuery, useMutation, useQueryClient, UseMutationOptions, UseQueryOptions } from "@tanstack/react-query";
-import { AxiosError } from "axios";
-// Assuming these imports and environment variable are correctly configured
-import { dummyApiClient } from "@/lib/axios";
-import { ApiError, ApiResponse } from "@/types/types";
+'use client';
 
-// NOTE: We assume BASEURL is available globally or imported correctly.
-const BASEURL = process.env.NEXT_PUBLIC_BASE_URL;
-
-// --- Type Definitions for better readability ---
-type TId = string | number;
-type TEntity = unknown; // Replace 'unknown' with your actual data type (e.g., Vendor, Location)
-type TParams = Record<string, any>; // Replace with specific payload types
-
-// --- Helper Functions and Hooks ---
-
-/**
- * Builds the full API URL for an endpoint.
- * @param path The relative path (e.g., /api/get-vendors)
- */
-// // const buildUrl = (path: string) => `${BASEURL}${path}`;
-const buildUrl = (path: string) => path;
-
-/**
- * Base type for all mutation hooks.
- * @param mutationKey Used for React Query tooling.
- * @param endpoint The API endpoint path.
- * @param method The HTTP method (post, put, delete).
- * @param invalidateKeys An array of query keys to invalidate on success.
- */
-const useBaseMutation = <TResponse = TEntity, TPayload = TParams, TContext = unknown>(
-    mutationKey: string[],
-    endpoint: (payload: TPayload) => string,
-    method: 'post' | 'put' | 'delete' | 'patch',
-    invalidateKeys: (payload: TPayload) => unknown[], // Function to derive keys from payload
-    options?: UseMutationOptions<TResponse, AxiosError<ApiError>, TPayload, TContext>
-) => {
-    const queryClient = useQueryClient();
-
-    const mutationFn = async (payload: TPayload) => {
-        const url = buildUrl(endpoint(payload));
-        
-        // --- FIX APPLIED HERE ---
-        // CRITICAL: Call dummyApiClient directly and pass method and data in the config object.
-        const response = await dummyApiClient<ApiResponse<TResponse>>(url, {
-            method: method,
-            // Only pass the payload (data) for POST/PUT/PATCH. DELETE requests typically send data via URL/params.
-            data: (method === 'post' || method === 'put' || method === 'patch') ? payload : undefined,
-        });
-        
-        // Return the actual data payload from the API response
-        return response.data as TResponse; 
-    };
-
-    return useMutation<TResponse, AxiosError<ApiError>, TPayload, TContext>({
-        mutationFn,
-        mutationKey,
-        onSuccess: (data, variables, context) => {
-            // Invalidate all related queries
-            invalidateKeys(variables).forEach(key => {
-                queryClient.invalidateQueries({ queryKey: key as any });
-            });
-            options?.onSuccess?.(data, variables, context);
-        },
-        ...options,
-    });
-};
-
-// --- QUERY HOOKS (GET) ---
-
-/**
- * Fetches the list of all Vendor Types.
- */
-export function useGetVendorTypes<TData = TEntity[]>(options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>) {
-    return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
-        queryKey: ["vendor-types"],
-        queryFn: async () => {
-            // FIX: Call dummyApiClient and store the full response object
-            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-vendor-types"));
-            return response;
-        },
-        // FIX: Select function extracts the data payload from the response object
-        select: (response) => response.data as TData,
-        staleTime: Infinity,
-        ...options,
-    });
-}
-
-/**
- * Fetches the list of all Locations.
- */
-export function useGetLocations<TData = TEntity[]>(options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>) {
-    return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
-        queryKey: ["locations"],
-        queryFn: async () => {
-            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-locations"));
-            return response;
-        },
-        select: (response) => response.data as TData,
-        staleTime: Infinity,
-        ...options,
-    });
-}
-
-/**
- * Fetches the list of all Purchase Order Terms.
- */
-export function useGetPurchaseOrderTerms<TData = TEntity[]>(options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>) {
-    return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
-        queryKey: ["purchase-order-terms"],
-        queryFn: async () => {
-            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-purchase-order-terms"));
-            return response;
-        },
-        select: (response) => response.data as TData,
-        staleTime: Infinity,
-        ...options,
-    });
-}
-
-/**
- * Fetches the list of all Status Ones.
- */
-export function useGetStatusOnes<TData = TEntity[]>(options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>) {
-    return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
-        queryKey: ["status-ones"],
-        queryFn: async () => {
-            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-status-one"));
-            return response;
-        },
-        select: (response) => response.data as TData,
-        staleTime: Infinity,
-        ...options,
-    });
-}
-
-/**
- * Fetches the list of all Vendors.
- */
-export function useGetVendors<TData = TEntity[]>(options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>) {
-    return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
-        queryKey: ["vendors"],
-        queryFn: async () => {
-            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-vendors"));
-            return response;
-        },
-        select: (response) => response.data as TData,
-        staleTime: Infinity,
-        ...options,
-    });
-}
-
-// Paginated vendors with server-side filters and search
-type VendorQuery = {
-    search?: string;
-    location_id?: string;
-    type_id?: string;
-    size?: number; // page size
-    page?: number; // 1-based page index as required by API
-    sort_by?: string;
-    sort_order?: "asc" | "desc";
-};
-
-export function useGetVendorsPaginated<TPaginated = any>(
-    query: VendorQuery,
-    options?: UseQueryOptions<ApiResponse<TPaginated>, AxiosError<ApiError>, TPaginated>
-) {
-    return useQuery<ApiResponse<TPaginated>, AxiosError<ApiError>, TPaginated>({
-        queryKey: ["vendors", query],
-        queryFn: async () => {
-            const params = new URLSearchParams();
-            if (query.search && query.search.trim()) params.set("search", query.search.trim());
-            if (query.location_id) params.set("location_id", query.location_id);
-            if (query.type_id) params.set("type_id", query.type_id);
-            if (typeof query.size === "number") params.set("size", String(query.size));
-            if (typeof query.page === "number") params.set("page", String(query.page));
-            if (query.sort_by) params.set("sort_by", query.sort_by);
-            if (query.sort_order) params.set("sort_order", query.sort_order);
-            const url = buildUrl(`/api/get-vendors${params.toString() ? `?${params.toString()}` : ""}`);
-            const response = await dummyApiClient<ApiResponse<TPaginated>>(url);
-            return response;
-        },
-        select: (response) => response.data as TPaginated,
-        ...options,
-    });
-}
-
-/**
- * Fetches vendor options for selects/comboboxes.
- */
-export function useGetVendorOptions<TData = TEntity[]>(options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>) {
-    return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
-        queryKey: ["vendor-options"],
-        queryFn: async () => {
-            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-vendor-options"));
-            return response;
-        },
-        select: (response) => response.data as TData,
-        staleTime: Infinity,
-        ...options,
-    });
-}
-
-/**
- * Fetches a single Vendor by ID.
- * @param id The ID of the vendor to fetch.
- */
-export function useGetVendor<TData = TEntity>(id: TId, options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>) {
-    return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
-        queryKey: ["vendor", id],
-        queryFn: async () => {
-            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl(`/api/get-vendor/${id}`));
-            return response;
-        },
-        select: (response) => response.data as TData,
-        enabled: !!id,
-        ...options,
-    });
-}
-
-// --- MUTATION HOOKS (POST, PUT, DELETE) ---
-
-// ------------------------------------------------
-// 1. Vendor Type Mutations
-// ------------------------------------------------
-
-type VendorTypePayload = { name: string, id?: TId };
-
-/**
- * Adds a new Vendor Type. Invalidates the 'vendor-types' list.
- */
-export function useAddVendorType() {
-    return useBaseMutation<TEntity, VendorTypePayload>(
-        ["add-vendor-type"],
-        () => "/api/add-vendor-type",
-        'post',
-        () => [['vendor-types']]
-    );
-}
-
-/**
- * Updates an existing Vendor Type. Invalidates the 'vendor-types' list.
- * Expects a payload with an 'id' field.
- */
-export function useUpdateVendorType() {
-    return useBaseMutation<TEntity, VendorTypePayload & { id: TId }>(
-        ["update-vendor-type"],
-        (payload) => `/api/update-vendor-type/${payload.id}`,
-        'put',
-        () => [['vendor-types']]
-    );
-}
-
-/**
- * Deletes a Vendor Type. Invalidates the 'vendor-types' list.
- * Expects a payload with an 'id' field.
- */
-export function useDeleteVendorType() {
-    return useBaseMutation<TEntity, { id: TId }>(
-        ["delete-vendor-type"],
-        (payload) => `/api/delete-vendor-type/${payload.id}`,
-        'delete',
-        () => [['vendor-types']]
-    );
-}
-
-// ------------------------------------------------
-// 2. Location Mutations
-// ------------------------------------------------
-
-type LocationPayload = TParams & { id?: TId };
-
-/**
- * Adds a new Location. Invalidates the 'locations' list.
- */
-export function useAddLocation() {
-    return useBaseMutation<TEntity, LocationPayload>(
-        ["add-location"],
-        () => "/api/add-location",
-        'post',
-        () => [['locations']]
-    );
-}
-
-/**
- * Updates an existing Location. Invalidates the 'locations' list.
- * Expects a payload with an 'id' field.
- */
-export function useUpdateLocation() {
-    return useBaseMutation<TEntity, LocationPayload & { id: TId }>(
-        ["update-location"],
-        (payload) => `/api/update-location/${payload.id}`,
-        'put',
-        () => [['locations']]
-    );
-}
-
-/**
- * Deletes a Location. Invalidates the 'locations' list.
- * Expects a payload with an 'id' field.
- */
-export function useDeleteLocation() {
-    return useBaseMutation<TEntity, { id: TId }>(
-        ["delete-location"],
-        (payload) => `/api/delete-location/${payload.id}`,
-        'delete',
-        () => [['locations']]
-    );
-}
-
-// ------------------------------------------------
-// 3. Purchase Order Term Mutations
-// ------------------------------------------------
-
-type POTermPayload = TParams & { id?: TId };
-
-/**
- * Adds a new Purchase Order Term. Invalidates the 'purchase-order-terms' list.
- */
-export function useAddPurchaseOrderTerm() {
-    return useBaseMutation<TEntity, POTermPayload>(
-        ["add-purchase-order-term"],
-        () => "/api/add-purchase-order-term",
-        'post',
-        () => [['purchase-order-terms']]
-    );
-}
-
-/**
- * Updates an existing Purchase Order Term. Invalidates the 'purchase-order-terms' list.
- * Expects a payload with an 'id' field.
- */
-export function useUpdatePurchaseOrderTerm() {
-    return useBaseMutation<TEntity, POTermPayload & { id: TId }>(
-        ["update-purchase-order-term"],
-        (payload) => `/api/update-purchase-order-term/${payload.id}`,
-        'put',
-        () => [['purchase-order-terms']]
-    );
-}
-
-/**
- * Deletes a Purchase Order Term. Invalidates the 'purchase-order-terms' list.
- * Expects a payload with an 'id' field.
- */
-export function useDeletePurchaseOrderTerm() {
-    return useBaseMutation<TEntity, { id: TId }>(
-        ["delete-purchase-order-term"],
-        (payload) => `/api/delete-purchase-order-term/${payload.id}`,
-        'delete',
-        () => [['purchase-order-terms']]
-    );
-}
-
-// ------------------------------------------------
-// 4. Status One Mutations
-// ------------------------------------------------
-
-type StatusOnePayload = TParams & { id?: TId };
-
-/**
- * Adds a new Status One. Invalidates the 'status-ones' list.
- */
-export function useAddStatusOne() {
-    return useBaseMutation<TEntity, StatusOnePayload>(
-        ["add-status-one"],
-        () => "/api/add-status-one",
-        'post',
-        () => [['status-ones']]
-    );
-}
-
-/**
- * Updates an existing Status One. Invalidates the 'status-ones' list.
- * Expects a payload with an 'id' field.
- */
-export function useUpdateStatusOne() {
-    return useBaseMutation<TEntity, StatusOnePayload & { id: TId }>(
-        ["update-status-one"],
-        (payload) => `/api/update-status-one/${payload.id}`,
-        'put',
-        () => [['status-ones']]
-    );
-}
-
-/**
- * Deletes a Status One. Invalidates the 'status-ones' list.
- * Expects a payload with an 'id' field.
- */
-export function useDeleteStatusOne() {
-    return useBaseMutation<TEntity, { id: TId }>(
-        ["delete-status-one"],
-        (payload) => `/api/delete-status-one/${payload.id}`,
-        'delete',
-        () => [['status-ones']]
-    );
-}
-
-// ------------------------------------------------
-// 5. Vendor/Contact/Attachment Mutations
-// ------------------------------------------------
+import { useQuery, type UseQueryOptions } from '@tanstack/react-query';
+import type { AxiosError } from 'axios';
+import { dummyApiClient } from '@/lib/api/axios';
+import type { ApiError, ApiResponse } from '@/types/types';
+import {
+  buildUrl,
+  useBaseMutation,
+  type TEntity,
+  type TId,
+  type TParams,
+} from './_helpers';
 
 type VendorPayload = TParams & { id?: TId };
-type AttachmentPayload = FormData & { id: TId }; // Assuming 'id' is Vendor ID
-type ContactPayload = TParams & { vendorId: TId, id?: TId }; // 'vendorId' is required for invalidation, 'id' is for PUT/DELETE
+type AttachmentPayload = FormData & { id: TId };
+type ContactPayload = TParams & { vendorId: TId; id?: TId };
 
-/**
- * Adds a new Vendor. Invalidates the 'vendors' list.
- */
-export function useAddVendor() {
-    return useBaseMutation<TEntity, VendorPayload>(
-        ["add-vendor"],
-        () => "/api/add-vendor",
-        'post',
-        () => [['vendors']]
-    );
-}
-
-/**
- * Updates an existing Vendor. Invalidates the 'vendors' list and the specific 'vendor' detail query.
- * Expects a payload with an 'id' field.
- */
-export function useUpdateVendor() {
-    return useBaseMutation<TEntity, VendorPayload & { id: TId }>(
-        ["update-vendor"],
-        (payload) => `/api/update-vendor/${payload.id}`,
-        'put',
-        (payload) => [['vendors'], ['vendor', payload.id]]
-    );
-}
-
-/**
- * Deletes a Vendor. Invalidates the 'vendors' list and the specific 'vendor' detail query.
- * Expects a payload with an 'id' field.
- */
-export function useDeleteVendor() {
-    return useBaseMutation<TEntity, { id: TId }>(
-        ["delete-vendor"],
-        (payload) => `/api/delete-vendor/${payload.id}`,
-        'delete',
-        (payload) => [['vendors'], ['vendor', payload.id]]
-    );
-}
-
-// Toggle vendor is-active by patching status_id
-export function usePatchVendorIsActive() {
-    return useBaseMutation<TEntity, { id: TId; status_id: string }>(
-        ["patch-vendor-is-active"],
-        (payload) => `/api/vendor/${payload.id}/is-active`,
-        'patch',
-        () => [['vendors']]
-    );
-}
-
-// --- Attachments ---
-
-/**
- * Adds a Vendor Attachment. Invalidates the specific 'vendor' detail query.
- * 'id' in payload refers to the Vendor ID.
- */
-export function useAddVendorAttachment() {
-    return useBaseMutation<TEntity, AttachmentPayload>(
-        ["add-vendor-attachment"],
-        (payload) => `/api/add-vendor-attachment/${payload.id}`,
-        'post',
-        (payload) => [['vendor', payload.id]]
-    );
-}
-
-/**
- * Deletes a Vendor Attachment. Invalidates the specific 'vendor' detail query (if vendorId is known).
- * 'id' in payload refers to the Attachment ID being deleted. We'll invalidate all vendors for safety.
- */
-export function useDeleteVendorAttachment() {
-    return useBaseMutation<TEntity, { id: TId }>(
-        ["delete-vendor-attachment"],
-        (payload) => `/api/delete-vendor-attachment/${payload.id}`,
-        'delete',
-        // Invalidate all vendor detail queries to refresh attachments across all visible vendors
-        () => [['vendors']] 
-    );
-}
-
-// --- Contacts ---
-
-/**
- * Adds a Vendor Contact. Invalidates the specific 'vendor' detail query.
- * 'id' in payload refers to the Vendor ID.
- */
-export function useAddVendorContact() {
-    // We assume the payload must contain the vendor ID for invalidation
-    return useBaseMutation<TEntity, ContactPayload & { id: TId }>( 
-        ["add-vendor-contact"],
-        (payload) => `/api/add-vendor-contact/${payload.id}`, // Assuming payload.id is the Vendor ID
-        'post',
-        (payload) => [['vendor', payload.id]]
-    );
-}
-
-/**
- * Updates an existing Vendor Contact. Invalidates the specific 'vendor' detail query.
- * Assuming the endpoint takes the Contact ID, and we pass the Vendor ID (vendorId) in the payload
- * for accurate invalidation.
- */
-export function useUpdateVendorContact() {
-    return useBaseMutation<TEntity, ContactPayload & { id: TId }>(
-        ["update-vendor-contact"],
-        (payload) => `/api/update-vendor-contact/${payload.id}`, // Assuming payload.id is the Contact ID
-        'put',
-        // Use vendorId from the payload for targeted invalidation
-        (payload) => [['vendor', payload.vendorId]] 
-    );
-}
-
-// ------------------------------------------------
-// 6. CUSTOMER MODULE HOOKS
-// ------------------------------------------------
-
-type CustomerPayload = TParams & { id?: TId };
-type CustomerDiscountPayload = TParams & { id?: TId };
-type SettingPayload = TParams & { id?: TId };
-
-// --- Customer Queries ---
-
-/**
- * Fetches the list of all Customers.
- */
-export function useGetCustomers<TData = TEntity[]>(options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>) {
-    return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
-        queryKey: ["customers"],
-        queryFn: async () => {
-            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-customers"));
-            return response;
-        },
-        select: (response) => response.data as TData,
-        staleTime: Infinity,
-        ...options,
-    });
-}
-
-// Paginated customers with server-side filters and search
-type CustomerQuery = {
-    search?: string;
-    location_id?: string;
-    type_id?: string;
-    size?: number; // page size
-    page?: number; // 1-based page index as required by API
-    sort_by?: string;
-    sort_order?: "asc" | "desc";
+type VendorQuery = {
+  search?: string;
+  location_id?: string;
+  type_id?: string;
+  size?: number;
+  page?: number;
+  sort_by?: string;
+  sort_order?: 'asc' | 'desc';
 };
 
-export function useGetCustomersPaginated<TPaginated = any>(
-    query: CustomerQuery,
-    options?: UseQueryOptions<ApiResponse<TPaginated>, AxiosError<ApiError>, TPaginated>
+export function useGetVendors<TData = TEntity[]>(
+  options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>,
 ) {
-    return useQuery<ApiResponse<TPaginated>, AxiosError<ApiError>, TPaginated>({
-        queryKey: ["customers", query],
-        queryFn: async () => {
-            const params = new URLSearchParams();
-            if (query.search && query.search.trim()) params.set("search", query.search.trim());
-            if (query.location_id) params.set("location_id", query.location_id);
-            if (query.type_id) params.set("type_id", query.type_id);
-            if (typeof query.size === "number") params.set("size", String(query.size));
-            if (typeof query.page === "number") params.set("page", String(query.page));
-            if (query.sort_by) params.set("sort_by", query.sort_by);
-            if (query.sort_order) params.set("sort_order", query.sort_order);
-            const url = buildUrl(`/api/get-customers${params.toString() ? `?${params.toString()}` : ""}`);
-            const response = await dummyApiClient<ApiResponse<TPaginated>>(url);
-            return response;
-        },
-        select: (response) => response.data as TPaginated,
-        ...options,
-    });
+  return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
+    queryKey: ['vendors'],
+    queryFn: async () =>
+      dummyApiClient<ApiResponse<TData>>(buildUrl('/api/get-vendors')),
+    select: (response) => response.data as TData,
+    staleTime: Infinity,
+    ...options,
+  });
 }
 
-/**
- * Fetches a single Customer by ID.
- * @param id The ID of the customer to fetch.
- */
-export function useGetCustomer<TData = TEntity>(id: TId, options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>) {
-    return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
-        queryKey: ["customer", id],
-        queryFn: async () => {
-            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl(`/api/get-customer/${id}`));
-            return response;
-        },
-        select: (response) => response.data as TData,
-        enabled: !!id,
-        ...options,
-    });
+export function useGetVendorsPaginated<TPaginated = unknown>(
+  query: VendorQuery,
+  options?: UseQueryOptions<
+    ApiResponse<TPaginated>,
+    AxiosError<ApiError>,
+    TPaginated
+  >,
+) {
+  return useQuery<ApiResponse<TPaginated>, AxiosError<ApiError>, TPaginated>({
+    queryKey: ['vendors', query],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (query.search?.trim()) params.set('search', query.search.trim());
+      if (query.location_id) params.set('location_id', query.location_id);
+      if (query.type_id) params.set('type_id', query.type_id);
+      if (typeof query.size === 'number') params.set('size', String(query.size));
+      if (typeof query.page === 'number') params.set('page', String(query.page));
+      if (query.sort_by) params.set('sort_by', query.sort_by);
+      if (query.sort_order) params.set('sort_order', query.sort_order);
+      const url = buildUrl(
+        `/api/get-vendors${params.toString() ? `?${params.toString()}` : ''}`,
+      );
+      return dummyApiClient<ApiResponse<TPaginated>>(url);
+    },
+    select: (response) => response.data as TPaginated,
+    ...options,
+  });
 }
 
-/**
- * Fetches the list of Customer Discounts.
- */
-export function useGetCustomerDiscounts<TData = TEntity[]>(options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>) {
-    return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
-        queryKey: ["customer-discounts"],
-        queryFn: async () => {
-            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-customer-discounts"));
-            return response;
-        },
-        select: (response) => response.data as TData,
-        staleTime: Infinity,
-        ...options,
-    });
+export function useGetVendorOptions<TData = TEntity[]>(
+  options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>,
+) {
+  return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
+    queryKey: ['vendor-options'],
+    queryFn: async () =>
+      dummyApiClient<ApiResponse<TData>>(buildUrl('/api/get-vendor-options')),
+    select: (response) => response.data as TData,
+    staleTime: Infinity,
+    ...options,
+  });
 }
 
-/**
- * Fetches the list of Settings.
- */
-export function useGetSettings<TData = TEntity[]>(options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>) {
-    return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
-        queryKey: ["settings"],
-        queryFn: async () => {
-            const response = await dummyApiClient<ApiResponse<TData>>(buildUrl("/api/get-settings"));
-            return response;
-        },
-        select: (response) => response.data as TData,
-        staleTime: Infinity,
-        ...options,
-    });
+export function useGetVendor<TData = TEntity>(
+  id: TId,
+  options?: UseQueryOptions<ApiResponse<TData>, AxiosError<ApiError>, TData>,
+) {
+  return useQuery<ApiResponse<TData>, AxiosError<ApiError>, TData>({
+    queryKey: ['vendor', id],
+    queryFn: async () =>
+      dummyApiClient<ApiResponse<TData>>(buildUrl(`/api/get-vendor/${id}`)),
+    select: (response) => response.data as TData,
+    enabled: !!id,
+    ...options,
+  });
 }
 
-
-// --- Customer Mutations ---
-
-/**
- * Adds a new Customer. Invalidates the 'customers' list.
- */
-export function useAddCustomer() {
-    return useBaseMutation<TEntity, CustomerPayload>(
-        ["add-customer"],
-        () => "/api/add-customer",
-        'post',
-        () => [['customers']]
-    );
+export function useAddVendor() {
+  return useBaseMutation<TEntity, VendorPayload>(
+    ['add-vendor'],
+    () => '/api/add-vendor',
+    'post',
+    () => [['vendors']],
+  );
 }
 
-/**
- * Updates an existing Customer. Invalidates the 'customers' list and the specific 'customer' detail query.
- * Expects a payload with an 'id' field.
- */
-export function useUpdateCustomer() {
-    return useBaseMutation<TEntity, CustomerPayload & { id: TId }>(
-        ["update-customer"],
-        (payload) => `/api/update-customer/${payload.id}`,
-        'put',
-        (payload) => [['customers'], ['customer', payload.id]]
-    );
+export function useUpdateVendor() {
+  return useBaseMutation<TEntity, VendorPayload & { id: TId }>(
+    ['update-vendor'],
+    (payload) => `/api/update-vendor/${payload.id}`,
+    'put',
+    (payload) => [['vendors'], ['vendor', payload.id]],
+  );
 }
 
-/**
- * Deletes a Customer. Invalidates the 'customers' list and the specific 'customer' detail query.
- * Expects a payload with an 'id' field.
- */
-export function useDeleteCustomer() {
-    return useBaseMutation<TEntity, { id: TId }>(
-        ["delete-customer"],
-        (payload) => `/api/delete-customer/${payload.id}`,
-        'delete',
-        (payload) => [['customers'], ['customer', payload.id]]
-    );
+export function useDeleteVendor() {
+  return useBaseMutation<TEntity, { id: TId }>(
+    ['delete-vendor'],
+    (payload) => `/api/delete-vendor/${payload.id}`,
+    'delete',
+    (payload) => [['vendors'], ['vendor', payload.id]],
+  );
 }
 
-// Toggle customer is-active by patching is_active boolean
-export function usePatchCustomerIsActive() {
-    return useBaseMutation<TEntity, { id: TId; is_active: boolean }>(
-        ["patch-customer-is-active"],
-        (payload) => `/api/customer/${payload.id}/is-active`,
-        'patch',
-        () => [['customers']]
-    );
+export function usePatchVendorIsActive() {
+  return useBaseMutation<TEntity, { id: TId; status_id: string }>(
+    ['patch-vendor-is-active'],
+    (payload) => `/api/vendor/${payload.id}/is-active`,
+    'patch',
+    () => [['vendors']],
+  );
 }
 
-// --- Customer Discount Mutations ---
-
-/**
- * Adds a new Customer Discount. Invalidates the 'customer-discounts' list.
- */
-export function useAddCustomerDiscount() {
-    return useBaseMutation<TEntity, CustomerDiscountPayload>(
-        ["add-customer-discount"],
-        () => "/api/add-customer-discount",
-        'post',
-        () => [['customer-discounts']]
-    );
+export function useAddVendorAttachment() {
+  return useBaseMutation<TEntity, AttachmentPayload>(
+    ['add-vendor-attachment'],
+    (payload) => `/api/add-vendor-attachment/${payload.id}`,
+    'post',
+    (payload) => [['vendor', payload.id]],
+  );
 }
 
-/**
- * Updates an existing Customer Discount. Invalidates the 'customer-discounts' list.
- * Expects a payload with an 'id' field.
- */
-export function useUpdateCustomerDiscount() {
-    return useBaseMutation<TEntity, CustomerDiscountPayload & { id: TId }>(
-        ["update-customer-discount"],
-        (payload) => `/api/update-customer-discount/${payload.id}`,
-        'put',
-        () => [['customer-discounts']]
-    );
+export function useDeleteVendorAttachment() {
+  return useBaseMutation<TEntity, { id: TId }>(
+    ['delete-vendor-attachment'],
+    (payload) => `/api/delete-vendor-attachment/${payload.id}`,
+    'delete',
+    () => [['vendors']],
+  );
 }
 
-/**
- * Deletes a Customer Discount. Invalidates the 'customer-discounts' list.
- * Expects a payload with an 'id' field.
- */
-export function useDeleteCustomerDiscount() {
-    return useBaseMutation<TEntity, { id: TId }>(
-        ["delete-customer-discount"],
-        (payload) => `/api/delete-customer-discount/${payload.id}`,
-        'delete',
-        () => [['customer-discounts']]
-    );
+export function useAddVendorContact() {
+  return useBaseMutation<TEntity, ContactPayload & { id: TId }>(
+    ['add-vendor-contact'],
+    (payload) => `/api/add-vendor-contact/${payload.id}`,
+    'post',
+    (payload) => [['vendor', payload.id]],
+  );
 }
 
-// --- Setting Mutations ---
-
-/**
- * Adds a new Setting. Invalidates the 'settings' list.
- */
-export function useAddSetting() {
-    return useBaseMutation<TEntity, SettingPayload>(
-        ["add-setting"],
-        () => "/api/add-setting",
-        'post',
-        () => [['settings']]
-    );
-}
-
-/**
- * Deletes a Setting. Invalidates the 'settings' list.
- * Expects a payload with an 'id' field.
- */
-export function useDeleteSetting() {
-    return useBaseMutation<TEntity, { id: TId }>(
-        ["delete-setting"],
-        (payload) => `/api/delete-setting/${payload.id}`,
-        'delete',
-        () => [['settings']]
-    );
+export function useUpdateVendorContact() {
+  return useBaseMutation<TEntity, ContactPayload & { id: TId }>(
+    ['update-vendor-contact'],
+    (payload) => `/api/update-vendor-contact/${payload.id}`,
+    'put',
+    (payload) => [['vendor', payload.vendorId]],
+  );
 }

@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useDebounce } from "use-debounce";
-import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -10,11 +9,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { useSheet } from "@/lib/sheet-providers";
-import NewEmployeeForm from "@/components/forms/actualForms/new-employee-form";
+import { useSheet } from "@/lib/providers/sheet-providers";
+import NewEmployeeForm from "@/components/forms/entities/new-employee-form";
  
-import EmployeeDataTable from "./components/employeeDataTable";
-import { useGetLocations } from "@/services/setups/vendor";
+import EmployeeDataTable from "./components/employee-data-table";
+import {
+  useGetLocations,
+} from "@/services/setups/lookups";
 import { useGetEmployeeTypes } from "@/services/setups/employee";
 
 export default function EmployeesPage() {

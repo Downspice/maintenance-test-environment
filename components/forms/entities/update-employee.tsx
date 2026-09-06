@@ -6,10 +6,10 @@ import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { UserRoundCheck } from "lucide-react";
-import DatePickerWrapper from "../wrappers/DatePickerWrapper";
+import DatePickerWrapper from "../fields/DatePickerWrapper";
 import { toast } from "sonner";
-import InputWrapper from "../wrappers/InputWrapper";
-import { ComboboxFieldWrapper } from "../wrappers/ComboboxWrapper";
+import InputWrapper from "../fields/InputWrapper";
+import { ComboboxFieldWrapper } from "../fields/ComboboxWrapper";
 import { useGetEmployeeRenewals } from "@/services/setups/employee";
 // Define the form schema with Zod
 export const updateEmployeeSchema = z.object({

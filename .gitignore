@@ -25,5 +25,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-
-.ds_store
+.pnpm-store
+# scaffold / unused generated apps
+/generated/

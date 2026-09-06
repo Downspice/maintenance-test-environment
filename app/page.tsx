@@ -1,5 +1,3 @@
-import FormSheet from "@/components/form-sheet";
-import Image from "next/image";
 import FeatureAnimation from "@/components/landing/feature-animation";
 
 export default function Home() {

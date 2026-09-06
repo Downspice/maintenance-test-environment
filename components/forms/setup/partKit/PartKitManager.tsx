@@ -6,13 +6,12 @@ import {
   PartKitsSchema,
   PartKitsSubmission,
   PartKitType,
-} from "@/lib/part-kits-schema";
+} from "@/lib/schemas/part-kits-schema";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import PartKitDialog from "./PartKitDialog";
 import PartKitPartsTable from "./PartKitPartsTable";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Pencil, Trash2, Plus, Save, TableCellsSplit } from "lucide-react";
+import { Pencil, Trash2, Plus, Save } from "lucide-react";
 import { useState } from "react";
 import {
   Table,

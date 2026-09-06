@@ -1,14 +1,13 @@
-import { Separator } from "../ui/separator";
-import CreateAllButton from "../views/createAllButton";
-import HeaderMeterButton from "../views/reportsButton";
-import NotificationsDropdown from "../views/reportsButton";
+import { Separator } from "../../ui/separator";
+import CreateAllButton from "../../features/createAllButton";
+import HeaderMeterButton from "../../features/reportsButton";
 
-import HeaderUploadButton from "../views/moreButton";
-import HeaderProfileButton from "../views/profileHeaderButton";
-import HeaderSettingsButton from "../views/setupButton";
-import { Input } from "../ui/input";
-import OrganizationHeaderButton from "../views/organizationHeaderButton";
-import DBToolsButton from "../views/dbToolsButton";
+import HeaderUploadButton from "../../features/moreButton";
+import HeaderProfileButton from "../../features/profileHeaderButton";
+import HeaderSettingsButton from "../../features/setupButton";
+import { Input } from "../../ui/input";
+import OrganizationHeaderButton from "../../features/organizationHeaderButton";
+import DBToolsButton from "../../features/dbToolsButton";
 
 interface NavbarProps {
   title: string;

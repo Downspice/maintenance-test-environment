@@ -1,4 +1,4 @@
-import EquipmentCalendar from "./component/equipment-calendar";
+import EquipmentCalendar from "./components/equipment-calendar";
 
 export default function CalendarPage() {
   return <EquipmentCalendar />;

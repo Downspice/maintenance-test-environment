@@ -7,14 +7,14 @@ import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Save } from "lucide-react";
 // Form wrappers
-import InputWrapper from "@/components/forms/wrappers/InputWrapper";
+import InputWrapper from "@/components/forms/fields/InputWrapper";
 // Schema and types
 import {
   equipmentSchema,
   type EquipmentFormValues,
-} from "@/lib/equipment-schema";
+} from "@/lib/schemas/equipment-schema";
 import { toast } from "sonner";
-import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
+import TextareaWrapper from "@/components/forms/fields/TextareaWrapper";
 
 interface triggerVariant {
   variant?: "icon" | "default";

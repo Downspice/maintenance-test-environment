@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { EditableDataTable } from "@/components/customUI/editableTable";
-import { cn } from "@/lib/utils";
 
 export default function MeterUpdatesMoreButton() {
   const [rows, setRows] = useState(meterData);

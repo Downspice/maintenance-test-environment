@@ -8,24 +8,33 @@ import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { GitPullRequestArrow } from "lucide-react";
 import { toast } from "sonner";
-import InputWrapper from "@/components/forms/wrappers/InputWrapper";
-import SelectWrapper from "@/components/forms/wrappers/SelectWrapper";
+import InputWrapper from "@/components/forms/fields/InputWrapper";
+import SelectWrapper from "@/components/forms/fields/SelectWrapper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import FileUploadWrapper from "@/components/forms/wrappers/FileUploadWrapper";
+import FileUploadWrapper from "@/components/forms/fields/FileUploadWrapper";
 import FormSubheader from "@/components/forms/ui/formSubheader";
-import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
-import { discount_typesOptions } from "@/lib/Invoice/invoices-page-data";
+import { ComboboxFieldWrapper } from "@/components/forms/fields/ComboboxWrapper";
+import { discount_typesOptions } from "@/lib/domains/invoice/invoices-page-data";
 import {
   customerSchema,
   CustomerInterface,
   CustomerTableDataInterface,
-} from "@/lib/Customer/customer-data";
-import SingleCheckboxWrapper from "@/components/forms/wrappers/SingleCheckboxWrapper";
+} from "@/lib/domains/customer/customer-data";
+import SingleCheckboxWrapper from "@/components/forms/fields/SingleCheckboxWrapper";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
-import { useGetLocations, useGetPurchaseOrderTerms, useGetStatusOnes, useGetVendorTypes, useUpdateCustomer, useGetCustomer } from "@/services/setups/vendor";
-import {deepCleanNulls} from "@/lib/utils"
+import TextareaWrapper from "@/components/forms/fields/TextareaWrapper";
+import {
+  useGetLocations,
+  useGetPurchaseOrderTerms,
+  useGetStatusOnes,
+  useGetVendorTypes,
+} from "@/services/setups/lookups";
+import {
+  useUpdateCustomer,
+  useGetCustomer,
+} from "@/services/setups/customer";
+import {deepCleanNulls} from "@/lib/shared/utils"
 import { useGetInventoryCategories } from "@/services/setups/inventory";
 import { useEffect } from "react";
 export default function EditCustomer({

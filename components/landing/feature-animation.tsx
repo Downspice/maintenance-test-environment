@@ -8,12 +8,10 @@ import {
     Users,
     Store,
     BarChart,
-    ArrowRight,
-    CheckCircle2,
-    Sparkles
+    CheckCircle2
 } from "lucide-react";
 import { useState, useEffect } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/shared/utils";
 
 const features = [
     {

@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { AddNoteSchema, AddNoteInterface } from "@/lib/WorkOrder/workOrder-data";
+import { AddNoteSchema, AddNoteInterface } from "@/lib/domains/work-order/workOrder-data";
 import {
     Dialog,
     DialogContent,

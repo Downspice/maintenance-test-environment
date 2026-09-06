@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import type { Control } from "react-hook-form";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/shared/utils";
 
 interface InputWrapperProps {
   control: Control<any>;

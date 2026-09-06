@@ -8,11 +8,11 @@ import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { GitPullRequestArrow } from "lucide-react";
 import { toast } from "sonner";
-import InputWrapper from "../wrappers/InputWrapper";
-import { ComboboxFieldWrapper, MultiComboboxWrapper } from "../wrappers/ComboboxWrapper";
-import DatePickerWrapper from "../wrappers/DatePickerWrapper";
+import InputWrapper from "../fields/InputWrapper";
+import { ComboboxFieldWrapper, MultiComboboxWrapper } from "../fields/ComboboxWrapper";
+import DatePickerWrapper from "../fields/DatePickerWrapper";
 import Fieldset from "@/components/customUI/fieldset";
-import SelectWrapper from "../wrappers/SelectWrapper";
+import SelectWrapper from "../fields/SelectWrapper";
 import {
   Sheet,
   SheetTrigger,
@@ -22,7 +22,7 @@ import {
   SheetDescription,
 } from "@/components/ui/sheet";
 import { useGetPaymentMethods, useGetInvoices, useAddInvoicePayment } from "@/services/setups/invoice";
-import { convertToOptionList } from "@/lib/utils";
+import { convertToOptionList } from "@/lib/shared/utils";
 
 // Define the form schema with Zod
 export const vendorSchema = z.object({

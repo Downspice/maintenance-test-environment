@@ -7,19 +7,19 @@ import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import z from "zod";
-import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
-import { equipmentOptionsList } from "@/lib/option-list";
-import RadioGroupWrapper from "@/components/forms/wrappers/RadioGroupWrapper";
-import SingleCheckboxWrapper from "@/components/forms/wrappers/SingleCheckboxWrapper";
-import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";
+import { ComboboxFieldWrapper } from "@/components/forms/fields/ComboboxWrapper";
+import { equipmentOptionsList } from "@/lib/shared/option-list";
+import RadioGroupWrapper from "@/components/forms/fields/RadioGroupWrapper";
+import SingleCheckboxWrapper from "@/components/forms/fields/SingleCheckboxWrapper";
+import DatePickerWrapper from "@/components/forms/fields/DatePickerWrapper";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import CheckboxWrapper from "@/components/forms/wrappers/CheckboxWrapper";
-import { MaintenanceTypesOptionList } from "@/lib/work-orders-data";
+import CheckboxWrapper from "@/components/forms/fields/CheckboxWrapper";
+import { MaintenanceTypesOptionList } from "@/lib/domains/work-order/mock-data";
 
 const PmForecasterSchema = z.object({
    intervals: z.string().optional(),

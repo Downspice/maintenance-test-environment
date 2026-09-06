@@ -8,17 +8,16 @@ import { Button } from "@/components/ui/button";
 import { Pen, Save, Trash2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 // Form wrappers
-import InputWrapper from "@/components/forms/wrappers/InputWrapper";
-import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";
+import InputWrapper from "@/components/forms/fields/InputWrapper";
+import DatePickerWrapper from "@/components/forms/fields/DatePickerWrapper";
 // Schema and types
 import {
   assigneeOptions,
-  substituteOptions,
-} from "@/lib/equipment-schema";
+} from "@/lib/schemas/equipment-schema";
 import Fieldset from "@/components/customUI/fieldset";
 import { toast } from "sonner";
-import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
-import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
+import { ComboboxFieldWrapper } from "@/components/forms/fields/ComboboxWrapper";
+import TextareaWrapper from "@/components/forms/fields/TextareaWrapper";
 import {
   Table,
   TableBody,
@@ -34,25 +33,30 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import SelectWrapper from "../wrappers/SelectWrapper";
-import {
-  discount_typesOptions,
-} from "@/lib/Invoice/invoices-page-data";
-import FileUploadWrapper from "../wrappers/FileUploadWrapper";
-import SingleCheckboxWrapper from "../wrappers/SingleCheckboxWrapper";
+import SelectWrapper from "../fields/SelectWrapper";
+
+
+import FileUploadWrapper from "../fields/FileUploadWrapper";
+import SingleCheckboxWrapper from "../fields/SingleCheckboxWrapper";
 import {
   PurchaseOrderSchema,
   PurchaseOrderItemSchema,
   PurchaseOrderType,
   PurchaseOrderItemType,
   PurchaseOrderStatusType,
-} from "@/lib/PurchaseOrder/purchaseOrder-data";
-import { useGetLocations, useGetPurchaseOrderTerms, useGetVendors } from "@/services/setups/vendor";
+} from "@/lib/domains/purchase-order/purchaseOrder-data";
+import {
+  useGetLocations,
+  useGetPurchaseOrderTerms,
+} from "@/services/setups/lookups";
+import {
+  useGetVendors,
+} from "@/services/setups/vendor";
 import { useGetPurchaseOrderShipVias, useGetNextPurchaseOrderNumber } from "@/services/setups/purchaseOrder";
 import { useGetWarehouses } from "@/services/setups/inventory";
 import { useGetItemTypes, useGetInvoices } from "@/services/setups/invoice";
 import { useGetWorkOrders } from "@/services/setups/workOrder";
-import { convertToOptionList } from "@/lib/utils";
+import { convertToOptionList } from "@/lib/shared/utils";
 
 interface triggerVariant {
   variant?: "icon" | "default";

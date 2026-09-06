@@ -5,8 +5,8 @@ import { AdvancedDataTable } from "@/components/customUI/advanced-data-table";
 import { SortableHeader } from "@/components/customUI/sortable-header";
 import { useState } from "react";
 import React from "react";
-import { matchesSearchAllFields } from "@/lib/utils";
-import { JobSiteData, JobSiteInterface } from "./josbsite-data";
+import { matchesSearchAllFields } from "@/lib/shared/utils";
+import { JobSiteData, JobSiteInterface } from "./jobsite-data";
 
 const getAllEmails = (Emails: JobSiteInterface[]): JobSiteInterface[] => {
   const result: JobSiteInterface[] = [];

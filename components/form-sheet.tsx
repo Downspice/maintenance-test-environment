@@ -11,8 +11,8 @@ import { Button } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
-import InputWrapper from "./forms/wrappers/InputWrapper"
-import { ComboboxFieldWrapper, ComboboxOption, MultiComboboxWrapper } from "./forms/wrappers/ComboboxWrapper"
+import InputWrapper from "./forms/fields/InputWrapper"
+import { ComboboxFieldWrapper, ComboboxOption, MultiComboboxWrapper } from "./forms/fields/ComboboxWrapper"
  
 
 // Define your options

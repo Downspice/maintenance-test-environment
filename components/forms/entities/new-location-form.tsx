@@ -8,11 +8,11 @@ import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { GitPullRequestArrow } from "lucide-react";
 import { toast } from "sonner";
-import InputWrapper from "../wrappers/InputWrapper";
+import InputWrapper from "../fields/InputWrapper";
 import {
   iconsOptionList,
-} from "@/lib/option-list";
-import { ComboboxFieldWrapper } from "../wrappers/ComboboxWrapper";
+} from "@/lib/shared/option-list";
+import { ComboboxFieldWrapper } from "../fields/ComboboxWrapper";
 
 // Define the form schema with Zod
 export const vendorSchema = z.object({

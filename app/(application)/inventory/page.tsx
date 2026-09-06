@@ -10,11 +10,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useSheet } from "@/lib/sheet-providers";
-import InventoryDataTable from "./table/inventoryTable";
-import NewInventory from "@/components/forms/actualForms/new-inventory-form";
-import { useGetLocations } from "@/services/setups/vendor";
+import { useSheet } from "@/lib/providers/sheet-providers";
+import InventoryDataTable from "./table/inventory-data-table";
+import NewInventory from "@/components/forms/entities/new-inventory-form";
+import {
+  useGetLocations,
+} from "@/services/setups/lookups";
 
 const FilterOptions = [
   { name: "All Parts", id: "all" },

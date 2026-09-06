@@ -7,9 +7,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"; 
-import InputWrapper from "@/components/forms/wrappers/InputWrapper";
-import RadioGroupWrapper from "@/components/forms/wrappers/RadioGroupWrapper";
-import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
+import InputWrapper from "@/components/forms/fields/InputWrapper";
+import RadioGroupWrapper from "@/components/forms/fields/RadioGroupWrapper";
+import { ComboboxFieldWrapper } from "@/components/forms/fields/ComboboxWrapper";
 
 const partOptions = [
   {

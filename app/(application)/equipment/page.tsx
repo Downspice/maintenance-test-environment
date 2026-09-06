@@ -9,12 +9,14 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
-import { useSheet } from "@/lib/sheet-providers";
-import EquipmentForm from "./components/new-equipment-form";
-import NewEquipmentDataTable from "./components/table/equipmentDatatable";
-import UpdateMeters from "./components/update-meters-form";
+import { useSheet } from "@/lib/providers/sheet-providers";
+import EquipmentForm from "@/components/forms/entities/equipment/new-equipment-form";
+import NewEquipmentDataTable from "./components/table/equipment-data-table";
+import UpdateMeters from "@/components/forms/entities/equipment/update-meters-form";
 
-import { useGetLocations } from "@/services/setups/vendor";
+import {
+  useGetLocations,
+} from "@/services/setups/lookups";
 
 export const equipmentActiveDropdown = [
   { id: "my", name: "My" },

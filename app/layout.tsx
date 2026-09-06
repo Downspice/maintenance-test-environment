@@ -3,10 +3,9 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
-import { Providers } from "@/lib/providers";
-import { SheetProvider } from "@/lib/sheet-providers";
-import { DialogProvider } from "@/lib/dialog-provider";
-import QueryProvider from "@/lib/QueryProvider";
+import { SheetProvider } from "@/lib/providers/sheet-providers";
+import { DialogProvider } from "@/lib/providers/dialog-provider";
+import QueryProvider from "@/lib/api/query-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

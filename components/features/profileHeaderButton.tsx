@@ -1,0 +1,56 @@
+"use client";
+import { Button } from "../ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { Separator } from "../ui/separator";
+import { Avatar, AvatarFallback } from "../ui/avatar";
+import { toast } from "sonner";
+const genericDropdown = () => {
+  toast("did something");
+};
+
+const dropdownItemsSection1 = [
+  { name: "User Preferences", onSelect: genericDropdown },
+];
+
+const dropdownItemsSection2 = [
+  { name: "Manage Users", onSelect: genericDropdown },
+  { name: "Change Password", onSelect: genericDropdown },
+];
+
+export default function HeaderProfileButton() {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="secondary">
+          <Avatar>
+            {/* <AvatarImage src="https://github.com/shffadcn.png" alt="@shadcn" /> */}
+            <AvatarFallback>YS</AvatarFallback>
+          </Avatar>{" "}
+          <span className="text-nowrap">Mr. Yaw Sarfo</span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        className="w-48 rounded-lg"
+        // side={isMobile ? "bottom" : "right"}
+        // align={isMobile ? "end" : "start"}
+      >
+        {dropdownItemsSection1.map((item) => (
+          <DropdownMenuItem key={item.name} onSelect={item.onSelect}>
+            <span>{item.name}</span>
+          </DropdownMenuItem>
+        ))}
+        <Separator orientation="horizontal" />
+        {dropdownItemsSection2.map((item) => (
+          <DropdownMenuItem key={item.name} onSelect={item.onSelect}>
+            <span>{item.name}</span>
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}

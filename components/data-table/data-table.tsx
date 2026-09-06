@@ -37,11 +37,8 @@ import { DataTableResizer } from "./data-table-resizer";
 // Import core utilities
 import { preprocessSearch } from "./utils/search";
 import {
-  createSortingHandler,
   createColumnFiltersHandler,
   createColumnVisibilityHandler,
-  createPaginationHandler,
-  createColumnSizingHandler,
   createSortingState
 } from "./utils/table-state-handlers";
 import { createKeyboardNavigationHandler } from "./utils/keyboard-navigation";

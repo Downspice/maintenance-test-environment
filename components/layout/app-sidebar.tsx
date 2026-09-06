@@ -12,17 +12,14 @@ import {
   Cog,
   Settings2,
   SquareTerminal,
-  File, Smartphone, ChartArea, Building, Users, ShoppingCart, Boxes, CalendarRange
+  File, Building, Users, ShoppingCart, Boxes, CalendarRange
 } from "lucide-react"
 
-import { NavMain } from "@/components/nav-main"
-import { NavProjects } from "@/components/nav-projects"
-import { NavUser } from "@/components/nav-user"
-import { TeamSwitcher } from "@/components/team-switcher"
+import { NavMain } from "@/components/layout/nav-main"
+import { TeamSwitcher } from "@/components/layout/team-switcher"
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"

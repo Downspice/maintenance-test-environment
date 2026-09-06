@@ -7,15 +7,17 @@ import { useState } from "react";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { GitPullRequestArrow, Plus, Building, User } from "lucide-react";
-import MultiSelectWrapper from "../wrappers/MultiSelectWrapper";
-import DatePickerWrapper from "../wrappers/DatePickerWrapper";
-import SelectWrapper from "../wrappers/SelectWrapper";
-import TextareaWrapper from "../wrappers/TextareaWrapper";
-import InputWrapper from "../wrappers/InputWrapper";
-import CheckboxWrapper from "../wrappers/CheckboxWrapper";
+import MultiSelectWrapper from "../fields/MultiSelectWrapper";
+import DatePickerWrapper from "../fields/DatePickerWrapper";
+import SelectWrapper from "../fields/SelectWrapper";
+import TextareaWrapper from "../fields/TextareaWrapper";
+import InputWrapper from "../fields/InputWrapper";
+import CheckboxWrapper from "../fields/CheckboxWrapper";
 import { toast } from "sonner";
-import { ComboboxFieldWrapper } from "../wrappers/ComboboxWrapper";
-import { useGetVendors } from "@/services/setups/vendor";
+import { ComboboxFieldWrapper } from "../fields/ComboboxWrapper";
+import {
+  useGetVendors,
+} from "@/services/setups/vendor";
  // Define the form schema with Zod
 export const workOrderSchema = z.object({
   partId: z.string({

@@ -12,16 +12,16 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import RadioGroupWrapper from "../wrappers/RadioGroupWrapper";
-import InputWrapper from "../wrappers/InputWrapper";
-import TextareaWrapper from "../wrappers/TextareaWrapper";
-import { ComboboxFieldWrapper } from "../wrappers/ComboboxWrapper";
+import RadioGroupWrapper from "../fields/RadioGroupWrapper";
+import InputWrapper from "../fields/InputWrapper";
+import TextareaWrapper from "../fields/TextareaWrapper";
+import { ComboboxFieldWrapper } from "../fields/ComboboxWrapper";
 import {
     useGetMaintenanceTaskTypes,
     useGetMaintenanceRepairs,
     useGetMaintenanceRepairTypes,
 } from "@/services/setups/maintenance";
-import { AddMaintenanceInWorkOrderSchema, AddMaintenanceInWorkOrderInterface, AddPartUsedInterface, AddLaborUsedInterface } from "@/lib/WorkOrder/workOrder-data";
+import { AddMaintenanceInWorkOrderSchema, AddMaintenanceInWorkOrderInterface, AddPartUsedInterface, AddLaborUsedInterface } from "@/lib/domains/work-order/workOrder-data";
 import AddPartUsed from "./add-part-used";
 import AddLaborUsed from "./add-labor-used";
 import { toast } from "sonner";

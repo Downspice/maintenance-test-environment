@@ -7,13 +7,12 @@ import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Pen, Save, Trash2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import InputWrapper from "@/components/forms/wrappers/InputWrapper";
-import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";
-import { assigneeOptions } from "@/lib/equipment-schema";
+import InputWrapper from "@/components/forms/fields/InputWrapper";
+import DatePickerWrapper from "@/components/forms/fields/DatePickerWrapper";
 import Fieldset from "@/components/customUI/fieldset";
 import { toast } from "sonner";
-import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
-import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
+import { ComboboxFieldWrapper } from "@/components/forms/fields/ComboboxWrapper";
+import TextareaWrapper from "@/components/forms/fields/TextareaWrapper";
 import {
   Table,
   TableBody,
@@ -30,12 +29,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import SelectWrapper from "../wrappers/SelectWrapper";
 import {
-  useGetCustomers,
   useGetLocations,
   useGetPurchaseOrderTerms,
-} from "@/services/setups/vendor";
+} from "@/services/setups/lookups";
+import {
+  useGetCustomers,
+} from "@/services/setups/customer";
 import { useGetWarehouses } from "@/services/setups/inventory";
 import {
   useAddInvoice,
@@ -43,7 +43,7 @@ import {
   useGetPaymentMethods,
   useGetNextInvoiceNumber,
 } from "@/services/setups/invoice";
-import { convertToOptionList } from "@/lib/utils";
+import { convertToOptionList } from "@/lib/shared/utils";
 
 type Customer = {
   id: string;

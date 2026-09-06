@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import JobSiteDataTable from "./jobsiteTable";
-import { jobSiteOptionsList } from "@/lib/option-list";
+import { jobSiteOptionsList } from "@/lib/shared/option-list";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { FilePenIcon, Plus, Trash2Icon } from "lucide-react";
@@ -16,8 +16,8 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
-import InputWrapper from "@/components/forms/wrappers/InputWrapper";
-import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
+import InputWrapper from "@/components/forms/fields/InputWrapper";
+import TextareaWrapper from "@/components/forms/fields/TextareaWrapper";
 import { Save } from "lucide-react";
 import { Form } from "@/components/ui/form";
 

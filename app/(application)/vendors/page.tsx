@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useDebounce } from "use-debounce";
-import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -10,11 +9,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { useSheet } from "@/lib/sheet-providers";
+import { useSheet } from "@/lib/providers/sheet-providers";
 
-import VendorDataTable from "./components/vendorTable";
-import NewVendor from "@/components/forms/actualForms/new-vendor-form";
-import { useGetLocations, useGetVendorTypes } from "@/services/setups/vendor";
+import VendorDataTable from "./components/vendor-data-table";
+import NewVendor from "@/components/forms/entities/new-vendor-form";
+import {
+  useGetLocations,
+  useGetVendorTypes,
+} from "@/services/setups/lookups";
 
 export default function VendorsPage() {
   const {

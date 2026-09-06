@@ -22,7 +22,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { Form } from "@/components/ui/form";
 import {
   laborAssociationSchema,
@@ -31,10 +30,10 @@ import {
   type LaborAssociationFormValues,
 } from "@/lib/schemas/labor-schema";
 
-import InputWrapper from "@/components/forms/wrappers/InputWrapper";
-import FileUploadWrapper from "@/components/forms/wrappers/FileUploadWrapper";
-import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
-import RadioGroupWrapper from "@/components/forms/wrappers/RadioGroupWrapper";
+import InputWrapper from "@/components/forms/fields/InputWrapper";
+import FileUploadWrapper from "@/components/forms/fields/FileUploadWrapper";
+import { ComboboxFieldWrapper } from "@/components/forms/fields/ComboboxWrapper";
+import RadioGroupWrapper from "@/components/forms/fields/RadioGroupWrapper";
 import {
   Table,
   TableBody,

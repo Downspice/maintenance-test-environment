@@ -17,7 +17,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/shared/utils";
 import * as React from "react";
 import { useCallback, useEffect, useState, useMemo } from "react";
 

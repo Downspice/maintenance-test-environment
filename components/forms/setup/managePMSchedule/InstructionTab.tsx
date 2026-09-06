@@ -4,9 +4,9 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
- import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
-import FileUploadWrapper from "@/components/forms/wrappers/FileUploadWrapper";
-import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
+ import TextareaWrapper from "@/components/forms/fields/TextareaWrapper";
+import FileUploadWrapper from "@/components/forms/fields/FileUploadWrapper";
+import { ComboboxFieldWrapper } from "@/components/forms/fields/ComboboxWrapper";
 
 const equipmentOptions = [
   { name: "Forklift", id: "forklift" },

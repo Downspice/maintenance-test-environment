@@ -17,7 +17,7 @@ import { toDate, formatInTimeZone } from "date-fns-tz";
 import { DateRange } from "react-day-picker";
 import { cva, VariantProps } from "class-variance-authority";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/shared/utils";
 import { Button } from "@/components/ui/button";
 import {
   Popover,

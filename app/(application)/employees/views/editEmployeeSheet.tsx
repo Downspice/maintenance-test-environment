@@ -12,12 +12,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   EmployeeCheckboxOptions,
   equipmentOptionsList,
-} from "@/lib/option-list";
-import InputWrapper from "@/components/forms/wrappers/InputWrapper";
-import SelectWrapper from "@/components/forms/wrappers/SelectWrapper";
-import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
-import CustomFieldsWrapper from "@/components/forms/wrappers/CustomFieldsWrapper";
-import FileUploadWrapper from "@/components/forms/wrappers/FileUploadWrapper";
+} from "@/lib/shared/option-list";
+import InputWrapper from "@/components/forms/fields/InputWrapper";
+import SelectWrapper from "@/components/forms/fields/SelectWrapper";
+import TextareaWrapper from "@/components/forms/fields/TextareaWrapper";
+import CustomFieldsWrapper from "@/components/forms/fields/CustomFieldsWrapper";
+import FileUploadWrapper from "@/components/forms/fields/FileUploadWrapper";
 import {
   Sheet,
   SheetContent,
@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import FormSubheader from "@/components/forms/ui/formSubheader";
-import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";
+import DatePickerWrapper from "@/components/forms/fields/DatePickerWrapper";
 import {
   Table,
   TableBody,
@@ -45,12 +45,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import CheckboxWrapper from "@/components/forms/wrappers/CheckboxWrapper";
+import CheckboxWrapper from "@/components/forms/fields/CheckboxWrapper";
 import {
-  EmployeeInterface,
   EmployeeSchema,
-} from "@/lib/Employee/employee-data";
-import { useGetInventoryCategories } from "@/services/setups/inventory";
+} from "@/lib/domains/employee/employee-data";
 import {
   useGetEmployee,
   useGetEmployeeCategories,
@@ -59,9 +57,11 @@ import {
   useGetEmployeeTypes,
   useUpdateEmployee,
 } from "@/services/setups/employee";
-import { useGetLocations } from "@/services/setups/vendor";
-import { employeeSchema } from "@/components/forms/actualForms/new-employee-form";
-import { deepCleanNulls } from "@/lib/utils";
+import {
+  useGetLocations,
+} from "@/services/setups/lookups";
+import { employeeSchema } from "@/components/forms/entities/new-employee-form";
+import { deepCleanNulls } from "@/lib/shared/utils";
 
 // Renewal data type
 export interface RenewalData {

@@ -10,7 +10,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { WrenchIcon } from "lucide-react";
-import NewRepairRequestForm from "@/components/forms/actualForms/moreButtonForms/repairRequest/repairRequestForm";
+import NewRepairRequestForm from "@/components/forms/actions/more/repairRequest/repairRequestForm";
 
 export default function RepairSheet() {
   const [sheetOpen, setSheetOpen] = useState();

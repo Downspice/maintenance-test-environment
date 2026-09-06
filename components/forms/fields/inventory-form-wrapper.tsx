@@ -12,7 +12,7 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import NewInventory from "@/components/forms/actualForms/new-inventory-form";
+import NewInventory from "@/components/forms/entities/new-inventory-form";
 
 interface TriggerVariant {
     variant?: "icon" | "default";

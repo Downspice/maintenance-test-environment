@@ -9,12 +9,13 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useSheet } from "@/lib/sheet-providers";
-import WorkOrderDataTable from "./components/table/workOrderTable";
-import { ActualWorkOrderForm } from "@/components/forms/actualForms/work-order-form";
-import { useGetLocations } from "@/services/setups/vendor";
+import { useSheet } from "@/lib/providers/sheet-providers";
+import WorkOrderDataTable from "./components/table/work-order-data-table";
+import { ActualWorkOrderForm } from "@/components/forms/entities/work-order-form";
+import {
+  useGetLocations,
+} from "@/services/setups/lookups";
 import { useGetWorkOrderStatuses } from "@/services/setups/workOrder";
 
 export default function WorkOrdersPage() {

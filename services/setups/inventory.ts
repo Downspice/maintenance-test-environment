@@ -2,7 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient, UseMutationOptions, UseQueryOptions } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { dummyApiClient } from "@/lib/axios";
+import { dummyApiClient } from "@/lib/api/axios";
 import { ApiError, ApiResponse } from "@/types/types";
 
 const BASEURL = process.env.NEXT_PUBLIC_BASE_URL;

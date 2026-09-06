@@ -8,17 +8,15 @@ import { Button } from "@/components/ui/button";
 import { Pen, Save, Trash2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 // Form wrappers
-import InputWrapper from "@/components/forms/wrappers/InputWrapper";
-import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";
+import InputWrapper from "@/components/forms/fields/InputWrapper";
+import DatePickerWrapper from "@/components/forms/fields/DatePickerWrapper";
 // Schema and types
-import {
-  assigneeOptions,
-  substituteOptions,
-} from "@/lib/equipment-schema";
+
+
 import Fieldset from "@/components/customUI/fieldset";
 import { toast } from "sonner";
-import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
-import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
+import { ComboboxFieldWrapper } from "@/components/forms/fields/ComboboxWrapper";
+import TextareaWrapper from "@/components/forms/fields/TextareaWrapper";
 import {
   Table,
   TableBody,
@@ -42,23 +40,33 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
-import FileUploadWrapper from "@/components/forms/wrappers/FileUploadWrapper";
-import SingleCheckboxWrapper from "@/components/forms/wrappers/SingleCheckboxWrapper";
+import FileUploadWrapper from "@/components/forms/fields/FileUploadWrapper";
+import SingleCheckboxWrapper from "@/components/forms/fields/SingleCheckboxWrapper";
 import {
   PurchaseOrderItemSchema,
   PurchaseOrderSchema,
   PurchaseOrderStatusType,
   PurchaseOrderItemType,
   PurchaseOrderType,
-} from "@/lib/PurchaseOrder/purchaseOrder-data";
+} from "@/lib/domains/purchase-order/purchaseOrder-data";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useGetCustomer, useGetCustomerDiscounts, useGetCustomers, useGetLocations, useGetPurchaseOrderTerms, useGetVendors } from "@/services/setups/vendor";
+import {
+  useGetLocations,
+  useGetPurchaseOrderTerms,
+} from "@/services/setups/lookups";
+import {
+  useGetCustomerDiscounts,
+  useGetCustomers,
+} from "@/services/setups/customer";
+import {
+  useGetVendors,
+} from "@/services/setups/vendor";
 import {
   useGetPurchaseOrder,
   useGetPurchaseOrderShipVias,
   useUpdatePurchaseOrder,
 } from "@/services/setups/purchaseOrder";
-import { convertToOptionList } from "@/lib/utils";
+import { convertToOptionList } from "@/lib/shared/utils";
 import { useGetWarehouses } from "@/services/setups/inventory";
 import { useGetItemTypes, useGetInvoices } from "@/services/setups/invoice";
 import { useGetWorkOrders } from "@/services/setups/workOrder";

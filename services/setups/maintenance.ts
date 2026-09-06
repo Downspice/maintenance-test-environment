@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient, UseMutationOptions, UseQueryOpti
 import { AxiosError } from "axios";
 
 // Assuming these relative imports are correctly configured for the project structure
-import { dummyApiClient } from "@/lib/axios";
+import { dummyApiClient } from "@/lib/api/axios";
 import { ApiError, ApiResponse } from "@/types/types";
 
 // NOTE: We assume BASEURL is available globally or imported correctly.

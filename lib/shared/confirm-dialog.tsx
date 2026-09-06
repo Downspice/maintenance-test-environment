@@ -1,6 +1,6 @@
 "use client"
 
-import { useDialog } from "@/lib/dialog-provider"
+import { useDialog } from "@/lib/providers/dialog-provider"
 import { Button } from "@/components/ui/button"
 import { useCallback, type ReactNode } from "react"
 import { AlertTriangle, CheckCircle2, Info, Trash2 } from "lucide-react"

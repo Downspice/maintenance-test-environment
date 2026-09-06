@@ -1,9 +1,9 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import InputWrapper from "@/components/forms/wrappers/InputWrapper";
-import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
-import {ComboboxFieldWrapper} from "@/components/forms/wrappers/ComboboxWrapper";
+import InputWrapper from "@/components/forms/fields/InputWrapper";
+import TextareaWrapper from "@/components/forms/fields/TextareaWrapper";
+import {ComboboxFieldWrapper} from "@/components/forms/fields/ComboboxWrapper";
 
 // Zod schema
 export const requestSchema = z.object({

@@ -23,7 +23,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/shared/utils";
 import { Check, FilePenIcon, Plus, Trash2, X } from "lucide-react";
 import {
   useGetEmployeeStatuses,
@@ -52,7 +52,7 @@ import {
   useGetVendorTypes,
   useUpdatePurchaseOrderTerm,
   useUpdateVendorType,
-} from "@/services/setups/vendor";
+} from "@/services/setups/lookups";
 import { useAddCostCenter, useAddInventoryCategory, useAddInventoryManufacturer, useAddInventoryUnitType, useDeleteCostCenter, useDeleteInventoryCategory, useDeleteInventoryManufacturer, useDeleteInventoryUnitType, useGetCostCenters, useGetInventoryCategories, useGetInventoryManufacturers, useGetInventoryUnitTypes, useUpdateCostCenter, useUpdateInventoryCategory, useUpdateInventoryManufacturer, useUpdateInventoryUnitType } from "@/services/setups/inventory";
 import { useAddPurchaseOrderShipVia, useDeletePurchaseOrderShipVia, useGetPurchaseOrderShipVias, useUpdatePurchaseOrderShipVia } from "@/services/setups/purchaseOrder";
 import { useAddWorkOrderType, useDeleteWorkOrderType, useGetWorkOrderTypes, useUpdateWorkOrderType } from "@/services/setups/workOrder";

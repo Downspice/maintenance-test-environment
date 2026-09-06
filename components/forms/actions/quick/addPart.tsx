@@ -11,21 +11,23 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   inventoryMovement,
   partOptions,
-} from "@/lib/inventory-data";
+} from "@/lib/domains/inventory/mock-data";
 import Fieldset from "@/components/customUI/fieldset";
-import PartSubstitutionTable from "@/app/(application)/inventory/component/inventory.partSubstitutionTable";
-import AlternateUpcCodesTable from "@/app/(application)/inventory/component/inventory.alternateUpcCodesTable";
-import { InventorySchema } from "@/lib/Inventory/inventory-data";
+import PartSubstitutionTable from "@/app/(application)/inventory/components/part-substitution-table";
+import AlternateUpcCodesTable from "@/app/(application)/inventory/components/alternate-upc-codes-table";
+import { InventorySchema } from "@/lib/domains/inventory/inventory-data";
 import { useState } from "react";
-import WarehouseTabs from "@/app/(application)/inventory/component/inventory.warehouse";
-import InputWrapper from "../../wrappers/InputWrapper";
-import { ComboboxFieldWrapper } from "../../wrappers/ComboboxWrapper";
-import FileUploadWrapper from "../../wrappers/FileUploadWrapper";
-import SelectWrapper from "../../wrappers/SelectWrapper";
-import SingleCheckboxWrapper from "../../wrappers/SingleCheckboxWrapper";
-import CustomFieldsWrapper from "../../wrappers/CustomFieldsWrapper";
+import WarehouseTabs from "@/app/(application)/inventory/components/warehouse-tabs";
+import InputWrapper from "../../fields/InputWrapper";
+import { ComboboxFieldWrapper } from "../../fields/ComboboxWrapper";
+import FileUploadWrapper from "../../fields/FileUploadWrapper";
+import SelectWrapper from "../../fields/SelectWrapper";
+import SingleCheckboxWrapper from "../../fields/SingleCheckboxWrapper";
+import CustomFieldsWrapper from "../../fields/CustomFieldsWrapper";
 import { useGetCostCenters, useGetInventoryCategories, useGetInventoryManufacturers, useGetInventoryUnitTypes, useGetMarkupTypes } from "@/services/setups/inventory";
-import { useGetVendorOptions } from "@/services/setups/vendor";
+import {
+  useGetVendorOptions,
+} from "@/services/setups/vendor";
 
 export default function NewPart() {
     const { data: equipmentManufacturerOptions } = useGetInventoryManufacturers();

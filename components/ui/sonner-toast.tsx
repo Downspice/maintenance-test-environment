@@ -4,7 +4,7 @@ import type React from "react"
 
 import { Toaster as SonnerToaster, toast as sonnerToast } from "sonner"
 import { CheckCircle2, XCircle, AlertCircle, Info } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/shared/utils"
 
 interface ToastProps {
   title?: string

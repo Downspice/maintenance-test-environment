@@ -1,7 +1,7 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
@@ -12,17 +12,18 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import InputWrapper from "../wrappers/InputWrapper";
-import TextareaWrapper from "../wrappers/TextareaWrapper";
-import { ComboboxFieldWrapper } from "../wrappers/ComboboxWrapper";
-import SingleCheckboxWrapper from "../wrappers/SingleCheckboxWrapper";
-import DatePickerWrapper from "../wrappers/DatePickerWrapper";
+import InputWrapper from "../fields/InputWrapper";
+import { ComboboxFieldWrapper } from "../fields/ComboboxWrapper";
+import SingleCheckboxWrapper from "../fields/SingleCheckboxWrapper";
+import DatePickerWrapper from "../fields/DatePickerWrapper";
 import { useGetCostCenters, useGetInventories } from "@/services/setups/inventory";
-import { AddPartUsedSchema, AddPartUsedInterface } from "@/lib/WorkOrder/workOrder-data";
-import { useGetVendorOptions } from "@/services/setups/vendor";
+import { AddPartUsedSchema, AddPartUsedInterface } from "@/lib/domains/work-order/workOrder-data";
+import {
+  useGetVendorOptions,
+} from "@/services/setups/vendor";
 import { GenericObject } from "@/types/types";
 import { useGetPurchaseOrders } from "@/services/setups/purchaseOrder";
-import { convertToOptionList } from "@/lib/utils";
+import { convertToOptionList } from "@/lib/shared/utils";
 import Fieldset from "@/components/customUI/fieldset";
 
 interface AddPartUsedProps {

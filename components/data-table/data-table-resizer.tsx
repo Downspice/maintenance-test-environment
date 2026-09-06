@@ -2,7 +2,7 @@
 
 import React from "react"
 import { Separator } from "@/components/ui/separator"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/shared/utils"
 import { GripVertical } from "lucide-react"
 
 // Simplified resizer component without complex types

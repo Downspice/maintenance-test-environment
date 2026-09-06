@@ -7,15 +7,15 @@ import { useState } from "react";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { GitPullRequestArrow } from "lucide-react";
-import TextareaWrapper from "../wrappers/TextareaWrapper";
+import TextareaWrapper from "../fields/TextareaWrapper";
 import { toast } from "sonner";
-import InputWrapper from "../wrappers/InputWrapper";
+import InputWrapper from "../fields/InputWrapper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { monthOptionList } from "@/lib/option-list";
-import { ComboboxFieldWrapper } from "../wrappers/ComboboxWrapper";
+import { monthOptionList } from "@/lib/shared/option-list";
+import { ComboboxFieldWrapper } from "../fields/ComboboxWrapper";
 import Fieldset from "@/components/customUI/fieldset";
-import SingleCheckboxWrapper from "../wrappers/SingleCheckboxWrapper";
-import CheckboxWrapper from "../wrappers/CheckboxWrapper";
+import SingleCheckboxWrapper from "../fields/SingleCheckboxWrapper";
+import CheckboxWrapper from "../fields/CheckboxWrapper";
 
 // Define the form schema with Zod
 export const vendorSchema = z.object({

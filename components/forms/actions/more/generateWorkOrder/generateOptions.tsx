@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import Fieldset from "@/components/customUI/fieldset";
-import RadioGroupWrapper from "@/components/forms/wrappers/RadioGroupWrapper";
+import RadioGroupWrapper from "@/components/forms/fields/RadioGroupWrapper";
 import {
   Dialog,
   DialogContent,
@@ -17,10 +17,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
-import SingleCheckboxWrapper from "@/components/forms/wrappers/SingleCheckboxWrapper";
-import CheckboxWrapper from "@/components/forms/wrappers/CheckboxWrapper";
-import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";
+import { ComboboxFieldWrapper } from "@/components/forms/fields/ComboboxWrapper";
+import SingleCheckboxWrapper from "@/components/forms/fields/SingleCheckboxWrapper";
+import CheckboxWrapper from "@/components/forms/fields/CheckboxWrapper";
+import DatePickerWrapper from "@/components/forms/fields/DatePickerWrapper";
 
 const equipmentOptionsList = [
   { name: "Drill Press", id: "drill-press" },

@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useDebounce } from "use-debounce";
-import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -10,10 +9,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { useSheet } from "@/lib/sheet-providers";
-import CustomerDataTable from "./table/customerDataTable";
-import NewCustomer from "@/components/forms/actualForms/new-customer-form";
-import { useGetLocations, useGetVendorTypes } from "@/services/setups/vendor";
+import { useSheet } from "@/lib/providers/sheet-providers";
+import CustomerDataTable from "./table/customer-data-table";
+import NewCustomer from "@/components/forms/entities/new-customer-form";
+import {
+  useGetLocations,
+  useGetVendorTypes,
+} from "@/services/setups/lookups";
 
 export default function CustomersPage() {
   const {

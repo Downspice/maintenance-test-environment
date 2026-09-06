@@ -7,8 +7,8 @@ import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Save } from "lucide-react";
 // Form wrappers
-import InputWrapper from "@/components/forms/wrappers/InputWrapper";
-import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";
+import InputWrapper from "@/components/forms/fields/InputWrapper";
+import DatePickerWrapper from "@/components/forms/fields/DatePickerWrapper";
 // Schema and types
 import Fieldset from "@/components/customUI/fieldset";
 import { toast } from "sonner";
@@ -18,7 +18,7 @@ import {
   PurchaseOrderItemSchema,
   PurchaseOrderSchema,
   PurchaseOrderStatusType,
-} from "@/lib/PurchaseOrder/purchaseOrder-data";
+} from "@/lib/domains/purchase-order/purchaseOrder-data";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 type ItemFormValues = z.infer<typeof PurchaseOrderItemSchema>;

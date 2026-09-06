@@ -10,26 +10,21 @@ import {
   GitPullRequestArrow,
   Pen,
   Plus,
-  MoreVertical,
   Trash2,
 } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
+
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
-import DatePickerWrapper from "../wrappers/DatePickerWrapper";
-import InputWrapper from "../wrappers/InputWrapper";
+import DatePickerWrapper from "../fields/DatePickerWrapper";
+import InputWrapper from "../fields/InputWrapper";
 import { toast } from "sonner";
 import {
   ComboboxFieldWrapper,
   MultiComboboxWrapper,
-} from "../wrappers/ComboboxWrapper";
+} from "../fields/ComboboxWrapper";
 import {
   Sheet,
   SheetContent,
@@ -48,7 +43,7 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Fieldset from "@/components/customUI/fieldset";
-import CustomFieldsWrapper from "../wrappers/CustomFieldsWrapper";
+import CustomFieldsWrapper from "../fields/CustomFieldsWrapper";
 import {
   Table,
   TableBody,
@@ -67,7 +62,7 @@ import {
   AddLaborUsedInterface,
   AddPartUsedInterface,
   CreateWorkOrderSchema,
-} from "@/lib/WorkOrder/workOrder-data";
+} from "@/lib/domains/work-order/workOrder-data";
 import AddMaintenance from "./add-maintenance";
 import { useGetCostCenters, useGetInventories } from "@/services/setups/inventory";
 import {
@@ -99,12 +94,14 @@ import AddLaborUsed from "./add-labor-used";
 import AddPartUsed from "./add-part-used";
 import AddNote from "./add-note";
 import { GenericObject } from "@/types/types";
-import { useSheet } from "@/lib/sheet-providers";
-import { useConfirmDialog } from "@/lib/confirm-dialog";
+import { useSheet } from "@/lib/providers/sheet-providers";
+import { useConfirmDialog } from "@/lib/shared/confirm-dialog";
 import { useGetPurchaseOrders } from "@/services/setups/purchaseOrder";
-import { convertToOptionList } from "@/lib/utils";
+import { convertToOptionList } from "@/lib/shared/utils";
 import { useGetInvoices } from "@/services/setups/invoice";
-import { useGetVendors } from "@/services/setups/vendor";
+import {
+  useGetVendors,
+} from "@/services/setups/vendor";
 import { useGetEmployees } from "@/services/setups/employee";
 // Equipment options
 

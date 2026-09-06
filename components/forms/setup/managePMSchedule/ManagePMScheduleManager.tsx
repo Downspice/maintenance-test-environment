@@ -6,15 +6,13 @@ import {
   PartKitsSchema,
   PartKitsSubmission,
   PartKitType,
-} from "@/lib/part-kits-schema";
+} from "@/lib/schemas/part-kits-schema";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import PartKitDialog, {
   ManagePMScheduleFormValues,
 } from "./ManagePMScheduleDialog";
-import PartKitPartsTable from "./ManagePMScheduleTable";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Pencil, Trash2, Plus, Save, TableCellsSplit } from "lucide-react";
+import { Pencil, Trash2, Plus, Save } from "lucide-react";
 import { useState } from "react";
 import {
   Table,
@@ -24,12 +22,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import DailyInspectionTable from "./DailyInspections";
-import ManagePMSchedulePartsTab from "./manageParts";
-import ManageSchedulePMLaborTab from "./ManageLabourSchedule";
-import InstructionTab from "./InstructionTab";
-import ManagePMAdvancedTab from "./AdvancedTab";
-import ManagePMScheduleEquipmentTable from "./EquipmentTab";
 import FullMaintenanceForm from "./PMService";
 
 const initial: ManagePMScheduleFormValues[] = [

@@ -9,7 +9,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { DialogProvider } from "@/lib/dialog-provider";
+import { DialogProvider } from "@/lib/providers/dialog-provider";
 
 type SheetContentType = {
   title: string;

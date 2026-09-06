@@ -4,10 +4,10 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import InputWrapper from "@/components/forms/wrappers/InputWrapper";
-import SingleCheckboxWrapper from "@/components/forms/wrappers/SingleCheckboxWrapper";
- import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";
-import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
+import InputWrapper from "@/components/forms/fields/InputWrapper";
+import SingleCheckboxWrapper from "@/components/forms/fields/SingleCheckboxWrapper";
+ import DatePickerWrapper from "@/components/forms/fields/DatePickerWrapper";
+import { ComboboxFieldWrapper } from "@/components/forms/fields/ComboboxWrapper";
 
 const advancedSchema = z.object({
   estimatedLaborTime: z.coerce.number().optional(),

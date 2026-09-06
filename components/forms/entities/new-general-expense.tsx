@@ -4,20 +4,19 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Save } from "lucide-react";
 // Form wrappers
-import InputWrapper from "@/components/forms/wrappers/InputWrapper";
-import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";
+import InputWrapper from "@/components/forms/fields/InputWrapper";
+import DatePickerWrapper from "@/components/forms/fields/DatePickerWrapper";
 // Schema and types
 import { toast } from "sonner";
-import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
-import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
+import { ComboboxFieldWrapper } from "@/components/forms/fields/ComboboxWrapper";
+import TextareaWrapper from "@/components/forms/fields/TextareaWrapper";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Form } from "@/components/ui/form";
-import { assigneeOptions, expenseOptions } from "@/lib/equipment-schema";
-import { equipmentOptionsList } from "@/lib/option-list";
-import CheckboxWrapper from "../wrappers/CheckboxWrapper";
-import SingleCheckboxWrapper from "../wrappers/SingleCheckboxWrapper";
+import { assigneeOptions, expenseOptions } from "@/lib/schemas/equipment-schema";
+import { equipmentOptionsList } from "@/lib/shared/option-list";
+import SingleCheckboxWrapper from "../fields/SingleCheckboxWrapper";
 import {
   Sheet,
   SheetContent,

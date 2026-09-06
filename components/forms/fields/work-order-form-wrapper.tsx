@@ -12,7 +12,7 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ActualWorkOrderForm } from "@/components/forms/actualForms/work-order-form";
+import { ActualWorkOrderForm } from "@/components/forms/entities/work-order-form";
 
 interface TriggerVariant {
     variant?: "icon" | "default";

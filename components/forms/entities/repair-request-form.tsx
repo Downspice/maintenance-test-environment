@@ -9,12 +9,12 @@
 // import { Save } from "lucide-react";
 
 // // Form wrappers
-// import InputWrapper from "@/components/forms/wrappers/InputWrapper";
-// import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
-// import SelectWrapper from "@/components/forms/wrappers/SelectWrapper";
-// import MultiSelectWrapper from "@/components/forms/wrappers/MultiSelectWrapper";
-// import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";
-// import CustomFieldsWrapper from "@/components/forms/wrappers/CustomFieldsWrapper";
+// import InputWrapper from "@/components/forms/fields/InputWrapper";
+// import TextareaWrapper from "@/components/forms/fields/TextareaWrapper";
+// import SelectWrapper from "@/components/forms/fields/SelectWrapper";
+// import MultiSelectWrapper from "@/components/forms/fields/MultiSelectWrapper";
+// import DatePickerWrapper from "@/components/forms/fields/DatePickerWrapper";
+// import CustomFieldsWrapper from "@/components/forms/fields/CustomFieldsWrapper";
 
 // // Schema and types
 // import {
@@ -22,12 +22,12 @@
 //   type EquipmentFormValues,
 //   meterUnitsOptions,
 //   assigneeOptions,
-// } from "@/lib/equipment-schema";
+// } from "@/lib/schemas/equipment-schema";
 // import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 // import Fieldset from "@/components/customUI/fieldset";
 // import {
 //   equipmentCheckboxOptions,
-// } from "@/lib/option-list";
+// } from "@/lib/shared/option-list";
 // import { toast } from "sonner";
 // import { ScrollArea } from "@/components/ui/scroll-area";
 // import {
@@ -41,11 +41,13 @@
 // import {
 //   ComboboxFieldWrapper,
 //   ComboboxOption,
-// } from "@/components/forms/wrappers/ComboboxWrapper";
+// } from "@/components/forms/fields/ComboboxWrapper";
 // import { Input } from "@/components/ui/input";
-// import CheckboxWrapper from "@/components/forms/wrappers/CheckboxWrapper";
+// import CheckboxWrapper from "@/components/forms/fields/CheckboxWrapper";
 // import { useGetInventoryCategories } from "@/services/setups/inventory";
-// import { useGetVendors } from "@/services/setups/vendor";
+// import {
+  useGetVendors,
+} from "@/services/setups/vendor";
 // import { useGetEquipmentColors, useGetEquipmentMakes, useGetEquipmentModels, useGetEquipmentOwnerships, useGetEquipmentStatuses, useGetEquipmentTypes } from "@/services/setups/equipments";
 
 // interface triggerVariant {

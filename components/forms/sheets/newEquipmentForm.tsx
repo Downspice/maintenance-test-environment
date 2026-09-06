@@ -12,8 +12,8 @@ import { Form } from "@/components/ui/form"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
  
-import InputWrapper from "../wrappers/InputWrapper"
-import { ComboboxFieldWrapper, ComboboxOption, MultiComboboxWrapper } from "../wrappers/ComboboxWrapper"
+import InputWrapper from "../fields/InputWrapper"
+import { ComboboxFieldWrapper, ComboboxOption, MultiComboboxWrapper } from "../fields/ComboboxWrapper"
  
 // Define your options
 const frameworks: ComboboxOption[] = [

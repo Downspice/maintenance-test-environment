@@ -3,23 +3,29 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { GitPullRequestArrow } from "lucide-react";
-import TextareaWrapper from "../wrappers/TextareaWrapper";
+import TextareaWrapper from "../fields/TextareaWrapper";
 import { toast } from "sonner";
-import InputWrapper from "../wrappers/InputWrapper";
-import { categoryOptions } from "@/lib/equipment-schema";
-import SelectWrapper from "../wrappers/SelectWrapper";
+import InputWrapper from "../fields/InputWrapper";
+import SelectWrapper from "../fields/SelectWrapper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import FileUploadWrapper from "../wrappers/FileUploadWrapper";
+import FileUploadWrapper from "../fields/FileUploadWrapper";
 import FormSubheader from "../ui/formSubheader";
-import { ComboboxFieldWrapper } from "../wrappers/ComboboxWrapper";
-import { discount_typesOptions } from "@/lib/Invoice/invoices-page-data";
-import { customerSchema,CustomerInterface} from "@/lib/Customer/customer-data";
-import { useAddCustomer, useGetCustomerDiscounts, useGetLocations, useGetPurchaseOrderTerms, useGetStatusOnes, useGetVendorTypes } from "@/services/setups/vendor";
-import SingleCheckboxWrapper from "../wrappers/SingleCheckboxWrapper";
+import { ComboboxFieldWrapper } from "../fields/ComboboxWrapper";
+import { customerSchema,CustomerInterface} from "@/lib/domains/customer/customer-data";
+import {
+  useGetLocations,
+  useGetPurchaseOrderTerms,
+  useGetStatusOnes,
+  useGetVendorTypes,
+} from "@/services/setups/lookups";
+import {
+  useAddCustomer,
+  useGetCustomerDiscounts,
+} from "@/services/setups/customer";
+import SingleCheckboxWrapper from "../fields/SingleCheckboxWrapper";
 
  
 export default function NewCustomer() {

@@ -8,19 +8,16 @@ import {
   Boxes,
   ShoppingCart,
   Building,
-  ChartArea,
-  Smartphone,
 } from "lucide-react";
 import React from "react";
-import AddEquipmentsButton from "@/components/sideBarButtons/add-equipments-buttons";
-import EquipmentForm from "@/app/(application)/equipment/components/new-equipment-form";
-import WorkOrderFormWrapper from "@/components/forms/wrappers/work-order-form-wrapper";
-import InventoryFormWrapper from "@/components/forms/wrappers/inventory-form-wrapper";
-import PurchaseOrderFormWrapper from "@/components/forms/wrappers/purchase-order-form-wrapper";
-import EmployeeFormWrapper from "@/components/forms/wrappers/employee-form-wrapper";
-import VendorFormWrapper from "@/components/forms/wrappers/vendor-form-wrapper";
-import InvoiceFormWrapper from "@/components/forms/wrappers/invoice-form-wrapper";
-import CustomerFormWrapper from "@/components/forms/wrappers/customer-form-wrapper";
+import EquipmentForm from "@/components/forms/entities/equipment/new-equipment-form";
+import WorkOrderFormWrapper from "@/components/forms/fields/work-order-form-wrapper";
+import InventoryFormWrapper from "@/components/forms/fields/inventory-form-wrapper";
+import PurchaseOrderFormWrapper from "@/components/forms/fields/purchase-order-form-wrapper";
+import EmployeeFormWrapper from "@/components/forms/fields/employee-form-wrapper";
+import VendorFormWrapper from "@/components/forms/fields/vendor-form-wrapper";
+import InvoiceFormWrapper from "@/components/forms/fields/invoice-form-wrapper";
+import CustomerFormWrapper from "@/components/forms/fields/customer-form-wrapper";
 type Submenu = {
   href: string;
   label: string;

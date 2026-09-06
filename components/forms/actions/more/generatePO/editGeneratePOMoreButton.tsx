@@ -8,18 +8,18 @@ import { Button } from "@/components/ui/button";
 import { Pen, Save, Trash2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 // Form wrappers
-import InputWrapper from "@/components/forms/wrappers/InputWrapper";
-import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";
+import InputWrapper from "@/components/forms/fields/InputWrapper";
+import DatePickerWrapper from "@/components/forms/fields/DatePickerWrapper";
 // Schema and types
 import {
   assigneeOptions,
   substituteOptions,
-} from "@/lib/equipment-schema";
+} from "@/lib/schemas/equipment-schema";
 import Fieldset from "@/components/customUI/fieldset";
  
 import { toast } from "sonner";
-import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
-import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
+import { ComboboxFieldWrapper } from "@/components/forms/fields/ComboboxWrapper";
+import TextareaWrapper from "@/components/forms/fields/TextareaWrapper";
 import {
   Table,
   TableBody,
@@ -36,24 +36,23 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+
+
 import {
   discount_typesOptions,
-  maintenanceItems,
-} from "@/lib/Invoice/invoices-page-data";
-import FileUploadWrapper from "@/components/forms/wrappers/FileUploadWrapper";
-import SingleCheckboxWrapper from "@/components/forms/wrappers/SingleCheckboxWrapper";
+} from "@/lib/domains/invoice/invoices-page-data";
+import FileUploadWrapper from "@/components/forms/fields/FileUploadWrapper";
+import SingleCheckboxWrapper from "@/components/forms/fields/SingleCheckboxWrapper";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useGetLocations, useGetVendors } from "@/services/setups/vendor";
+import {
+  useGetLocations,
+} from "@/services/setups/lookups";
+import {
+  useGetVendors,
+} from "@/services/setups/vendor";
 import { useGetPurchaseOrderShipVias } from "@/services/setups/purchaseOrder";
 import { useGetItemTypes, useGetInvoices } from "@/services/setups/invoice";
-import { convertToOptionList } from "@/lib/utils";
+import { convertToOptionList } from "@/lib/shared/utils";
 
 // Purchase Order Item Schema
 export const PurchaseOrderItemSchema = z.object({

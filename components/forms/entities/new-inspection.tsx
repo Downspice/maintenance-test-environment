@@ -5,20 +5,20 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Camera, LucideTrash2, Save, WrenchIcon } from "lucide-react";
+import { Camera, Save, WrenchIcon } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
 // Form wrappers
-import InputWrapper from "@/components/forms/wrappers/InputWrapper";
-import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";
+import InputWrapper from "@/components/forms/fields/InputWrapper";
+import DatePickerWrapper from "@/components/forms/fields/DatePickerWrapper";
 // Schema and types
-import { assigneeOptions } from "@/lib/equipment-schema";
+import { assigneeOptions } from "@/lib/schemas/equipment-schema";
 import Fieldset from "@/components/customUI/fieldset";
 import {
   conditionOptionsList,
   equipmentOptionsList,
-} from "@/lib/option-list";
+} from "@/lib/shared/option-list";
 import { toast } from "sonner";
-import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
+import { ComboboxFieldWrapper } from "@/components/forms/fields/ComboboxWrapper";
 import { EditableDataTable } from "@/components/customUI/editableTable";
 import { Input } from "@/components/ui/input";
 import {
@@ -29,10 +29,9 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { priorityOptions } from "../../../app/(application)/work-orders/forms/newWorkOrderFormSheet";
-import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
+import TextareaWrapper from "@/components/forms/fields/TextareaWrapper";
 import { Checkbox } from "@/components/ui/checkbox";
-import NewRepairRequestForm from "./moreButtonForms/repairRequest/repairRequestForm";
+import NewRepairRequestForm from "../actions/more/repairRequest/repairRequestForm";
 import { z } from "zod";
 
 // Editable table row type

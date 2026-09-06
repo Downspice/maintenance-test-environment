@@ -7,29 +7,18 @@ import { useState } from "react";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { GitPullRequestArrow, Pen, Plus, Trash2 } from "lucide-react";
-import TextareaWrapper from "../wrappers/TextareaWrapper";
+import TextareaWrapper from "../fields/TextareaWrapper";
 import { toast } from "sonner";
-import InputWrapper from "../wrappers/InputWrapper";
-import { categoryOptions } from "@/lib/equipment-schema";
-import SelectWrapper from "../wrappers/SelectWrapper";
+import InputWrapper from "../fields/InputWrapper";
+import SelectWrapper from "../fields/SelectWrapper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  EmployeeCheckboxOptions,
-  equipmentOptionsList,
-} from "@/lib/option-list";
+
+
 import FormSubheader from "../ui/formSubheader";
-import CustomFieldsWrapper from "../wrappers/CustomFieldsWrapper";
-import DatePickerWrapper from "../wrappers/DatePickerWrapper";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import FileUploadWrapper from "../wrappers/FileUploadWrapper";
-import CheckboxWrapper from "../wrappers/CheckboxWrapper";
+import CustomFieldsWrapper from "../fields/CustomFieldsWrapper";
+import DatePickerWrapper from "../fields/DatePickerWrapper";
+
+
 import {
   Table,
   TableBody,
@@ -38,26 +27,23 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import UpdateEmployeeRenewalForm from "./update-employee";
-import { useSheet } from "@/lib/sheet-providers";
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   useAddEmployee,
   useGetEmployeeCategories,
   useGetEmployeeRenewals,
   useGetEmployeeStatuses,
   useGetEmployeeTypes,
-  useUpdateEmployeeCategory,
 } from "@/services/setups/employee";
-import { useGetLocations } from "@/services/setups/vendor";
+import {
+  useGetLocations,
+} from "@/services/setups/lookups";
 
 // Renewal data type
 export interface RenewalData {

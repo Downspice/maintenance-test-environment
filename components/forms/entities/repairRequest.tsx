@@ -8,13 +8,12 @@ import { Button } from "@/components/ui/button";
 import { Camera, LucideTrash2, Save } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
 // Form wrappers
-import InputWrapper from "@/components/forms/wrappers/InputWrapper";
-import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";
+import InputWrapper from "@/components/forms/fields/InputWrapper";
+import DatePickerWrapper from "@/components/forms/fields/DatePickerWrapper";
 // Schema and types
-import { assigneeOptions } from "@/lib/equipment-schema";
 import Fieldset from "@/components/customUI/fieldset";
 import { toast } from "sonner";
-import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
+import { ComboboxFieldWrapper } from "@/components/forms/fields/ComboboxWrapper";
 import { EditableDataTable } from "@/components/customUI/editableTable";
 import { Input } from "@/components/ui/input";
 import {
@@ -33,9 +32,10 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useGetLocations } from "@/services/setups/vendor";
+
+
 import { useGetEquipments, useUpdateEquipmentRepairRequest } from "@/services/setups/equipments";
-import { convertToOptionList } from "@/lib/utils";
+import { convertToOptionList } from "@/lib/shared/utils";
 import { GenericObject } from "@/types/types";
 import { useGetEmployees } from "@/services/setups/employee";
 import { useGetMaintenanceRepairs } from "@/services/setups/maintenance";

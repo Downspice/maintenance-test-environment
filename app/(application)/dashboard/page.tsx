@@ -1,12 +1,12 @@
 "use client";
-import { DonutChartCard } from "@/components/charts/donughtChart";
+import { DonutChartCard } from "@/components/charts/donut-chart";
 import ReusableButtonCard from "@/components/reusable/reusableButtonCard";
 import ReusableButtonInventoryCard from "@/components/reusable/reusableButtonCardInventory";
 import React from "react";
 import { useState } from "react";
-import { EquipmentDataTable } from "./components/data-table/equipment/equipment.dataTable";
-import { InventoryDataTable } from "./components/data-table/inventory/inventory.dataTable";
-import { EmployeesDataTable } from "./components/data-table/employees/employeesdue.datatable";
+import { EquipmentDataTable } from "./components/data-table/equipment/equipment-data-table";
+import { InventoryDataTable } from "./components/data-table/inventory/inventory-data-table";
+import { EmployeesDataTable } from "./components/data-table/employees/employees-data-table";
 import { MonthlyMaintenanceChart } from "./components/charts/monthlyBarChart";
 import {
   DropdownMenu,
@@ -14,7 +14,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import RepairRequestFormMoreButton from "@/components/forms/actualForms/moreButtonForms/repairRequest/repairRequestForm";
 
 const homeCardData = {
   name: "Equipment Due",

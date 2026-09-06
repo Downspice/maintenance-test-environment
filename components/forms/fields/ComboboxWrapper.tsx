@@ -3,7 +3,7 @@ import { Check, ChevronsUpDown, X } from "lucide-react";
 import type { Control } from "react-hook-form";
 import { useState, useMemo } from "react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/shared/utils";
 import { Button } from "@/components/ui/button";
 import {
   Command,

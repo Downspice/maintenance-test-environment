@@ -7,19 +7,21 @@ import { useState } from "react";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { GitPullRequestArrow } from "lucide-react";
-import TextareaWrapper from "../wrappers/TextareaWrapper";
+import TextareaWrapper from "../fields/TextareaWrapper";
 import { toast } from "sonner";
-import InputWrapper from "../wrappers/InputWrapper";
-import SelectWrapper from "../wrappers/SelectWrapper";
+import InputWrapper from "../fields/InputWrapper";
+import SelectWrapper from "../fields/SelectWrapper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import CustomFieldsWrapper from "../wrappers/CustomFieldsWrapper";
-import FileUploadWrapper from "../wrappers/FileUploadWrapper";
+import CustomFieldsWrapper from "../fields/CustomFieldsWrapper";
+import FileUploadWrapper from "../fields/FileUploadWrapper";
 import {
-  useAddVendor,
   useGetVendorTypes,
   useGetLocations,
   useGetStatusOnes,
   useGetPurchaseOrderTerms,
+} from "@/services/setups/lookups";
+import {
+  useAddVendor,
 } from "@/services/setups/vendor";
 
 export type VendorFormValues = z.infer<typeof vendorSchema>;

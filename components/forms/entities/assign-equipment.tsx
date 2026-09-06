@@ -8,33 +8,34 @@ import { Button } from "@/components/ui/button";
 import { LucideTrash2, Save } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
 // Form wrappers
-import InputWrapper from "@/components/forms/wrappers/InputWrapper";
-import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";
+import InputWrapper from "@/components/forms/fields/InputWrapper";
+import DatePickerWrapper from "@/components/forms/fields/DatePickerWrapper";
 // Schema and types
 import {
   equipmentSchema,
   type EquipmentFormValues,
   assigneeOptions,
-} from "@/lib/equipment-schema";
+} from "@/lib/schemas/equipment-schema";
 import Fieldset from "@/components/customUI/fieldset";
 import {
   equipmentOptionsList,
   jobSiteOptionsList,
   rateDurationOptions,
-  stateProvinceOptions,
   vendorTypeOptions,
-} from "@/lib/option-list";
+} from "@/lib/shared/option-list";
 import { toast } from "sonner";
-import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
+import { ComboboxFieldWrapper } from "@/components/forms/fields/ComboboxWrapper";
 import { EditableDataTable } from "@/components/customUI/editableTable";
 import { Input } from "@/components/ui/input";
-import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
+import TextareaWrapper from "@/components/forms/fields/TextareaWrapper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import RadioGroupWrapper, {
   RadioOption,
-} from "@/components/forms/wrappers/RadioGroupWrapper";
-import SingleCheckboxWrapper from "@/components/forms/wrappers/SingleCheckboxWrapper";
-import { useGetLocations } from "@/services/setups/vendor";
+} from "@/components/forms/fields/RadioGroupWrapper";
+import SingleCheckboxWrapper from "@/components/forms/fields/SingleCheckboxWrapper";
+import {
+  useGetLocations,
+} from "@/services/setups/lookups";
 
 interface triggerVariant {
   variant?: "icon" | "default";

@@ -11,7 +11,9 @@ import { ColumnDef } from "@tanstack/react-table";
   SelectValue,
 } from "@/components/ui/select";
  
-import { useGetLocations } from "@/services/setups/vendor";
+import {
+  useGetLocations,
+} from "@/services/setups/lookups";
 
 export default function PhysicalInventoryUpdateMoreButton() {
     const { 

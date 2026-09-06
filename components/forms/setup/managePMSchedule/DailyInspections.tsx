@@ -12,8 +12,8 @@ import { Pencil, Trash2, Plus } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import InputWrapper from "@/components/forms/wrappers/InputWrapper";
-import SelectWrapper from "@/components/forms/wrappers/SelectWrapper";
+import InputWrapper from "@/components/forms/fields/InputWrapper";
+import SelectWrapper from "@/components/forms/fields/SelectWrapper";
 import { AlertDialog } from "@/components/ui/alert-dialog";
 
 const priorityOptions = [

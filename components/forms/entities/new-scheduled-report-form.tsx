@@ -8,11 +8,11 @@ import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Save, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { useConfirmDialog } from "@/lib/confirm-dialog";
+import { useConfirmDialog } from "@/lib/shared/confirm-dialog";
 import {
   ComboboxFieldWrapper,
   MultiComboboxWrapper,
-} from "@/components/forms/wrappers/ComboboxWrapper";
+} from "@/components/forms/fields/ComboboxWrapper";
 import {
   Dialog,
   DialogContent,
@@ -34,8 +34,10 @@ import {
   reportCategoryTypeOptionsList,
   reportFrequencyTypeOptionsList,
   reportTypeOptionsList,
-} from "@/lib/option-list";
-import { useGetLocations } from "@/services/setups/vendor";
+} from "@/lib/shared/option-list";
+import {
+  useGetLocations,
+} from "@/services/setups/lookups";
 
 const ScheduledReportSchema = z.object({
   report: z.string(),

@@ -6,27 +6,24 @@ import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon, CameraIcon, Trash2Icon } from "lucide-react";
+import { CameraIcon, Trash2Icon } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Form, 
 } from "@/components/ui/form";
-import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
-import DatePicker from "@/components/ui/date-picker";
-import { assigneeOptions } from "@/lib/equipment-schema";
-import { equipmentOptionsList } from "@/lib/option-list";
-import DatePickerWrapper from "@/components/forms/wrappers/DatePickerWrapper";
-import InputWrapper from "@/components/input-wrapper";
+import { ComboboxFieldWrapper } from "@/components/forms/fields/ComboboxWrapper";
+import { assigneeOptions } from "@/lib/schemas/equipment-schema";
+import { equipmentOptionsList } from "@/lib/shared/option-list";
+import DatePickerWrapper from "@/components/forms/fields/DatePickerWrapper";
+import InputWrapper from "@/components/forms/fields/InputWrapper";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import TextareaWrapper from "@/components/forms/wrappers/TextareaWrapper";
+import TextareaWrapper from "@/components/forms/fields/TextareaWrapper";
 
 const priorities = ["Low", "Medium", "High"];
 const typeOptions = [

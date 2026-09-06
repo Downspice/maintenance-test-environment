@@ -4,7 +4,7 @@ import { Cross2Icon } from "@radix-ui/react-icons";
 import type { Table } from "@tanstack/react-table";
 import { useEffect, useState, useRef } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
-import { Settings, Undo2, TrashIcon, EyeOff, CheckSquare, MoveHorizontal } from "lucide-react";
+import { Settings, Undo2, EyeOff, CheckSquare, MoveHorizontal } from "lucide-react";
 import { useRouter } from '@bprogress/next/app';
 
 import { Button } from "@/components/ui/button";

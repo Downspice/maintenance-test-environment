@@ -7,10 +7,12 @@ import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"; 
-import InputWrapper from "@/components/forms/wrappers/InputWrapper";
-import { ComboboxFieldWrapper } from "@/components/forms/wrappers/ComboboxWrapper";
-import RadioGroupWrapper from "@/components/forms/wrappers/RadioGroupWrapper";
-import { useGetVendorOptions } from "@/services/setups/vendor";
+import InputWrapper from "@/components/forms/fields/InputWrapper";
+import { ComboboxFieldWrapper } from "@/components/forms/fields/ComboboxWrapper";
+import RadioGroupWrapper from "@/components/forms/fields/RadioGroupWrapper";
+import {
+  useGetVendorOptions,
+} from "@/services/setups/vendor";
 
 const equipmentOptions = [
   { name: "Forklift", id: "forklift" },

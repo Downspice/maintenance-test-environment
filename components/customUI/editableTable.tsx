@@ -31,7 +31,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { ChevronDown, ArrowDown, ArrowUp } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/shared/utils"
 import debounce from "debounce"
 
 type EditableDataTableProps<TData> = {

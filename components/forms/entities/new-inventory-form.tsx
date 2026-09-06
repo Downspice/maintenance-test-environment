@@ -7,19 +7,19 @@ import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { GitPullRequestArrow } from "lucide-react";
 import { toast } from "sonner";
-import InputWrapper from "../wrappers/InputWrapper";
-import SelectWrapper from "../wrappers/SelectWrapper";
-import CustomFieldsWrapper from "../wrappers/CustomFieldsWrapper";
-import { ComboboxFieldWrapper } from "../wrappers/ComboboxWrapper";
+import InputWrapper from "../fields/InputWrapper";
+import SelectWrapper from "../fields/SelectWrapper";
+import CustomFieldsWrapper from "../fields/CustomFieldsWrapper";
+import { ComboboxFieldWrapper } from "../fields/ComboboxWrapper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { inventoryMovement, partOptions } from "@/lib/inventory-data";
-import SingleCheckboxWrapper from "../wrappers/SingleCheckboxWrapper";
+import { inventoryMovement, partOptions } from "@/lib/domains/inventory/mock-data";
+import SingleCheckboxWrapper from "../fields/SingleCheckboxWrapper";
 import Fieldset from "@/components/customUI/fieldset";
-import FileUploadWrapper from "../wrappers/FileUploadWrapper";
-import PartSubstitutionTable from "@/app/(application)/inventory/component/inventory.partSubstitutionTable";
-import AlternateUpcCodesTable from "@/app/(application)/inventory/component/inventory.alternateUpcCodesTable";
+import FileUploadWrapper from "../fields/FileUploadWrapper";
+import PartSubstitutionTable from "@/app/(application)/inventory/components/part-substitution-table";
+import AlternateUpcCodesTable from "@/app/(application)/inventory/components/alternate-upc-codes-table";
 import { useState } from "react";
-import WarehouseTabs from "@/app/(application)/inventory/component/inventory.warehouse";
+import WarehouseTabs from "@/app/(application)/inventory/components/warehouse-tabs";
 import {
   useAddInventory,
   useGetCostCenters,
@@ -29,7 +29,9 @@ import {
   useGetMarkupTypes,
   useGetWarehouses,
 } from "@/services/setups/inventory";
-import { useGetVendors } from "@/services/setups/vendor";
+import {
+  useGetVendors,
+} from "@/services/setups/vendor";
 import { GenericObject } from "@/types/types";
 
 // Updated schema to match backend structure

@@ -7,9 +7,9 @@ import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import Fieldset from "@/components/customUI/fieldset";
-import RadioGroupWrapper from "@/components/forms/wrappers/RadioGroupWrapper";
+import RadioGroupWrapper from "@/components/forms/fields/RadioGroupWrapper";
 import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
-import { PurchaseOrderInterface } from "@/lib/PurchaseOrder/purchaseOrder-data";
+import { PurchaseOrderInterface } from "@/lib/domains/purchase-order/purchaseOrder-data";
 import EditPurchaseOrderFormMoreButton from "./editGeneratePOMoreButton";
 
 // Dummy table data
