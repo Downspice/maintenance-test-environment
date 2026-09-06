@@ -39,9 +39,6 @@ type Group = {
   menus: Menu[];
 };
 
-function yourImportedFunction() {
-  console.log("jndfkj");
-}
 export function getMenuList(pathname: string): Group[] {
   return [
     {
