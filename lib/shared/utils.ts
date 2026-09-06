@@ -9,7 +9,7 @@ export function matchesSearchAllFields<T extends Record<string, any>>(
   item: T,
   searchid: string
 ): boolean {
-  const lowerSearch = searchValue.toLowerCase();
+  const lowerSearch = searchid.toLowerCase();
 
   return Object.values(item).some((value) => {
     if (value == null) return false;
