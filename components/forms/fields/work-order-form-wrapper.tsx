@@ -24,12 +24,16 @@ export default function WorkOrderFormWrapper({ variant }: TriggerVariant) {
     return (
         <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-                <Button variant={variant === "icon" ? "ghost" : "default"}>
+                <Button
+                    variant={variant === "icon" ? "ghost" : "primary"}
+                    size={variant === "icon" ? "icon" : "md"}
+                    className={variant === "icon" ? "size-6 p-0" : undefined}
+                >
                     {variant === "icon" ? (
-                        <Plus />
+                        <Plus className="size-4" />
                     ) : (
                         <>
-                            <Plus />
+                            <Plus className="size-4 mr-2" />
                             Create New Work Order
                         </>
                     )}

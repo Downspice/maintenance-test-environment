@@ -47,6 +47,12 @@ const buttonVariants = tv({
         'h-auto px-0 py-0 shadow-none',
       ],
       // Shadcn compat shim
+      default: [
+        'bg-primary-base text-static-white',
+        'hover:bg-primary-dark',
+        'active:bg-primary-darker',
+        'shadow-regular-xs',
+      ],
       outline: [
         'bg-bg-white-0 text-text-strong-950 ring-1 ring-inset ring-stroke-soft-200',
         'hover:bg-bg-weak-50 hover:ring-stroke-sub-300',

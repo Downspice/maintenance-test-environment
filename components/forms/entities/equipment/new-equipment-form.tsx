@@ -69,7 +69,7 @@ import { GenericObject } from "@/types/types";
 import { format } from "date-fns";
 
 interface TriggerVariant {
-  variant?: "icon" | "default";
+  variant?: "icon" | "default" | "primary";
 }
 
 // New schema matching your provided structure
@@ -924,12 +924,16 @@ export default function EquipmentForm({ variant }: TriggerVariant) {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant={variant === "icon" ? "ghost" : "default"}>
+        <Button
+          variant={variant === "icon" ? "ghost" : "primary"}
+          size={variant === "icon" ? "icon" : "md"}
+          className={variant === "icon" ? "size-6 p-0" : undefined}
+        >
           {variant === "icon" ? (
-            <Plus />
+            <Plus className="size-4" />
           ) : (
             <>
-              <Plus />
+              <Plus className="size-4 mr-2" />
               Create New Equipment
             </>
           )}

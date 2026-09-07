@@ -471,7 +471,7 @@ export function EquipmentTableLoader({ locationId }: { locationId?: string }) {
           return SelectedComponent ? SelectedComponent : null;
         };
         const selectedType = dropdownItems.find(
-          (type) => type.label === selectedProjectType
+          (type) => type?.label === selectedProjectType
         );
 
         return (
