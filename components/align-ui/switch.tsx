@@ -5,24 +5,18 @@ import * as SwitchPrimitive from '@radix-ui/react-switch';
 import { tv, type VariantProps } from '@/utils/tv';
 import { cn } from '@/utils/cn';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Switch Variants — AlignUI Design System
-// ─────────────────────────────────────────────────────────────────────────────
-
 const switchVariants = tv({
   slots: {
     root: [
       'relative inline-flex shrink-0 cursor-pointer items-center rounded-full',
-      'ring-2 ring-inset ring-transparent bg-ln-gray-200',
-      'transition-all duration-200 outline-none',
-      'focus-visible:ring-2 focus-visible:ring-ln-gray-900 focus-visible:ring-offset-2',
-      'data-[state=checked]:bg-ln-gray-900',
+      'bg-gray-200 transition-all duration-200 outline-none',
+      'focus-visible:ring-2 focus-visible:ring-stroke-strong-950 focus-visible:ring-offset-2',
+      'data-[state=checked]:bg-text-strong-950',
       'disabled:pointer-events-none disabled:opacity-40',
     ],
     thumb: [
-      'pointer-events-none block rounded-full bg-white shadow-sm',
-      'transition-transform duration-200',
-      'data-[state=checked]:translate-x-full',
+      'pointer-events-none block rounded-full bg-white',
+      'shadow-switch-thumb transition-transform duration-200',
     ],
   },
   variants: {
@@ -33,28 +27,20 @@ const switchVariants = tv({
       },
       md: {
         root: 'h-5 w-9',
-        thumb: 'size-4 translate-x-0.5 data-[state=checked]:translate-x-4.5',
+        thumb: 'size-4 translate-x-0.5 data-[state=checked]:translate-x-[18px]',
       },
       lg: {
         root: 'h-6 w-11',
-        thumb: 'size-5 translate-x-0.5 data-[state=checked]:translate-x-5.5',
+        thumb: 'size-5 translate-x-0.5 data-[state=checked]:translate-x-[22px]',
       },
     },
   },
   defaultVariants: { size: 'md' },
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Types
-// ─────────────────────────────────────────────────────────────────────────────
-
 export interface SwitchProps
   extends React.ComponentPropsWithoutRef<typeof SwitchPrimitive.Root>,
     VariantProps<typeof switchVariants> {}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Component
-// ─────────────────────────────────────────────────────────────────────────────
 
 const Switch = React.forwardRef<
   React.ElementRef<typeof SwitchPrimitive.Root>,

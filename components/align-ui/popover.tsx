@@ -1,12 +1,7 @@
 'use client';
-
 import * as React from 'react';
 import * as PopoverPrimitive from '@radix-ui/react-popover';
 import { cn } from '@/utils/cn';
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Popover — AlignUI Design System
-// ─────────────────────────────────────────────────────────────────────────────
 
 const Popover = PopoverPrimitive.Root;
 const PopoverTrigger = PopoverPrimitive.Trigger;
@@ -23,8 +18,8 @@ const PopoverContent = React.forwardRef<
       sideOffset={sideOffset}
       className={cn(
         'z-50 w-72 rounded-[12px] outline-none',
-        'bg-ln-gray-0 p-4',
-        'ring-1 ring-inset ring-ln-gray-100 shadow-ln-lg',
+        'bg-bg-white-0 p-4',
+        'ring-1 ring-inset ring-stroke-soft-200 shadow-regular-md',
         'data-[state=open]:animate-in data-[state=closed]:animate-out',
         'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
         'data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95',

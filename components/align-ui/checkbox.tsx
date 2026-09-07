@@ -5,19 +5,15 @@ import * as CheckboxPrimitive from '@radix-ui/react-checkbox';
 import { tv, type VariantProps } from '@/utils/tv';
 import { cn } from '@/utils/cn';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Checkbox Variants — AlignUI Design System
-// ─────────────────────────────────────────────────────────────────────────────
-
 const checkboxVariants = tv({
   base: [
     'peer flex shrink-0 items-center justify-center rounded-[5px]',
-    'ring-1 ring-inset ring-ln-gray-200 bg-ln-gray-0',
+    'ring-1 ring-inset ring-stroke-soft-200 bg-bg-white-0',
     'transition-all duration-150 outline-none',
-    'hover:ring-ln-gray-400',
-    'focus-visible:ring-2 focus-visible:ring-ln-gray-900',
-    'data-[state=checked]:bg-ln-gray-900 data-[state=checked]:ring-ln-gray-900',
-    'data-[state=indeterminate]:bg-ln-gray-900 data-[state=indeterminate]:ring-ln-gray-900',
+    'hover:ring-stroke-sub-300',
+    'focus-visible:ring-2 focus-visible:ring-stroke-strong-950',
+    'data-[state=checked]:bg-text-strong-950 data-[state=checked]:ring-text-strong-950',
+    'data-[state=indeterminate]:bg-text-strong-950 data-[state=indeterminate]:ring-text-strong-950',
     'disabled:pointer-events-none disabled:opacity-40',
   ],
   variants: {
@@ -30,17 +26,9 @@ const checkboxVariants = tv({
   defaultVariants: { size: 'md' },
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Types
-// ─────────────────────────────────────────────────────────────────────────────
-
 export interface CheckboxProps
   extends React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>,
     VariantProps<typeof checkboxVariants> {}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Component
-// ─────────────────────────────────────────────────────────────────────────────
 
 const Checkbox = React.forwardRef<
   React.ElementRef<typeof CheckboxPrimitive.Root>,
@@ -52,19 +40,8 @@ const Checkbox = React.forwardRef<
     {...props}
   >
     <CheckboxPrimitive.Indicator className="flex items-center justify-center text-current">
-      <svg
-        className="size-3 text-ln-gray-0"
-        viewBox="0 0 12 12"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M2 6L5 9L10 3"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
+      <svg className="size-3 text-static-white" viewBox="0 0 12 12" fill="none">
+        <path d="M2 6L5 9L10 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     </CheckboxPrimitive.Indicator>
   </CheckboxPrimitive.Root>

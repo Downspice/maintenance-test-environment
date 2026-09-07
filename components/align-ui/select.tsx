@@ -5,10 +5,6 @@ import * as SelectPrimitive from '@radix-ui/react-select';
 import { RiArrowDownSLine, RiCheckLine } from '@remixicon/react';
 import { cn } from '@/utils/cn';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Select — AlignUI Design System
-// ─────────────────────────────────────────────────────────────────────────────
-
 const Select = SelectPrimitive.Root;
 const SelectGroup = SelectPrimitive.Group;
 const SelectValue = SelectPrimitive.Value;
@@ -21,13 +17,13 @@ const SelectTrigger = React.forwardRef<
     ref={ref}
     className={cn(
       'flex h-9 w-full items-center justify-between gap-2 rounded-[10px]',
-      'bg-ln-gray-0 px-3 shadow-ln-xs',
-      'text-ln-paragraph-sm text-ln-gray-900',
-      'ring-1 ring-inset ring-ln-gray-200',
+      'bg-bg-white-0 px-3 shadow-regular-xs',
+      'text-paragraph-sm text-text-strong-950',
+      'ring-1 ring-inset ring-stroke-soft-200',
       'transition-all duration-200 outline-none',
-      'hover:ring-ln-gray-300',
-      'focus:ring-2 focus:ring-ln-gray-900',
-      'data-[placeholder]:text-ln-gray-400',
+      'hover:ring-stroke-sub-300',
+      'focus:ring-2 focus:ring-stroke-strong-950',
+      'data-[placeholder]:text-text-soft-400',
       'disabled:pointer-events-none disabled:opacity-40',
       '[&>span]:line-clamp-1',
       className,
@@ -36,7 +32,7 @@ const SelectTrigger = React.forwardRef<
   >
     {children}
     <SelectPrimitive.Icon asChild>
-      <RiArrowDownSLine className="size-4 shrink-0 text-ln-gray-400 transition-transform duration-200 group-data-[state=open]:rotate-180" />
+      <RiArrowDownSLine className="size-4 shrink-0 text-text-soft-400 transition-transform duration-200" />
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>
 ));
@@ -51,7 +47,7 @@ const SelectScrollUpButton = React.forwardRef<
     className={cn('flex cursor-default items-center justify-center py-1', className)}
     {...props}
   >
-    <RiArrowDownSLine className="size-4 rotate-180 text-ln-gray-400" />
+    <RiArrowDownSLine className="size-4 rotate-180 text-text-soft-400" />
   </SelectPrimitive.ScrollUpButton>
 ));
 SelectScrollUpButton.displayName = SelectPrimitive.ScrollUpButton.displayName;
@@ -65,7 +61,7 @@ const SelectScrollDownButton = React.forwardRef<
     className={cn('flex cursor-default items-center justify-center py-1', className)}
     {...props}
   >
-    <RiArrowDownSLine className="size-4 text-ln-gray-400" />
+    <RiArrowDownSLine className="size-4 text-text-soft-400" />
   </SelectPrimitive.ScrollDownButton>
 ));
 SelectScrollDownButton.displayName = SelectPrimitive.ScrollDownButton.displayName;
@@ -79,8 +75,8 @@ const SelectContent = React.forwardRef<
       ref={ref}
       className={cn(
         'relative z-50 min-w-[8rem] overflow-hidden',
-        'rounded-[12px] bg-ln-gray-0',
-        'ring-1 ring-inset ring-ln-gray-100 shadow-ln-lg',
+        'rounded-[12px] bg-bg-white-0',
+        'ring-1 ring-inset ring-stroke-soft-200 shadow-regular-md',
         'data-[state=open]:animate-in data-[state=closed]:animate-out',
         'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
         'data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95',
@@ -115,7 +111,7 @@ const SelectLabel = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.Label
     ref={ref}
-    className={cn('px-2 py-1.5 text-ln-subheading-xs text-ln-gray-400 uppercase tracking-wide', className)}
+    className={cn('px-2 py-1.5 text-subheading-xs text-text-soft-400 uppercase tracking-wide', className)}
     {...props}
   />
 ));
@@ -130,9 +126,9 @@ const SelectItem = React.forwardRef<
     className={cn(
       'relative flex w-full cursor-pointer select-none items-center',
       'rounded-[8px] py-1.5 pl-2 pr-8',
-      'text-ln-paragraph-sm text-ln-gray-700 outline-none',
+      'text-paragraph-sm text-text-sub-600 outline-none',
       'transition-colors duration-100',
-      'focus:bg-ln-gray-50 focus:text-ln-gray-900',
+      'focus:bg-bg-weak-50 focus:text-text-strong-950',
       'data-[disabled]:pointer-events-none data-[disabled]:opacity-40',
       className,
     )}
@@ -140,7 +136,7 @@ const SelectItem = React.forwardRef<
   >
     <span className="absolute right-2 flex size-4 items-center justify-center">
       <SelectPrimitive.ItemIndicator>
-        <RiCheckLine className="size-4 text-ln-gray-900" />
+        <RiCheckLine className="size-4 text-text-strong-950" />
       </SelectPrimitive.ItemIndicator>
     </span>
     <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
@@ -154,21 +150,13 @@ const SelectSeparator = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.Separator
     ref={ref}
-    className={cn('-mx-1 my-1 h-px bg-ln-gray-100', className)}
+    className={cn('-mx-1 my-1 h-px bg-stroke-soft-200', className)}
     {...props}
   />
 ));
 SelectSeparator.displayName = SelectPrimitive.Separator.displayName;
 
 export {
-  Select,
-  SelectGroup,
-  SelectValue,
-  SelectTrigger,
-  SelectContent,
-  SelectLabel,
-  SelectItem,
-  SelectSeparator,
-  SelectScrollUpButton,
-  SelectScrollDownButton,
+  Select, SelectGroup, SelectValue, SelectTrigger, SelectContent,
+  SelectLabel, SelectItem, SelectSeparator, SelectScrollUpButton, SelectScrollDownButton,
 };

@@ -5,10 +5,6 @@ import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { RiCloseLine } from '@remixicon/react';
 import { cn } from '@/utils/cn';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Modal (Dialog) — AlignUI Design System
-// ─────────────────────────────────────────────────────────────────────────────
-
 const Dialog = DialogPrimitive.Root;
 const DialogTrigger = DialogPrimitive.Trigger;
 const DialogPortal = DialogPrimitive.Portal;
@@ -21,7 +17,7 @@ const DialogOverlay = React.forwardRef<
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn(
-      'fixed inset-0 z-50 bg-black/20 backdrop-blur-sm',
+      'fixed inset-0 z-50 bg-overlay backdrop-blur-sm',
       'data-[state=open]:animate-in data-[state=closed]:animate-out',
       'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
       className,
@@ -42,7 +38,7 @@ const DialogContent = React.forwardRef<
       className={cn(
         'fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2',
         'w-full max-w-lg rounded-2xl',
-        'bg-ln-gray-0 shadow-ln-xl ring-1 ring-inset ring-ln-gray-100',
+        'bg-bg-white-0 shadow-custom-md ring-1 ring-inset ring-stroke-soft-200',
         'p-6 outline-none',
         'data-[state=open]:animate-in data-[state=closed]:animate-out',
         'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
@@ -58,9 +54,9 @@ const DialogContent = React.forwardRef<
       <DialogPrimitive.Close
         className={cn(
           'absolute right-4 top-4 flex size-8 items-center justify-center rounded-[8px]',
-          'text-ln-gray-400 transition-all duration-150 outline-none',
-          'hover:bg-ln-gray-100 hover:text-ln-gray-700',
-          'focus-visible:ring-2 focus-visible:ring-ln-gray-900',
+          'text-text-soft-400 transition-all duration-150 outline-none',
+          'hover:bg-bg-weak-50 hover:text-text-sub-600',
+          'focus-visible:ring-2 focus-visible:ring-stroke-strong-950',
           'disabled:pointer-events-none',
         )}
       >
@@ -78,10 +74,7 @@ const DialogHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivEleme
 DialogHeader.displayName = 'DialogHeader';
 
 const DialogFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={cn('flex items-center justify-end gap-3 mt-5 pt-5 border-t border-ln-gray-100', className)}
-    {...props}
-  />
+  <div className={cn('flex items-center justify-end gap-3 mt-5 pt-5 border-t border-stroke-soft-200', className)} {...props} />
 );
 DialogFooter.displayName = 'DialogFooter';
 
@@ -89,11 +82,7 @@ const DialogTitle = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Title>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>
 >(({ className, ...props }, ref) => (
-  <DialogPrimitive.Title
-    ref={ref}
-    className={cn('text-ln-title-h5 text-ln-gray-900', className)}
-    {...props}
-  />
+  <DialogPrimitive.Title ref={ref} className={cn('text-title-h5 text-text-strong-950', className)} {...props} />
 ));
 DialogTitle.displayName = DialogPrimitive.Title.displayName;
 
@@ -101,23 +90,11 @@ const DialogDescription = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Description>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>
 >(({ className, ...props }, ref) => (
-  <DialogPrimitive.Description
-    ref={ref}
-    className={cn('text-ln-paragraph-sm text-ln-gray-500', className)}
-    {...props}
-  />
+  <DialogPrimitive.Description ref={ref} className={cn('text-paragraph-sm text-text-soft-400', className)} {...props} />
 ));
 DialogDescription.displayName = DialogPrimitive.Description.displayName;
 
 export {
-  Dialog,
-  DialogPortal,
-  DialogOverlay,
-  DialogClose,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogFooter,
-  DialogTitle,
-  DialogDescription,
+  Dialog, DialogPortal, DialogOverlay, DialogClose, DialogTrigger,
+  DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription,
 };

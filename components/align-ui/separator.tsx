@@ -1,10 +1,6 @@
 import * as React from 'react';
 import { cn } from '@/utils/cn';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Separator (Divider) — AlignUI Design System
-// ─────────────────────────────────────────────────────────────────────────────
-
 export interface SeparatorProps extends React.HTMLAttributes<HTMLDivElement> {
   orientation?: 'horizontal' | 'vertical';
   decorative?: boolean;
@@ -17,7 +13,7 @@ const Separator = React.forwardRef<HTMLDivElement, SeparatorProps>(
       role={decorative ? 'none' : 'separator'}
       aria-orientation={decorative ? undefined : orientation}
       className={cn(
-        'shrink-0 bg-ln-gray-100',
+        'shrink-0 bg-stroke-soft-200',
         orientation === 'horizontal' ? 'h-px w-full' : 'h-full w-px',
         className,
       )}
