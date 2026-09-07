@@ -40,6 +40,13 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -339,7 +346,7 @@ export function EquipmentPageDataTable({ realServer }: DataTableProps) {
     useState<FilterOption>("All Due Equipment");
   const [sortField, setSortField] = useState<SortField>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
-  const rowsPerPage = 5;
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   // Filter data based on selected option
   const filterData = (data: CarData[], option: FilterOption): CarData[] => {
@@ -900,20 +907,21 @@ export function EquipmentPageDataTable({ realServer }: DataTableProps) {
 
       {/* Pagination */}
       <div className="flex w-full items-center justify-between gap-4 px-1 py-3">
-        <div className="flex items-center gap-4">
-          <p className="text-paragraph-xs text-text-sub-600 shrink-0">
-            Showing{" "}
-            <span className="font-medium text-text-strong-950">
-              {data.length === 0 ? 0 : (currentPage - 1) * rowsPerPage + 1}
-            </span>{" "}
-            to{" "}
-            <span className="font-medium text-text-strong-950">
-              {Math.min(currentPage * rowsPerPage, totalItems)}
-            </span>{" "}
-            out of{" "}
-            <span className="font-medium text-text-strong-950">{totalItems}</span>
-          </p>
-        </div>
+        {/* Left: Showing X to Y out of Z */}
+        <p className="text-paragraph-xs text-text-sub-600 shrink-0">
+          Showing{" "}
+          <span className="font-medium text-text-strong-950">
+            {data.length === 0 ? 0 : (currentPage - 1) * rowsPerPage + 1}
+          </span>{" "}
+          to{" "}
+          <span className="font-medium text-text-strong-950">
+            {Math.min(currentPage * rowsPerPage, totalItems)}
+          </span>{" "}
+          out of{" "}
+          <span className="font-medium text-text-strong-950">{totalItems}</span>
+        </p>
+
+        {/* Center: Navigation buttons */}
         <div className="flex items-center gap-2">
           <button
             type="button"
@@ -962,6 +970,28 @@ export function EquipmentPageDataTable({ realServer }: DataTableProps) {
             <RiArrowRightDoubleLine className="size-3.5" />
           </button>
         </div>
+
+        {/* Right: Page size dropdown */}
+        <Select
+          value={`${rowsPerPage}`}
+          onValueChange={(val) => {
+            setRowsPerPage(Number(val));
+            setCurrentPage(1);
+          }}
+        >
+          <SelectTrigger className="h-8 min-w-[90px] w-auto gap-2 border border-stroke-soft-200 bg-white px-2.5 rounded-lg shadow-regular-xs text-label-xs text-text-strong-950 hover:bg-bg-weak-50 cursor-pointer">
+            <SelectValue placeholder={`${rowsPerPage} / page`}>
+              {rowsPerPage} / page
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent side="top" align="end">
+            {[5, 10, 20, 30, 50].map((n) => (
+              <SelectItem key={n} value={`${n}`} className="cursor-pointer text-label-xs">
+                {n} / page
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
     </div>
   );

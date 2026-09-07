@@ -66,40 +66,14 @@ export function DataTablePagination<TData>({
 
   return (
     <div className="flex w-full items-center justify-between gap-4 px-1 py-3">
-      {/* Left side: Page Size Selector + "Showing X to Y out of Z" */}
-      <div className="flex items-center gap-4">
-        <Select
-          value={`${pageSize}`}
-          onValueChange={(value) => {
-            const url = new URL(window.location.href);
-            url.searchParams.set("pageSize", value);
-            url.searchParams.set("page", "1");
-            window.history.replaceState({}, "", url.toString());
-            table.setPagination({ pageIndex: 0, pageSize: Number(value) });
-          }}
-        >
-          <SelectTrigger className="h-8 min-w-[100px] w-auto gap-2 border border-stroke-soft-200 bg-white-0 px-2.5 rounded-lg shadow-regular-xs text-label-xs text-text-strong-950 hover:bg-bg-weak-50 cursor-pointer">
-            <SelectValue placeholder={`${pageSize} / page`}>
-              {pageSize} / page
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent side="top" align="start">
-            {pageSizeOptions.map((n) => (
-              <SelectItem key={n} value={`${n}`} className="cursor-pointer text-label-xs">
-                {n} / page
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      {/* Left side: "Showing X to Y out of Z" */}
+      <p className="text-paragraph-xs text-text-sub-600 shrink-0">
+        Showing <span className="font-medium text-text-strong-950">{from}</span> to{" "}
+        <span className="font-medium text-text-strong-950">{to}</span> out of{" "}
+        <span className="font-medium text-text-strong-950">{actualTotal}</span>
+      </p>
 
-        <p className="text-paragraph-xs text-text-sub-600 shrink-0">
-          Showing <span className="font-medium text-text-strong-950">{from}</span> to{" "}
-          <span className="font-medium text-text-strong-950">{to}</span> out of{" "}
-          <span className="font-medium text-text-strong-950">{actualTotal}</span>
-        </p>
-      </div>
-
-      {/* Right side: Navigation buttons */}
+      {/* Center: Navigation buttons */}
       <div className="flex items-center gap-2">
         {/* First */}
         <button
@@ -147,6 +121,31 @@ export function DataTablePagination<TData>({
           <RiArrowRightDoubleLine className="size-3.5" />
         </button>
       </div>
+
+      {/* Right side: Page Size Selector */}
+      <Select
+        value={`${pageSize}`}
+        onValueChange={(value) => {
+          const url = new URL(window.location.href);
+          url.searchParams.set("pageSize", value);
+          url.searchParams.set("page", "1");
+          window.history.replaceState({}, "", url.toString());
+          table.setPagination({ pageIndex: 0, pageSize: Number(value) });
+        }}
+      >
+        <SelectTrigger className="h-8 min-w-[90px] w-auto gap-2 border border-stroke-soft-200 bg-white px-2.5 rounded-lg shadow-regular-xs text-label-xs text-text-strong-950 hover:bg-bg-weak-50 cursor-pointer">
+          <SelectValue placeholder={`${pageSize} / page`}>
+            {pageSize} / page
+          </SelectValue>
+        </SelectTrigger>
+        <SelectContent side="top" align="end">
+          {pageSizeOptions.map((n) => (
+            <SelectItem key={n} value={`${n}`} className="cursor-pointer text-label-xs">
+              {n} / page
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
   );
 }

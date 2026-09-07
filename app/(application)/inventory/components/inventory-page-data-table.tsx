@@ -27,6 +27,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 
 import { InventoryData, InventoryDataInterface } from "@/lib/domains/inventory/mock-data";
@@ -359,20 +366,21 @@ export function InventoryPageDataTable({ realServer }: DataTableProps) {
       {/* Pagination */}
       {/* Pagination */}
       <div className="flex w-full items-center justify-between gap-4 px-1 py-3">
-        <div className="flex items-center gap-4">
-          <p className="text-paragraph-xs text-text-sub-600 shrink-0">
-            Showing{" "}
-            <span className="font-medium text-text-strong-950">
-              {data.length === 0 ? 0 : (currentPage - 1) * rowsPerPage + 1}
-            </span>{" "}
-            to{" "}
-            <span className="font-medium text-text-strong-950">
-              {Math.min(currentPage * rowsPerPage, totalPages * rowsPerPage)}
-            </span>{" "}
-            out of{" "}
-            <span className="font-medium text-text-strong-950">{totalPages * rowsPerPage}</span>
-          </p>
-        </div>
+        {/* Left: Showing X to Y out of Z */}
+        <p className="text-paragraph-xs text-text-sub-600 shrink-0">
+          Showing{" "}
+          <span className="font-medium text-text-strong-950">
+            {data.length === 0 ? 0 : (currentPage - 1) * rowsPerPage + 1}
+          </span>{" "}
+          to{" "}
+          <span className="font-medium text-text-strong-950">
+            {Math.min(currentPage * rowsPerPage, totalPages * rowsPerPage)}
+          </span>{" "}
+          out of{" "}
+          <span className="font-medium text-text-strong-950">{totalPages * rowsPerPage}</span>
+        </p>
+
+        {/* Center: Navigation buttons */}
         <div className="flex items-center gap-2">
           <button
             type="button"
@@ -418,9 +426,30 @@ export function InventoryPageDataTable({ realServer }: DataTableProps) {
             onClick={() => handlePageChange(totalPages)}
             disabled={currentPage === totalPages}
           >
-            RiArrowRightDoubleLine className="size-3.5" />
+            <RiArrowRightDoubleLine className="size-3.5" />
           </button>
         </div>
+
+        {/* Right: Page size dropdown */}
+        <Select
+          value={`${rowsPerPage}`}
+          onValueChange={(val) => {
+            handlePageChange(1);
+          }}
+        >
+          <SelectTrigger className="h-8 min-w-[90px] w-auto gap-2 border border-stroke-soft-200 bg-white px-2.5 rounded-lg shadow-regular-xs text-label-xs text-text-strong-950 hover:bg-bg-weak-50 cursor-pointer">
+            <SelectValue placeholder={`${rowsPerPage} / page`}>
+              {rowsPerPage} / page
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent side="top" align="end">
+            {[5, 10, 20, 30, 50].map((n) => (
+              <SelectItem key={n} value={`${n}`} className="cursor-pointer text-label-xs">
+                {n} / page
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
     </div>
   );
