@@ -263,7 +263,7 @@ const WarehouseSetup: React.FC = () => {
                 <TableRow key={contact.id}>
                   <TableCell>{contact.name}</TableCell>
                   <TableCell>{contact.email}</TableCell>
-                  <TableCell>
+                  <TableCell className="w-px whitespace-nowrap" style={{ width: "1%" }}>
                     <Button
                       variant="ghost"
                       size="sm"

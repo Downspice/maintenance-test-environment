@@ -427,7 +427,7 @@ export default function AssignEquipmentForm() {
                           <TableCell>{fuel.price}</TableCell>
                           <TableCell>{fuel.totalCost}</TableCell>
                           <TableCell>{fuel.state}</TableCell>
-                          <TableCell>
+                          <TableCell className="w-px whitespace-nowrap" style={{ width: "1%" }}>
                             <div className="flex gap-2">
                               <EditFluidConsumption
                                 children={
@@ -879,7 +879,7 @@ export function EditAssignEquipmentForm({
                                   <TableCell>{fuel.price}</TableCell>
                                   <TableCell>{fuel.totalCost}</TableCell>
                                   <TableCell>{fuel.state}</TableCell>
-                                  <TableCell>
+                                  <TableCell className="w-px whitespace-nowrap" style={{ width: "1%" }}>
                                     <div className="flex gap-2">
                                       <EditFluidConsumption
                                         children={

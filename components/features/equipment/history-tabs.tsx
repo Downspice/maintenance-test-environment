@@ -107,7 +107,7 @@ const MaintenanceHistoryComponent = ({ equipmentId }: { equipmentId: string }) =
             <TableHead>Maintenance Performed</TableHead>
             <TableHead>Assigned To</TableHead>
             <TableHead>Total</TableHead>
-            <TableHead className="w-[100px]">Actions</TableHead>
+            <TableHead className="w-px whitespace-nowrap" style={{ width: "1%" }}>Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -132,7 +132,7 @@ const MaintenanceHistoryComponent = ({ equipmentId }: { equipmentId: string }) =
                 <TableCell>{wo.maintenancePerformed}</TableCell>
                 <TableCell>{wo.assignedTo}</TableCell>
                 <TableCell>{wo.total}</TableCell>
-                <TableCell className="text-right">
+                <TableCell className="text-right w-px whitespace-nowrap" style={{ width: "1%" }}>
                   <EditActualWorkOrderForm
                     children={
                       <Button size="icon" variant="outline">
@@ -360,7 +360,7 @@ function FluidsTab() {
             <TableHead>Meter 1</TableHead>
             <TableHead>Unit Cost</TableHead>
             <TableHead>Total</TableHead>
-            <TableHead className="w-[100px]">Actions</TableHead>
+            <TableHead className="w-px whitespace-nowrap" style={{ width: "1%" }}>Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -373,7 +373,7 @@ function FluidsTab() {
               <TableCell>{item.meter1}</TableCell>
               <TableCell>${item.unit_cost.toFixed(2)}</TableCell>
               <TableCell>${item.total.toFixed(2)}</TableCell>{" "}
-              <TableCell className="text-right space-x-2">
+              <TableCell className="text-right space-x-2 w-px whitespace-nowrap" style={{ width: "1%" }}>
                 <EditFluidConsumption
                   children={
                     <Button size="icon" variant="outline">
@@ -671,7 +671,7 @@ function AccidentsTab() {
               <TableHead>Injuries</TableHead>
               <TableHead>Damage</TableHead>
               <TableHead>Other</TableHead>
-              <TableHead className="text-right w-[100px]">Actions</TableHead>
+              <TableHead className="text-right w-px whitespace-nowrap" style={{ width: "1%" }}>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -686,7 +686,7 @@ function AccidentsTab() {
                 <TableCell>{item.injuries}</TableCell>
                 <TableCell>{item.damage}</TableCell>
                 <TableCell>{item.other}</TableCell>
-                <TableCell className="text-right space-x-2">
+                <TableCell className="text-right space-x-2 w-px whitespace-nowrap" style={{ width: "1%" }}>
                   <EditAccidents
                     children={
                       <Button size="icon" variant="outline">
@@ -891,7 +891,7 @@ function FuelTab() {
               <TableHead>Total</TableHead>
               <TableHead>Economy</TableHead>
               <TableHead>Vendor</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead className="text-right w-px whitespace-nowrap" style={{ width: "1%" }}>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -904,7 +904,7 @@ function FuelTab() {
                 <TableCell>{item.total}</TableCell>
                 <TableCell>{item.economy}</TableCell>
                 <TableCell>{item.vendor}</TableCell>
-                <TableCell className="text-right space-x-2">
+                <TableCell className="text-right space-x-2 w-px whitespace-nowrap" style={{ width: "1%" }}>
                   <UpdateFuelTransactionForm
                     children={
                       <Button size="icon" variant="outline">
@@ -993,7 +993,7 @@ function ExpensesTab() {
               <TableHead>Cost</TableHead>
               <TableHead>Cost Centre</TableHead>
               <TableHead>Notes</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead className="text-right w-px whitespace-nowrap" style={{ width: "1%" }}>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -1006,7 +1006,7 @@ function ExpensesTab() {
                 <TableCell>{item.cost}</TableCell>
                 <TableCell>{item.costCentre}</TableCell>
                 <TableCell>{item.notes}</TableCell>
-                <TableCell className="text-right space-x-2">
+                <TableCell className="text-right space-x-2 w-px whitespace-nowrap" style={{ width: "1%" }}>
                   <EditGeneralExpense
                     children={
                       <Button size="icon" variant="outline">
@@ -1113,7 +1113,7 @@ function InspectionTab() {
               <TableHead>Inspector</TableHead>
               <TableHead>Notes</TableHead>
               <TableHead>Hours</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead className="text-right w-px whitespace-nowrap" style={{ width: "1%" }}>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -1124,7 +1124,7 @@ function InspectionTab() {
                 <TableCell>{item.inspector}</TableCell>
                 <TableCell>{item.notes}</TableCell>
                 <TableCell>{item.hours}</TableCell>
-                <TableCell className="text-right space-x-2">
+                <TableCell className="text-right space-x-2 w-px whitespace-nowrap" style={{ width: "1%" }}>
                   <EditInspectionForm
                     children={
                       <Button size="icon" variant="outline">

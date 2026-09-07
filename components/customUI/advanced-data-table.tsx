@@ -3,6 +3,7 @@
 import { TableHeader } from "@/components/ui/table"
 
 import * as React from "react"
+import { cn } from "@/lib/shared/utils"
 import { DataTablePagination } from "@/components/data-table/pagination"
 import {
   type ColumnDef,
@@ -656,13 +657,25 @@ export function AdvancedDataTable<TData, TValue>({
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
+                  const isActions =
+                    header.column.id === "actions" ||
+                    header.id === "actions" ||
+                    (typeof header.column.columnDef.header === "string" &&
+                      /actions?/i.test(header.column.columnDef.header))
                   return (
                     <TableHead
                       key={header.id}
-                      style={header.column.columnDef.size ? {
-                        minWidth: `${header.column.columnDef.size}px`,
-                        maxWidth: `${header.column.columnDef.size}px`,
-                      } : undefined}
+                      className={cn(isActions && "w-px whitespace-nowrap")}
+                      style={
+                        isActions
+                          ? { width: "1%", whiteSpace: "nowrap" }
+                          : header.column.columnDef.size
+                          ? {
+                              minWidth: `${header.column.columnDef.size}px`,
+                              maxWidth: `${header.column.columnDef.size}px`,
+                            }
+                          : undefined
+                      }
                     >
                       {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
@@ -675,15 +688,27 @@ export function AdvancedDataTable<TData, TValue>({
             {isLoading ? (
               Array.from({ length: Math.min(8, paginationInfo?.pageSize ?? 10) }).map((_, idx) => (
                 <TableRow key={`skeleton-row-${idx}`}>
-                  {table.getVisibleLeafColumns().map((col, cIdx) => (
-                    <TableCell key={`skeleton-cell-${idx}-${col.id}`}>
-                      {col.id === "select" || col.id === "expand" ? (
-                        <Skeleton className="h-4 w-4 rounded-sm" />
-                      ) : (
-                        <Skeleton className={cIdx % 3 === 0 ? "h-4 w-2/3" : cIdx % 3 === 1 ? "h-4 w-1/2" : "h-4 w-3/4"} />
-                      )}
-                    </TableCell>
-                  ))}
+                  {table.getVisibleLeafColumns().map((col, cIdx) => {
+                    const isActions =
+                      col.id === "actions" ||
+                      (typeof col.columnDef.header === "string" &&
+                        /actions?/i.test(col.columnDef.header))
+                    return (
+                      <TableCell
+                        key={`skeleton-cell-${idx}-${col.id}`}
+                        className={cn(isActions && "w-px whitespace-nowrap")}
+                        style={isActions ? { width: "1%", whiteSpace: "nowrap" } : undefined}
+                      >
+                        {col.id === "select" || col.id === "expand" ? (
+                          <Skeleton className="h-4 w-4 rounded-sm" />
+                        ) : isActions ? (
+                          <Skeleton className="h-4 w-8 rounded-sm" />
+                        ) : (
+                          <Skeleton className={cIdx % 3 === 0 ? "h-4 w-2/3" : cIdx % 3 === 1 ? "h-4 w-1/2" : "h-4 w-3/4"} />
+                        )}
+                      </TableCell>
+                    )
+                  })}
                 </TableRow>
               ))
             ) : table.getRowModel().rows?.length ? (
@@ -697,24 +722,42 @@ export function AdvancedDataTable<TData, TValue>({
                       className={`cursor-pointer hover:bg-muted/50 ${getRowClassName ? getRowClassName(row) : ""}`}
                       onClick={() => onRowClick?.(row)}
                     >
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell
-                          key={cell.id}
-                          style={{
-                            paddingLeft: cell.column.id === "select" && row.depth > 0 ? `${row.depth * 20}px` : undefined,
-                          }}
-                        >
-                          <div
-                            className="cursor-pointer  rounded px-1 py-0.5 -mx-1 -my-0.5"
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              onCellClick?.(cell, row)
-                            }}
+                      {row.getVisibleCells().map((cell) => {
+                        const isActions =
+                          cell.column.id === "actions" ||
+                          cell.id.includes("actions") ||
+                          (typeof cell.column.columnDef.header === "string" &&
+                            /actions?/i.test(cell.column.columnDef.header))
+                        return (
+                          <TableCell
+                            key={cell.id}
+                            className={cn(isActions && "w-px whitespace-nowrap")}
+                            style={
+                              isActions
+                                ? { width: "1%", whiteSpace: "nowrap" }
+                                : {
+                                    paddingLeft:
+                                      cell.column.id === "select" && row.depth > 0
+                                        ? `${row.depth * 20}px`
+                                        : undefined,
+                                  }
+                            }
                           >
-                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                          </div>
-                        </TableCell>
-                      ))}
+                            <div
+                              className={cn(
+                                "cursor-pointer rounded px-1 py-0.5 -mx-1 -my-0.5",
+                                isActions && "w-fit"
+                              )}
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                onCellClick?.(cell, row)
+                              }}
+                            >
+                              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                            </div>
+                          </TableCell>
+                        )
+                      })}
                     </TableRow>
                     {/* Custom sub-row rendering */}
                     {renderSubRow && renderCustomSubRows(row)}

@@ -265,7 +265,7 @@ export function InventoryPageDataTable({ realServer }: DataTableProps) {
                   <SortableHeader field="quantity">Quantity</SortableHeader>
                   <SortableHeader field="unit_cost">Unit Cost</SortableHeader>
                   <SortableHeader field="vendor_names">Vendors</SortableHeader>
-                  <TableHead>Actions</TableHead>
+                  <TableHead className="w-px whitespace-nowrap" style={{ width: "1%" }}>Actions</TableHead>
                 </>
               )}
             </TableRow>
@@ -305,7 +305,7 @@ export function InventoryPageDataTable({ realServer }: DataTableProps) {
                     <TableCell> {car.quantity}</TableCell>
                     <TableCell> $ {car.unit_cost}</TableCell>
                     <TableCell> {car.vendor_names}</TableCell>
-                    <TableCell>
+                    <TableCell className="w-px whitespace-nowrap" style={{ width: "1%" }}>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="outline" size="sm">

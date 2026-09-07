@@ -668,7 +668,7 @@ export function EquipmentPageDataTable({ realServer }: DataTableProps) {
                   <SortableHeader field="meters">Meters</SortableHeader>
                   <TableHead>Task</TableHead>
                   <TableHead>Inspections</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead className="w-px whitespace-nowrap" style={{ width: "1%" }}>Actions</TableHead>
                 </>
               )}
             </TableRow>
@@ -789,7 +789,7 @@ export function EquipmentPageDataTable({ realServer }: DataTableProps) {
                         </div>
                       )}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="w-px whitespace-nowrap" style={{ width: "1%" }}>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="outline" size="sm">

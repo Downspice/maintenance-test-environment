@@ -91,7 +91,7 @@ export function MeterReplacementTab() {
               <TableHead>Current Meter</TableHead>
               <TableHead>Replacement Meter</TableHead>
               <TableHead>Description</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead className="text-right w-px whitespace-nowrap" style={{ width: "1%" }}>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -101,7 +101,7 @@ export function MeterReplacementTab() {
                 <TableCell>{item.currentMeter}</TableCell>
                 <TableCell>{item.replacementMeter}</TableCell>
                 <TableCell>{item.description}</TableCell>
-                <TableCell className="text-right space-x-2">
+                <TableCell className="text-right space-x-2 w-px whitespace-nowrap" style={{ width: "1%" }}>
                   <UpdateMeterReplacementForm
                     children={
                       <Button size="icon" variant="outline">

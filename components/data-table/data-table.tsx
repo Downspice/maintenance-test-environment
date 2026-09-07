@@ -33,6 +33,7 @@ import { AlertCircle } from "lucide-react";
 import { useTableConfig, type TableConfig } from "./utils/table-config";
 import { useTableColumnResize } from "./hooks/use-table-column-resize";
 import { DataTableResizer } from "./data-table-resizer";
+import { cn } from "@/lib/shared/utils";
 
 // Import core utilities
 import { preprocessSearch } from "./utils/search";
@@ -682,29 +683,43 @@ export function DataTable<TData, TValue>({
               <TableRow
                 key={headerGroup.id}
               >
-                {headerGroup.headers.map((header) => (
-                  <TableHead
-                    className="px-2 py-2 relative text-left group/th"
-                    key={header.id}
-                    colSpan={header.colSpan}
-                    scope="col"
-                    tabIndex={-1}
-                    style={{
-                      width: header.getSize(),
-                    }}
-                    data-column-resizing={header.column.getIsResizing() ? "true" : undefined}
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
+                {headerGroup.headers.map((header) => {
+                  const isActions =
+                    header.column.id === "actions" ||
+                    header.id === "actions" ||
+                    (typeof header.column.columnDef.header === "string" &&
+                      /actions?/i.test(header.column.columnDef.header));
+                  return (
+                    <TableHead
+                      className={cn(
+                        "px-2 py-2 relative text-left group/th",
+                        isActions && "w-px whitespace-nowrap"
                       )}
-                    {tableConfig.enableColumnResizing && header.column.getCanResize() && (
-                      <DataTableResizer header={header} table={table} />
-                    )}
-                  </TableHead>
-                ))}
+                      key={header.id}
+                      colSpan={header.colSpan}
+                      scope="col"
+                      tabIndex={-1}
+                      style={
+                        isActions
+                          ? { width: "1%", whiteSpace: "nowrap" }
+                          : {
+                              width: header.getSize(),
+                            }
+                      }
+                      data-column-resizing={header.column.getIsResizing() ? "true" : undefined}
+                    >
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
+                      {tableConfig.enableColumnResizing && header.column.getCanResize() && (
+                        <DataTableResizer header={header} table={table} />
+                      )}
+                    </TableHead>
+                  );
+                })}
               </TableRow>
             ))}
           </TableHeader>
@@ -717,15 +732,26 @@ export function DataTable<TData, TValue>({
                   key={`loading-row-${crypto.randomUUID()}`}
                   tabIndex={-1}
                 >
-                  {Array.from({ length: columns.length }).map((_, j, array) => (
-                    <TableCell
-                      key={`skeleton-cell-${crypto.randomUUID()}`}
-                      className="px-4 py-2 truncate max-w-0 text-left"
-                      tabIndex={-1}
-                    >
-                      <Skeleton className="h-6 w-full" />
-                    </TableCell>
-                  ))}
+                  {columns.map((col, j) => {
+                    const isActions =
+                      (col as any).id === "actions" ||
+                      (col as any).accessorKey === "actions" ||
+                      (typeof (col as any).header === "string" &&
+                        /actions?/i.test((col as any).header));
+                    return (
+                      <TableCell
+                        key={`skeleton-cell-${crypto.randomUUID()}`}
+                        className={cn(
+                          "px-4 py-2 text-left",
+                          isActions ? "w-px whitespace-nowrap" : "truncate max-w-0"
+                        )}
+                        style={isActions ? { width: "1%", whiteSpace: "nowrap" } : undefined}
+                        tabIndex={-1}
+                      >
+                        <Skeleton className={cn("h-6", isActions ? "w-8" : "w-full")} />
+                      </TableCell>
+                    );
+                  })}
                 </TableRow>
               ))
             ) : table.getRowModel().rows?.length ? (
@@ -747,19 +773,30 @@ export function DataTable<TData, TValue>({
                     e.currentTarget.setAttribute('data-focused', 'true');
                   }}
                 >
-                  {row.getVisibleCells().map((cell, cellIndex) => (
-                    <TableCell
-                      className="px-4 py-2 truncate max-w-0 text-left"
-                      key={cell.id}
-                      id={`cell-${rowIndex}-${cellIndex}`}
-                      data-cell-index={cellIndex}
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
+                  {row.getVisibleCells().map((cell, cellIndex) => {
+                    const isActions =
+                      cell.column.id === "actions" ||
+                      cell.id.includes("actions") ||
+                      (typeof cell.column.columnDef.header === "string" &&
+                        /actions?/i.test(cell.column.columnDef.header));
+                    return (
+                      <TableCell
+                        className={cn(
+                          "px-4 py-2 text-left",
+                          isActions ? "w-px whitespace-nowrap" : "truncate max-w-0"
+                        )}
+                        style={isActions ? { width: "1%", whiteSpace: "nowrap" } : undefined}
+                        key={cell.id}
+                        id={`cell-${rowIndex}-${cellIndex}`}
+                        data-cell-index={cellIndex}
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    );
+                  })}
                 </TableRow>
               ))
             ) : (

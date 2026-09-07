@@ -144,29 +144,38 @@ export function EditableDataTable<TData>({
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead
-                    key={header.id}
-                    colSpan={header.colSpan}
-                    onClick={
-                      header.column.getCanSort()
-                        ? header.column.getToggleSortingHandler()
-                        : undefined
-                    }
-                    className={cn(
-                      header.colSpan > 1 && "text-center font-bold bg-muted",
-                      header.column.getCanSort() && "cursor-pointer select-none"
-                    )}
-                  >
-                    <div className="flex items-center justify-center gap-1">
-                      {flexRender(header.column.columnDef.header, header.getContext())}
-                      {{
-                        asc: <ArrowUp className="h-4 w-4" />,
-                        desc: <ArrowDown className="h-4 w-4" />,
-                      }[header.column.getIsSorted() as string] ?? null}
-                    </div>
-                  </TableHead>
-                ))}
+                {headerGroup.headers.map((header) => {
+                  const isActions =
+                    header.column.id === "actions" ||
+                    header.id === "actions" ||
+                    (typeof header.column.columnDef.header === "string" &&
+                      /actions?/i.test(header.column.columnDef.header))
+                  return (
+                    <TableHead
+                      key={header.id}
+                      colSpan={header.colSpan}
+                      onClick={
+                        header.column.getCanSort()
+                          ? header.column.getToggleSortingHandler()
+                          : undefined
+                      }
+                      className={cn(
+                        header.colSpan > 1 && "text-center font-bold bg-muted",
+                        header.column.getCanSort() && "cursor-pointer select-none",
+                        isActions && "w-px whitespace-nowrap"
+                      )}
+                      style={isActions ? { width: "1%", whiteSpace: "nowrap" } : undefined}
+                    >
+                      <div className="flex items-center justify-center gap-1">
+                        {flexRender(header.column.columnDef.header, header.getContext())}
+                        {{
+                          asc: <ArrowUp className="h-4 w-4" />,
+                          desc: <ArrowDown className="h-4 w-4" />,
+                        }[header.column.getIsSorted() as string] ?? null}
+                      </div>
+                    </TableHead>
+                  )
+                })}
               </TableRow>
             ))}
           </TableHeader>
@@ -174,15 +183,26 @@ export function EditableDataTable<TData>({
           <TableBody>
             {table.getRowModel().rows.map((row) => (
               <TableRow key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, {
-                      ...cell.getContext(),
-                      updateRow,
-                      rowIndex: row.index,
-                    })}
-                  </TableCell>
-                ))}
+                {row.getVisibleCells().map((cell) => {
+                  const isActions =
+                    cell.column.id === "actions" ||
+                    cell.id.includes("actions") ||
+                    (typeof cell.column.columnDef.header === "string" &&
+                      /actions?/i.test(cell.column.columnDef.header))
+                  return (
+                    <TableCell
+                      key={cell.id}
+                      className={cn(isActions && "w-px whitespace-nowrap")}
+                      style={isActions ? { width: "1%", whiteSpace: "nowrap" } : undefined}
+                    >
+                      {flexRender(cell.column.columnDef.cell, {
+                        ...cell.getContext(),
+                        updateRow,
+                        rowIndex: row.index,
+                      })}
+                    </TableCell>
+                  )
+                })}
               </TableRow>
             ))}
           </TableBody>

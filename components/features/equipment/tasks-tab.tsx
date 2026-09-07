@@ -105,7 +105,7 @@ export function TasksTab({ equipmentId }: { equipmentId?: string | number }) {
                 <TableHead>PM Service</TableHead>
                 <TableHead>Frequency</TableHead>
                 <TableHead>Last Service Date</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="text-right w-px whitespace-nowrap" style={{ width: "1%" }}>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -121,7 +121,7 @@ export function TasksTab({ equipmentId }: { equipmentId?: string | number }) {
                     <TableCell>{item.service}</TableCell>
                     <TableCell>{item.frequency}</TableCell>
                     <TableCell>{item.lastDate}</TableCell>
-                    <TableCell className="text-right space-x-2">
+                    <TableCell className="text-right space-x-2 w-px whitespace-nowrap" style={{ width: "1%" }}>
 
                       <UpdateEquipmentPMServiceForm
                         children={
@@ -172,7 +172,7 @@ export function TasksTab({ equipmentId }: { equipmentId?: string | number }) {
                 <TableHead>Due At</TableHead>
                 <TableHead>Requested By</TableHead>
                 <TableHead>WO#</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="text-right w-px whitespace-nowrap" style={{ width: "1%" }}>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -191,7 +191,7 @@ export function TasksTab({ equipmentId }: { equipmentId?: string | number }) {
                     <TableCell>{item.employee_name}</TableCell>
                     <TableCell>{item.wo}</TableCell>
 
-                    <TableCell className="text-right space-x-2">
+                    <TableCell className="text-right space-x-2 w-px whitespace-nowrap" style={{ width: "1%" }}>
                       <EditActualUpdateRepairRequestForm
                         children={
                           <Button size="icon" variant="outline">
@@ -240,7 +240,7 @@ export function TasksTab({ equipmentId }: { equipmentId?: string | number }) {
               <TableRow>
                 <TableHead>Renewal</TableHead>
                 <TableHead>Due On</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="text-right w-px whitespace-nowrap" style={{ width: "1%" }}>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -255,7 +255,7 @@ export function TasksTab({ equipmentId }: { equipmentId?: string | number }) {
                   <TableRow key={item.id}>
                     <TableCell>{item.renewal_name}</TableCell>
                     <TableCell>{item.due_on}</TableCell>
-                    <TableCell className="text-right space-x-2">
+                    <TableCell className="text-right space-x-2 w-px whitespace-nowrap" style={{ width: "1%" }}>
                       <UpdateEquipmentRenewalForm
                         children={
                           <Button variant={"secondary"} size={"icon"}>

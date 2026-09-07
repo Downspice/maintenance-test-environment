@@ -574,7 +574,7 @@ export default function NewInvoiceForm() {
                             <TableCell>{item.item}</TableCell>
                             <TableCell>{item.cost}</TableCell>
                             <TableCell>{item.amount}</TableCell>
-                            <TableCell>
+                            <TableCell className="w-px whitespace-nowrap" style={{ width: "1%" }}>
                               <div className="flex gap-2">
                                 <Button
                                   type="button"
@@ -683,7 +683,7 @@ export default function NewInvoiceForm() {
                               {payment.date_received.toLocaleDateString()}
                             </TableCell>
                             <TableCell>{payment.amount_received}</TableCell>
-                            <TableCell>
+                            <TableCell className="w-px whitespace-nowrap" style={{ width: "1%" }}>
                               <div className="flex gap-2">
                                 <Button
                                   type="button"

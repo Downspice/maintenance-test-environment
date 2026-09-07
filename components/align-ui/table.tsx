@@ -43,19 +43,26 @@ const TableRow = React.forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTML
 TableRow.displayName = 'TableRow';
 
 const TableHead = React.forwardRef<HTMLTableCellElement, React.ThHTMLAttributes<HTMLTableCellElement>>(
-  ({ className, ...props }, ref) => (
-    <th
-      ref={ref}
-      className={cn(
-        'h-10 px-3 text-left align-middle whitespace-nowrap bg-bg-weak-50',
-        'first:rounded-l-lg last:rounded-r-lg',
-        'text-subheading-xs text-text-soft-400 uppercase tracking-wide',
-        '[&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]',
-        className,
-      )}
-      {...props}
-    />
-  ),
+  ({ className, style, children, ...props }, ref) => {
+    const isActions = typeof children === 'string' && /^actions?$/i.test(children.trim());
+    return (
+      <th
+        ref={ref}
+        className={cn(
+          'h-10 px-3 text-left align-middle whitespace-nowrap bg-bg-weak-50',
+          'first:rounded-l-lg last:rounded-r-lg',
+          'text-subheading-xs text-text-soft-400 uppercase tracking-wide',
+          '[&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]',
+          isActions && 'w-px whitespace-nowrap',
+          className,
+        )}
+        style={isActions ? { width: '1%', whiteSpace: 'nowrap', ...style } : style}
+        {...props}
+      >
+        {children}
+      </th>
+    );
+  },
 );
 TableHead.displayName = 'TableHead';
 
