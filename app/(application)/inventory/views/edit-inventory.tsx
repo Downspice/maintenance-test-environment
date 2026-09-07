@@ -53,6 +53,29 @@ export default function EditInventory({
   pageId: string;
 }) {
   const [open, setOpen] = useState<boolean>(false);
+
+  return (
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetTrigger asChild>{children}</SheetTrigger>
+      <SheetContent className="w-3/4">
+        {open && (
+          <EditInventoryContent
+            pageId={pageId}
+            onClose={() => setOpen(false)}
+          />
+        )}
+      </SheetContent>
+    </Sheet>
+  );
+}
+
+function EditInventoryContent({
+  pageId,
+  onClose,
+}: {
+  pageId: string;
+  onClose: () => void;
+}) {
   const { data: inventoryData, isLoading } = useGetInventory<any>(pageId);
   const { data: equipmentManufacturerOptions } =
     useGetInventoryManufacturers<GenericObject[]>();
@@ -63,7 +86,7 @@ export default function EditInventory({
   const { data: markupTypeOptions } = useGetMarkupTypes<GenericObject[]>();
   const { data: categoryOptions } =
     useGetInventoryCategories<GenericObject[]>();
-  const { mutateAsync: updateInventory } = useUpdateInventory();
+  const { mutateAsync: updateInventory, isPending: isUpdating } = useUpdateInventory();
 
   const inventoryForm = useForm<z.infer<typeof InventorySchema>>({
     resolver: zodResolver(InventorySchema),
@@ -90,7 +113,7 @@ export default function EditInventory({
           key: item.name,
           id: item.value,
         })) || [];
-        console.log( data.others)
+      console.log(data.others);
 
       // Transform inventory trackings
       const trackings =
@@ -180,309 +203,317 @@ export default function EditInventory({
     });
     if (response) {
       toast.success(response.message || "Inventory updated successfully");
+      onClose();
     }
   }
 
-  if (isLoading) {
+  if (isLoading || !inventoryData) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin" />
+      <div className="h-full flex flex-col">
+        <SheetHeader>
+          <SheetTitle>Edit Inventory</SheetTitle>
+        </SheetHeader>
+        <div className="flex flex-1 items-center justify-center min-h-[300px]">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        </div>
       </div>
     );
   }
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>{children}</SheetTrigger>
-      <SheetContent className="w-3/4 ">
-        <SheetHeader>
-          <SheetTitle>
-            <div className="flex justify-between">
-              <div>{inventoryData.name}</div>
-            </div>
-          </SheetTitle>
-        </SheetHeader>
-        <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
-          <div>
-            <Form {...inventoryForm}>
-              <form
-                onSubmit={inventoryForm.handleSubmit(
-                  (data) => handleSubmit(data),
-                  (errors) => {
-                    console.log(errors);
-                    const firstErrorField = Object.values(errors)[0];
-                    const message = firstErrorField?.message;
+    <>
+      <SheetHeader>
+        <SheetTitle>
+          <div className="flex justify-between">
+            <div>{inventoryData?.name || "Edit Inventory"}</div>
+          </div>
+        </SheetTitle>
+      </SheetHeader>
+      <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
+        <div>
+          <Form {...inventoryForm}>
+            <form
+              onSubmit={inventoryForm.handleSubmit(
+                (data) => handleSubmit(data),
+                (errors) => {
+                  console.log(errors);
+                  const firstErrorField = Object.values(errors)[0];
+                  const message = firstErrorField?.message;
 
-                    if (message) {
-                      toast.error(message);
-                    } else {
-                      toast.error("Please check the form for errors.");
-                    }
+                  if (message) {
+                    toast.error(message);
+                  } else {
+                    toast.error("Please check the form for errors.");
                   }
-                )}
-                className="flex flex-col gap-2"
-              >
-                <Tabs defaultValue="Identification">
-                  <TabsList>
-                    <TabsTrigger value="Identification">
-                      Identification
-                    </TabsTrigger>
-                    <TabsTrigger value="Advanced">Advanced</TabsTrigger>
-                    <TabsTrigger value="Photos">Photos</TabsTrigger>
-                    <TabsTrigger value="Attachments">Attachments</TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="Identification" className="space-y-2">
-                    <div className="work-order-form-wrapper flex flex-col gap-0.5">
-                      <InputWrapper
-                        control={inventoryForm.control}
-                        name="part_number"
-                        label="Part Number"
-                        type="text"
-                        required
-                        value={""}
-                      />
-                      <InputWrapper
-                        control={inventoryForm.control}
-                        name="name"
-                        label="Name"
-                        type="text"
-                        required
-                        value={""}
-                      />
-                      <InputWrapper
-                        control={inventoryForm.control}
-                        name="description"
-                        label="Description"
-                        type="text"
-                        required
-                        value={""}
-                      />
-                      <ComboboxFieldWrapper
-                        control={inventoryForm.control}
-                        name="manufacturer"
-                        label="Manufacturer"
-                        options={equipmentManufacturerOptions ?? []}
-                      />
-                      <ComboboxFieldWrapper
-                        control={inventoryForm.control}
-                        name="category"
-                        label="Category"
-                        options={categoryOptions ?? []}
-                      />
-                      <div className="grid grid-cols-2 gap-x-2">
-                        <div className="col-span-1">
+                }
+              )}
+              className="flex flex-col gap-2"
+            >
+              <Tabs defaultValue="Identification">
+                <TabsList>
+                  <TabsTrigger value="Identification">
+                    Identification
+                  </TabsTrigger>
+                  <TabsTrigger value="Advanced">Advanced</TabsTrigger>
+                  <TabsTrigger value="Photos">Photos</TabsTrigger>
+                  <TabsTrigger value="Attachments">Attachments</TabsTrigger>
+                </TabsList>
+                <TabsContent value="Identification" className="space-y-2">
+                  <div className="work-order-form-wrapper flex flex-col gap-0.5">
+                    <InputWrapper
+                      control={inventoryForm.control}
+                      name="part_number"
+                      label="Part Number"
+                      type="text"
+                      required
+                      value={""}
+                    />
+                    <InputWrapper
+                      control={inventoryForm.control}
+                      name="name"
+                      label="Name"
+                      type="text"
+                      required
+                      value={""}
+                    />
+                    <InputWrapper
+                      control={inventoryForm.control}
+                      name="description"
+                      label="Description"
+                      type="text"
+                      required
+                      value={""}
+                    />
+                    <ComboboxFieldWrapper
+                      control={inventoryForm.control}
+                      name="manufacturer"
+                      label="Manufacturer"
+                      options={equipmentManufacturerOptions ?? []}
+                    />
+                    <ComboboxFieldWrapper
+                      control={inventoryForm.control}
+                      name="category"
+                      label="Category"
+                      options={categoryOptions ?? []}
+                    />
+                    <div className="grid grid-cols-2 gap-x-2">
+                      <div className="col-span-1">
+                        <InputWrapper
+                          control={inventoryForm.control}
+                          name="unit_cost"
+                          label="Unit Cost (Base)"
+                          type="text"
+                          required
+                          value={""}
+                        />
+                      </div>
+                      <div className="col-span-1">
+                        <SelectWrapper
+                          control={inventoryForm.control}
+                          name="unit_of_measure"
+                          label="Unit of Measure"
+                          options={unitOptions ?? []}
+                        />
+                      </div>
+                    </div>
+                    <InputWrapper
+                      control={inventoryForm.control}
+                      name="upc"
+                      label="UPC"
+                      type="text"
+                      required
+                      value={""}
+                    />
+                    <CustomFieldsWrapper
+                      control={inventoryForm.control}
+                      name="others"
+                      label="Custom Fields"
+                      maxFields={2}
+                    />
+                  </div>
+                  <SingleCheckboxWrapper
+                    control={inventoryForm.control}
+                    name="enable_tracking"
+                    label="Enable inventory tracking"
+                  />
+                  <WarehouseTabs
+                    warehouses={warehouses}
+                    setWarehouses={setWarehouses}
+                    options={warehouseOptions ?? []}
+                    control={inventoryForm.control}
+                    enableTrackingWatch={
+                      enableTrackingWatch ? enableTrackingWatch : false
+                    }
+                    vendorOptions={vendorOptions}
+                    costCenterOptions={costCenterOptions}
+                    inventoryMovement={inventoryMovement}
+                  />
+                </TabsContent>
+                <TabsContent
+                  value="Advanced"
+                  className="grid grid-cols-2 gap-x-1"
+                >
+                  <div className="col-span-1">
+                    <Fieldset
+                      className="h-full"
+                      legend="Markup (invoices)"
+                      content={
+                        <>
+                          <SelectWrapper
+                            control={inventoryForm.control}
+                            name={`markUp`}
+                            label="Markup Type"
+                            options={[
+                              ...(markupTypeOptions || []),
+                              { id: "none", name: "none" },
+                            ]}
+                            required
+                          />
+                          {inventoryForm.watch("markUp") ===
+                            "1a6f57d9-e764-406e-9366-601e1fe4a1fd" && (
+                            <InputWrapper
+                              control={inventoryForm.control}
+                              name="percent_markup"
+                              label="% Markup"
+                              type="number"
+                              required
+                              value=""
+                            />
+                          )}
+                          {inventoryForm.watch("markUp") ===
+                            "1034cc78-6c2d-46cc-8f7f-210d08061d37" && (
+                            <InputWrapper
+                              control={inventoryForm.control}
+                              name="markup_value"
+                              label="Markup Value"
+                              type="number"
+                              required
+                              value=""
+                            />
+                          )}
+                          {inventoryForm.watch("markUp") ===
+                            "218ba36b-3919-4bf7-91d5-fb0ca90fab12" && (
+                            <InputWrapper
+                              control={inventoryForm.control}
+                              name="markup_price"
+                              label="Markup Price"
+                              type="number"
+                              required
+                              value=""
+                            />
+                          )}
+                        </>
+                      }
+                    />
+                  </div>
+                  <div className="col-span-1">
+                    <Fieldset
+                      legend="Warranty"
+                      content={
+                        <>
                           <InputWrapper
                             control={inventoryForm.control}
-                            name="unit_cost"
-                            label="Unit Cost (Base)"
+                            name={`days`}
+                            label="Days"
+                            type="number"
+                            value={""}
+                            required
+                          />
+                          <InputWrapper
+                            control={inventoryForm.control}
+                            name={`primary`}
+                            label="Primary"
+                            type="number"
+                            value={""}
+                            required
+                          />
+                          <InputWrapper
+                            control={inventoryForm.control}
+                            name={`secondary`}
+                            label="Secondary"
+                            type="number"
+                            value={""}
+                            required
+                          />
+                          <InputWrapper
+                            control={inventoryForm.control}
+                            name={`notes`}
+                            label="Notes"
                             type="text"
                             required
                             value={""}
                           />
-                        </div>
-                        <div className="col-span-1">
-                          <SelectWrapper
-                            control={inventoryForm.control}
-                            name="unit_of_measure"
-                            label="Unit of Measure"
-                            options={unitOptions ?? []}
-                          />
-                        </div>
-                      </div>
-                      <InputWrapper
-                        control={inventoryForm.control}
-                        name="upc"
-                        label="UPC"
-                        type="text"
-                        required
-                        value={""}
-                      />
-                      <CustomFieldsWrapper
-                        control={inventoryForm.control}
-                        name="others"
-                        label="Custom Fields"
-                        maxFields={2}
-                      />
-                    </div>
-                    <SingleCheckboxWrapper
-                      control={inventoryForm.control}
-                      name="enable_tracking"
-                      label="Enable inventory tracking"
-                    />
-                    <WarehouseTabs
-                      warehouses={warehouses}
-                      setWarehouses={setWarehouses}
-                      options={warehouseOptions ?? []}
-                      control={inventoryForm.control}
-                      enableTrackingWatch={
-                        enableTrackingWatch ? enableTrackingWatch : false
+                        </>
                       }
-                      vendorOptions={vendorOptions}
-                      costCenterOptions={costCenterOptions}
-                      inventoryMovement={inventoryMovement}
                     />
-                  </TabsContent>
-                  <TabsContent
-                    value="Advanced"
-                    className="grid grid-cols-2 gap-x-1"
-                  >
-                    <div className="col-span-1">
-                      <Fieldset
-                        className="h-full"
-                        legend="Markup (invoices)"
-                        content={
-                          <>
-                            <SelectWrapper
-                              control={inventoryForm.control}
-                              name={`markUp`}
-                              label="Markup Type"
-                              options={[
-                                ...(markupTypeOptions || []),
-                                { id: "none", name: "none" },
-                              ]}
-                              required
-                            />
-                            {inventoryForm.watch("markUp") ===
-                              "1a6f57d9-e764-406e-9366-601e1fe4a1fd" && (
-                              <InputWrapper
-                                control={inventoryForm.control}
-                                name="percent_markup"
-                                label="% Markup"
-                                type="number"
-                                required
-                                value=""
-                              />
-                            )}
-                            {inventoryForm.watch("markUp") ===
-                              "1034cc78-6c2d-46cc-8f7f-210d08061d37" && (
-                              <InputWrapper
-                                control={inventoryForm.control}
-                                name="markup_value"
-                                label="Markup Value"
-                                type="number"
-                                required
-                                value=""
-                              />
-                            )}
-                            {inventoryForm.watch("markUp") ===
-                              "218ba36b-3919-4bf7-91d5-fb0ca90fab12" && (
-                              <InputWrapper
-                                control={inventoryForm.control}
-                                name="markup_price"
-                                label="Markup Price"
-                                type="number"
-                                required
-                                value=""
-                              />
-                            )}
-                          </>
-                        }
-                      />
-                    </div>
-                    <div className="col-span-1">
-                      <Fieldset
-                        legend="Warranty"
-                        content={
-                          <>
-                            <InputWrapper
-                              control={inventoryForm.control}
-                              name={`days`}
-                              label="Days"
-                              type="number"
-                              value={""}
-                              required
-                            />
-                            <InputWrapper
-                              control={inventoryForm.control}
-                              name={`primary`}
-                              label="Primary"
-                              type="number"
-                              value={""}
-                              required
-                            />
-                            <InputWrapper
-                              control={inventoryForm.control}
-                              name={`secondary`}
-                              label="Secondary"
-                              type="number"
-                              value={""}
-                              required
-                            />
-                            <InputWrapper
-                              control={inventoryForm.control}
-                              name={`notes`}
-                              label="Notes"
-                              type="text"
-                              required
-                              value={""}
-                            />
-                          </>
-                        }
-                      />
-                    </div>
-                    <div className="col-span-2">
-                      <Tabs
-                        defaultValue="Part Substitutions"
-                        className="w-full"
-                      >
-                        <TabsList>
-                          <TabsTrigger value="Part Substitutions">
-                            Part Substitutions
-                          </TabsTrigger>
-                          <TabsTrigger value="Alternate UPC Codes">
-                            Alternate UPC Codes
-                          </TabsTrigger>
-                        </TabsList>
-                        <TabsContent value="Part Substitutions">
-                          <PartSubstitutionTable
-                            parts={partOptions ?? []}
-                            value={partSubs}
-                            onChange={(rows) =>
-                              inventoryForm.setValue(
-                                "inventory_substitutions",
-                                rows
-                              )
-                            }
-                          />
-                        </TabsContent>
-                        <TabsContent value="Alternate UPC Codes">
-                          <AlternateUpcCodesTable
-                            manufacturers={equipmentManufacturerOptions ?? []}
-                            vendors={vendorOptions ?? []}
-                            value={upcCodes}
-                            onChange={(val) =>
-                              inventoryForm.setValue("upc_codes", val)
-                            }
-                          />
-                        </TabsContent>
-                      </Tabs>
-                    </div>
-                  </TabsContent>
-                  <TabsContent value="Photos" className="space-y-2">
-                    <FileUploadWrapper
-                      control={inventoryForm.control}
-                      name="Photos"
-                      label="Photos"
-                    />
-                  </TabsContent>
-                  <TabsContent value="Attachments" className="space-y-2">
-                    <FileUploadWrapper
-                      control={inventoryForm.control}
-                      name="Attachments"
-                      label="Attachments"
-                    />
-                  </TabsContent>
-                </Tabs>
-                <div className="flex justify-between gap-x-4 my-8 w-full">
-                  <Button type="submit" className="w-full">
-                    <GitPullRequestArrow className="mr-2" /> Update Inventory
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </div>
-        </ScrollArea>
-      </SheetContent>
-    </Sheet>
+                  </div>
+                  <div className="col-span-2">
+                    <Tabs
+                      defaultValue="Part Substitutions"
+                      className="w-full"
+                    >
+                      <TabsList>
+                        <TabsTrigger value="Part Substitutions">
+                          Part Substitutions
+                        </TabsTrigger>
+                        <TabsTrigger value="Alternate UPC Codes">
+                          Alternate UPC Codes
+                        </TabsTrigger>
+                      </TabsList>
+                      <TabsContent value="Part Substitutions">
+                        <PartSubstitutionTable
+                          parts={partOptions ?? []}
+                          value={partSubs}
+                          onChange={(rows) =>
+                            inventoryForm.setValue(
+                              "inventory_substitutions",
+                              rows
+                            )
+                          }
+                        />
+                      </TabsContent>
+                      <TabsContent value="Alternate UPC Codes">
+                        <AlternateUpcCodesTable
+                          manufacturers={equipmentManufacturerOptions ?? []}
+                          vendors={vendorOptions ?? []}
+                          value={upcCodes}
+                          onChange={(val) =>
+                            inventoryForm.setValue("upc_codes", val)
+                          }
+                        />
+                      </TabsContent>
+                    </Tabs>
+                  </div>
+                </TabsContent>
+                <TabsContent value="Photos" className="space-y-2">
+                  <FileUploadWrapper
+                    control={inventoryForm.control}
+                    name="Photos"
+                    label="Photos"
+                  />
+                </TabsContent>
+                <TabsContent value="Attachments" className="space-y-2">
+                  <FileUploadWrapper
+                    control={inventoryForm.control}
+                    name="Attachments"
+                    label="Attachments"
+                  />
+                </TabsContent>
+              </Tabs>
+              <div className="flex justify-between gap-x-4 my-8 w-full">
+                <Button type="submit" className="w-full" disabled={isUpdating}>
+                  {isUpdating ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <GitPullRequestArrow className="mr-2 h-4 w-4" />
+                  )}
+                  {isUpdating ? "Updating..." : "Update Inventory"}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </div>
+      </ScrollArea>
+    </>
   );
 }

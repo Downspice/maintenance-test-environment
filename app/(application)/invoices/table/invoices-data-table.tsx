@@ -364,7 +364,7 @@ export function InvoicesTableLoader({ InvoiceData, isLoading }: { InvoiceData: I
         );
 
         return (
-          <div className="flex flex-row justify-between ">
+          <div className="flex flex-row justify-between gap-x-2">
             <EditInvoice
               children={
                 <Button variant={"secondary"} size={"icon"}>

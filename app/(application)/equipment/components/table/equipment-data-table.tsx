@@ -475,10 +475,10 @@ export function EquipmentTableLoader({ locationId }: { locationId?: string }) {
         );
 
         return (
-          <div className="flex flex-row justify-between">
+          <div className="flex flex-row justify-between gap-x-2">
             <EquipmentProfile
               children={
-                <Button variant="ghost" size="icon">
+                <Button variant={"secondary"} size={"icon"}>
                   <FileTextIcon className="h-4 w-4" />
                 </Button>
               }
