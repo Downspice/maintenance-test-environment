@@ -537,12 +537,12 @@ export function AdvancedDataTable<TData, TValue>({
   }
 
   return (
-    <div className="w-full space-y-4">
+    <div className="w-full flex-1 min-h-0 flex flex-col space-y-3 overflow-hidden">
       {/* Loading indicator replaced by table skeletons */}
 
       {/* Action Bar for Selected Rows */}
       {hasSelectedRows && (
-        <div className="flex items-center justify-between p-4 bg-blue-50 border border-blue-200 rounded-lg">
+        <div className="flex items-center justify-between p-4 bg-blue-50 border border-blue-200 rounded-lg shrink-0">
           <div className="flex items-center gap-2">
             <Badge variant="secondary">{selectedRows.length} row(s) selected</Badge>
             <Button variant="ghost" size="sm" onClick={() => setRowSelection({})}>
@@ -580,7 +580,7 @@ export function AdvancedDataTable<TData, TValue>({
       )}
 
       {/* Controls */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between shrink-0">
         <div className="flex items-center space-x-2">
           <Input
             placeholder={realServerPagination ? "Search (server-side)..." : "Search..."}
@@ -650,7 +650,7 @@ export function AdvancedDataTable<TData, TValue>({
       </div>
 
       {/* Table */}
-      <div className="rounded-md">
+      <div className="flex-1 min-h-0 rounded-lg border border-stroke-soft-200 overflow-hidden">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -732,12 +732,14 @@ export function AdvancedDataTable<TData, TValue>({
       </div>
 
       {/* Pagination */}
-      <DataTablePagination
-        table={table}
-        totalItems={realServerPagination ? (paginationInfo?.totalRows ?? data.length) : table.getFilteredRowModel().rows.length}
-        totalSelectedItems={table.getFilteredSelectedRowModel().rows.length}
-        pageSizeOptions={pageSizeOptions}
-      />
+      <div className="shrink-0 pt-2">
+        <DataTablePagination
+          table={table}
+          totalItems={realServerPagination ? (paginationInfo?.totalRows ?? data.length) : table.getFilteredRowModel().rows.length}
+          totalSelectedItems={table.getFilteredSelectedRowModel().rows.length}
+          pageSizeOptions={pageSizeOptions}
+        />
+      </div>
     </div>
   )
 }

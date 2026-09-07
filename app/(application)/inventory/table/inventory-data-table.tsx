@@ -460,7 +460,7 @@ export function InventoryDataLoader({
   ];
 
   return (
-    <div className="">
+    <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
       <AdvancedDataTable
         columns={columns}
         data={serverRows}

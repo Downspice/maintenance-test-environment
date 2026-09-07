@@ -18,7 +18,7 @@ export default function AdminPanelLayout({
       <Sidebar />
       <main
         className={cn(
-          "min-h-[calc(100vh)] transition-[margin-left] ease-in-out duration-300",
+          "h-screen flex flex-col overflow-hidden transition-[margin-left] ease-in-out duration-300",
           !settings.disabled && (!getOpenState() ? "lg:ml-[90px]" : "lg:ml-72")
         )}
       >

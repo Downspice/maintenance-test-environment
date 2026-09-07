@@ -638,7 +638,7 @@ export function DataTable<TData, TValue>({
 
   // console.log("here is the data>>>>",dataItems())
   return (
-    <div className="space-y-4">
+    <div className="w-full flex-1 min-h-0 flex flex-col space-y-3 overflow-hidden">
       {tableConfig.enableToolbar && (
         <DataTableToolbar
           table={table}
@@ -672,7 +672,7 @@ export function DataTable<TData, TValue>({
 
       <div
         ref={tableContainerRef}
-        className="overflow-y-auto rounded-md table-container"
+        className="flex-1 min-h-0 rounded-lg border border-stroke-soft-200 overflow-hidden table-container"
         aria-label="Data table"
         onKeyDown={tableConfig.enableKeyboardNavigation ? handleKeyDown : undefined}
       >
@@ -778,13 +778,15 @@ export function DataTable<TData, TValue>({
       </div>
 
       {tableConfig.enablePagination && (
-        <DataTablePagination
-          table={table}
-          totalItems={data?.pagination?.total_items || 0}
-          totalSelectedItems={totalSelectedItems}
-          pageSizeOptions={pageSizeOptions || [10, 20, 30, 40, 50]}
-          size={tableConfig.size}
-        />
+        <div className="shrink-0 pt-2">
+          <DataTablePagination
+            table={table}
+            totalItems={data?.pagination?.total_items || 0}
+            totalSelectedItems={totalSelectedItems}
+            pageSizeOptions={pageSizeOptions || [10, 20, 30, 40, 50]}
+            size={tableConfig.size}
+          />
+        </div>
       )}
     </div>
   );

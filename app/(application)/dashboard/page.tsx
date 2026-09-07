@@ -80,8 +80,8 @@ export default function Page() {
     setOpen(false); // close after selection
   };
   return (
-    <>
-      <div className="flex flex-row  p-4 justify-between">
+    <div className="flex-1 min-h-0 overflow-y-auto">
+      <div className="flex flex-row p-4 justify-between">
         <span className="text-2xl font-bold">Welcome, Yaw Sarfo</span>
         <div>
           You are currently viewing your dashboard for{" "}
@@ -109,9 +109,9 @@ export default function Page() {
         </div>
       </div>
 
-      <div className="grid grid-cols-6 gap-4  px-4 pt-0">
-        <div className="col-span-4  ">
-          <div className=" flex w-full flex-row gap-4 pb-3">
+      <div className="grid grid-cols-6 gap-4 px-4 pt-0 pb-6">
+        <div className="col-span-4">
+          <div className="flex w-full flex-row gap-4 pb-3">
             <ReusableButtonCard
               data={homeCardData}
               onClick={() => setActiveCard(1)}
@@ -156,6 +156,6 @@ export default function Page() {
           <MonthlyMaintenanceChart />
         </div>
       </div>
-    </>
+    </div>
   );
 }

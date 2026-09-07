@@ -85,13 +85,13 @@ export default function WorkOrdersPage() {
   };
 
   return (
-    <div className="flex flex-col container mx-auto py-10 space-y-4">
-      <div className="flex flex-row items-center space-x-2">
+    <div className="flex flex-col flex-1 min-h-0 container mx-auto p-4 md:p-6 space-y-4 overflow-hidden">
+      <div className="flex flex-row items-center space-x-2 shrink-0">
         <h1 className="text-xl font-semibold">Work Orders</h1>
         <Badge>5</Badge>
       </div>
 
-      <div className="flex justify-between items-center space-x-4">
+      <div className="flex justify-between items-center space-x-4 shrink-0">
         <div className="flex flex-row space-x-0.5">
           {/* Status Filter */}
           <Select onValueChange={(val) => handleSelectChange("status", val)}>
@@ -123,18 +123,10 @@ export default function WorkOrdersPage() {
           </Select>
         </div>
         <div className="flex flex-row space-x-0.5">
-          {/* Search Input */}
-          {/* <Input
-            type="text"
-            placeholder="Search ..."
-            className="w-[240px]"
-            value={filters.search}
-            onChange={handleSearchChange}
-          /> */}
           <Button onClick={createWorkOrder}>New Work Order</Button>
         </div>
       </div>
-      <div>
+      <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
         <WorkOrderDataTable
           locationId={filters.location || undefined}
           statusId={filters.status === "all" ? undefined : filters.status || undefined}

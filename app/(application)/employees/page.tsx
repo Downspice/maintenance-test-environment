@@ -97,13 +97,13 @@ export default function EmployeesPage() {
   };
 
   return (
-    <div className="p-4 flex flex-col space-y-4">
-      <div className="flex flex-row items-center space-x-2">
+    <div className="flex flex-col flex-1 min-h-0 container mx-auto p-4 md:p-6 space-y-4 overflow-hidden">
+      <div className="flex flex-row items-center space-x-2 shrink-0">
         <h1 className="text-xl font-semibold">Employees</h1>
         {/* <Badge>10</Badge> */}
       </div>
 
-      <div className="flex justify-between items-center space-x-4">
+      <div className="flex justify-between items-center space-x-4 shrink-0">
         <div className="flex flex-row space-x-0.5">
           {/* Location Filter */}
           <Select onValueChange={(val) => handleSelectChange("location", val)}>
@@ -137,7 +137,7 @@ export default function EmployeesPage() {
           <Button onClick={createEquipment}>Create New Employee</Button>
         </div>
       </div>
-      <div>
+      <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
         <EmployeeDataTable locationId={filters.location || undefined} typeId={filters.type || undefined} />
       </div>
     </div>

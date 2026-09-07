@@ -119,13 +119,13 @@ export default function EmployeesPage() {
   };
 
   return (
-    <div className="flex flex-col px-8  mx-auto py-10 space-y-4">
-      <div className="flex flex-row items-center space-x-2">
+    <div className="flex flex-col flex-1 min-h-0 container mx-auto p-4 md:p-6 space-y-4 overflow-hidden">
+      <div className="flex flex-row items-center space-x-2 shrink-0">
         <h1 className="text-xl font-semibold">Invoices</h1>
         <Badge>10</Badge>
       </div>
 
-      <div className="flex justify-between items-center space-x-4">
+      <div className="flex justify-between items-center space-x-4 shrink-0">
         {/* Equipment Filter */}
 
         <div className="flex flex-row space-x-0.5">
@@ -162,7 +162,7 @@ export default function EmployeesPage() {
           <Button onClick={managePayments}>Manage Payments</Button>
         </div>
       </div>
-      <div>
+      <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
         <InvoicesDataTable />
       </div>
     </div>

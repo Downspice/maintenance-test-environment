@@ -383,7 +383,7 @@ export function VendorTableLoader({ locationId, typeId }: { locationId?: string;
   ];
 
   return (
-    <div className="max-w-full">
+    <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
       {/* <div className="mb-8">
          
 

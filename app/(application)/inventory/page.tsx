@@ -87,13 +87,13 @@ export default function InventoryPage() {
   };
 
   return (
-    <div className="flex flex-col p-4 mx-auto py-10 space-y-4">
-      <div className="flex flex-row items-center space-x-2">
+    <div className="flex flex-col flex-1 min-h-0 container mx-auto p-4 md:p-6 space-y-4 overflow-hidden">
+      <div className="flex flex-row items-center space-x-2 shrink-0">
         <h1 className="text-xl font-semibold">Inventories</h1>
         <Badge>9</Badge>
       </div>
 
-      <div className="flex justify-between items-center space-x-4">
+      <div className="flex justify-between items-center space-x-4 shrink-0">
         <div className="flex flex-row space-x-0.5">
           {/* Status Filter */}
           <Select onValueChange={(val) => handleSelectChange("filterType", val)}>
@@ -125,18 +125,10 @@ export default function InventoryPage() {
         </div>
 
         <div className="flex flex-row space-x-0.5">
-          {/* Search Input */}
-          {/* <Input
-            type="text"
-            placeholder="Search ..."
-            className="w-[240px]"
-            value={filters.search}
-            onChange={handleSearchChange}
-          /> */}
           <Button onClick={createInventory}>New Inventory</Button>
         </div>
       </div>
-      <div>
+      <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
         <InventoryDataTable
           locationId={filters.location || undefined}
           filterType={filters.filterType === "all" ? undefined : filters.filterType}

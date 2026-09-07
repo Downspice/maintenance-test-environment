@@ -92,13 +92,13 @@ export default function PurchaseOrdersPage() {
   };
 
   return (
-    <div className="flex flex-col p-4 mx-auto py-10 space-y-4">
-      <div className="flex flex-row items-center space-x-2">
+    <div className="flex flex-col flex-1 min-h-0 container mx-auto p-4 md:p-6 space-y-4 overflow-hidden">
+      <div className="flex flex-row items-center space-x-2 shrink-0">
         <h1 className="text-xl font-semibold">Purchase Orders</h1>
         {/* <Badge>8</Badge> */}
       </div>
 
-      <div className="flex justify-between items-center space-x-4">
+      <div className="flex justify-between items-center space-x-4 shrink-0">
         {/* Filters */}
         <div className="flex flex-row space-x-0.5">
           {/* Status Filter */}
@@ -128,35 +128,13 @@ export default function PurchaseOrdersPage() {
               ))}
             </SelectContent>
           </Select>
-
-          {/* Date Filter (Custom) */}
-          {/* <Select onValueChange={(val) => handleSelectChange("custom", val)}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="All Dates" />
-            </SelectTrigger>
-            <SelectContent>
-              {dateFilterOptionsList.map((option) => (
-                <SelectItem value={option.id} key={option.id}>
-                  {option.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select> */}
         </div>
 
         <div className="flex flex-row space-x-0.5">
-          {/* Search Input */}
-          {/* <Input
-            type="text"
-            placeholder="Search ..."
-            className="w-[240px]"
-            value={filters.search}
-            onChange={handleSearchChange}
-          /> */}
           <Button onClick={createPurchaseOrder}>New Purchase Order</Button>
         </div>
       </div>
-      <div>
+      <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
         <PurchaseOrderDataTable
           locationId={filters.location || undefined}
           statusId={filters.status === "all" ? undefined : filters.status || undefined}
