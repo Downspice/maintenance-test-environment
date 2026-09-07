@@ -225,7 +225,7 @@ export function InventoryPageDataTable({ realServer }: DataTableProps) {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-md border">
+      <div className="rounded-md">
         <Table>
           <TableHeader>
             <TableRow>
@@ -357,28 +357,70 @@ export function InventoryPageDataTable({ realServer }: DataTableProps) {
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => handlePageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-        >
-          <ChevronLeft className="h-4 w-4" />
-          <span className="sr-only">Previous page</span>
-        </Button>
-        <div className="text-sm">
-          Page {currentPage} of {totalPages}
+      {/* Pagination */}
+      <div className="flex w-full items-center justify-between gap-4 px-1 py-3">
+        <div className="flex items-center gap-4">
+          <p className="text-paragraph-xs text-text-sub-600 shrink-0">
+            Showing{" "}
+            <span className="font-medium text-text-strong-950">
+              {data.length === 0 ? 0 : (currentPage - 1) * rowsPerPage + 1}
+            </span>{" "}
+            to{" "}
+            <span className="font-medium text-text-strong-950">
+              {Math.min(currentPage * rowsPerPage, totalPages * rowsPerPage)}
+            </span>{" "}
+            out of{" "}
+            <span className="font-medium text-text-strong-950">{totalPages * rowsPerPage}</span>
+          </p>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => handlePageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
-        >
-          <ChevronRight className="h-4 w-4" />
-          <span className="sr-only">Next page</span>
-        </Button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            className={cn(
+              "inline-flex items-center justify-center h-8 w-8 rounded-lg bg-bg-weak-50 border border-stroke-soft-200 shadow-regular-xs text-label-xs text-text-sub-600 hover:bg-bg-soft-200 hover:text-text-strong-950 transition-all cursor-pointer",
+              currentPage === 1 && "opacity-40 pointer-events-none"
+            )}
+            onClick={() => handlePageChange(1)}
+            disabled={currentPage === 1}
+          >
+            <RiArrowLeftDoubleLine className="size-3.5" />
+          </button>
+          <button
+            type="button"
+            className={cn(
+              "inline-flex items-center justify-center gap-1.5 h-8 px-3.5 rounded-lg bg-bg-weak-50 border border-stroke-soft-200 shadow-regular-xs text-label-xs text-text-sub-600 hover:bg-bg-soft-200 hover:text-text-strong-950 transition-all cursor-pointer",
+              currentPage === 1 && "opacity-40 pointer-events-none"
+            )}
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            <RiArrowLeftSLine className="size-3.5" />
+            Previous
+          </button>
+          <button
+            type="button"
+            className={cn(
+              "inline-flex items-center justify-center gap-1.5 h-8 px-3.5 rounded-lg bg-bg-weak-50 border border-stroke-soft-200 shadow-regular-xs text-label-xs text-text-sub-600 hover:bg-bg-soft-200 hover:text-text-strong-950 transition-all cursor-pointer",
+              currentPage === totalPages && "opacity-40 pointer-events-none"
+            )}
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            Next
+            <RiArrowRightSLine className="size-3.5" />
+          </button>
+          <button
+            type="button"
+            className={cn(
+              "inline-flex items-center justify-center h-8 w-8 rounded-lg bg-bg-weak-50 border border-stroke-soft-200 shadow-regular-xs text-label-xs text-text-sub-600 hover:bg-bg-soft-200 hover:text-text-strong-950 transition-all cursor-pointer",
+              currentPage === totalPages && "opacity-40 pointer-events-none"
+            )}
+            onClick={() => handlePageChange(totalPages)}
+            disabled={currentPage === totalPages}
+          >
+            RiArrowRightDoubleLine className="size-3.5" />
+          </button>
+        </div>
       </div>
     </div>
   );

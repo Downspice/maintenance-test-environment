@@ -1,13 +1,12 @@
 "use client";
 
 import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  DoubleArrowLeftIcon,
-  DoubleArrowRightIcon,
-} from "@radix-ui/react-icons";
+  RiArrowLeftDoubleLine,
+  RiArrowLeftSLine,
+  RiArrowRightDoubleLine,
+  RiArrowRightSLine,
+} from "@remixicon/react";
 import type { Table } from "@tanstack/react-table";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -15,124 +14,138 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-const getButtonSizeClass = (size: 'sm' | 'default' | 'lg') => {
-  switch (size) {
-    case 'sm': return 'h-7 w-7 p-0';
-    case 'lg': return 'h-11 w-11 p-0';
-    default: return 'h-8 w-8 p-0';
-  }
-};
+import { cn } from "@/lib/shared/utils";
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>;
-  totalItems?: number; // Total number of items from API
-  totalSelectedItems?: number; // Total selected items across all pages
-  pageSizeOptions?: number[]; // Custom page size options
-  size?: 'sm' | 'default' | 'lg'; // Size prop for components
+  totalItems?: number;
+  totalSelectedItems?: number;
+  pageSizeOptions?: number[];
+  size?: "sm" | "default" | "lg";
 }
 
 export function DataTablePagination<TData>({
   table,
-  totalItems = 0,
+  totalItems,
   totalSelectedItems = 0,
-  pageSizeOptions = [10, 20, 30, 40, 50], // Default options if none provided
-  size = 'default'
+  pageSizeOptions = [10, 20, 30, 40, 50],
+  size = "default",
 }: DataTablePaginationProps<TData>) {
-  // Convert 'lg' size to 'default' for SelectTrigger since it only accepts 'sm' | 'default'
-  const selectSize = size === 'lg' ? 'default' : size;
+  const pageSize = table.getState().pagination.pageSize;
+  const pageIndex = table.getState().pagination.pageIndex;
+  const totalPages = table.getPageCount() || 1;
+
+  const actualTotal = totalItems ?? table.getFilteredRowModel().rows.length;
+
+  // "Showing X to Y out of Z"
+  const from = actualTotal === 0 ? 0 : pageIndex * pageSize + 1;
+  const to = Math.min((pageIndex + 1) * pageSize, actualTotal);
+
+  const navBtnClass = (disabled: boolean) =>
+    cn(
+      "inline-flex items-center justify-center gap-1.5 h-8 px-3.5",
+      "text-label-xs font-normal text-text-sub-600 whitespace-nowrap",
+      "rounded-lg bg-bg-weak-50 border border-stroke-soft-200 shadow-regular-xs",
+      "transition-all duration-150 cursor-pointer select-none",
+      "hover:bg-bg-soft-200 hover:text-text-strong-950",
+      disabled && "opacity-40 pointer-events-none"
+    );
+
+  const iconBtnClass = (disabled: boolean) =>
+    cn(
+      "inline-flex items-center justify-center h-8 w-8",
+      "text-label-xs font-normal text-text-sub-600 whitespace-nowrap",
+      "rounded-lg bg-bg-weak-50 border border-stroke-soft-200 shadow-regular-xs",
+      "transition-all duration-150 cursor-pointer select-none",
+      "hover:bg-bg-soft-200 hover:text-text-strong-950",
+      disabled && "opacity-40 pointer-events-none"
+    );
+
+  const go = (pageIdx: number) =>
+    table.setPagination({ pageIndex: pageIdx, pageSize });
 
   return (
-    <div className="flex w-full flex-col items-center justify-between gap-4 overflow-auto px-2 py-1 sm:flex-row sm:gap-8">
-      <div className="flex-1 text-sm text-muted-foreground">
-        {totalSelectedItems} of {totalItems} row(s) selected.
+    <div className="flex w-full items-center justify-between gap-4 px-1 py-3">
+      {/* Left side: Page Size Selector + "Showing X to Y out of Z" */}
+      <div className="flex items-center gap-4">
+        <Select
+          value={`${pageSize}`}
+          onValueChange={(value) => {
+            const url = new URL(window.location.href);
+            url.searchParams.set("pageSize", value);
+            url.searchParams.set("page", "1");
+            window.history.replaceState({}, "", url.toString());
+            table.setPagination({ pageIndex: 0, pageSize: Number(value) });
+          }}
+        >
+          <SelectTrigger className="h-8 min-w-[100px] w-auto gap-2 border border-stroke-soft-200 bg-white-0 px-2.5 rounded-lg shadow-regular-xs text-label-xs text-text-strong-950 hover:bg-bg-weak-50 cursor-pointer">
+            <SelectValue placeholder={`${pageSize} / page`}>
+              {pageSize} / page
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent side="top" align="start">
+            {pageSizeOptions.map((n) => (
+              <SelectItem key={n} value={`${n}`} className="cursor-pointer text-label-xs">
+                {n} / page
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <p className="text-paragraph-xs text-text-sub-600 shrink-0">
+          Showing <span className="font-medium text-text-strong-950">{from}</span> to{" "}
+          <span className="font-medium text-text-strong-950">{to}</span> out of{" "}
+          <span className="font-medium text-text-strong-950">{actualTotal}</span>
+        </p>
       </div>
-      <div className="flex flex-col items-center gap-4 sm:flex-row sm:gap-6 lg:gap-8">
-        <div className="flex items-center space-x-2">
-          <p className="whitespace-nowrap text-sm font-medium">
-            Rows per page
-          </p>
-          <Select
-            value={`${table.getState().pagination.pageSize}`}
-            onValueChange={(value) => {
-              // Force URL update via direct window manipulation first
-              // This ensures the URL gets updated before the table state changes
-              const url = new URL(window.location.href);
-              url.searchParams.set('pageSize', value);
-              url.searchParams.set('page', '1'); // Always reset to page 1
-              window.history.replaceState({}, '', url.toString());
-              
-              // Then use the table's pagination change handler to update table state
-              // This order ensures the URL is already set when the table state updates
-              table.setPagination({
-                pageIndex: 0, // Reset to first page
-                pageSize: Number(value)
-              });
-            }}
-          >
-            <SelectTrigger className="cursor-pointer" size={selectSize}>
-              <SelectValue placeholder={table.getState().pagination.pageSize} />
-            </SelectTrigger>
-            <SelectContent side="top" className="cursor-pointer">
-              {pageSizeOptions.map((pageSize) => (
-                <SelectItem key={pageSize} value={`${pageSize}`} className="cursor-pointer">
-                  {pageSize}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="flex items-center justify-center text-sm font-medium">
-          Page {table.getState().pagination.pageIndex + 1} of{" "}
-          {table.getPageCount() || 1}
-        </div>
-        <div className="flex items-center space-x-2">
-          <Button
-            aria-label="Go to first page"
-            variant="outline"
-            className={`${getButtonSizeClass(size)} hidden lg:flex cursor-pointer`}
-            onClick={() => table.setPagination({ pageIndex: 0, pageSize: table.getState().pagination.pageSize })}
-            disabled={!table.getCanPreviousPage()}
-          >
-            <DoubleArrowLeftIcon className="h-4 w-4" aria-hidden="true" />
-          </Button>
-          <Button
-            aria-label="Go to previous page"
-            variant="outline"
-            className={`${getButtonSizeClass(size)} cursor-pointer`}
-            onClick={() => table.setPagination({
-              pageIndex: table.getState().pagination.pageIndex - 1,
-              pageSize: table.getState().pagination.pageSize
-            })}
-            disabled={!table.getCanPreviousPage()}
-          >
-            <ChevronLeftIcon className="h-4 w-4" aria-hidden="true" />
-          </Button>
-          <Button
-            aria-label="Go to next page"
-            variant="outline"
-            className={`${getButtonSizeClass(size)} cursor-pointer`}
-            onClick={() => table.setPagination({
-              pageIndex: table.getState().pagination.pageIndex + 1,
-              pageSize: table.getState().pagination.pageSize
-            })}
-            disabled={!table.getCanNextPage()}
-          >
-            <ChevronRightIcon className="h-4 w-4" aria-hidden="true" />
-          </Button>
-          <Button
-            aria-label="Go to last page"
-            variant="outline"
-            className={`${getButtonSizeClass(size)} hidden lg:flex cursor-pointer`}
-            onClick={() => table.setPagination({
-              pageIndex: table.getPageCount() - 1,
-              pageSize: table.getState().pagination.pageSize
-            })}
-            disabled={!table.getCanNextPage()}
-          >
-            <DoubleArrowRightIcon className="h-4 w-4" aria-hidden="true" />
-          </Button>
-        </div>
+
+      {/* Right side: Navigation buttons */}
+      <div className="flex items-center gap-2">
+        {/* First */}
+        <button
+          type="button"
+          aria-label="First page"
+          className={iconBtnClass(!table.getCanPreviousPage())}
+          onClick={() => go(0)}
+          disabled={!table.getCanPreviousPage()}
+        >
+          <RiArrowLeftDoubleLine className="size-3.5" />
+        </button>
+
+        {/* Previous */}
+        <button
+          type="button"
+          aria-label="Previous page"
+          className={navBtnClass(!table.getCanPreviousPage())}
+          onClick={() => go(pageIndex - 1)}
+          disabled={!table.getCanPreviousPage()}
+        >
+          <RiArrowLeftSLine className="size-3.5" />
+          Previous
+        </button>
+
+        {/* Next */}
+        <button
+          type="button"
+          aria-label="Next page"
+          className={navBtnClass(!table.getCanNextPage())}
+          onClick={() => go(pageIndex + 1)}
+          disabled={!table.getCanNextPage()}
+        >
+          Next
+          <RiArrowRightSLine className="size-3.5" />
+        </button>
+
+        {/* Last */}
+        <button
+          type="button"
+          aria-label="Last page"
+          className={iconBtnClass(!table.getCanNextPage())}
+          onClick={() => go(totalPages - 1)}
+          disabled={!table.getCanNextPage()}
+        >
+          <RiArrowRightDoubleLine className="size-3.5" />
+        </button>
       </div>
     </div>
   );

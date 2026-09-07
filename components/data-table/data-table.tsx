@@ -85,8 +85,8 @@ interface DataTableProps<TData, TValue> {
   getColumns: (handleRowDeselection: ((rowId: string) => void) | null | undefined) => ColumnDef<TData, TValue>[];
 
   // Data fetching function
-  fetchDataFn: ((params: DataFetchParams) => Promise<DataFetchResult<TData>>) | 
-               ((page: number, pageSize: number, search: string, dateRange: { from_date: string; to_date: string }, sortBy: string, sortOrder: string) => unknown);
+  fetchDataFn: ((params: DataFetchParams) => Promise<DataFetchResult<TData>>) |
+  ((page: number, pageSize: number, search: string, dateRange: { from_date: string; to_date: string }, sortBy: string, sortOrder: string) => unknown);
 
   // Function to fetch specific items by their IDs
   fetchByIdsFn?: (ids: number[] | string[]) => Promise<TData[]>;
@@ -324,11 +324,11 @@ export function DataTable<TData, TValue>({
       // Create refs to capture the current sort values at the time of fetching
       const currentSortBy = sortBy;
       const currentSortOrder = sortOrder;
-      
+
       const fetchData = async () => {
         try {
           setIsLoading(true);
-          
+
           const result = await (fetchDataFn as (params: DataFetchParams) => Promise<DataFetchResult<TData>>)({
             page,
             limit: pageSize,
@@ -356,20 +356,20 @@ export function DataTable<TData, TValue>({
 
   // If fetchDataFn is a React Query hook, call it directly with parameters
   const queryResult = (fetchDataFn as { isQueryHook?: boolean }).isQueryHook === true
-    ? (fetchDataFn as (page: number, pageSize: number, search: string, dateRange: { from_date: string; to_date: string }, sortBy: string, sortOrder: string) => { 
-        isLoading: boolean; 
-        isSuccess: boolean; 
-        isError: boolean; 
-        data?: DataFetchResult<TData>; 
-        error?: Error 
-      })(
-        page, 
-        pageSize, 
-        search, 
-        dateRange, 
-        sortBy,
-        sortOrder
-      )
+    ? (fetchDataFn as (page: number, pageSize: number, search: string, dateRange: { from_date: string; to_date: string }, sortBy: string, sortOrder: string) => {
+      isLoading: boolean;
+      isSuccess: boolean;
+      isError: boolean;
+      data?: DataFetchResult<TData>;
+      error?: Error
+    })(
+      page,
+      pageSize,
+      search,
+      dateRange,
+      sortBy,
+      sortOrder
+    )
     : null;
 
   // If using React Query, update state based on query result
@@ -413,11 +413,11 @@ export function DataTable<TData, TValue>({
       const newSorting = typeof updaterOrValue === 'function'
         ? updaterOrValue(sorting)
         : updaterOrValue;
-      
+
       if (newSorting.length > 0) {
         const columnId = newSorting[0].id;
         const direction = newSorting[0].desc ? "desc" : "asc";
-        
+
         // Use Promise.all for batch updates to ensure they're applied together
         Promise.all([
           setSortBy(columnId),
@@ -446,7 +446,7 @@ export function DataTable<TData, TValue>({
       const newPagination = typeof updaterOrValue === 'function'
         ? updaterOrValue({ pageIndex: page - 1, pageSize })
         : updaterOrValue;
-      
+
       // Special handling: When page size changes, always reset to page 1
       if (newPagination.pageSize !== pageSize) {
         // First, directly update URL to ensure it's in sync
@@ -454,13 +454,13 @@ export function DataTable<TData, TValue>({
         url.searchParams.set('pageSize', String(newPagination.pageSize));
         url.searchParams.set('page', '1'); // Always reset to page 1
         window.history.replaceState({}, '', url.toString());
-        
+
         // Then update our state
         setPageSize(newPagination.pageSize);
         setPage(1);
         return;
       }
-      
+
       // Only update page if it's changed - this handles normal page navigation
       if ((newPagination.pageIndex + 1) !== page) {
         const setPagePromise = setPage(newPagination.pageIndex + 1);
@@ -562,7 +562,7 @@ export function DataTable<TData, TValue>({
   useEffect(() => {
     // This effect ensures page is valid after page size changes
     const totalPages = data?.pagination?.total_pages || 0;
-    
+
     if (totalPages > 0 && page > totalPages) {
       setPage(1);
     }
@@ -672,7 +672,7 @@ export function DataTable<TData, TValue>({
 
       <div
         ref={tableContainerRef}
-        className="overflow-y-auto rounded-md border table-container"
+        className="overflow-y-auto rounded-md table-container"
         aria-label="Data table"
         onKeyDown={tableConfig.enableKeyboardNavigation ? handleKeyDown : undefined}
       >
@@ -697,9 +697,9 @@ export function DataTable<TData, TValue>({
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
                     {tableConfig.enableColumnResizing && header.column.getCanResize() && (
                       <DataTableResizer header={header} table={table} />
                     )}

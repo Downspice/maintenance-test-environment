@@ -18,7 +18,7 @@ export default function AdminPanelLayout({
       <Sidebar />
       <main
         className={cn(
-          "min-h-[calc(100vh)] bg-gradient-to-br from-[#cae7eeae] via-[#e3e8eead] to-[#ffffff]  transition-[margin-left] ease-in-out duration-300",
+          "min-h-[calc(100vh)] transition-[margin-left] ease-in-out duration-300",
           !settings.disabled && (!getOpenState() ? "lg:ml-[90px]" : "lg:ml-72")
         )}
       >

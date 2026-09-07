@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "MAINTENANCE CLONE | ",
+  title: "MAINTENANCE CLONE ",
   description: "test-maintenance-erp.vercel.app",
 };
 

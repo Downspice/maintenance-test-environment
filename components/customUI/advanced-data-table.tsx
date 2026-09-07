@@ -3,6 +3,7 @@
 import { TableHeader } from "@/components/ui/table"
 
 import * as React from "react"
+import { DataTablePagination } from "@/components/data-table/pagination"
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -111,6 +112,10 @@ export function AdvancedDataTable<TData, TValue>({
   const [rowSelection, setRowSelection] = React.useState({})
   const [globalFilter, setGlobalFilter] = React.useState("")
   const [expanded, setExpanded] = React.useState<ExpandedState>({})
+  const [clientPagination, setClientPagination] = React.useState({
+    pageIndex: 0,
+    pageSize: pageSizeOptions[0] ?? 10,
+  })
 
   // Search state for server-side search
   const [searchValue, setSearchValue] = React.useState("")
@@ -303,6 +308,33 @@ export function AdvancedDataTable<TData, TValue>({
         ? paginationInfo.totalPages
         : 1 // at least 1 page so TanStack is happy
       : undefined,
+    onPaginationChange: (updater) => {
+      const currentPagination = realServerPagination
+        ? {
+            pageIndex: paginationInfo?.pageIndex ?? 0,
+            pageSize: paginationInfo?.pageSize ?? 10,
+          }
+        : clientPagination
+
+      const nextPagination = typeof updater === "function" ? updater(currentPagination) : updater
+
+      if (realServerPagination) {
+        if (nextPagination.pageSize !== currentPagination.pageSize) {
+          onPageSizeChange?.(nextPagination.pageSize)
+        }
+        if (nextPagination.pageIndex !== currentPagination.pageIndex) {
+          onPaginationChange?.(
+            nextPagination.pageIndex > currentPagination.pageIndex
+              ? "next"
+              : nextPagination.pageIndex < currentPagination.pageIndex
+                ? "previous"
+                : nextPagination.pageIndex,
+          )
+        }
+      } else {
+        setClientPagination(nextPagination)
+      }
+    },
     state: {
       sorting: realServerPagination ? (serverSorting ?? sorting) : sorting,
       columnFilters,
@@ -310,13 +342,12 @@ export function AdvancedDataTable<TData, TValue>({
       rowSelection,
       globalFilter: realServerPagination ? undefined : globalFilter,
       expanded,
-      /*  Ensure pagination is **never** undefined.
-          - In server mode we honour the supplied `paginationInfo`
-          - In client mode we fall back to sensible defaults            */
-      pagination: {
-        pageIndex: paginationInfo?.pageIndex ?? 0,
-        pageSize: paginationInfo?.pageSize ?? 10,
-      },
+      pagination: realServerPagination
+        ? {
+            pageIndex: paginationInfo?.pageIndex ?? 0,
+            pageSize: paginationInfo?.pageSize ?? 10,
+          }
+        : clientPagination,
     },
   })
 
@@ -619,7 +650,7 @@ export function AdvancedDataTable<TData, TValue>({
       </div>
 
       {/* Table */}
-      <div className="rounded-md border">
+      <div className="rounded-md">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -701,91 +732,12 @@ export function AdvancedDataTable<TData, TValue>({
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-between space-x-2 py-4">
-        <div className="flex items-center gap-3 text-sm text-muted-foreground">
-          {realServerPagination && paginationInfo ? (
-            <>
-              Page {paginationInfo.pageIndex + 1} of {paginationInfo.totalPages} ({paginationInfo.totalRows} total rows)
-            </>
-          ) : (
-            <>
-              {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s)
-              selected.
-            </>
-          )}
-          {realServerPagination && (
-            <div className="flex items-center gap-2">
-              <span className="text-xs">Rows per page</span>
-              <Select
-                value={String(paginationInfo?.pageSize ?? 10)}
-                onValueChange={(v) => onPageSizeChange?.(Number(v))}
-                disabled={isLoading}
-              >
-                <SelectTrigger className="h-8 w-[90px]">
-                  <SelectValue placeholder={String(paginationInfo?.pageSize ?? 10)} />
-                </SelectTrigger>
-                <SelectContent side="top">
-                  {pageSizeOptions.map((opt) => (
-                    <SelectItem key={opt} value={String(opt)}>
-                      {opt}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-        </div>
-        <div className="space-x-2">
-          {realServerPagination ? (
-            <>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handlePagination("previous")}
-                disabled={isLoading || (paginationInfo?.pageIndex ?? 0) === 0}
-              >
-                Previous
-              </Button>
-              {Array.from({ length: paginationInfo?.totalPages ?? 0 }, (_, i) => i).map((i) => {
-                const isActive = (paginationInfo?.pageIndex ?? 0) === i
-                return (
-                  <Button
-                    key={`page-${i + 1}`}
-                    variant={isActive ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => handlePagination(i)}
-                    disabled={isLoading}
-                  >
-                    {i + 1}
-                  </Button>
-                )
-              })}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handlePagination("next")}
-                disabled={isLoading || (paginationInfo?.pageIndex ?? 0) >= (paginationInfo?.totalPages ?? 1) - 1}
-              >
-                Next
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => table.previousPage()}
-                disabled={!table.getCanPreviousPage()}
-              >
-                Previous
-              </Button>
-              <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-                Next
-              </Button>
-            </>
-          )}
-        </div>
-      </div>
+      <DataTablePagination
+        table={table}
+        totalItems={realServerPagination ? (paginationInfo?.totalRows ?? data.length) : table.getFilteredRowModel().rows.length}
+        totalSelectedItems={table.getFilteredSelectedRowModel().rows.length}
+        pageSizeOptions={pageSizeOptions}
+      />
     </div>
   )
 }
