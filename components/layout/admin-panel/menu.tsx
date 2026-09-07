@@ -31,7 +31,7 @@ export function Menu({ isOpen }: MenuProps) {
           {menuList.map(({ groupLabel, menus }, index) => (
             <li className={cn("w-full", groupLabel ? "pt-5" : "")} key={index}>
               {(isOpen && groupLabel) || isOpen === undefined ? (
-                <p className="text-sm font-medium text-muted-foreground px-4 pb-2 max-w-[248px] truncate">
+                <p className="text-sm font-medium text-muted-foreground px-4 pb-2 truncate">
                   {groupLabel}
                 </p>
               ) : !isOpen && isOpen !== undefined && groupLabel ? (
@@ -54,41 +54,51 @@ export function Menu({ isOpen }: MenuProps) {
                 (
                   { href, label, icon: Icon, active, submenus, button },
                   index
-                ) =>
-                  !submenus || submenus.length === 0 ? (
+                ) => {
+                  const isActive =
+                    (active === undefined &&
+                      (href === "/dashboard"
+                        ? pathname === "/dashboard" || pathname === "/"
+                        : pathname === href || pathname.startsWith(href + "/"))) ||
+                    active;
+
+                  return !submenus || submenus.length === 0 ? (
                     <div className="w-full" key={index}>
                       <TooltipProvider disableHoverableContent>
                         <Tooltip delayDuration={100}>
                           <TooltipTrigger asChild>
                             <Button
-                              variant={
-                                (active === undefined &&
-                                  pathname.startsWith(href)) ||
-                                active
-                                  ? "secondary"
-                                  : "ghost"
-                              }
-                              className="w-full justify-start h-10 mb-1"
+                              variant="ghost"
+                              className={cn(
+                                "w-full h-10 mb-1 transition-colors duration-150",
+                                isOpen === false ? "justify-center px-0" : "justify-start px-3",
+                                isActive
+                                  ? "bg-gray-100 text-text-strong-950 font-semibold dark:bg-zinc-800 dark:text-zinc-50"
+                                  : "text-text-sub-600 hover:bg-gray-50 hover:text-text-strong-950 dark:hover:bg-zinc-800/50"
+                              )}
                               asChild
                             >
                               <Link
                                 href={href}
-                                className="flex items-center justify-between gap-2 w-full"
+                                className={cn(
+                                  "flex items-center w-full",
+                                  isOpen === false ? "justify-center" : "justify-between"
+                                )}
                               >
                                 {/* Icon and Label */}
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2.5 min-w-0">
                                   <span
                                     className={cn(
-                                      isOpen === false ? "" : "mr-1"
+                                      isOpen === false ? "" : "shrink-0"
                                     )}
                                   >
                                     <Icon size={18} />
                                   </span>
                                   <p
                                     className={cn(
-                                      "max-w-[200px] truncate",
+                                      "truncate text-sm",
                                       isOpen === false
-                                        ? "-translate-x-96 opacity-0"
+                                        ? "-translate-x-96 opacity-0 hidden"
                                         : "translate-x-0 opacity-100"
                                     )}
                                   >
@@ -98,7 +108,12 @@ export function Menu({ isOpen }: MenuProps) {
 
                                 {/* Plus button */}
                                 {isOpen && button && (
-                                  <div className="w-full flex justify-end  ">
+                                  <div
+                                    className="ml-auto shrink-0 flex items-center justify-center [&_button]:size-6 [&_button]:p-0 [&_button]:h-6 [&_button]:w-6 [&_button]:rounded-md [&_button]:text-text-soft-400 hover:[&_button]:text-text-strong-950 hover:[&_button]:bg-gray-200/70 dark:hover:[&_button]:bg-zinc-700 transition-colors"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                    }}
+                                  >
                                     {button} 
                                   </div>
                                 )}
@@ -118,16 +133,13 @@ export function Menu({ isOpen }: MenuProps) {
                       <CollapseMenuButton
                         icon={Icon}
                         label={label}
-                        active={
-                          active === undefined
-                            ? pathname.startsWith(href)
-                            : active
-                        }
+                        active={isActive}
                         submenus={submenus}
                         isOpen={isOpen}
                       />
                     </div>
-                  )
+                  );
+                }
               )}
             </li>
           ))}

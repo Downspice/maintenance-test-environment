@@ -924,7 +924,7 @@ export default function EquipmentForm({ variant }: TriggerVariant) {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant={variant}>
+        <Button variant={variant === "icon" ? "ghost" : "default"}>
           {variant === "icon" ? (
             <Plus />
           ) : (

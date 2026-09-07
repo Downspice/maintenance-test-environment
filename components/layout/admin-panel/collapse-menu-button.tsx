@@ -66,8 +66,13 @@ export function CollapseMenuButton({
         asChild
       >
         <Button
-          variant={isSubmenuActive ? "secondary" : "ghost"}
-          className="w-full justify-start h-10"
+          variant="ghost"
+          className={cn(
+            "w-full justify-start h-10 mb-1 px-3 transition-colors duration-150",
+            isSubmenuActive
+              ? "bg-gray-100 text-text-strong-950 font-semibold dark:bg-zinc-800 dark:text-zinc-50"
+              : "text-text-sub-600 hover:bg-gray-50 hover:text-text-strong-950 dark:hover:bg-zinc-800/50"
+          )}
         >
           <div className="w-full items-center flex justify-between">
             <div className="flex items-center">
@@ -76,10 +81,10 @@ export function CollapseMenuButton({
               </span>
               <p
                 className={cn(
-                  "max-w-[150px] truncate",
+                  "truncate text-sm",
                   isOpen
                     ? "translate-x-0 opacity-100"
-                    : "-translate-x-96 opacity-0"
+                    : "-translate-x-96 opacity-0 hidden"
                 )}
               >
                 {label}
@@ -102,34 +107,38 @@ export function CollapseMenuButton({
         </Button>
       </CollapsibleTrigger>
       <CollapsibleContent className="overflow-hidden data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
-        {submenus.map(({ href, label, active }, index) => (
-          <Button
-            key={index}
-            variant={
-              (active === undefined && pathname === href) || active
-                ? "secondary"
-                : "ghost"
-            }
-            className="w-full justify-start h-10 mb-1"
-            asChild
-          >
-            <Link href={href}>
-              <span className="mr-4 ml-2">
-                <Dot size={18} />
-              </span>
-              <p
-                className={cn(
-                  "max-w-[170px] truncate",
-                  isOpen
-                    ? "translate-x-0 opacity-100"
-                    : "-translate-x-96 opacity-0"
-                )}
-              >
-                {label}
-              </p>
-            </Link>
-          </Button>
-        ))}
+        {submenus.map(({ href, label, active }, index) => {
+          const isItemActive = (active === undefined && pathname === href) || active;
+          return (
+            <Button
+              key={index}
+              variant="ghost"
+              className={cn(
+                "w-full justify-start h-10 mb-1 px-3 transition-colors duration-150",
+                isItemActive
+                  ? "bg-gray-100 text-text-strong-950 font-semibold dark:bg-zinc-800 dark:text-zinc-50"
+                  : "text-text-sub-600 hover:bg-gray-50 hover:text-text-strong-950 dark:hover:bg-zinc-800/50"
+              )}
+              asChild
+            >
+              <Link href={href}>
+                <span className="mr-4 ml-2">
+                  <Dot size={18} />
+                </span>
+                <p
+                  className={cn(
+                    "truncate text-sm",
+                    isOpen
+                      ? "translate-x-0 opacity-100"
+                      : "-translate-x-96 opacity-0 hidden"
+                  )}
+                >
+                  {label}
+                </p>
+              </Link>
+            </Button>
+          );
+        })}
       </CollapsibleContent>
     </Collapsible>
   ) : (
@@ -139,8 +148,13 @@ export function CollapseMenuButton({
           <TooltipTrigger asChild>
             <DropdownMenuTrigger asChild>
               <Button
-                variant={isSubmenuActive ? "secondary" : "ghost"}
-                className="w-full justify-start h-10 mb-1"
+                variant="ghost"
+                className={cn(
+                  "w-full justify-start h-10 mb-1 transition-colors duration-150",
+                  isSubmenuActive
+                    ? "bg-gray-100 text-text-strong-950 font-semibold dark:bg-zinc-800 dark:text-zinc-50"
+                    : "text-text-sub-600 hover:bg-gray-50 hover:text-text-strong-950 dark:hover:bg-zinc-800/50"
+                )}
               >
                 <div className="w-full items-center flex justify-between">
                   <div className="flex items-center">
@@ -173,10 +187,11 @@ export function CollapseMenuButton({
         {submenus.map(({ href, label, active }, index) => (
           <DropdownMenuItem key={index} asChild>
             <Link
-              className={`cursor-pointer ${
+              className={cn(
+                "cursor-pointer",
                 ((active === undefined && pathname === href) || active) &&
-                "bg-secondary"
-              }`}
+                  "bg-gray-100 font-semibold dark:bg-zinc-800"
+              )}
               href={href}
             >
               <p className="max-w-[180px] truncate">{label}</p>
