@@ -1,7 +1,204 @@
 @import url('https://fonts.googleapis.com/css2?family=Google+Sans:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap');
 @import url('https://fonts.cdnfonts.com/css/google-sans');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
+
+/* ============================================================
+   ALIGN UI — Design Token System (ln-* prefix)
+   Incremental migration layer — coexists with Shadcn variables
+   ============================================================ */
+
+@layer base {
+  :root {
+    /* ── AlignUI Gray Scale ─────────────────────────────── */
+    --ln-color-gray-0:    #ffffff;
+    --ln-color-gray-25:   #fafafa;
+    --ln-color-gray-50:   #f5f5f5;
+    --ln-color-gray-100:  #ebebeb;
+    --ln-color-gray-200:  #d6d6d6;
+    --ln-color-gray-300:  #b8b8b8;
+    --ln-color-gray-400:  #a3a3a3;
+    --ln-color-gray-450:  #8f8f8f;
+    --ln-color-gray-500:  #737373;
+    --ln-color-gray-600:  #525252;
+    --ln-color-gray-700:  #404040;
+    --ln-color-gray-900:  #171717;
+    --ln-color-gray-1000: #0a0a0a;
+
+    /* ── AlignUI Orange / Brand ─────────────────────────── */
+    --ln-color-orange:          #f97316;
+    --ln-color-orange-dark:     #ea6a08;
+    --ln-color-orange-darker:   #db5e00;
+    --ln-color-orange-lighter:  #fdba74;
+    --ln-color-orange-lightest: #fff7ed;
+
+    /* ── AlignUI Green ──────────────────────────────────── */
+    --ln-color-green:          #22c55e;
+    --ln-color-green-dark:     #16a34a;
+    --ln-color-green-lighter:  #86efac;
+    --ln-color-green-lightest: #f0fdf4;
+
+    /* ── AlignUI Red ────────────────────────────────────── */
+    --ln-color-red:          #ef4444;
+    --ln-color-red-dark:     #dc2626;
+    --ln-color-red-lighter:  #fca5a5;
+    --ln-color-red-lightest: #fef2f2;
+
+    /* ── AlignUI Blue ───────────────────────────────────── */
+    --ln-color-blue:          #3b82f6;
+    --ln-color-blue-dark:     #2563eb;
+    --ln-color-blue-lighter:  #93c5fd;
+    --ln-color-blue-lightest: #eff6ff;
+
+    /* ── AlignUI Yellow ─────────────────────────────────── */
+    --ln-color-yellow:          #eab308;
+    --ln-color-yellow-dark:     #ca8a04;
+    --ln-color-yellow-lighter:  #fde047;
+    --ln-color-yellow-lightest: #fefce8;
+
+    /* ── AlignUI Purple ─────────────────────────────────── */
+    --ln-color-purple:          #a855f7;
+    --ln-color-purple-dark:     #9333ea;
+    --ln-color-purple-lighter:  #d8b4fe;
+    --ln-color-purple-lightest: #faf5ff;
+
+    /* ── AlignUI Shadows ────────────────────────────────── */
+    --shadow-ln-badge-gray:   0 0 0 1.5px rgba(0, 0, 0, 0.06), 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+    --shadow-ln-badge-orange: 0 0 0 1.5px rgba(249, 115, 22, 0.16), 0 1px 2px 0 rgba(249, 115, 22, 0.2);
+    --shadow-ln-xs:           0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-ln-sm:           0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+    --shadow-ln-md:           0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    --shadow-ln-lg:           0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+    --shadow-ln-xl:           0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+
+    /* ── AlignUI Keyframe Animations ────────────────────── */
+    --animate-accordion-down: accordion-down 0.2s ease-out;
+    --animate-accordion-up:   accordion-up 0.2s ease-out;
+    --animate-slide-down:     slideDown 300ms cubic-bezier(0.87, 0, 0.13, 1) forwards;
+    --animate-slide-up:       slideUp 300ms cubic-bezier(0.87, 0, 0.13, 1) forwards;
+  }
+
+  .dark {
+    /* Dark mode overrides for AlignUI tokens */
+    --ln-color-gray-0:    #0a0a0a;
+    --ln-color-gray-25:   #121212;
+    --ln-color-gray-50:   #1a1a1a;
+    --ln-color-gray-100:  #262626;
+    --ln-color-gray-200:  #333333;
+    --ln-color-gray-300:  #4a4a4a;
+    --ln-color-gray-400:  #737373;
+    --ln-color-gray-450:  #8f8f8f;
+    --ln-color-gray-500:  #a3a3a3;
+    --ln-color-gray-600:  #d4d4d4;
+    --ln-color-gray-700:  #e5e5e5;
+    --ln-color-gray-900:  #f5f5f5;
+    --ln-color-gray-1000: #fafafa;
+  }
+}
+
+@keyframes accordion-down {
+  from { height: 0; }
+  to   { height: var(--radix-accordion-content-height); }
+}
+
+@keyframes accordion-up {
+  from { height: var(--radix-accordion-content-height); }
+  to   { height: 0; }
+}
+
+@keyframes slideDown {
+  from { height: 0; }
+  to   { height: var(--radix-collapsible-content-height); }
+}
+
+@keyframes slideUp {
+  from { height: var(--radix-collapsible-content-height); }
+  to   { height: 0; }
+}
+
+/* ── AlignUI Tailwind Theme Extension ───────────────────── */
+@theme inline {
+  /* Gray scale */
+  --color-ln-gray-0:    var(--ln-color-gray-0);
+  --color-ln-gray-25:   var(--ln-color-gray-25);
+  --color-ln-gray-50:   var(--ln-color-gray-50);
+  --color-ln-gray-100:  var(--ln-color-gray-100);
+  --color-ln-gray-200:  var(--ln-color-gray-200);
+  --color-ln-gray-300:  var(--ln-color-gray-300);
+  --color-ln-gray-400:  var(--ln-color-gray-400);
+  --color-ln-gray-450:  var(--ln-color-gray-450);
+  --color-ln-gray-500:  var(--ln-color-gray-500);
+  --color-ln-gray-600:  var(--ln-color-gray-600);
+  --color-ln-gray-700:  var(--ln-color-gray-700);
+  --color-ln-gray-900:  var(--ln-color-gray-900);
+  --color-ln-gray-1000: var(--ln-color-gray-1000);
+
+  /* Brand orange */
+  --color-ln-orange:          var(--ln-color-orange);
+  --color-ln-orange-dark:     var(--ln-color-orange-dark);
+  --color-ln-orange-darker:   var(--ln-color-orange-darker);
+  --color-ln-orange-lighter:  var(--ln-color-orange-lighter);
+  --color-ln-orange-lightest: var(--ln-color-orange-lightest);
+
+  /* Semantic colors */
+  --color-ln-green:            var(--ln-color-green);
+  --color-ln-green-dark:       var(--ln-color-green-dark);
+  --color-ln-green-lightest:   var(--ln-color-green-lightest);
+  --color-ln-red:              var(--ln-color-red);
+  --color-ln-red-dark:         var(--ln-color-red-dark);
+  --color-ln-red-lightest:     var(--ln-color-red-lightest);
+  --color-ln-blue:             var(--ln-color-blue);
+  --color-ln-blue-dark:        var(--ln-color-blue-dark);
+  --color-ln-blue-lightest:    var(--ln-color-blue-lightest);
+  --color-ln-yellow:           var(--ln-color-yellow);
+  --color-ln-yellow-dark:      var(--ln-color-yellow-dark);
+  --color-ln-yellow-lightest:  var(--ln-color-yellow-lightest);
+  --color-ln-purple:           var(--ln-color-purple);
+  --color-ln-purple-dark:      var(--ln-color-purple-dark);
+  --color-ln-purple-lightest:  var(--ln-color-purple-lightest);
+
+  /* Shadows */
+  --shadow-ln-badge-gray:   var(--shadow-ln-badge-gray);
+  --shadow-ln-badge-orange: var(--shadow-ln-badge-orange);
+  --shadow-ln-xs:           var(--shadow-ln-xs);
+  --shadow-ln-sm:           var(--shadow-ln-sm);
+  --shadow-ln-md:           var(--shadow-ln-md);
+  --shadow-ln-lg:           var(--shadow-ln-lg);
+  --shadow-ln-xl:           var(--shadow-ln-xl);
+
+  /* Animations */
+  --animate-accordion-down: var(--animate-accordion-down);
+  --animate-accordion-up:   var(--animate-accordion-up);
+  --animate-slide-down:     var(--animate-slide-down);
+  --animate-slide-up:       var(--animate-slide-up);
+
+  /* AlignUI Typography Scale */
+  --text-ln-title-h1: [2.25rem, 1.1] / 600;
+  --text-ln-title-h2: [1.875rem, 1.15] / 600;
+  --text-ln-title-h3: [1.5rem, 1.2] / 600;
+  --text-ln-title-h4: [1.25rem, 1.25] / 600;
+  --text-ln-title-h5: [1.125rem, 1.3] / 550;
+  --text-ln-title-h6: [1rem, 1.4] / 550;
+
+  --text-ln-label-xl:  [1rem, 1.4] / 500;
+  --text-ln-label-lg:  [0.9375rem, 1.4] / 500;
+  --text-ln-label-md:  [0.875rem, 1.4] / 500;
+  --text-ln-label-sm:  [0.8125rem, 1.4] / 500;
+  --text-ln-label-xs:  [0.75rem, 1.4] / 500;
+  --text-ln-label-2xs: [0.6875rem, 1.4] / 500;
+
+  --text-ln-paragraph-xl:  [1rem, 1.6] / 400;
+  --text-ln-paragraph-lg:  [0.9375rem, 1.6] / 400;
+  --text-ln-paragraph-md:  [0.875rem, 1.6] / 400;
+  --text-ln-paragraph-sm:  [0.8125rem, 1.6] / 400;
+  --text-ln-paragraph-xs:  [0.75rem, 1.6] / 400;
+
+  --text-ln-subheading-md:  [0.75rem, 1.4] / 600;
+  --text-ln-subheading-sm:  [0.6875rem, 1.4] / 600;
+  --text-ln-subheading-xs:  [0.625rem, 1.4] / 600;
+  --text-ln-subheading-2xs: [0.5625rem, 1.4] / 600;
+}
 
 @layer utilities {
   .glassmorphic {
@@ -43,47 +240,57 @@
 /* //@custom-variant dark (&:is(.dark *)); */
 
 @theme inline {
-  --text-base: [0.4rem, 2.6rem];
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: 'Google Sans', 'Product Sans', var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  /* ── Font stack ── */
+  --font-sans: 'Inter', 'Google Sans', 'Product Sans', system-ui, -apple-system, sans-serif;
   --font-mono: var(--font-geist-mono);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
+
+  /* ── Shadcn compat colors (still needed for sidebar, charts, etc.) ── */
+  --color-background:             var(--background);
+  --color-foreground:             var(--foreground);
+  --color-card:                   var(--card);
+  --color-card-foreground:        var(--card-foreground);
+  --color-popover:                var(--popover);
+  --color-popover-foreground:     var(--popover-foreground);
+  --color-primary:                var(--primary);
+  --color-primary-foreground:     var(--primary-foreground);
+  --color-secondary:              var(--secondary);
+  --color-secondary-foreground:   var(--secondary-foreground);
+  --color-muted:                  var(--muted);
+  --color-muted-foreground:       var(--muted-foreground);
+  --color-accent:                 var(--accent);
+  --color-accent-foreground:      var(--accent-foreground);
+  --color-destructive:            var(--destructive);
+  --color-border:                 var(--border);
+  --color-input:                  var(--input);
+  --color-ring:                   var(--ring);
+
+  /* ── Chart colors ── */
   --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  /* ── Sidebar colors ── */
+  --color-sidebar:                   var(--sidebar);
+  --color-sidebar-foreground:        var(--sidebar-foreground);
+  --color-sidebar-primary:           var(--sidebar-primary);
+  --color-sidebar-primary-foreground:var(--sidebar-primary-foreground);
+  --color-sidebar-accent:            var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border:            var(--sidebar-border);
+  --color-sidebar-ring:              var(--sidebar-ring);
+
+  /* ── App gradient ── */
   --color-app-background: var(--gradient-background);
 
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
+  /* ── Radii ── */
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 }
+
 
 :root {
   --radius: 0.625rem;
@@ -198,18 +405,46 @@
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    border-color: var(--ln-color-gray-200);
   }
 
   html {
-    font-size: 0.75rem;
-    /* All rem units now based on 0.6rem = 9.6px */
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+    -moz-tab-size: 4;
+    tab-size: 4;
+    scroll-behavior: smooth;
   }
 
   body {
-    font-family: var(--font-sans);
-    @apply bg-background text-foreground;
+    font-family: 'Inter', 'Google Sans', 'Product Sans', system-ui, -apple-system, sans-serif;
+    font-size: 0.875rem;        /* 14px — AlignUI paragraph-sm base */
+    line-height: 1.6;
+    color: var(--ln-color-gray-900);
+    background-color: var(--ln-color-gray-0);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 
+  /* Keep legacy Shadcn background for pages that still use it */
+  .bg-background {
+    background: var(--background);
+  }
+  .text-foreground {
+    color: var(--foreground);
+  }
+
+  /* Focus ring reset — AlignUI handles its own per-component */
+  :focus-visible {
+    outline: none;
+  }
+
+  /* Preserve border-border for Shadcn sidebar which still relies on it */
+  .border-border {
+    border-color: var(--border);
   }
 }
