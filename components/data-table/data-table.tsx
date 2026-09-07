@@ -672,7 +672,7 @@ export function DataTable<TData, TValue>({
 
       <div
         ref={tableContainerRef}
-        className="flex-1 min-h-0 rounded-lg border border-stroke-soft-200 overflow-hidden table-container"
+        className="flex-1 min-h-0 rounded-lg overflow-hidden table-container"
         aria-label="Data table"
         onKeyDown={tableConfig.enableKeyboardNavigation ? handleKeyDown : undefined}
       >

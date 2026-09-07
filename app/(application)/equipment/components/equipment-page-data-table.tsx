@@ -637,7 +637,7 @@ export function EquipmentPageDataTable({ realServer }: DataTableProps) {
 
   return (
     <div className="w-full flex-1 min-h-0 flex flex-col space-y-3 overflow-hidden">
-      <div className="flex-1 min-h-0 rounded-lg border border-stroke-soft-200 overflow-hidden">
+      <div className="flex-1 min-h-0 rounded-lg overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>

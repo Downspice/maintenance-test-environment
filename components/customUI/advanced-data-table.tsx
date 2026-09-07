@@ -311,9 +311,9 @@ export function AdvancedDataTable<TData, TValue>({
     onPaginationChange: (updater) => {
       const currentPagination = realServerPagination
         ? {
-            pageIndex: paginationInfo?.pageIndex ?? 0,
-            pageSize: paginationInfo?.pageSize ?? 10,
-          }
+          pageIndex: paginationInfo?.pageIndex ?? 0,
+          pageSize: paginationInfo?.pageSize ?? 10,
+        }
         : clientPagination
 
       const nextPagination = typeof updater === "function" ? updater(currentPagination) : updater
@@ -344,9 +344,9 @@ export function AdvancedDataTable<TData, TValue>({
       expanded,
       pagination: realServerPagination
         ? {
-            pageIndex: paginationInfo?.pageIndex ?? 0,
-            pageSize: paginationInfo?.pageSize ?? 10,
-          }
+          pageIndex: paginationInfo?.pageIndex ?? 0,
+          pageSize: paginationInfo?.pageSize ?? 10,
+        }
         : clientPagination,
     },
   })
@@ -650,7 +650,7 @@ export function AdvancedDataTable<TData, TValue>({
       </div>
 
       {/* Table */}
-      <div className="flex-1 min-h-0 rounded-lg border border-stroke-soft-200 overflow-hidden">
+      <div className="flex-1 min-h-0 rounded-lg overflow-hidden">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
