@@ -35,18 +35,20 @@ export default function InvoicesDataTable() {
   const {
     data: InvoiceData,
     isLoading,
-    error: InvoiceDataError,
   } = useGetInvoices<InvoiceTableInterface[]>();
-  console.log("InvoiceData", InvoiceData)
 
-  return InvoiceData ? (
-    <InvoicesTableLoader InvoiceData={InvoiceData} isLoading={isLoading} />
-  ) : (
-    <div>is loading.......</div>
+  return (
+    <InvoicesTableLoader InvoiceData={InvoiceData ?? []} isLoading={isLoading} />
   );
 }
 
-export function InvoicesTableLoader({ InvoiceData, isLoading }: { InvoiceData: InvoiceTableInterface[]; isLoading: boolean }) {
+export function InvoicesTableLoader({
+  InvoiceData = [],
+  isLoading,
+}: {
+  InvoiceData?: InvoiceTableInterface[];
+  isLoading: boolean;
+}) {
   const deleteApi = useDeleteInvoice();
   const confirmDialog = useConfirmDialog();
   const [invoiceToDelete, setInvoiceToDelete] = useState<any | null>(null);
@@ -59,7 +61,7 @@ export function InvoicesTableLoader({ InvoiceData, isLoading }: { InvoiceData: I
   // This structure matches the vendor table pattern
   const serverRows = InvoiceData ?? [];
   const currentPage = pageIndex + 1;
-  const totalPages = Math.ceil(serverRows.length / pageSize);
+  const totalPages = Math.max(1, Math.ceil(serverRows.length / pageSize));
   const totalRows = serverRows.length;
 
   const paginationInfo = {
@@ -89,10 +91,14 @@ export function InvoicesTableLoader({ InvoiceData, isLoading }: { InvoiceData: I
   const status = [...new Set(flatEmployees.map((emp) => emp.status))];
   const issued_date = [...new Set(flatEmployees.map((emp) => emp.invoice_date))];
   const due_date = [...new Set(flatEmployees.map((emp) => emp.due_date))];
-  const customer_name = [...new Set(flatEmployees.map((emp) => emp.customer.company_name))];
-  const total = [...new Set(flatEmployees.map((emp) => emp.total?.toString()))];
+  const customer_name = [
+    ...new Set(flatEmployees.map((emp) => emp.customer?.company_name).filter(Boolean)),
+  ];
+  const total = [
+    ...new Set(flatEmployees.map((emp) => emp.total?.toString()).filter(Boolean)),
+  ];
   const payment = [
-    ...new Set(flatEmployees.map((emp) => emp.payments?.toString())),
+    ...new Set(flatEmployees.map((emp) => emp.payments?.toString()).filter(Boolean)),
   ];
 
   const handleRowClick = (row: any) => {
@@ -278,8 +284,7 @@ export function InvoicesTableLoader({ InvoiceData, isLoading }: { InvoiceData: I
       cell: ({ row }) => {
         return (
           <div className="flex items-center gap-1 text-primary">
-            {" "}
-            {row.original.customer.company_name}
+            {row.original.customer?.company_name}
           </div>
         );
       },
