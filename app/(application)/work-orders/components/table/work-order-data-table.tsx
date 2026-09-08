@@ -44,6 +44,7 @@ import ChangeAssigneesForm from "@/components/forms/entities/work-order/change-a
 import ChangeCostCenterForm from "@/components/forms/entities/work-order/change-cost-center";
 import ChangeStatusForm from "@/components/forms/entities/work-order/change-status";
 import { useDeleteWorkOrder, useGetWorkOrdersPaginated } from "@/services/setups/workOrder";
+import { DeleteWorkOrderModal } from "./modals/delete-work-order-modal";
 
 const getStatusColor = (status: string) => {
   switch (status.toLowerCase()) {
@@ -106,6 +107,8 @@ export function WorkOrderDataLoader({
   statusId?: string;
 }) {
   const confirmDialog = useConfirmDialog();
+  const { mutateAsync: deleteWorkOrderAsync } = useDeleteWorkOrder();
+  const [workOrderToDelete, setWorkOrderToDelete] = useState<any | null>(null);
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [search, setSearch] = useState("");
@@ -371,28 +374,8 @@ export function WorkOrderDataLoader({
       header: "Actions",
       size: 60,
       cell: ({ row }) => {
-        const { mutate: deleteWorkOrder } = useDeleteWorkOrder();
-
         const handleDeleteRow = (row: any) => {
-          console.log("Delete row:", row.original);
-          (async () => {
-            const ok = await confirmDialog({
-              title: "Delete work order?",
-              description: `Are you sure you want to delete ${row.original.wo_number}?`,
-              confirmText: "Delete",
-              variant: "destructive",
-            })
-            if (ok) {
-              deleteWorkOrder({ id: row.original.id }, {
-                onSuccess: () => {
-                  toast.success(`Deleted ${row.original.wo_number || "Work Order"}`)
-                },
-                onError: (error) => {
-                  toast.error(error?.response?.data?.message || "Failed to delete work order")
-                }
-              })
-            }
-          })()
+          setWorkOrderToDelete(row.original);
         };
 
         const handleStatus = (status: string, row: any) => {
@@ -586,6 +569,11 @@ export function WorkOrderDataLoader({
         serverSorting={sorting}
         onServerSortingChange={handleServerSortingChange}
         isLoading={isLoading}
+      />
+      <DeleteWorkOrderModal
+        workOrder={workOrderToDelete}
+        onClose={() => setWorkOrderToDelete(null)}
+        deleteWorkOrderAsync={deleteWorkOrderAsync}
       />
     </div>
   );

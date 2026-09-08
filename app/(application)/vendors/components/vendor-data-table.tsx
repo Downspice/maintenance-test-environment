@@ -20,7 +20,7 @@ import {
 } from "@/services/setups/vendor";
 import { toast } from "sonner";
 import { useConfirmDialog } from "@/lib/shared/confirm-dialog";
-import { DeleteConfirmationModal } from "@/components/reusable/modals/delete-confirmation-modal";
+import { DeleteVendorModal } from "./modals/delete-vendor-modal";
 
 export default function VendorDataTable({
   locationId,
@@ -451,61 +451,12 @@ export function VendorTableLoader({ locationId, typeId }: { locationId?: string;
         isLoading={isLoading}
       />
 
-      <DeleteConfirmationModal
-        open={!!vendorToDelete}
-        onOpenChange={(open) => {
-          if (!open) setVendorToDelete(null);
-        }}
-        title="Delete vendor"
-        description="Are you sure you want to delete the following vendor?"
-        warningTitle="Warning:"
-        warningText={
-          <>
-            This action <strong className="font-semibold text-text-strong-950">cannot be undone</strong>. Deleting this vendor will remove all its associated data. Any linked purchase orders, invoices, parts, and contacts will be affected.
-          </>
-        }
-        item={
-          vendorToDelete
-            ? {
-                name: vendorToDelete.name || "Vendor",
-                description: [
-                  vendorToDelete.type?.name,
-                  vendorToDelete.vendor_contact?.email || vendorToDelete.vendor_contact?.phone_one,
-                  vendorToDelete.city,
-                ]
-                  .filter(Boolean)
-                  .join(" • ") || "Vendor record",
-              }
-            : undefined
-        }
-        switchLabel="Confirm permanent deletion"
-        switchDescription="Toggle switch to authorize deletion of this vendor."
-        confirmText="Yes, Delete Vendor"
-        cancelText="Cancel"
-        onDelete={async () => {
-          if (!vendorToDelete?.id) return;
-          const currentStatusId: string | undefined = vendorToDelete.status?.id;
-          const otherStatusId: string | undefined = Array.isArray(statusOnes)
-            ? statusOnes.find((s: { id?: string }) => s?.id !== currentStatusId)?.id
-            : undefined;
-
-          try {
-            await deleteVendor.mutateAsync({ id: vendorToDelete.id });
-            toast.success(`Vendor "${vendorToDelete.name}" deleted successfully`);
-          } catch {
-            // Fallback to status update if backend uses soft delete / is-active
-            if (otherStatusId) {
-              await patchIsActive.mutateAsync({
-                id: vendorToDelete.id,
-                status_id: otherStatusId,
-              });
-              toast.success(`Vendor "${vendorToDelete.name}" deleted successfully`);
-            } else {
-              toast.error("Unable to delete vendor");
-            }
-          }
-          setVendorToDelete(null);
-        }}
+      <DeleteVendorModal
+        vendor={vendorToDelete}
+        onClose={() => setVendorToDelete(null)}
+        deleteVendor={deleteVendor}
+        patchIsActive={patchIsActive}
+        statusOnes={statusOnes as Array<{ id: string }> | undefined}
       />
     </div>
   );

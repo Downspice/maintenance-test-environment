@@ -33,6 +33,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useGetPurchaseOrdersPaginated } from "@/services/setups/purchaseOrder";
 import { useConfirmDialog } from "@/lib/shared/confirm-dialog";
 import { toast } from "sonner";
+import { DeletePurchaseOrderModal } from "./modals/delete-purchase-order-modal";
 // import ViewPurchaseOrder from "../views/viewDetailsSheet";
 
 export default function PurchaseOrderDataTable({
@@ -53,6 +54,7 @@ export function PurchaseOrderDataLoader({
   statusId?: string;
 }) {
   const confirmDialog = useConfirmDialog();
+  const [poToDelete, setPoToDelete] = useState<any | null>(null);
   const [pageIndex, setPageIndex] = useState(0); // 0-based for UI
   const [pageSize, setPageSize] = useState(10);
   const [search, setSearch] = useState("");
@@ -321,17 +323,7 @@ export function PurchaseOrderDataLoader({
       size: 60,
       cell: ({ row }) => {
         const handleDeleteRow = (row: any) => {
-          console.log("Delete row:", row.original);
-          (async () => {
-            const ok = await confirmDialog({
-              title: "Delete purchase order?",
-              description: `Are you sure you want to delete ${row.original.po_number}?`,
-              confirmText: "Delete",
-            });
-            if (ok) {
-              toast.success(`Deleted ${row.original.po_number}`);
-            }
-          })();
+          setPoToDelete(row.original);
         };
 
         const handleCloseRow = (row: any) => {
@@ -486,6 +478,11 @@ export function PurchaseOrderDataLoader({
         serverSorting={sorting}
         onServerSortingChange={handleServerSortingChange}
         isLoading={isLoading}
+      />
+
+      <DeletePurchaseOrderModal
+        purchaseOrder={poToDelete}
+        onClose={() => setPoToDelete(null)}
       />
     </div>
   );

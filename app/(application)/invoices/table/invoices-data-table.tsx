@@ -29,6 +29,7 @@ import { ActualRecordPaymentForm } from "@/components/forms/entities/record-paym
 import { useDeleteInvoice, useGetInvoices } from "@/services/setups/invoice";
 import { toast } from "sonner";
 import { useConfirmDialog } from "@/lib/shared/confirm-dialog";
+import { DeleteInvoiceModal } from "./modals/delete-invoice-modal";
 
 export default function InvoicesDataTable() {
   const {
@@ -48,6 +49,7 @@ export default function InvoicesDataTable() {
 export function InvoicesTableLoader({ InvoiceData, isLoading }: { InvoiceData: InvoiceTableInterface[]; isLoading: boolean }) {
   const deleteApi = useDeleteInvoice();
   const confirmDialog = useConfirmDialog();
+  const [invoiceToDelete, setInvoiceToDelete] = useState<any | null>(null);
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [search, setSearch] = useState("");
@@ -322,18 +324,7 @@ export function InvoicesTableLoader({ InvoiceData, isLoading }: { InvoiceData: I
       size: 60,
       cell: ({ row }) => {
         const handleDeleteRow = (row: any) => {
-          console.log("Delete row:", row.original);
-          (async () => {
-            const ok = await confirmDialog({
-              title: "Delete invoice?",
-              description: `Are you sure you want to delete ${row.original.invoice_number}?`,
-              confirmText: "Delete",
-            })
-            if (ok) {
-              await deleteApi.mutateAsync(row.original)
-              toast.success(`Deleted successfully`)
-            }
-          })()
+          setInvoiceToDelete(row.original);
         };
 
         const [open, setOpen] = useState(false);
@@ -488,6 +479,12 @@ export function InvoicesTableLoader({ InvoiceData, isLoading }: { InvoiceData: I
         serverSorting={sorting}
         onServerSortingChange={handleServerSortingChange}
         isLoading={isLoading}
+      />
+
+      <DeleteInvoiceModal
+        invoice={invoiceToDelete}
+        onClose={() => setInvoiceToDelete(null)}
+        deleteApi={deleteApi}
       />
     </div>
   );

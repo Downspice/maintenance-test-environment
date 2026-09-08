@@ -46,6 +46,7 @@ import { ActualWorkOrderForm } from "@/components/forms/entities/work-order-form
 import { useGetEquipmentsPaginated } from "@/services/setups/equipments";
 import { toast } from "sonner";
 import { useConfirmDialog } from "@/lib/shared/confirm-dialog";
+import { DeleteEquipmentModal } from "./modals/delete-equipment-modal";
 
 export default function DataTableDemo({
   locationId,
@@ -57,6 +58,7 @@ export default function DataTableDemo({
 
 export function EquipmentTableLoader({ locationId }: { locationId?: string }) {
   const confirmDialog = useConfirmDialog();
+  const [equipmentToDelete, setEquipmentToDelete] = useState<any | null>(null);
   const [pageIndex, setPageIndex] = useState(0); // 0-based for UI
   const [pageSize, setPageSize] = useState(10);
   const [search, setSearch] = useState("");
@@ -401,17 +403,7 @@ export function EquipmentTableLoader({ locationId }: { locationId?: string }) {
       size: 60,
       cell: ({ row }) => {
         const handleDeleteRow = (row: any) => {
-          console.log("Delete row:", row.original);
-          (async () => {
-            const ok = await confirmDialog({
-              title: "Delete equipment?",
-              description: `Are you sure you want to delete ${row.original.name}?`,
-              confirmText: "Delete",
-            })
-            if (ok) {
-              toast.success(`Deleted ${row.original.name}`)
-            }
-          })()
+          setEquipmentToDelete(row.original);
         };
 
         const [open, setOpen] = useState(false);
@@ -608,6 +600,11 @@ export function EquipmentTableLoader({ locationId }: { locationId?: string }) {
         serverSorting={sorting}
         onServerSortingChange={handleServerSortingChange}
         isLoading={isLoading}
+      />
+
+      <DeleteEquipmentModal
+        equipment={equipmentToDelete}
+        onClose={() => setEquipmentToDelete(null)}
       />
     </div>
   );

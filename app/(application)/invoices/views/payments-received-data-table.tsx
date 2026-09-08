@@ -14,6 +14,7 @@ import EditPaymentReceived from "./edit-payment-received";
 import { toast } from "sonner";
 import { useConfirmDialog } from "@/lib/shared/confirm-dialog";
 import { useGetInvoicePayments } from "@/services/setups/invoice";
+import { DeletePaymentModal } from "./modals/delete-payment-modal";
 
 const getAllEmployees = (
   employees: PaymentReceivedInterface[]
@@ -54,6 +55,7 @@ const mapPaymentToEditForm = (payment: PaymentReceivedInterface) => {
 
 export default function PaymentReceivedTable() {
   const confirmDialog = useConfirmDialog();
+  const [paymentToDelete, setPaymentToDelete] = useState<any | null>(null);
 
   // Fetch invoice payments from API
   const {
@@ -315,17 +317,7 @@ export default function PaymentReceivedTable() {
       header: "Actions",
       cell: ({ row }) => {
         const handleDeleteRow = (row: any) => {
-          console.log("Delete row:", row.original);
-          (async () => {
-            const ok = await confirmDialog({
-              title: "Delete payment?",
-              description: `Are you sure you want to delete ${row.original.name}?`,
-              confirmText: "Delete",
-            })
-            if (ok) {
-              toast.success(`Deleted ${row.original.name}`)
-            }
-          })()
+          setPaymentToDelete(row.original);
         };
 
         return (
@@ -406,6 +398,11 @@ export default function PaymentReceivedTable() {
         onServerSortingChange={handleServerSortingChange}
 
         isLoading={isApiLoading}
+      />
+
+      <DeletePaymentModal
+        payment={paymentToDelete}
+        onClose={() => setPaymentToDelete(null)}
       />
     </div>
   );

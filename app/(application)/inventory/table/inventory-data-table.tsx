@@ -40,6 +40,7 @@ import TransferInventoryForm from "../forms/transferInventory";
 import { useDeleteInventory, useGetInventoriesPaginated } from "@/services/setups/inventory";
 import { toast } from "sonner";
 import { useConfirmDialog } from "@/lib/shared/confirm-dialog";
+import { DeleteInventoryModal } from "./modals/delete-inventory-modal";
 
 export default function InventoryDataTable({
   locationId,
@@ -60,6 +61,7 @@ export function InventoryDataLoader({
 }) {
   const confirmDialog = useConfirmDialog();
   const deleteApi = useDeleteInventory();
+  const [itemToDelete, setItemToDelete] = useState<any | null>(null);
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [search, setSearch] = useState("");
@@ -298,19 +300,7 @@ export function InventoryDataLoader({
       size: 60,
       cell: ({ row }) => {
         const handleDeleteRow = (row: any) => {
-          console.log("Delete row:", row.original);
-
-          (async () => {
-            const ok = await confirmDialog({
-              title: "Delete inventory item?",
-              description: `Are you sure you want to delete ${row.original.name}?`,
-              confirmText: "Delete",
-            })
-            if (ok) {
-              await deleteApi.mutateAsync(row.original)
-              toast.success(`Deleted Successfully`)
-            }
-          })()
+          setItemToDelete(row.original);
         };
         const [open, setOpen] = useState(false);
         const [selectedProjectType, setSelectedProjectType] = useState<
@@ -482,6 +472,12 @@ export function InventoryDataLoader({
         serverSorting={sorting}
         onServerSortingChange={handleServerSortingChange}
         isLoading={isLoading}
+      />
+
+      <DeleteInventoryModal
+        item={itemToDelete}
+        onClose={() => setItemToDelete(null)}
+        deleteApi={deleteApi}
       />
     </div>
   );
