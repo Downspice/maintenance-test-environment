@@ -15,9 +15,7 @@ import InvoicesDataTable from "./table/invoices-data-table";
 
 import NewInvoiceForm from "@/components/forms/entities/new-invoice-form";
 import PaymentReceivedTable from "./views/payments-received-data-table";
-import {
-  useGetLocations,
-} from "@/services/setups/lookups";
+import { useGetLocations } from "@/services/setups/lookups";
 
 const ActiveDropdown = [
   {
@@ -101,7 +99,12 @@ export default function EmployeesPage() {
     openSheet({
       title: "Create Invoice",
       description: "Fill out the form below to create a new Invoice.",
-      content: <NewInvoiceForm />,
+      content: <NewInvoiceForm formId="new-invoice-form" hideSubmitButton />,
+      renderActions: (
+        <Button form="new-invoice-form" type="submit" variant="primary">
+          Save Invoice
+        </Button>
+      ),
     });
   };
 

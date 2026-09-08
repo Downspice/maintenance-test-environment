@@ -33,9 +33,7 @@ import {
   useGetLocations,
   useGetPurchaseOrderTerms,
 } from "@/services/setups/lookups";
-import {
-  useGetCustomers,
-} from "@/services/setups/customer";
+import { useGetCustomers } from "@/services/setups/customer";
 import { useGetWarehouses } from "@/services/setups/inventory";
 import {
   useAddInvoice,
@@ -136,7 +134,13 @@ export const InvoicePaymentSchema = z.object({
 
 export type PaymentFormValues = z.infer<typeof InvoicePaymentSchema>;
 
-export default function NewInvoiceForm() {
+export default function NewInvoiceForm({
+  formId = "new-invoice-form",
+  hideSubmitButton,
+}: {
+  formId?: string;
+  hideSubmitButton?: boolean;
+} = {}) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const { mutateAsync } = useAddInvoice();
@@ -168,10 +172,6 @@ export default function NewInvoiceForm() {
   } = useGetCustomers<Customer[]>();
 
   const { data: nextInvoiceNumberData } = useGetNextInvoiceNumber();
-
-
-
-
 
   const [items, setItems] = useState<InvoiceItemInterface[]>([]);
   const [editItems, setEditItems] = useState<InvoiceItemInterface | null>(null);
@@ -284,8 +284,10 @@ export default function NewInvoiceForm() {
 
         const shippingDetails = [
           customer.customer_shipping?.address,
-          customer.customer_shipping?.phone_one && `Phone: ${customer.customer_shipping.phone_one}`,
-          customer.customer_shipping?.country && `Country: ${customer.customer_shipping.country}`,
+          customer.customer_shipping?.phone_one &&
+            `Phone: ${customer.customer_shipping.phone_one}`,
+          customer.customer_shipping?.country &&
+            `Country: ${customer.customer_shipping.country}`,
         ]
           .filter(Boolean)
           .join("\n");
@@ -295,7 +297,6 @@ export default function NewInvoiceForm() {
       }
     }
   }, [customerId, customersOptionsList, form]);
-
 
   function onSubmit(data: z.infer<typeof InvoiceSchema>) {
     // Transform data to match backend format
@@ -381,6 +382,7 @@ export default function NewInvoiceForm() {
   return (
     <Form {...form}>
       <form
+        id={formId}
         onSubmit={form.handleSubmit(onSubmit, onError)}
         className="space-y-6"
       >
@@ -574,7 +576,10 @@ export default function NewInvoiceForm() {
                             <TableCell>{item.item}</TableCell>
                             <TableCell>{item.cost}</TableCell>
                             <TableCell>{item.amount}</TableCell>
-                            <TableCell className="w-px whitespace-nowrap" style={{ width: "1%" }}>
+                            <TableCell
+                              className="w-px whitespace-nowrap"
+                              style={{ width: "1%" }}
+                            >
                               <div className="flex gap-2">
                                 <Button
                                   type="button"
@@ -644,25 +649,29 @@ export default function NewInvoiceForm() {
                               control={PaymentsForm.control}
                               value=""
                             />
-                            <Button type="button" onClick={PaymentsForm.handleSubmit(
-                              onSubmitPayment,
-                              (errors) => {
-                                console.log(errors);
-                                const firstErrorField =
-                                  Object.values(errors)[0];
-                                const message = firstErrorField?.message;
+                            <Button
+                              type="button"
+                              onClick={PaymentsForm.handleSubmit(
+                                onSubmitPayment,
+                                (errors) => {
+                                  console.log(errors);
+                                  const firstErrorField =
+                                    Object.values(errors)[0];
+                                  const message = firstErrorField?.message;
 
-                                if (message) {
-                                  toast.error(message);
-                                } else {
-                                  toast.error(
-                                    "Please check the form for errors."
-                                  );
+                                  if (message) {
+                                    toast.error(message);
+                                  } else {
+                                    toast.error(
+                                      "Please check the form for errors."
+                                    );
+                                  }
                                 }
-                              }
-                            )}
+                              )}
                               className="grid gap-4 mt-4"
-                            >Save Payment</Button>
+                            >
+                              Save Payment
+                            </Button>
                           </div>
                         </DialogContent>
                       </Dialog>
@@ -683,7 +692,10 @@ export default function NewInvoiceForm() {
                               {payment.date_received.toLocaleDateString()}
                             </TableCell>
                             <TableCell>{payment.amount_received}</TableCell>
-                            <TableCell className="w-px whitespace-nowrap" style={{ width: "1%" }}>
+                            <TableCell
+                              className="w-px whitespace-nowrap"
+                              style={{ width: "1%" }}
+                            >
                               <div className="flex gap-2">
                                 <Button
                                   type="button"
@@ -828,22 +840,24 @@ export default function NewInvoiceForm() {
             </div>
           </div>
         </div>
-        <div className="flex justify-end">
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-            className="min-w-32 my-4 w-full"
-          >
-            {isSubmitting ? (
-              "Creating..."
-            ) : (
-              <>
-                <Save className="mr-2 h-4 w-4" />
-                Submit
-              </>
-            )}
-          </Button>
-        </div>
+        {!hideSubmitButton && (
+          <div className="flex justify-end">
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="min-w-32 my-4 w-full"
+            >
+              {isSubmitting ? (
+                "Creating..."
+              ) : (
+                <>
+                  <Save className="mr-2 h-4 w-4" />
+                  Submit
+                </>
+              )}
+            </Button>
+          </div>
+        )}
       </form>
     </Form>
   );

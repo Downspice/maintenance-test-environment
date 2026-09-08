@@ -13,10 +13,7 @@ import { useSheet } from "@/lib/providers/sheet-providers";
 
 import VendorDataTable from "./components/vendor-data-table";
 import NewVendor from "@/components/forms/entities/new-vendor-form";
-import {
-  useGetLocations,
-  useGetVendorTypes,
-} from "@/services/setups/lookups";
+import { useGetLocations, useGetVendorTypes } from "@/services/setups/lookups";
 
 export default function VendorsPage() {
   const {
@@ -42,7 +39,10 @@ export default function VendorsPage() {
   const buildURL = (updatedFilters: typeof filters) => {
     const queryParams = new URLSearchParams();
 
-    if (updatedFilters.location && updatedFilters.location !== "delete_filter") {
+    if (
+      updatedFilters.location &&
+      updatedFilters.location !== "delete_filter"
+    ) {
       queryParams.set("location_id", updatedFilters.location);
     }
 
@@ -89,7 +89,12 @@ export default function VendorsPage() {
     openSheet({
       title: "Create Vendor",
       description: "Fill out the form below to create a new Vendor.",
-      content: <NewVendor />,
+      content: <NewVendor formId="new-vendor-form" hideSubmitButton />,
+      renderActions: (
+        <Button form="new-vendor-form" type="submit" variant="primary">
+          Save Vendor
+        </Button>
+      ),
     });
   };
 
@@ -136,7 +141,10 @@ export default function VendorsPage() {
         </div>
       </div>
       <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
-        <VendorDataTable locationId={filters.location || undefined} typeId={filters.type || undefined} />
+        <VendorDataTable
+          locationId={filters.location || undefined}
+          typeId={filters.type || undefined}
+        />
       </div>
     </div>
   );

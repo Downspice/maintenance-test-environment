@@ -72,7 +72,15 @@ export const vendorSchema = z.object({
     .optional(),
 });
 
-export default function NewVendor() {
+interface NewVendorProps {
+  formId?: string;
+  hideSubmitButton?: boolean;
+}
+
+export default function NewVendor({
+  formId = "new-vendor-form",
+  hideSubmitButton,
+}: NewVendorProps = {}) {
   const [customFields, setCustomFields] = useState<
     { name: string; id: string }[]
   >([]);
@@ -85,22 +93,19 @@ export default function NewVendor() {
   });
   const formControl = vendorForm.control as Control<any>;
 
-  const { 
-    mutateAsync, 
-    isPending, 
-  } = useAddVendor(); 
+  const { mutateAsync, isPending } = useAddVendor();
 
   // 3. Define the mutation handler that receives validated data
   const handleSubmit = async (data: VendorFormValues) => {
     console.log("Submitting data:", data);
-    
-    // try {
-      // 4. AWAIT the mutateAsync call, passing the validated 'data' object
-      const res = (await mutateAsync(data)) as { message?: string };
-      toast.success(res?.message ?? "Vendor created.");
-      vendorForm.reset(); // Reset form state on success
 
-      // In a real application, you would likely close the sheet/modal here
+    // try {
+    // 4. AWAIT the mutateAsync call, passing the validated 'data' object
+    const res = (await mutateAsync(data)) as { message?: string };
+    toast.success(res?.message ?? "Vendor created.");
+    vendorForm.reset(); // Reset form state on success
+
+    // In a real application, you would likely close the sheet/modal here
 
     // } catch (error: any) {
     //   // 6. Handle error and feedback using the try/catch block
@@ -118,6 +123,7 @@ export default function NewVendor() {
     <div>
       <Form {...vendorForm}>
         <form
+          id={formId}
           onSubmit={vendorForm.handleSubmit(handleSubmit, (errors) => {
             const firstErrorField = Object.values(errors)[0];
             const message =
@@ -150,7 +156,8 @@ export default function NewVendor() {
                   required
                 />
                 <InputWrapper
-                  control={formControl} required
+                  control={formControl}
+                  required
                   name="vendor_number"
                   label="Vendor #"
                   type="text"
@@ -170,7 +177,6 @@ export default function NewVendor() {
                   type="text"
                 />
 
-                 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="col-span-1">
                     <InputWrapper
@@ -182,7 +188,8 @@ export default function NewVendor() {
                   </div>
                   <div className="col-span-1">
                     <InputWrapper
-                      control={formControl} required
+                      control={formControl}
+                      required
                       name="state"
                       label="State /Province"
                       type="text"
@@ -193,7 +200,8 @@ export default function NewVendor() {
                       control={formControl}
                       name="postal_code"
                       label="Postal Code"
-                      type="text" required
+                      type="text"
+                      required
                     />
                   </div>
                   <div className="col-span-1">
@@ -302,11 +310,13 @@ export default function NewVendor() {
             </TabsContent>
           </Tabs>
 
-          <div className="flex justify-between gap-x-4 my-8 w-full">
-            <Button className=" w-full" disabled={isPending}>
-              <GitPullRequestArrow className="mr-2" /> Save
-            </Button>
-          </div>
+          {!hideSubmitButton && (
+            <div className="flex justify-between gap-x-4 my-8 w-full">
+              <Button className=" w-full" disabled={isPending}>
+                <GitPullRequestArrow className="mr-2" /> Save
+              </Button>
+            </div>
+          )}
         </form>
       </Form>
     </div>

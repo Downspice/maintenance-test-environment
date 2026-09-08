@@ -14,7 +14,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import FileUploadWrapper from "../fields/FileUploadWrapper";
 import FormSubheader from "../ui/formSubheader";
 import { ComboboxFieldWrapper } from "../fields/ComboboxWrapper";
-import { customerSchema,CustomerInterface} from "@/lib/domains/customer/customer-data";
+import {
+  customerSchema,
+  CustomerInterface,
+} from "@/lib/domains/customer/customer-data";
 import {
   useGetLocations,
   useGetPurchaseOrderTerms,
@@ -27,29 +30,34 @@ import {
 } from "@/services/setups/customer";
 import SingleCheckboxWrapper from "../fields/SingleCheckboxWrapper";
 
- 
-export default function NewCustomer() {
-    const {
-      data: vendorTypeOptions,
-      isLoading,
-      error: vendorTypesError,
-    } = useGetVendorTypes<Array<{ id: string; name: string }>>();
-  const { 
-    data: discount_typesOptions, 
-    isLoading:discount_typesOptionsLoading, 
-    error: discount_typesOptionsError
-  } = useGetCustomerDiscounts<Array<{ id: string, name: string }>>();
-    const {
-      data: locationOptionsList,
-      isLoading: locationOptionsListLoading,
-      error: locationOptionsListError,
-    } = useGetLocations<Array<{ id: string; name: string }>>();
-  const { 
-    data: statusOptions, 
-    isLoading:statusOptionsLoading, 
-    error: statusOptionsError
-  } = useGetStatusOnes<Array<{ id: string, name: string }>>();
-const {
+export default function NewCustomer({
+  formId = "new-customer-form",
+  hideSubmitButton,
+}: {
+  formId?: string;
+  hideSubmitButton?: boolean;
+} = {}) {
+  const {
+    data: vendorTypeOptions,
+    isLoading,
+    error: vendorTypesError,
+  } = useGetVendorTypes<Array<{ id: string; name: string }>>();
+  const {
+    data: discount_typesOptions,
+    isLoading: discount_typesOptionsLoading,
+    error: discount_typesOptionsError,
+  } = useGetCustomerDiscounts<Array<{ id: string; name: string }>>();
+  const {
+    data: locationOptionsList,
+    isLoading: locationOptionsListLoading,
+    error: locationOptionsListError,
+  } = useGetLocations<Array<{ id: string; name: string }>>();
+  const {
+    data: statusOptions,
+    isLoading: statusOptionsLoading,
+    error: statusOptionsError,
+  } = useGetStatusOnes<Array<{ id: string; name: string }>>();
+  const {
     data: termsOptionsList,
     isLoading: termsOptionsListLoading,
     error: termsOptionsListError,
@@ -59,70 +67,66 @@ const {
     defaultValues: {},
   });
 
- 
-
   const watchdiscount_type = CustomerForm.watch("discount_type");
   const watchIsSame = CustomerForm.watch("is_same");
 
-    const { 
-      mutateAsync, 
-      isPending, 
-    } = useAddCustomer(); 
-  
-    // 3. Define the mutation handler that receives validated data
-    const handleSubmit = async (data: CustomerInterface) => {
-      console.log("Submitting data:", data);
-      
-      // If is_same is true, clear shipping fields
-      if (data.is_same) {
-        data.shipping = {
-          ...data.shipping,
-          company_name: "",
-          contact: "",
-          address: "",
-          city: "",
-          state: "",
-          postal_code: "",
-          country: "",
-          phone_one: "",
-          fax: "",
-          email: "",
-        };
-      }
-      
-      // try {
-        // 4. AWAIT the mutateAsync call, passing the validated 'data' object
-        const res = await mutateAsync(data); 
-  
-        // 5. Handle success and feedback
-        // Assuming 'res' contains a success message or the created object
-        toast.success(res?.messagee); 
-        CustomerForm.reset(); // Reset form state on success
-  
-        // In a real application, you would likely close the sheet/modal here
-  
-      // } catch (error: any) {
-      //   // 6. Handle error and feedback using the try/catch block
-      //   console.error("Mutation failed:", error);
-      //   const errorMessage = error?.response?.data?.message || 'Failed to create vendor.';
-      //   toast.error(errorMessage);
-      // }
-    };
+  const { mutateAsync, isPending } = useAddCustomer();
+
+  // 3. Define the mutation handler that receives validated data
+  const handleSubmit = async (data: CustomerInterface) => {
+    console.log("Submitting data:", data);
+
+    // If is_same is true, clear shipping fields
+    if (data.is_same) {
+      data.shipping = {
+        ...data.shipping,
+        company_name: "",
+        contact: "",
+        address: "",
+        city: "",
+        state: "",
+        postal_code: "",
+        country: "",
+        phone_one: "",
+        fax: "",
+        email: "",
+      };
+    }
+
+    // try {
+    // 4. AWAIT the mutateAsync call, passing the validated 'data' object
+    const res = await mutateAsync(data);
+
+    // 5. Handle success and feedback
+    // Assuming 'res' contains a success message or the created object
+    toast.success(res?.messagee);
+    CustomerForm.reset(); // Reset form state on success
+
+    // In a real application, you would likely close the sheet/modal here
+
+    // } catch (error: any) {
+    //   // 6. Handle error and feedback using the try/catch block
+    //   console.error("Mutation failed:", error);
+    //   const errorMessage = error?.response?.data?.message || 'Failed to create vendor.';
+    //   toast.error(errorMessage);
+    // }
+  };
 
   return (
     <div>
       <Form {...CustomerForm}>
         <form
-        onSubmit={CustomerForm.handleSubmit(handleSubmit, (errors) => {
-                    const firstErrorField = Object.values(errors)[0];
-                    const message = firstErrorField?.message;
-        
-                    if (message) {
-                      toast.error(message);
-                    } else {
-                      toast.error("Please check the form for errors.");
-                    }
-                  })} 
+          id={formId}
+          onSubmit={CustomerForm.handleSubmit(handleSubmit, (errors) => {
+            const firstErrorField = Object.values(errors)[0];
+            const message = firstErrorField?.message;
+
+            if (message) {
+              toast.error(message);
+            } else {
+              toast.error("Please check the form for errors.");
+            }
+          })}
         >
           <Tabs defaultValue="Billing" className="w-full">
             <TabsList>
@@ -149,7 +153,7 @@ const {
                   type="text"
                   value={""}
                 />
- 
+
                 <InputWrapper
                   control={CustomerForm.control}
                   name="address"
@@ -158,7 +162,6 @@ const {
                   value={""}
                 />
 
-               
                 <div className="grid grid-cols-2 gap-1">
                   <div className="col-span-1">
                     <InputWrapper
@@ -173,7 +176,8 @@ const {
                     <InputWrapper
                       control={CustomerForm.control}
                       name="state"
-                      label="State /Province" required
+                      label="State /Province"
+                      required
                       type="text"
                       value={""}
                     />
@@ -197,7 +201,7 @@ const {
                     />
                   </div>
                   <div className="col-span-1"></div>
-                </div> 
+                </div>
                 <FormSubheader header="Contact" />
                 <div className="grid grid-cols-2 gap-1">
                   <div className="col-span-1">
@@ -256,7 +260,7 @@ const {
                       name="term_id"
                       label="Term "
                       required
-                      options={termsOptionsList ??[]}
+                      options={termsOptionsList ?? []}
                     />
                   </div>
                   <div className="col-span-1">
@@ -273,9 +277,10 @@ const {
                       control={CustomerForm.control}
                       name="discount_type"
                       label="Discount Type"
-                      options={discount_typesOptions??[]}
+                      options={discount_typesOptions ?? []}
                     />
-                    {watchdiscount_type === "1fcd0622-ebfa-477a-ba12-21cfcb070a62" && (
+                    {watchdiscount_type ===
+                      "1fcd0622-ebfa-477a-ba12-21cfcb070a62" && (
                       <InputWrapper
                         control={CustomerForm.control}
                         name={"discount_percent"}
@@ -284,7 +289,8 @@ const {
                         type="text"
                       />
                     )}
-                    {watchdiscount_type === "af4850a7-a669-4898-9adc-83a7c27132b9" && (
+                    {watchdiscount_type ===
+                      "af4850a7-a669-4898-9adc-83a7c27132b9" && (
                       <InputWrapper
                         control={CustomerForm.control}
                         name={"discount_amount"}
@@ -309,7 +315,7 @@ const {
                       name="type_id"
                       label="Type "
                       required
-                      options={vendorTypeOptions??[]}
+                      options={vendorTypeOptions ?? []}
                     />
                   </div>
                   <div className="col-span-1">
@@ -318,7 +324,7 @@ const {
                       name="location_id"
                       label="Location "
                       required
-                      options={locationOptionsList??[]}
+                      options={locationOptionsList ?? []}
                     />
                   </div>
                 </div>
@@ -360,7 +366,7 @@ const {
                   type="text"
                   value={""}
                   disabled={watchIsSame}
-                /> 
+                />
                 <div className="grid grid-cols-2 gap-1">
                   <div className="col-span-1">
                     <InputWrapper
@@ -410,7 +416,8 @@ const {
                     <InputWrapper
                       control={CustomerForm.control}
                       name="shipping.state"
-                      label="State /Province" required
+                      label="State /Province"
+                      required
                       type="text"
                       value={""}
                       disabled={watchIsSame}
@@ -460,11 +467,13 @@ const {
             </TabsContent>
           </Tabs>
 
-          <div className="flex justify-between gap-x-4 my-8 w-full">
-            <Button className=" w-full" disabled={isPending}>
-              <GitPullRequestArrow className="mr-2" /> Save
-            </Button>
-          </div>
+          {!hideSubmitButton && (
+            <div className="flex justify-between gap-x-4 my-8 w-full">
+              <Button className=" w-full" disabled={isPending}>
+                <GitPullRequestArrow className="mr-2" /> Save
+              </Button>
+            </div>
+          )}
         </form>
       </Form>
     </div>

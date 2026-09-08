@@ -13,11 +13,9 @@ import InputWrapper from "../fields/InputWrapper";
 import SelectWrapper from "../fields/SelectWrapper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-
 import FormSubheader from "../ui/formSubheader";
 import CustomFieldsWrapper from "../fields/CustomFieldsWrapper";
 import DatePickerWrapper from "../fields/DatePickerWrapper";
-
 
 import {
   Table,
@@ -41,9 +39,7 @@ import {
   useGetEmployeeStatuses,
   useGetEmployeeTypes,
 } from "@/services/setups/employee";
-import {
-  useGetLocations,
-} from "@/services/setups/lookups";
+import { useGetLocations } from "@/services/setups/lookups";
 
 // Renewal data type
 export interface RenewalData {
@@ -84,17 +80,25 @@ export const employeeSchema = z.object({
   driver_license_class: z.string().optional(),
   driver_license_state: z.string().optional(),
   notes: z.string().optional(),
-  renewals: z.array(
-    z.object({
-      renewal_id: z.string(),
-      issued_date: z.any(),
-      expiry_date: z.any(),
-      notes: z.string().optional(),
-    })
-  ).optional(),
+  renewals: z
+    .array(
+      z.object({
+        renewal_id: z.string(),
+        issued_date: z.any(),
+        expiry_date: z.any(),
+        notes: z.string().optional(),
+      })
+    )
+    .optional(),
 });
 
-export default function NewEmployeeForm() {
+export default function NewEmployeeForm({
+  formId = "new-employee-form",
+  hideSubmitButton,
+}: {
+  formId?: string;
+  hideSubmitButton?: boolean;
+} = {}) {
   const [miscellaneous, setCustomFields] = useState<
     { name: string; id: string }[]
   >([]);
@@ -136,7 +140,7 @@ export default function NewEmployeeForm() {
 
   const handleAddRenewal = (newRenewal: RenewalData) => {
     if (editingId) {
-      setRenewals(renewals.map(r => r.id === editingId ? newRenewal : r));
+      setRenewals(renewals.map((r) => (r.id === editingId ? newRenewal : r)));
       setEditingId(null);
     } else {
       setRenewals([...renewals, newRenewal]);
@@ -147,7 +151,7 @@ export default function NewEmployeeForm() {
   };
 
   const handleDeleteRenewal = (id: string) => {
-    const updated = renewals.filter(r => r.id !== id);
+    const updated = renewals.filter((r) => r.id !== id);
     setRenewals(updated);
     employeeForm.setValue("renewals", updated);
     toast.success("Renewal removed");
@@ -170,6 +174,7 @@ export default function NewEmployeeForm() {
     <div className="w-full">
       <Form {...employeeForm}>
         <form
+          id={formId}
           onSubmit={employeeForm.handleSubmit(handleSubmit, (errors) => {
             console.log(errors);
             const firstErrorField = Object.values(errors)[0];
@@ -196,12 +201,12 @@ export default function NewEmployeeForm() {
               <div className="flex flex-col gap-1">
                 <FormSubheader header={"Employment"} />
                 <InputWrapper
-                    control={employeeForm.control}
-                    name="employee_number"
-                    label="Employee Number"
-                    type="text"
-                    value={""}
-                  />
+                  control={employeeForm.control}
+                  name="employee_number"
+                  label="Employee Number"
+                  type="text"
+                  value={""}
+                />
                 <div className="flex flex-row">
                   <InputWrapper
                     control={employeeForm.control}
@@ -454,7 +459,7 @@ export default function NewEmployeeForm() {
                         onSubmit={handleAddRenewal}
                         editingRenewal={
                           editingId
-                            ? renewals.find(r => r.id === editingId)
+                            ? renewals.find((r) => r.id === editingId)
                             : undefined
                         }
                       />
@@ -513,11 +518,13 @@ export default function NewEmployeeForm() {
             </TabsContent>
           </Tabs>
 
-          <div className="flex justify-between gap-x-4 my-8 w-full">
-            <Button className="w-full" type="submit" disabled={isPending}>
-              <GitPullRequestArrow className="mr-2" /> Save
-            </Button>
-          </div>
+          {!hideSubmitButton && (
+            <div className="flex justify-between gap-x-4 my-8 w-full">
+              <Button className="w-full" type="submit" disabled={isPending}>
+                <GitPullRequestArrow className="mr-2" /> Save
+              </Button>
+            </div>
+          )}
         </form>
       </Form>
     </div>
@@ -533,11 +540,10 @@ function RenewalFormContent({
   onSubmit,
   editingRenewal,
 }: RenewalFormContentProps) {
-    const{data:renewalOptionsList}=useGetEmployeeRenewals()
+  const { data: renewalOptionsList } = useGetEmployeeRenewals();
 
   const form = useForm({
     defaultValues: editingRenewal || {
-      
       renewal_id: "",
       issued_date: new Date(),
       expiry_date: new Date(),
@@ -562,7 +568,7 @@ function RenewalFormContent({
           control={form.control}
           name="renewal_id"
           label="Renewal Type"
-          options={renewalOptionsList??[]}
+          options={renewalOptionsList ?? []}
         />
         <DatePickerWrapper
           control={form.control}

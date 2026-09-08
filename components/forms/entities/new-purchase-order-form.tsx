@@ -11,9 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import InputWrapper from "@/components/forms/fields/InputWrapper";
 import DatePickerWrapper from "@/components/forms/fields/DatePickerWrapper";
 // Schema and types
-import {
-  assigneeOptions,
-} from "@/lib/schemas/equipment-schema";
+import { assigneeOptions } from "@/lib/schemas/equipment-schema";
 import Fieldset from "@/components/customUI/fieldset";
 import { toast } from "sonner";
 import { ComboboxFieldWrapper } from "@/components/forms/fields/ComboboxWrapper";
@@ -35,7 +33,6 @@ import {
 } from "@/components/ui/dialog";
 import SelectWrapper from "../fields/SelectWrapper";
 
-
 import FileUploadWrapper from "../fields/FileUploadWrapper";
 import SingleCheckboxWrapper from "../fields/SingleCheckboxWrapper";
 import {
@@ -49,10 +46,11 @@ import {
   useGetLocations,
   useGetPurchaseOrderTerms,
 } from "@/services/setups/lookups";
+import { useGetVendors } from "@/services/setups/vendor";
 import {
-  useGetVendors,
-} from "@/services/setups/vendor";
-import { useGetPurchaseOrderShipVias, useGetNextPurchaseOrderNumber } from "@/services/setups/purchaseOrder";
+  useGetPurchaseOrderShipVias,
+  useGetNextPurchaseOrderNumber,
+} from "@/services/setups/purchaseOrder";
 import { useGetWarehouses } from "@/services/setups/inventory";
 import { useGetItemTypes, useGetInvoices } from "@/services/setups/invoice";
 import { useGetWorkOrders } from "@/services/setups/workOrder";
@@ -60,39 +58,63 @@ import { convertToOptionList } from "@/lib/shared/utils";
 
 interface triggerVariant {
   variant?: "icon" | "default";
+  formId?: string;
+  hideSubmitButton?: boolean;
 }
 
-export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
+export default function NewPurchaseOrderForm({
+  variant,
+  formId = "new-purchase-order-form",
+  hideSubmitButton,
+}: triggerVariant) {
   const { data: shipViaOptions } = useGetPurchaseOrderShipVias();
-  const { data: itemTypesOptionsList } = useGetItemTypes<Array<{ id: string; name: string }>>();
-  const { data: termsOptionsList } = useGetPurchaseOrderTerms<Array<{ id: string; name: string }>>();
-  const { data: invoices } = useGetInvoices<Array<{ id: string; invoice_number: string }>>();
-  const invoiceOptionsList = convertToOptionList(invoices ?? [], "id", "invoice_number");
-  const { data: workOrders } = useGetWorkOrders<Array<{ id: string; wo_number: string }>>();
-  const workOrderOptionsList = convertToOptionList(workOrders ?? [], "id", "wo_number");
+  const { data: itemTypesOptionsList } =
+    useGetItemTypes<Array<{ id: string; name: string }>>();
+  const { data: termsOptionsList } =
+    useGetPurchaseOrderTerms<Array<{ id: string; name: string }>>();
+  const { data: invoices } =
+    useGetInvoices<Array<{ id: string; invoice_number: string }>>();
+  const invoiceOptionsList = convertToOptionList(
+    invoices ?? [],
+    "id",
+    "invoice_number"
+  );
+  const { data: workOrders } =
+    useGetWorkOrders<Array<{ id: string; wo_number: string }>>();
+  const workOrderOptionsList = convertToOptionList(
+    workOrders ?? [],
+    "id",
+    "wo_number"
+  );
 
   const { data: nextPoNumberData } = useGetNextPurchaseOrderNumber();
-
-
 
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editIndex, setEditIndex] = useState<number | null>(null);
-  const { data: vendorOptions } = useGetVendors<Array<{ id: string; name: string }>>();
-  const vendorOptionsList = convertToOptionList(vendorOptions ?? [], "id", "name");
+  const { data: vendorOptions } =
+    useGetVendors<Array<{ id: string; name: string }>>();
+  const vendorOptionsList = convertToOptionList(
+    vendorOptions ?? [],
+    "id",
+    "name"
+  );
 
   const [items, setItems] = useState<PurchaseOrderItemType[]>([]);
-  const [editItems, setEditItems] = useState<PurchaseOrderItemType | null>(null);
+  const [editItems, setEditItems] = useState<PurchaseOrderItemType | null>(
+    null
+  );
   const [openItems, setOpenItems] = useState(false);
-  const { data: warehouseOptionsList } = useGetWarehouses<Array<{ id: string; name: string }>>();
+  const { data: warehouseOptionsList } =
+    useGetWarehouses<Array<{ id: string; name: string }>>();
 
   const [status, setStatus] = useState<PurchaseOrderStatusType>("Requisition");
 
   const {
     data: locationOptionsList,
     isLoading: locationOptionsListLoading,
-    error: locationOptionsListError
-  } = useGetLocations<Array<{ id: string, name: string }>>();
+    error: locationOptionsListError,
+  } = useGetLocations<Array<{ id: string; name: string }>>();
 
   const PurchaseOrderStatuses: PurchaseOrderStatusType[] = [
     "Requisition",
@@ -210,7 +232,6 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
     }
   }, [nextPoNumberData, form]);
 
-
   function onSubmit(data: PurchaseOrderType) {
     // Add items to the submission data
     const submissionData = {
@@ -272,7 +293,8 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
     form.setValue("subtotal", subtotal);
 
     // Calculate total cost (you can add tax and discount logic here)
-    const total = subtotal + form.getValues("freight") - form.getValues("credit");
+    const total =
+      subtotal + form.getValues("freight") - form.getValues("credit");
     form.setValue("total_cost", total);
   }, [items]);
 
@@ -291,6 +313,7 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
   return (
     <Form {...form}>
       <form
+        id={formId}
         onSubmit={form.handleSubmit(onSubmit, onError)}
         className="space-y-6 w-7/8"
       >
@@ -309,25 +332,27 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
                 <button
                   key={stat}
                   type="button"
-                  className={`p-3 h-fit rounded-md border text-sm font-medium ${status === stat
-                    ? stat === "Requisition"
-                      ? "bg-green-600 text-white"
-                      : stat === "Ordered"
-                        ? "bg-yellow-500 text-white"
-                        : stat === "Partial"
-                          ? "bg-orange-500 text-white"
-                          : "bg-red-600 text-white"
-                    : "bg-white text-gray-700 border-gray-300"
-                    }`}
+                  className={`p-3 h-fit rounded-md border text-sm font-medium ${
+                    status === stat
+                      ? stat === "Requisition"
+                        ? "bg-green-600 text-white"
+                        : stat === "Ordered"
+                          ? "bg-yellow-500 text-white"
+                          : stat === "Partial"
+                            ? "bg-orange-500 text-white"
+                            : "bg-red-600 text-white"
+                      : "bg-white text-gray-700 border-gray-300"
+                  }`}
                   onClick={() => {
                     // You need to map status to status_id here
                     // This is a placeholder - replace with actual logic
-                    const statusIdMap: Record<PurchaseOrderStatusType, string> = {
-                      Requisition: "requisition-id",
-                      Ordered: "ordered-id",
-                      Partial: "partial-id",
-                      Closed: "closed-id",
-                    };
+                    const statusIdMap: Record<PurchaseOrderStatusType, string> =
+                      {
+                        Requisition: "requisition-id",
+                        Ordered: "ordered-id",
+                        Partial: "partial-id",
+                        Closed: "closed-id",
+                      };
                     form.setValue("status_id", statusIdMap[stat]);
                     setStatus(stat);
                   }}
@@ -732,22 +757,24 @@ export default function NewPurchaseOrderForm({ variant }: triggerVariant) {
             </div>
           </div>
         </div>
-        <div className="flex justify-end">
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-            className="min-w-32 my-4 w-full"
-          >
-            {isSubmitting ? (
-              "Creating..."
-            ) : (
-              <>
-                <Save className="mr-2 h-4 w-4" />
-                Create Purchase Order
-              </>
-            )}
-          </Button>
-        </div>
+        {!hideSubmitButton && (
+          <div className="flex justify-end">
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="min-w-32 my-4 w-full"
+            >
+              {isSubmitting ? (
+                "Creating..."
+              ) : (
+                <>
+                  <Save className="mr-2 h-4 w-4" />
+                  Create Purchase Order
+                </>
+              )}
+            </Button>
+          </div>
+        )}
       </form>
     </Form>
   );

@@ -11,11 +11,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { useSheet } from "@/lib/providers/sheet-providers";
 import NewEmployeeForm from "@/components/forms/entities/new-employee-form";
- 
+
 import EmployeeDataTable from "./components/employee-data-table";
-import {
-  useGetLocations,
-} from "@/services/setups/lookups";
+import { useGetLocations } from "@/services/setups/lookups";
 import { useGetEmployeeTypes } from "@/services/setups/employee";
 
 export default function EmployeesPage() {
@@ -92,7 +90,12 @@ export default function EmployeesPage() {
     openSheet({
       title: "Create Employee",
       description: "Fill out the form below to create a new Employee.",
-      content: <NewEmployeeForm />,
+      content: <NewEmployeeForm formId="new-employee-form" hideSubmitButton />,
+      renderActions: (
+        <Button form="new-employee-form" type="submit" variant="primary">
+          Save Employee
+        </Button>
+      ),
     });
   };
 
@@ -138,7 +141,10 @@ export default function EmployeesPage() {
         </div>
       </div>
       <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
-        <EmployeeDataTable locationId={filters.location || undefined} typeId={filters.type || undefined} />
+        <EmployeeDataTable
+          locationId={filters.location || undefined}
+          typeId={filters.type || undefined}
+        />
       </div>
     </div>
   );

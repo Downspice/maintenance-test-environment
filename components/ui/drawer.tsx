@@ -1,118 +1,204 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Drawer as DrawerPrimitive } from "vaul"
+import * as React from "react";
+import {
+  Drawer as AlignDrawer,
+  DrawerRoot as AlignDrawerRoot,
+  DrawerTrigger,
+  DrawerPortal,
+  DrawerClose,
+  DrawerOverlay,
+  DrawerContent as AlignDrawerContent,
+  DrawerHeader,
+  DrawerBody,
+  DrawerTitle,
+  DrawerDescription,
+} from "@/components/align-ui/drawer";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/utils/cn";
 
-import { cn } from "@/lib/shared/utils"
+// ─────────────────────────────────────────────────────────────────────────────
+// Application Drawer Component (components/ui/drawer.tsx)
+// Option B: Clean High-Level Usage with closeable parameter, secondary close
+// button in the footer, and renderActions prop for action buttons.
+// ─────────────────────────────────────────────────────────────────────────────
 
-const Drawer = ({
-  shouldScaleBackground = true,
-  ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Root>) => (
-  <DrawerPrimitive.Root
-    shouldScaleBackground={shouldScaleBackground}
-    {...props}
-  />
-)
-Drawer.displayName = "Drawer"
+interface DrawerFooterProps extends React.HTMLAttributes<HTMLDivElement> {
+  closeable?: boolean;
+  closeText?: string;
+  renderActions?: React.ReactNode | (() => React.ReactNode);
+  actions?: React.ReactNode | (() => React.ReactNode);
+}
 
-const DrawerTrigger = DrawerPrimitive.Trigger
+const DrawerFooter = React.forwardRef<HTMLDivElement, DrawerFooterProps>(
+  (
+    {
+      className,
+      closeable = true,
+      closeText = "Close",
+      renderActions,
+      actions,
+      children,
+      ...props
+    },
+    ref
+  ) => {
+    const actionsToRender = renderActions ?? actions;
 
-const DrawerPortal = DrawerPrimitive.Portal
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "flex items-center justify-end gap-3 px-6 py-4 border-t border-stroke-soft-200 mt-auto shrink-0",
+          className
+        )}
+        {...props}
+      >
+        {closeable && (
+          <DrawerClose asChild>
+            <Button variant="secondary" type="button">
+              {closeText}
+            </Button>
+          </DrawerClose>
+        )}
+        {typeof actionsToRender === "function"
+          ? actionsToRender()
+          : actionsToRender}
+        {children}
+      </div>
+    );
+  }
+);
+DrawerFooter.displayName = "DrawerFooter";
 
-const DrawerClose = DrawerPrimitive.Close
-
-const DrawerOverlay = React.forwardRef<
-  React.ElementRef<typeof DrawerPrimitive.Overlay>,
-  React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Overlay>
->(({ className, ...props }, ref) => (
-  <DrawerPrimitive.Overlay
-    ref={ref}
-    className={cn("fixed inset-0 z-50 bg-black/80", className)}
-    {...props}
-  />
-))
-DrawerOverlay.displayName = DrawerPrimitive.Overlay.displayName
+interface DrawerContentProps extends React.ComponentPropsWithoutRef<
+  typeof AlignDrawerContent
+> {
+  closeable?: boolean;
+}
 
 const DrawerContent = React.forwardRef<
-  React.ElementRef<typeof DrawerPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Content>
->(({ className, children, ...props }, ref) => (
-  <DrawerPortal>
-    <DrawerOverlay />
-    <DrawerPrimitive.Content
-      ref={ref}
-      className={cn(
-        "fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[10px] border bg-background",
-        className
-      )}
-      {...props}
-    >
-      <div className="mx-auto mt-4 h-2 w-[100px] rounded-full bg-muted" />
-      {children}
-    </DrawerPrimitive.Content>
-  </DrawerPortal>
-))
-DrawerContent.displayName = "DrawerContent"
-
-const DrawerHeader = ({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={cn("grid gap-1.5 p-4 text-center sm:text-left", className)}
-    {...props}
-  />
-)
-DrawerHeader.displayName = "DrawerHeader"
-
-const DrawerFooter = ({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={cn("mt-auto flex flex-col gap-2 p-4", className)}
-    {...props}
-  />
-)
-DrawerFooter.displayName = "DrawerFooter"
-
-const DrawerTitle = React.forwardRef<
-  React.ElementRef<typeof DrawerPrimitive.Title>,
-  React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Title>
->(({ className, ...props }, ref) => (
-  <DrawerPrimitive.Title
+  React.ElementRef<typeof AlignDrawerContent>,
+  DrawerContentProps
+>(({ closeable = true, showCloseButton, ...props }, ref) => (
+  <AlignDrawerContent
     ref={ref}
-    className={cn(
-      "text-lg font-semibold leading-none tracking-tight",
-      className
-    )}
+    showCloseButton={showCloseButton ?? closeable}
     {...props}
   />
-))
-DrawerTitle.displayName = DrawerPrimitive.Title.displayName
+));
+DrawerContent.displayName = "DrawerContent";
 
-const DrawerDescription = React.forwardRef<
-  React.ElementRef<typeof DrawerPrimitive.Description>,
-  React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Description>
->(({ className, ...props }, ref) => (
-  <DrawerPrimitive.Description
-    ref={ref}
-    className={cn("text-sm text-muted-foreground", className)}
-    {...props}
-  />
-))
-DrawerDescription.displayName = DrawerPrimitive.Description.displayName
+interface DrawerProps extends React.ComponentPropsWithoutRef<
+  typeof AlignDrawer
+> {
+  closeable?: boolean;
+  renderActions?: React.ReactNode | (() => React.ReactNode);
+  actions?: React.ReactNode | (() => React.ReactNode);
+  trigger?: React.ReactNode;
+  title?: React.ReactNode;
+  description?: React.ReactNode;
+  closeText?: string;
+  side?: "right" | "left" | "top" | "bottom";
+  className?: string;
+  contentClassName?: string;
+  bodyClassName?: string;
+  footerClassName?: string;
+  headerClassName?: string;
+  footer?: React.ReactNode;
+  showFooter?: boolean;
+  onInteractOutside?: React.ComponentPropsWithoutRef<
+    typeof AlignDrawerContent
+  >["onInteractOutside"];
+  onEscapeKeyDown?: React.ComponentPropsWithoutRef<
+    typeof AlignDrawerContent
+  >["onEscapeKeyDown"];
+}
+
+const DrawerComponent = ({
+  closeable = true,
+  renderActions,
+  actions,
+  trigger,
+  title,
+  description,
+  closeText = "Close",
+  side = "right",
+  className,
+  contentClassName,
+  bodyClassName,
+  footerClassName,
+  headerClassName,
+  footer,
+  showFooter = true,
+  onInteractOutside,
+  onEscapeKeyDown,
+  children,
+  ...rootProps
+}: DrawerProps) => {
+  return (
+    <AlignDrawer {...rootProps}>
+      {trigger && <DrawerTrigger asChild>{trigger}</DrawerTrigger>}
+      <DrawerContent
+        side={side}
+        closeable={closeable}
+        className={cn(contentClassName, className)}
+        onInteractOutside={onInteractOutside}
+        onEscapeKeyDown={onEscapeKeyDown}
+      >
+        {(title || description) && (
+          <DrawerHeader className={headerClassName}>
+            {title && <DrawerTitle>{title}</DrawerTitle>}
+            {description && (
+              <DrawerDescription>{description}</DrawerDescription>
+            )}
+          </DrawerHeader>
+        )}
+        <DrawerBody className={bodyClassName}>{children}</DrawerBody>
+        {showFooter &&
+          (footer !== undefined ? (
+            footer
+          ) : (
+            <DrawerFooter
+              closeable={closeable}
+              renderActions={renderActions ?? actions}
+              closeText={closeText}
+              className={footerClassName}
+            />
+          ))}
+      </DrawerContent>
+    </AlignDrawer>
+  );
+};
+
+const Drawer = Object.assign(DrawerComponent, {
+  Root: AlignDrawerRoot,
+  Trigger: DrawerTrigger,
+  Portal: DrawerPortal,
+  Close: DrawerClose,
+  Overlay: DrawerOverlay,
+  Content: DrawerContent,
+  Header: DrawerHeader,
+  Body: DrawerBody,
+  Footer: DrawerFooter,
+  Title: DrawerTitle,
+  Description: DrawerDescription,
+});
+
+const DrawerRoot = AlignDrawerRoot;
 
 export {
   Drawer,
-  DrawerPortal,
-  DrawerOverlay,
+  DrawerRoot,
   DrawerTrigger,
+  DrawerPortal,
   DrawerClose,
+  DrawerOverlay,
   DrawerContent,
   DrawerHeader,
+  DrawerBody,
   DrawerFooter,
   DrawerTitle,
   DrawerDescription,
-}
+};
+export type { DrawerContentProps, DrawerFooterProps, DrawerProps };

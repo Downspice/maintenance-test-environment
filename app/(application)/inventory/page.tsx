@@ -13,9 +13,7 @@ import { Button } from "@/components/ui/button";
 import { useSheet } from "@/lib/providers/sheet-providers";
 import InventoryDataTable from "./table/inventory-data-table";
 import NewInventory from "@/components/forms/entities/new-inventory-form";
-import {
-  useGetLocations,
-} from "@/services/setups/lookups";
+import { useGetLocations } from "@/services/setups/lookups";
 
 const FilterOptions = [
   { name: "All Parts", id: "all" },
@@ -25,9 +23,8 @@ const FilterOptions = [
 ];
 
 export default function InventoryPage() {
-  const {
-    data: locationOptionsList,
-  } = useGetLocations<Array<{ id: string; name: string }>>();
+  const { data: locationOptionsList } =
+    useGetLocations<Array<{ id: string; name: string }>>();
 
   const [filters, setFilters] = useState({
     filterType: "all",
@@ -82,7 +79,12 @@ export default function InventoryPage() {
     openSheet({
       title: "Create Inventory",
       description: "Fill out the form below to create a new Inventory.",
-      content: <NewInventory />,
+      content: <NewInventory formId="new-inventory-form" hideSubmitButton />,
+      renderActions: (
+        <Button form="new-inventory-form" type="submit" variant="primary">
+          Save Inventory
+        </Button>
+      ),
     });
   };
 
@@ -96,7 +98,9 @@ export default function InventoryPage() {
       <div className="flex justify-between items-center space-x-4 shrink-0">
         <div className="flex flex-row space-x-0.5">
           {/* Status Filter */}
-          <Select onValueChange={(val) => handleSelectChange("filterType", val)}>
+          <Select
+            onValueChange={(val) => handleSelectChange("filterType", val)}
+          >
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="All Parts" />
             </SelectTrigger>
@@ -131,7 +135,9 @@ export default function InventoryPage() {
       <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
         <InventoryDataTable
           locationId={filters.location || undefined}
-          filterType={filters.filterType === "all" ? undefined : filters.filterType}
+          filterType={
+            filters.filterType === "all" ? undefined : filters.filterType
+          }
         />
       </div>
     </div>

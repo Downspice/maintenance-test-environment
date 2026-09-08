@@ -3,54 +3,50 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import {
-    Sheet,
-    SheetContent,
-    SheetDescription,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger,
-} from "@/components/ui/sheet";
+import { Drawer } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ActualWorkOrderForm } from "@/components/forms/entities/work-order-form";
 
 interface TriggerVariant {
-    variant?: "icon" | "default";
+  variant?: "icon" | "default";
 }
 
 export default function WorkOrderFormWrapper({ variant }: TriggerVariant) {
-    const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false);
 
-    return (
-        <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger asChild>
-                <Button
-                    variant={variant === "icon" ? "ghost" : "primary"}
-                    size={variant === "icon" ? "icon" : "md"}
-                    className={variant === "icon" ? "size-6 p-0" : undefined}
-                >
-                    {variant === "icon" ? (
-                        <Plus className="size-4" />
-                    ) : (
-                        <>
-                            <Plus className="size-4 mr-2" />
-                            Create New Work Order
-                        </>
-                    )}
-                </Button>
-            </SheetTrigger>
-            <SheetContent className="w-3/4">
-                <SheetHeader>
-                    <SheetTitle>Create New Work Order</SheetTitle>
-                    <SheetDescription>
-                        Fill out the form below to create a new work order.
-                    </SheetDescription>
-                </SheetHeader>
-
-                <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
-                    <ActualWorkOrderForm />
-                </ScrollArea>
-            </SheetContent>
-        </Sheet>
-    );
+  return (
+    <Drawer
+      open={open}
+      onOpenChange={setOpen}
+      trigger={
+        <Button
+          variant={variant === "icon" ? "ghost" : "primary"}
+          size={variant === "icon" ? "icon" : "md"}
+          className={variant === "icon" ? "size-6 p-0" : undefined}
+        >
+          {variant === "icon" ? (
+            <Plus className="size-4" />
+          ) : (
+            <>
+              <Plus className="size-4 mr-2" />
+              Create New Work Order
+            </>
+          )}
+        </Button>
+      }
+      title="Create New Work Order"
+      description="Fill out the form below to create a new work order."
+      closeable={true}
+      renderActions={
+        <Button form="actual-work-order-form" type="submit" variant="primary">
+          Create Work Order
+        </Button>
+      }
+      className="w-3/4"
+    >
+      <ScrollArea className="h-[calc(100vh-160px)] pr-4">
+        <ActualWorkOrderForm formId="actual-work-order-form" hideSubmitButton />
+      </ScrollArea>
+    </Drawer>
+  );
 }

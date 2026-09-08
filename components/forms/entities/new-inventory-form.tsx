@@ -12,7 +12,10 @@ import SelectWrapper from "../fields/SelectWrapper";
 import CustomFieldsWrapper from "../fields/CustomFieldsWrapper";
 import { ComboboxFieldWrapper } from "../fields/ComboboxWrapper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { inventoryMovement, partOptions } from "@/lib/domains/inventory/mock-data";
+import {
+  inventoryMovement,
+  partOptions,
+} from "@/lib/domains/inventory/mock-data";
 import SingleCheckboxWrapper from "../fields/SingleCheckboxWrapper";
 import Fieldset from "@/components/customUI/fieldset";
 import FileUploadWrapper from "../fields/FileUploadWrapper";
@@ -29,14 +32,12 @@ import {
   useGetMarkupTypes,
   useGetWarehouses,
 } from "@/services/setups/inventory";
-import {
-  useGetVendors,
-} from "@/services/setups/vendor";
+import { useGetVendors } from "@/services/setups/vendor";
 import { GenericObject } from "@/types/types";
 
 // Updated schema to match backend structure
 export const InventorySchema = z.object({
-  id:z.string().optional(),
+  id: z.string().optional(),
   part_number: z.string().min(1, "Part Number is required"),
   name: z.string().min(1, "Name is required"),
   description: z.string().min(1, "Description is required"),
@@ -116,7 +117,13 @@ export const InventorySchema = z.object({
   Attachments: z.any().optional(),
 });
 
-export default function NewInventory() {
+export default function NewInventory({
+  formId = "new-inventory-form",
+  hideSubmitButton,
+}: {
+  formId?: string;
+  hideSubmitButton?: boolean;
+} = {}) {
   const { data: equipmentManufacturerOptions } =
     useGetInventoryManufacturers<GenericObject[]>();
   const { data: unitOptions } = useGetInventoryUnitTypes<GenericObject[]>();
@@ -164,6 +171,7 @@ export default function NewInventory() {
     <div>
       <Form {...inventoryForm}>
         <form
+          id={formId}
           onSubmit={inventoryForm.handleSubmit(
             (data) => handleSubmit(data),
             (errors) => {
@@ -289,7 +297,10 @@ export default function NewInventory() {
                         control={inventoryForm.control}
                         name={`markUp`}
                         label="Markup Type"
-                        options={[...markupTypeOptions??[],{id:"none",name:"none"}]}
+                        options={[
+                          ...(markupTypeOptions ?? []),
+                          { id: "none", name: "none" },
+                        ]}
                         required
                       />
                       {inventoryForm.watch("markUp") ===
@@ -417,11 +428,13 @@ export default function NewInventory() {
               />
             </TabsContent>
           </Tabs>
-          <div className="flex justify-between gap-x-4 my-8 w-full">
-            <Button type="submit" className="w-full">
-              <GitPullRequestArrow className="mr-2" /> Create Inventory
-            </Button>
-          </div>
+          {!hideSubmitButton && (
+            <div className="flex justify-between gap-x-4 my-8 w-full">
+              <Button type="submit" className="w-full">
+                <GitPullRequestArrow className="mr-2" /> Create Inventory
+              </Button>
+            </div>
+          )}
         </form>
       </Form>
     </div>

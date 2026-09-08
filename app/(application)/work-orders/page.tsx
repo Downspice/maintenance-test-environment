@@ -13,19 +13,15 @@ import { Button } from "@/components/ui/button";
 import { useSheet } from "@/lib/providers/sheet-providers";
 import WorkOrderDataTable from "./components/table/work-order-data-table";
 import { ActualWorkOrderForm } from "@/components/forms/entities/work-order-form";
-import {
-  useGetLocations,
-} from "@/services/setups/lookups";
+import { useGetLocations } from "@/services/setups/lookups";
 import { useGetWorkOrderStatuses } from "@/services/setups/workOrder";
 
 export default function WorkOrdersPage() {
-  const {
-    data: locationOptionsList,
-  } = useGetLocations<Array<{ id: string; name: string }>>();
+  const { data: locationOptionsList } =
+    useGetLocations<Array<{ id: string; name: string }>>();
 
-  const {
-    data: statusOptionsList,
-  } = useGetWorkOrderStatuses<Array<{ id: string; name: string }>>();
+  const { data: statusOptionsList } =
+    useGetWorkOrderStatuses<Array<{ id: string; name: string }>>();
 
   const [filters, setFilters] = useState({
     status: "",
@@ -58,10 +54,7 @@ export default function WorkOrdersPage() {
     console.log("Generated URL:", url);
   };
 
-  const handleSelectChange = (
-    key: "status" | "location",
-    value: string
-  ) => {
+  const handleSelectChange = (key: "status" | "location", value: string) => {
     const updated = { ...filters, [key]: value };
     setFilters(updated);
     buildURL(updated);
@@ -80,7 +73,14 @@ export default function WorkOrdersPage() {
     openSheet({
       title: "Create New Work Order",
       description: "Fill out the form below to create a new work order.",
-      content: <ActualWorkOrderForm />,
+      content: (
+        <ActualWorkOrderForm formId="actual-work-order-form" hideSubmitButton />
+      ),
+      renderActions: (
+        <Button form="actual-work-order-form" type="submit" variant="primary">
+          Create Work Order
+        </Button>
+      ),
     });
   };
 
@@ -129,7 +129,9 @@ export default function WorkOrdersPage() {
       <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
         <WorkOrderDataTable
           locationId={filters.location || undefined}
-          statusId={filters.status === "all" ? undefined : filters.status || undefined}
+          statusId={
+            filters.status === "all" ? undefined : filters.status || undefined
+          }
         />
       </div>
     </div>

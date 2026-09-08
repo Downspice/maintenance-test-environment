@@ -12,9 +12,7 @@ import { Button } from "@/components/ui/button";
 import { useSheet } from "@/lib/providers/sheet-providers";
 import PurchaseOrderDataTable from "./table/purchase-order-data-table";
 import NewPurchaseOrderForm from "@/components/forms/entities/new-purchase-order-form";
-import {
-  useGetLocations,
-} from "@/services/setups/lookups";
+import { useGetLocations } from "@/services/setups/lookups";
 
 const ActiveDropdown = [
   { name: "Open", id: "my_open" },
@@ -87,7 +85,17 @@ export default function PurchaseOrdersPage() {
     openSheet({
       title: "Create Purchase Order",
       description: "Fill out the form below to create a new Purchase Order.",
-      content: <NewPurchaseOrderForm />,
+      content: (
+        <NewPurchaseOrderForm
+          formId="new-purchase-order-form"
+          hideSubmitButton
+        />
+      ),
+      renderActions: (
+        <Button form="new-purchase-order-form" type="submit" variant="primary">
+          Save Purchase Order
+        </Button>
+      ),
     });
   };
 
@@ -137,7 +145,9 @@ export default function PurchaseOrdersPage() {
       <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
         <PurchaseOrderDataTable
           locationId={filters.location || undefined}
-          statusId={filters.status === "all" ? undefined : filters.status || undefined}
+          statusId={
+            filters.status === "all" ? undefined : filters.status || undefined
+          }
         />
       </div>
     </div>

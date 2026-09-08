@@ -1,20 +1,22 @@
 "use client";
 
 import { createContext, useContext, useState, type ReactNode } from "react";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Drawer } from "@/components/ui/drawer";
 import { DialogProvider } from "@/lib/providers/dialog-provider";
+import { cn } from "@/utils/cn";
 
 type SheetContentType = {
-  title: string;
+  title?: string;
   description?: string;
   content: ReactNode;
+  className?: string;
+  side?: "top" | "bottom" | "left" | "right";
+  closeable?: boolean;
+  renderActions?: React.ReactNode | (() => React.ReactNode);
+  actions?: React.ReactNode | (() => React.ReactNode);
+  closeText?: string;
+  footer?: React.ReactNode;
+  showFooter?: boolean;
 };
 
 type SheetContextType = {
@@ -38,7 +40,7 @@ export function SheetProvider({ children }: { children: ReactNode }) {
 
   const closeSheet = () => {
     setOpen(false);
-    // We don't immediately clear content so the sheet can animate out nicely
+    // We don't immediately clear content so the drawer can animate out nicely
     setTimeout(() => {
       setContent(null);
     }, 300);
@@ -47,32 +49,28 @@ export function SheetProvider({ children }: { children: ReactNode }) {
   return (
     <SheetContext.Provider value={{ open, content, openSheet, closeSheet }}>
       {children}
-      <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent
-          onInteractOutside={(e) => {
-            // Prevent closing the sheet if the dialog is open
-            if (isDialogOpen) {
-              e.preventDefault();
-            }
-          }}
-        >
-          <DialogProvider onOpenChange={setIsDialogOpen}>
-            <ScrollArea className="h-full px-5">
-              {content && (
-                <>
-                  <SheetHeader>
-                    <SheetTitle>{content.title}</SheetTitle>
-                    {content.description && (
-                      <SheetDescription>{content.description}</SheetDescription>
-                    )}
-                  </SheetHeader>
-                  <div className="mt-6">{content.content}</div>
-                </>
-              )}
-            </ScrollArea>
-          </DialogProvider>
-        </SheetContent>
-      </Sheet>
+      <Drawer
+        open={open}
+        onOpenChange={setOpen}
+        title={content?.title}
+        description={content?.description}
+        closeable={content?.closeable ?? true}
+        renderActions={content?.renderActions ?? content?.actions}
+        closeText={content?.closeText}
+        footer={content?.footer}
+        showFooter={content?.showFooter}
+        side={content?.side}
+        className={cn("w-full sm:max-w-2xl lg:max-w-3xl", content?.className)}
+        onInteractOutside={(e) => {
+          if (isDialogOpen) {
+            e.preventDefault();
+          }
+        }}
+      >
+        <DialogProvider onOpenChange={setIsDialogOpen}>
+          {content?.content}
+        </DialogProvider>
+      </Drawer>
     </SheetContext.Provider>
   );
 }

@@ -12,10 +12,7 @@ import { Button } from "@/components/ui/button";
 import { useSheet } from "@/lib/providers/sheet-providers";
 import CustomerDataTable from "./table/customer-data-table";
 import NewCustomer from "@/components/forms/entities/new-customer-form";
-import {
-  useGetLocations,
-  useGetVendorTypes,
-} from "@/services/setups/lookups";
+import { useGetLocations, useGetVendorTypes } from "@/services/setups/lookups";
 
 export default function CustomersPage() {
   const {
@@ -90,7 +87,12 @@ export default function CustomersPage() {
     openSheet({
       title: "Create Customer",
       description: "Fill out the form below to create a new customer.",
-      content: <NewCustomer />,
+      content: <NewCustomer formId="new-customer-form" hideSubmitButton />,
+      renderActions: (
+        <Button form="new-customer-form" type="submit" variant="primary">
+          Save Customer
+        </Button>
+      ),
     });
   };
 
@@ -136,7 +138,10 @@ export default function CustomersPage() {
         </div>
       </div>
       <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
-        <CustomerDataTable locationId={filters.location || undefined} typeId={filters.type || undefined} />
+        <CustomerDataTable
+          locationId={filters.location || undefined}
+          typeId={filters.type || undefined}
+        />
       </div>
     </div>
   );

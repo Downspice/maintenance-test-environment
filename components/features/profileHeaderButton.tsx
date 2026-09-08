@@ -7,7 +7,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Separator } from "../ui/separator";
-import { Avatar, AvatarFallback } from "../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { toast } from "sonner";
 const genericDropdown = () => {
   toast("did something");
@@ -27,8 +27,8 @@ export default function HeaderProfileButton() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="secondary">
-          <Avatar>
-            {/* <AvatarImage src="https://github.com/shffadcn.png" alt="@shadcn" /> */}
+          <Avatar size="sm">
+            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
             <AvatarFallback>YS</AvatarFallback>
           </Avatar>{" "}
           <span className="text-nowrap">Mr. Yaw Sarfo</span>
