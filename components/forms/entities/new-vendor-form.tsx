@@ -2,8 +2,7 @@
 
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, type Control } from "react-hook-form";
-import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { GitPullRequestArrow } from "lucide-react";
@@ -12,8 +11,8 @@ import { toast } from "sonner";
 import InputWrapper from "../fields/InputWrapper";
 import { ChoiceListComboboxField } from "../fields/ChoiceListComboboxWrapper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import CustomFieldsWrapper from "../fields/CustomFieldsWrapper";
 import FileUploadWrapper from "../fields/FileUploadWrapper";
+import CustomFieldRow from "../fields/CustomFieldRow";
 import { useAddVendor } from "@/services/setups/vendor";
 
 export type VendorFormInput = z.input<typeof vendorSchema>;
@@ -44,7 +43,15 @@ export const vendorSchema = z.object({
 
   notes: z.coerce.string().optional(),
 
-  others: z.any().optional(), // Can refine later
+  others: z
+    .array(
+      z.object({
+        name: z.string().optional(),
+        value: z.string().optional(),
+      })
+    )
+    .optional()
+    .or(z.any()),
 
   // Contact Tab
   phone_one: z
@@ -81,17 +88,17 @@ export default function NewVendor({
   formId = "new-vendor-form",
   hideSubmitButton,
 }: NewVendorProps = {}) {
-  const [customFields, setCustomFields] = useState<
-    { name: string; id: string }[]
-  >([]);
-
   const vendorForm = useForm<VendorFormInput, unknown, VendorFormValues>({
     resolver: zodResolver(vendorSchema),
     defaultValues: {
       name: "",
+      others: [
+        { name: "", value: "" },
+        { name: "", value: "" },
+      ],
     },
   });
-  const formControl = vendorForm.control as Control<any>;
+  const formControl = vendorForm.control;
 
   const { mutateAsync, isPending } = useAddVendor();
 
@@ -99,24 +106,22 @@ export default function NewVendor({
   const handleSubmit = async (data: VendorFormValues) => {
     console.log("Submitting data:", data);
 
-    // try {
-    // 4. AWAIT the mutateAsync call, passing the validated 'data' object
-    const res = (await mutateAsync(data)) as { message?: string };
+    const validOthers = Array.isArray(data.others)
+      ? data.others.filter(
+          (item) => item && (item.name?.trim() || item.value?.trim())
+        )
+      : [];
+
+    const payload = {
+      ...data,
+      others: validOthers,
+    };
+
+    const res = (await mutateAsync(
+      payload as unknown as Parameters<typeof mutateAsync>[0]
+    )) as { message?: string };
     toast.success(res?.message ?? "Vendor created.");
     vendorForm.reset(); // Reset form state on success
-
-    // In a real application, you would likely close the sheet/modal here
-
-    // } catch (error: any) {
-    //   // 6. Handle error and feedback using the try/catch block
-    //   console.error("Mutation failed:", error);
-    //   const errorMessage = error?.response?.data?.message || 'Failed to create vendor.';
-    //   toast.error(errorMessage);
-    // }
-  };
-
-  const addCustomField = () => {
-    setCustomFields([...customFields, { name: "", id: "" }]);
   };
 
   return (
@@ -177,7 +182,7 @@ export default function NewVendor({
                   type="text"
                 />
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-x-4 gap-y-1">
                   <div className="col-span-1">
                     <InputWrapper
                       control={formControl}
@@ -212,7 +217,6 @@ export default function NewVendor({
                       type="text"
                     />
                   </div>
-                  <div className="col-span-1"></div>
                 </div>
                 <ChoiceListComboboxField
                   control={formControl}
@@ -258,10 +262,15 @@ export default function NewVendor({
                     rows={4}
                   />
                 </div>
-                <CustomFieldsWrapper
+                <CustomFieldRow
                   control={formControl}
-                  name="others"
-                  label="Custom Fields"
+                  nameField="others.0.name"
+                  valueField="others.0.value"
+                />
+                <CustomFieldRow
+                  control={formControl}
+                  nameField="others.1.name"
+                  valueField="others.1.value"
                 />
               </div>
             </TabsContent>

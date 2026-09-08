@@ -12,8 +12,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import InputWrapper from "@/components/forms/fields/InputWrapper";
 import { ChoiceListComboboxField } from "@/components/forms/fields/ChoiceListComboboxWrapper";
 import TextareaWrapper from "@/components/forms/fields/TextareaWrapper";
-import CustomFieldsWrapper from "@/components/forms/fields/CustomFieldsWrapper";
 import FileUploadWrapper from "@/components/forms/fields/FileUploadWrapper";
+import CustomFieldRow from "@/components/forms/fields/CustomFieldRow";
 import {
   Sheet,
   SheetContent,
@@ -22,13 +22,8 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  useGetVendor,
-  useUpdateVendor,
-} from "@/services/setups/vendor";
-import {
-  vendorSchema,
-} from "@/components/forms/entities/new-vendor-form";
+import { useGetVendor, useUpdateVendor } from "@/services/setups/vendor";
+import { vendorSchema } from "@/components/forms/entities/new-vendor-form";
 import { VendorTableInterface } from "@/lib/domains/vendor/vendor-data";
 import { deepCleanNulls } from "@/lib/shared/utils";
 
@@ -91,9 +86,32 @@ export default function EditVendor({
       billing_rate:
         vendorDetails.billing_rate != null
           ? String(vendorDetails.billing_rate)
-          : initialData.billing_rate ?? "",
+          : (initialData.billing_rate ?? ""),
       notes: vendorDetails.notes ?? initialData.notes ?? "",
-      others: vendorDetails.others ?? (initialData as any).others ?? {},
+      others: [
+        {
+          name:
+            Array.isArray(vendorDetails.others) && vendorDetails.others[0]?.name
+              ? vendorDetails.others[0].name
+              : "",
+          value:
+            Array.isArray(vendorDetails.others) &&
+            vendorDetails.others[0]?.value
+              ? vendorDetails.others[0].value
+              : "",
+        },
+        {
+          name:
+            Array.isArray(vendorDetails.others) && vendorDetails.others[1]?.name
+              ? vendorDetails.others[1].name
+              : "",
+          value:
+            Array.isArray(vendorDetails.others) &&
+            vendorDetails.others[1]?.value
+              ? vendorDetails.others[1].value
+              : "",
+        },
+      ],
       phone_one:
         vendorDetails.vendor_contact?.phone_one ??
         initialData.vendor_contact?.phone_one ??
@@ -103,7 +121,9 @@ export default function EditVendor({
         initialData.vendor_contact?.phone_two ??
         "",
       fax:
-        vendorDetails.vendor_contact?.fax ?? initialData.vendor_contact?.fax ?? "",
+        vendorDetails.vendor_contact?.fax ??
+        initialData.vendor_contact?.fax ??
+        "",
       email:
         vendorDetails.vendor_contact?.email ??
         initialData.vendor_contact?.email ??
@@ -120,11 +140,20 @@ export default function EditVendor({
   const { mutateAsync, isPending } = useUpdateVendor();
   async function handleSubmit(formData: z.infer<typeof vendorSchema>) {
     try {
+      const validOthers = Array.isArray(formData.others)
+        ? formData.others.filter(
+            (item: any) => item && (item.name?.trim() || item.value?.trim())
+          )
+        : [];
+
       const payload = {
         ...formData,
         id: formData.id ?? vendorDetails?.id ?? initialData.id,
+        others: validOthers,
       };
-      const res = await mutateAsync(payload);
+      const res = await mutateAsync(
+        payload as unknown as Parameters<typeof mutateAsync>[0]
+      );
       toast.success((res as any)?.message ?? "Edited successfully!");
       vendorForm.reset();
       setOpen(false);
@@ -186,7 +215,7 @@ export default function EditVendor({
                       label="Address"
                       type="text"
                     />
-                    <div className="grid grid-cols-2 gap-1">
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-1">
                       <div className="col-span-1">
                         <InputWrapper
                           control={vendorForm.control}
@@ -219,7 +248,6 @@ export default function EditVendor({
                           type="text"
                         />
                       </div>
-                      <div className="col-span-1"></div>
                     </div>
                     <ChoiceListComboboxField
                       control={vendorForm.control}
@@ -265,10 +293,15 @@ export default function EditVendor({
                         rows={4}
                       />
                     </div>
-                    <CustomFieldsWrapper
+                    <CustomFieldRow
                       control={vendorForm.control}
-                      name="others"
-                      label="Custom Fields"
+                      nameField="others.0.name"
+                      valueField="others.0.value"
+                    />
+                    <CustomFieldRow
+                      control={vendorForm.control}
+                      nameField="others.1.name"
+                      valueField="others.1.value"
                     />
                   </div>
                 </TabsContent>
