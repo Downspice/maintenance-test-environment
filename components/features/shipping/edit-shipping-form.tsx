@@ -35,17 +35,17 @@ export const vendorSchema = z.object({
   notes: z.string().optional(),
 });
 
-  export default function EditShipToForm({
-    children,
-    data,
-  }: {
-    children: React.ReactNode;
-    data: any;
-  }) {
-      const { data: categoryOptions } = useGetInventoryCategories();
-      const { data: statusOptions } = useGetEquipmentStatuses();
-      
-    
+export default function EditShipToForm({
+  children,
+  data,
+}: {
+  children: React.ReactNode;
+  data: any;
+}) {
+  const { data: categoryOptions } = useGetInventoryCategories();
+  const { data: statusOptions } = useGetEquipmentStatuses();
+
+
   const [customFields, setCustomFields] = useState<
     { name: string; id: string }[]
   >([]);
@@ -218,7 +218,7 @@ export const vendorSchema = z.object({
                     </div>
                     <CustomFieldsWrapper
                       control={vendorForm.control}
-                       name="others"
+                      name="others"
                       label="Custom Fields"
                     />
                   </div>
@@ -228,7 +228,7 @@ export const vendorSchema = z.object({
                     <InputWrapper
                       control={vendorForm.control}
                       name="phone_one"
-                      label="Phone 1:"
+                      label="Phone 1"
                       type="text"
                       required
                       value={""}
@@ -236,7 +236,7 @@ export const vendorSchema = z.object({
                     <InputWrapper
                       control={vendorForm.control}
                       name="phone_two"
-                      label="Phone 2:"
+                      label="Phone 2"
                       type="text"
                       value={""}
                     />

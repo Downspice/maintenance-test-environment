@@ -47,7 +47,7 @@ export default function NewShipToForm() {
   });
   const { data: categoryOptions } = useGetInventoryCategories();
   const { data: statusOptions } = useGetEquipmentStatuses();
-  
+
 
   async function handleSubmit(data: z.infer<typeof vendorSchema>) {
     console.log(data);
@@ -64,7 +64,7 @@ export default function NewShipToForm() {
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <div className="flex justify-between w-full">
-            <div></div>
+          <div></div>
           <Button>
             <Plus />
             New
@@ -219,7 +219,7 @@ export default function NewShipToForm() {
                     </div>
                     <CustomFieldsWrapper
                       control={vendorForm.control}
-                       name="others"
+                      name="others"
                       label="Custom Fields"
                     />
                   </div>
@@ -229,7 +229,7 @@ export default function NewShipToForm() {
                     <InputWrapper
                       control={vendorForm.control}
                       name="phone_one"
-                      label="Phone 1:"
+                      label="Phone 1"
                       type="text"
                       required
                       value={""}
@@ -237,7 +237,7 @@ export default function NewShipToForm() {
                     <InputWrapper
                       control={vendorForm.control}
                       name="phone_two"
-                      label="Phone 2:"
+                      label="Phone 2"
                       type="text"
                       value={""}
                     />

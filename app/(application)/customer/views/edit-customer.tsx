@@ -34,7 +34,7 @@ import {
   useUpdateCustomer,
   useGetCustomer,
 } from "@/services/setups/customer";
-import {deepCleanNulls} from "@/lib/shared/utils"
+import { deepCleanNulls } from "@/lib/shared/utils"
 import { useGetInventoryCategories } from "@/services/setups/inventory";
 import { useEffect } from "react";
 export default function EditCustomer({
@@ -44,10 +44,10 @@ export default function EditCustomer({
   children: React.ReactNode;
   data: CustomerTableDataInterface;
 }) {
-    const { data: categoryOptions } = useGetInventoryCategories();
-  
+  const { data: categoryOptions } = useGetInventoryCategories();
+
   const [open, setOpen] = useState(false);
-  
+
   // Fetch full customer details by ID
   const { data: customerDetails, isLoading: isLoadingCustomer } = useGetCustomer<CustomerTableDataInterface & { customer_shipping?: any; discount_type?: string; discount_amount?: string }>(data.id, {
     enabled: open && !!data.id,
@@ -111,60 +111,60 @@ export default function EditCustomer({
         // Map is_same from customer_shipping
         is_same: customerDetails.customer_shipping?.is_same || false,
       };
-      
+
       CustomerForm.reset(deepCleanNulls(formData));
     }
   }, [customerDetails, open]);
   const {
-      data: vendorTypeOptions,
-      isLoading,
-      error: vendorTypesError,
-    } = useGetVendorTypes<Array<{ id: string; name: string }>>();
-  
-    const {
-      data: locationOptionsList,
-      isLoading: locationOptionsListLoading,
-      error: locationOptionsListError,
-    } = useGetLocations<Array<{ id: string; name: string }>>();
-  const { 
-    data: statusOptions, 
-    isLoading:statusOptionsLoading, 
+    data: vendorTypeOptions,
+    isLoading,
+    error: vendorTypesError,
+  } = useGetVendorTypes<Array<{ id: string; name: string }>>();
+
+  const {
+    data: locationOptionsList,
+    isLoading: locationOptionsListLoading,
+    error: locationOptionsListError,
+  } = useGetLocations<Array<{ id: string; name: string }>>();
+  const {
+    data: statusOptions,
+    isLoading: statusOptionsLoading,
     error: statusOptionsError
   } = useGetStatusOnes<Array<{ id: string, name: string }>>();
-    const {
-      data: termsOptionsList,
-      isLoading: termsOptionsListLoading,
-      error: termsOptionsListError,
-    } = useGetPurchaseOrderTerms<Array<{ id: string; name: string }>>();
-  
- 
+  const {
+    data: termsOptionsList,
+    isLoading: termsOptionsListLoading,
+    error: termsOptionsListError,
+  } = useGetPurchaseOrderTerms<Array<{ id: string; name: string }>>();
+
+
   const { mutateAsync, isPending } = useUpdateCustomer();
-    async function handleSubmit(formData: z.infer<typeof customerSchema>) {
-      console.log(formData);
-      
-      // If is_same is true, clear shipping fields
-      if (formData.is_same) {
-        formData.shipping = {
-          ...formData.shipping,
-          company_name: "",
-          contact: "",
-          address: "",
-          city: "",
-          state: "",
-          postal_code: "",
-          country: "",
-          phone_one: "",
-          fax: "",
-          email: "",
-        };
-      }
-      
-      // Here you would typically send the data to your API
-      const res = await mutateAsync(formData as CustomerInterface & { id: string });
-      toast.success((res as any)?.message || "Edited successfully!");
-      CustomerForm.reset();
+  async function handleSubmit(formData: z.infer<typeof customerSchema>) {
+    console.log(formData);
+
+    // If is_same is true, clear shipping fields
+    if (formData.is_same) {
+      formData.shipping = {
+        ...formData.shipping,
+        company_name: "",
+        contact: "",
+        address: "",
+        city: "",
+        state: "",
+        postal_code: "",
+        country: "",
+        phone_one: "",
+        fax: "",
+        email: "",
+      };
     }
-  
+
+    // Here you would typically send the data to your API
+    const res = await mutateAsync(formData as CustomerInterface & { id: string });
+    toast.success((res as any)?.message || "Edited successfully!");
+    CustomerForm.reset();
+  }
+
 
   const watchdiscount_type = CustomerForm.watch("discount_type");
   const watchIsSame = CustomerForm.watch("is_same");
@@ -213,7 +213,7 @@ export default function EditCustomer({
                         type="text"
                         value={""}
                       />
-        
+
                       <InputWrapper
                         control={CustomerForm.control}
                         name="address"
@@ -221,7 +221,7 @@ export default function EditCustomer({
                         type="text"
                         value={""}
                       />
-                      
+
                       <div className="grid grid-cols-2 gap-4">
                         <div className="col-span-1">
                           <InputWrapper
@@ -262,14 +262,14 @@ export default function EditCustomer({
                         </div>
                         <div className="col-span-1"></div>
                       </div>
-                      
+
                       <FormSubheader header="Contact" />
                       <div className="grid grid-cols-2 gap-1">
                         <div className="col-span-1">
                           <InputWrapper
                             control={CustomerForm.control}
                             name="phone_one"
-                            label="Phone 1:"
+                            label="Phone 1"
                             type="text"
                             required
                             value={""}
@@ -279,7 +279,7 @@ export default function EditCustomer({
                           <InputWrapper
                             control={CustomerForm.control}
                             name="phone_two"
-                            label="Phone 2:"
+                            label="Phone 2"
                             type="text"
                             value={""}
                           />
@@ -321,7 +321,7 @@ export default function EditCustomer({
                             name="term_id"
                             label="Term "
                             required
-                            options={termsOptionsList??[]}
+                            options={termsOptionsList ?? []}
                           />
                         </div>
                         <div className="col-span-1">
@@ -338,7 +338,7 @@ export default function EditCustomer({
                             control={CustomerForm.control}
                             name="discount_type"
                             label="Discount Type"
-                            options={discount_typesOptions??[]}
+                            options={discount_typesOptions ?? []}
                           />
                           {watchdiscount_type === "1fcd0622-ebfa-477a-ba12-21cfcb070a62" && (
                             <InputWrapper
@@ -383,7 +383,7 @@ export default function EditCustomer({
                             name="location_id"
                             label="Location "
                             required
-                            options={locationOptionsList??[]}
+                            options={locationOptionsList ?? []}
                           />
                         </div>
                       </div>
@@ -426,7 +426,7 @@ export default function EditCustomer({
                         value={""}
                         disabled={watchIsSame}
                       />
- 
+
                       <div className="grid grid-cols-2 gap-1">
                         <div className="col-span-1">
                           <InputWrapper

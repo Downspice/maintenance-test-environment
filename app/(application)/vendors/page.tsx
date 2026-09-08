@@ -89,6 +89,7 @@ export default function VendorsPage() {
     openSheet({
       title: "Create Vendor",
       description: "Fill out the form below to create a new Vendor.",
+      className: "w-3/4 sm:max-w-none lg:max-w-none",
       content: <NewVendor formId="new-vendor-form" hideSubmitButton />,
       renderActions: (
         <Button form="new-vendor-form" type="submit" variant="primary">

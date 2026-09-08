@@ -108,8 +108,8 @@ export default function NewVendor({
 
     const validOthers = Array.isArray(data.others)
       ? data.others.filter(
-          (item) => item && (item.name?.trim() || item.value?.trim())
-        )
+        (item) => item && (item.name?.trim() || item.value?.trim())
+      )
       : [];
 
     const payload = {
@@ -133,8 +133,8 @@ export default function NewVendor({
             const firstErrorField = Object.values(errors)[0];
             const message =
               firstErrorField &&
-              typeof firstErrorField === "object" &&
-              "message" in firstErrorField
+                typeof firstErrorField === "object" &&
+                "message" in firstErrorField
                 ? String(firstErrorField.message)
                 : undefined;
 
@@ -279,14 +279,14 @@ export default function NewVendor({
                 <InputWrapper
                   control={formControl}
                   name="phone_one"
-                  label="Phone 1:"
+                  label="Phone 1"
                   type="text"
                   required
                 />
                 <InputWrapper
                   control={formControl}
                   name="phone_two"
-                  label="Phone 2:"
+                  label="Phone 2"
                   type="text"
                 />
                 <InputWrapper

@@ -208,7 +208,7 @@ export default function NewCustomer({
                     <InputWrapper
                       control={CustomerForm.control}
                       name="phone_one"
-                      label="Phone 1:"
+                      label="Phone 1"
                       type="text"
                       required
                       value={""}
@@ -218,7 +218,7 @@ export default function NewCustomer({
                     <InputWrapper
                       control={CustomerForm.control}
                       name="phone_two"
-                      label="Phone 2:"
+                      label="Phone 2"
                       type="text"
                       value={""}
                     />
@@ -281,24 +281,24 @@ export default function NewCustomer({
                     />
                     {watchdiscount_type ===
                       "1fcd0622-ebfa-477a-ba12-21cfcb070a62" && (
-                      <InputWrapper
-                        control={CustomerForm.control}
-                        name={"discount_percent"}
-                        label={"Discount"}
-                        value={""}
-                        type="text"
-                      />
-                    )}
+                        <InputWrapper
+                          control={CustomerForm.control}
+                          name={"discount_percent"}
+                          label={"Discount"}
+                          value={""}
+                          type="text"
+                        />
+                      )}
                     {watchdiscount_type ===
                       "af4850a7-a669-4898-9adc-83a7c27132b9" && (
-                      <InputWrapper
-                        control={CustomerForm.control}
-                        name={"discount_amount"}
-                        label={"Discount"}
-                        value={""}
-                        type="text"
-                      />
-                    )}
+                        <InputWrapper
+                          control={CustomerForm.control}
+                          name={"discount_amount"}
+                          label={"Discount"}
+                          value={""}
+                          type="text"
+                        />
+                      )}
                   </div>
                   <div className="col-span-1">
                     <InputWrapper
