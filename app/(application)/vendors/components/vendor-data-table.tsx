@@ -16,9 +16,11 @@ import {
 import {
   useGetVendorsPaginated,
   usePatchVendorIsActive,
+  useDeleteVendor,
 } from "@/services/setups/vendor";
 import { toast } from "sonner";
 import { useConfirmDialog } from "@/lib/shared/confirm-dialog";
+import { DeleteConfirmationModal } from "@/components/reusable/modals/delete-confirmation-modal";
 
 export default function VendorDataTable({
   locationId,
@@ -30,10 +32,22 @@ export default function VendorDataTable({
   return <VendorTableLoader locationId={locationId} typeId={typeId} />;
 }
 
+interface VendorRow {
+  id?: string;
+  name?: string;
+  type?: { name?: string };
+  vendor_contact?: { email?: string; phone_one?: string };
+  city?: string;
+  status?: { id?: string; is_active?: boolean };
+  [key: string]: unknown;
+}
+
 export function VendorTableLoader({ locationId, typeId }: { locationId?: string; typeId?: string }) {
   const patchIsActive = usePatchVendorIsActive();
-  const { data: statusOnes } = useGetStatusOnes<any[]>();
+  const deleteVendor = useDeleteVendor();
+  const { data: statusOnes } = useGetStatusOnes<Array<{ id: string }>>();
   const confirmDialog = useConfirmDialog();
+  const [vendorToDelete, setVendorToDelete] = useState<VendorRow | null>(null);
   const [pageIndex, setPageIndex] = useState(0); // 0-based for UI
   const [pageSize, setPageSize] = useState(10);
   const [search, setSearch] = useState("");
@@ -309,35 +323,35 @@ export function VendorTableLoader({ locationId, typeId }: { locationId?: string;
       header: "Actions",
       size: 60,
       cell: ({ row }) => {
-        const handleDeleteRow = (row: any) => {
-          const currentStatusId: string | undefined = row.original?.status?.id
+        const handleRestoreRow = (row: any) => {
+          const currentStatusId: string | undefined = row.original?.status?.id;
           const otherStatusId: string | undefined = Array.isArray(statusOnes)
             ? statusOnes.find((s: any) => s?.id !== currentStatusId)?.id
-            : undefined
+            : undefined;
 
-            ; (async () => {
-              const isActive = row.original?.status?.is_active !== false
-              const ok = await confirmDialog({
-                title: isActive ? "Deactivate vendor?" : "Restore vendor?",
-                description: isActive
-                  ? `This will deactivate ${row.original.name}.`
-                  : `This will restore ${row.original.name}.`,
-                confirmText: isActive ? "Deactivate" : "Restore",
-                variant: isActive ? "destructive" : "default",
-                tone: isActive ? "danger" : "success",
-              })
-              if (ok) {
-                if (!row.original?.id || !otherStatusId) {
-                  toast.error("Unable to determine target status")
-                  return
-                }
-                await patchIsActive.mutateAsync({ id: row.original.id, status_id: otherStatusId })
-                toast.success(`Status updated`)
+          (async () => {
+            const ok = await confirmDialog({
+              title: "Restore vendor?",
+              description: `This will restore ${row.original.name}.`,
+              confirmText: "Restore",
+              variant: "default",
+              tone: "success",
+            });
+            if (ok) {
+              if (!row.original?.id || !otherStatusId) {
+                toast.error("Unable to determine target status");
+                return;
               }
-            })()
+              await patchIsActive.mutateAsync({
+                id: row.original.id,
+                status_id: otherStatusId,
+              });
+              toast.success("Status updated");
+            }
+          })();
         };
 
-        const isActive = row.original?.status?.is_active !== false
+        const isActive = row.original?.status?.is_active !== false;
         return (
           <div className="flex flex-row gap-2 justify-end">
             {isActive ? (
@@ -355,7 +369,7 @@ export function VendorTableLoader({ locationId, typeId }: { locationId?: string;
                   size={"icon"}
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleDeleteRow(row);
+                    setVendorToDelete(row.original);
                   }}
                   className="text-destructive hover:text-destructive"
                 >
@@ -368,7 +382,7 @@ export function VendorTableLoader({ locationId, typeId }: { locationId?: string;
                 size={"sm"}
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleDeleteRow(row);
+                  handleRestoreRow(row);
                 }}
               >
                 Restore <RecycleIcon className="w-4 h-4" />
@@ -435,6 +449,63 @@ export function VendorTableLoader({ locationId, typeId }: { locationId?: string;
         onServerSortingChange={handleServerSortingChange}
         getRowClassName={(row) => (row.original?.status?.is_active === false ? "bg-red-50" : "")}
         isLoading={isLoading}
+      />
+
+      <DeleteConfirmationModal
+        open={!!vendorToDelete}
+        onOpenChange={(open) => {
+          if (!open) setVendorToDelete(null);
+        }}
+        title="Delete vendor"
+        description="Are you sure you want to delete the following vendor?"
+        warningTitle="Warning:"
+        warningText={
+          <>
+            This action <strong className="font-semibold text-text-strong-950">cannot be undone</strong>. Deleting this vendor will remove all its associated data. Any linked purchase orders, invoices, parts, and contacts will be affected.
+          </>
+        }
+        item={
+          vendorToDelete
+            ? {
+                name: vendorToDelete.name || "Vendor",
+                description: [
+                  vendorToDelete.type?.name,
+                  vendorToDelete.vendor_contact?.email || vendorToDelete.vendor_contact?.phone_one,
+                  vendorToDelete.city,
+                ]
+                  .filter(Boolean)
+                  .join(" • ") || "Vendor record",
+              }
+            : undefined
+        }
+        switchLabel="Confirm permanent deletion"
+        switchDescription="Toggle switch to authorize deletion of this vendor."
+        confirmText="Yes, Delete Vendor"
+        cancelText="Cancel"
+        onDelete={async () => {
+          if (!vendorToDelete?.id) return;
+          const currentStatusId: string | undefined = vendorToDelete.status?.id;
+          const otherStatusId: string | undefined = Array.isArray(statusOnes)
+            ? statusOnes.find((s: { id?: string }) => s?.id !== currentStatusId)?.id
+            : undefined;
+
+          try {
+            await deleteVendor.mutateAsync({ id: vendorToDelete.id });
+            toast.success(`Vendor "${vendorToDelete.name}" deleted successfully`);
+          } catch {
+            // Fallback to status update if backend uses soft delete / is-active
+            if (otherStatusId) {
+              await patchIsActive.mutateAsync({
+                id: vendorToDelete.id,
+                status_id: otherStatusId,
+              });
+              toast.success(`Vendor "${vendorToDelete.name}" deleted successfully`);
+            } else {
+              toast.error("Unable to delete vendor");
+            }
+          }
+          setVendorToDelete(null);
+        }}
       />
     </div>
   );
