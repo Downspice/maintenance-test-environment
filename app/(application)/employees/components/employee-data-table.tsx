@@ -16,6 +16,7 @@ import EditEmployee from "../views/editEmployeeSheet";
 import { useGetEmployeesPaginated, usePatchEmployeeIsActive, useGetEmployeeStatuses } from "@/services/setups/employee";
 import { toast } from "sonner";
 import { useConfirmDialog } from "@/lib/shared/confirm-dialog";
+import { DeactivateEmployeeModal } from "./modals/deactivate-employee-modal";
 
 export default function EmployeeDataTable({
   locationId,
@@ -31,6 +32,7 @@ export function EmployeeTableLoader({ locationId, typeId }: { locationId?: strin
   const patchIsActive = usePatchEmployeeIsActive();
   const { data: employeeStatuses } = useGetEmployeeStatuses<any[]>();
   const confirmDialog = useConfirmDialog();
+  const [employeeToDeactivate, setEmployeeToDeactivate] = useState<any | null>(null);
   const [pageIndex, setPageIndex] = useState(0); // 0-based for UI
   const [pageSize, setPageSize] = useState(10);
   const [search, setSearch] = useState("");
@@ -323,35 +325,30 @@ export function EmployeeTableLoader({ locationId, typeId }: { locationId?: strin
       header: "Actions",
       size: 60,
       cell: ({ row }) => {
-        const handleDeleteRow = (row: any) => {
-          const currentStatusId: string | undefined = row.original?.status?.id
+        const handleRestoreRow = async (row: any) => {
+          const currentStatusId: string | undefined = row.original?.status?.id;
           const otherStatusId: string | undefined = Array.isArray(employeeStatuses)
             ? employeeStatuses.find((s: any) => s?.id !== currentStatusId)?.id
-            : undefined
+            : undefined;
 
-            ; (async () => {
-              const isActive = row.original?.status?.is_active !== false
-              const ok = await confirmDialog({
-                title: isActive ? "Deactivate employee?" : "Restore employee?",
-                description: isActive
-                  ? `This will deactivate ${row.original.last_name + " " + row.original.first_name + " " + (row.original.middle_name ?? "")}.`
-                  : `This will restore ${row.original.last_name + " " + row.original.first_name + " " + (row.original.middle_name ?? "")}.`,
-                confirmText: isActive ? "Deactivate" : "Restore",
-                variant: isActive ? "destructive" : "default",
-                tone: isActive ? "danger" : "success",
-              })
-              if (ok) {
-                if (!row.original?.id || !otherStatusId) {
-                  toast.error("Unable to determine target status")
-                  return
-                }
-                await patchIsActive.mutateAsync({ id: row.original.id, status_id: otherStatusId })
-                toast.success(`Status updated`)
-              }
-            })()
+          const ok = await confirmDialog({
+            title: "Restore employee?",
+            description: `This will restore ${row.original.last_name + " " + row.original.first_name + " " + (row.original.middle_name ?? "")}.`,
+            confirmText: "Restore",
+            variant: "default",
+            tone: "success",
+          });
+          if (ok) {
+            if (!row.original?.id || !otherStatusId) {
+              toast.error("Unable to determine target status");
+              return;
+            }
+            await patchIsActive.mutateAsync({ id: row.original.id, status_id: otherStatusId });
+            toast.success(`Status updated`);
+          }
         };
 
-        const isActive = row.original?.status?.is_active !== false
+        const isActive = row.original?.status?.is_active !== false;
         return (
           <div className="flex gap-2 w-fit">
             {isActive ? (
@@ -369,7 +366,7 @@ export function EmployeeTableLoader({ locationId, typeId }: { locationId?: strin
                   size={"icon"}
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleDeleteRow(row);
+                    setEmployeeToDeactivate(row.original);
                   }}
                   className="text-destructive hover:text-destructive"
                 >
@@ -382,7 +379,7 @@ export function EmployeeTableLoader({ locationId, typeId }: { locationId?: strin
                 size={"sm"}
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleDeleteRow(row);
+                  handleRestoreRow(row);
                 }}
               >
                 Restore <RotateCcw className="w-4 h-4 ml-1" />
@@ -432,6 +429,13 @@ export function EmployeeTableLoader({ locationId, typeId }: { locationId?: strin
         onServerSortingChange={handleServerSortingChange}
         getRowClassName={(row) => (row.original?.status?.is_active === false ? "bg-red-50" : "")}
         isLoading={isLoading}
+      />
+
+      <DeactivateEmployeeModal
+        employee={employeeToDeactivate}
+        onClose={() => setEmployeeToDeactivate(null)}
+        patchIsActive={patchIsActive}
+        employeeStatuses={employeeStatuses}
       />
     </div>
   );
