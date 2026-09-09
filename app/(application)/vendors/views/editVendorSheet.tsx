@@ -186,7 +186,7 @@ export default function EditVendor({
           Save Vendor
         </Button>
       }
-      className="w-3/4 sm:max-w-none lg:max-w-none"
+      className="w-full sm:w-[45%] sm:min-w-[600px] sm:max-w-none lg:max-w-none"
     >
       <ScrollArea className="h-[calc(100vh-160px)] pr-4">
         <Form {...vendorForm}>
