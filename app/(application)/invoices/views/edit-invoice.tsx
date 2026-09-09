@@ -19,6 +19,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Skeleton } from "@/components/ui/skeleton";
 import DatePickerWrapper from "@/components/forms/fields/DatePickerWrapper";
 import {
   Table,
@@ -152,17 +153,31 @@ export default function EditInvoice({ children, invoiceId }: EditInvoiceProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editIndex, setEditIndex] = useState<number | null>(null);
 
-  // Fetch invoice data
-  const { data: invoiceData, isLoading: isLoadingInvoice } = useGetInvoice(invoiceId);
+  // Fetch invoice data only when drawer is open
+  const { data: invoiceData, isLoading: isLoadingInvoice } = useGetInvoice(invoiceId, {
+    enabled: open && !!invoiceId,
+  });
   const { mutateAsync: updateInvoice } = useUpdateInvoice();
 
-  // Fetch dropdown options
-  const { data: locationOptionsList } = useGetLocations<Array<{ id: string; name: string }>>();
-  const { data: warehouseOptionsList } = useGetWarehouses<Array<{ id: string; name: string }>>();
-  const { data: itemTypesOptionsList } = useGetItemTypes<Array<{ id: string; name: string }>>();
-  const { data: paymentMethodOptionsList } = useGetPaymentMethods<Array<{ id: string; name: string }>>();
-  const { data: customersOptionsList } = useGetCustomers<Customer[]>();
-  const { data: termsOptionsList } = useGetPurchaseOrderTerms<Array<{ id: string; name: string }>>();
+  // Fetch dropdown options only when drawer is open
+  const { data: locationOptionsList } = useGetLocations<Array<{ id: string; name: string }>>({
+    enabled: open,
+  });
+  const { data: warehouseOptionsList } = useGetWarehouses<Array<{ id: string; name: string }>>({
+    enabled: open,
+  });
+  const { data: itemTypesOptionsList } = useGetItemTypes<Array<{ id: string; name: string }>>({
+    enabled: open,
+  });
+  const { data: paymentMethodOptionsList } = useGetPaymentMethods<Array<{ id: string; name: string }>>({
+    enabled: open,
+  });
+  const { data: customersOptionsList } = useGetCustomers<Customer[]>({
+    enabled: open,
+  });
+  const { data: termsOptionsList } = useGetPurchaseOrderTerms<Array<{ id: string; name: string }>>({
+    enabled: open,
+  });
 
   const [items, setItems] = useState<InvoiceItemInterface[]>([]);
   const [editItems, setEditItems] = useState<InvoiceItemInterface | null>(null);
@@ -417,10 +432,6 @@ export default function EditInvoice({ children, invoiceId }: EditInvoiceProps) {
     }
   }, [customerId, customersOptionsList, form]);
 
-  if (isLoadingInvoice) {
-    return <div>Loading...</div>;
-  }
-
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>{children}</SheetTrigger>
@@ -428,11 +439,29 @@ export default function EditInvoice({ children, invoiceId }: EditInvoiceProps) {
         <SheetHeader>
           <SheetTitle>
             <div className="flex justify-between">
-              <div>Edit Invoice: {invoiceData?.invoice_number}</div>
+              <div>
+                Edit Invoice{invoiceData?.invoice_number ? `: ${invoiceData.invoice_number}` : ""}
+              </div>
             </div>
           </SheetTitle>
         </SheetHeader>
-        <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
+        {isLoadingInvoice ? (
+          <div className="space-y-6 mt-6 p-4">
+            <div className="grid grid-cols-3 gap-3">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+            </div>
+            <Skeleton className="h-24 w-full" />
+            <Skeleton className="h-44 w-full" />
+            <Skeleton className="h-32 w-full" />
+          </div>
+        ) : (
+          <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit, onError)}
@@ -854,6 +883,7 @@ export default function EditInvoice({ children, invoiceId }: EditInvoiceProps) {
             </form>
           </Form>
         </ScrollArea>
+        )}
       </SheetContent>
     </Sheet>
   );
