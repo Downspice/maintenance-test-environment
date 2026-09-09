@@ -15,6 +15,7 @@ import FileUploadWrapper from "@/components/forms/fields/FileUploadWrapper";
 import CustomFieldRow from "@/components/forms/fields/CustomFieldRow";
 import { Drawer } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useGetVendor, useUpdateVendor } from "@/services/setups/vendor";
 import { vendorSchema } from "@/components/forms/entities/new-vendor-form";
 import { VendorTableInterface } from "@/lib/domains/vendor/vendor-data";
@@ -37,12 +38,13 @@ export default function EditVendor({
     resolver: zodResolver(vendorSchema),
     defaultValues: {},
   });
-  const { data: vendorDetails } = useGetVendor<VendorDetailData>(
+  const { data: vendorDetails, isLoading: isQueryLoading } = useGetVendor<VendorDetailData>(
     initialData.id,
     {
       enabled: open && !!initialData.id,
     }
   );
+  const isLoading = isQueryLoading || (open && !vendorDetails);
 
   useEffect(() => {
     if (!open || !vendorDetails) {
@@ -181,7 +183,7 @@ export default function EditVendor({
           form="edit-vendor-form"
           type="submit"
           variant="primary"
-          disabled={isPending}
+          disabled={isPending || isLoading}
         >
           Save Vendor
         </Button>
@@ -189,7 +191,89 @@ export default function EditVendor({
       className="w-full sm:w-[45%] sm:min-w-[600px] sm:max-w-none lg:max-w-none"
     >
       <ScrollArea className="h-[calc(100vh-160px)] pr-4">
-        <Form {...vendorForm}>
+        {isLoading ? (
+          <div className="space-y-6">
+            {/* Tabs Header Skeleton */}
+            <div className="flex gap-2 border-b border-stroke-soft-200 pb-2">
+              <Skeleton className="h-9 w-24 rounded-lg" />
+              <Skeleton className="h-9 w-24 rounded-lg" />
+              <Skeleton className="h-9 w-28 rounded-lg" />
+            </div>
+
+            {/* Fields Skeleton */}
+            <div className="flex flex-col gap-4">
+              <div className="space-y-1.5">
+                <Skeleton className="h-4 w-16" />
+                <Skeleton className="h-10 w-full rounded-lg" />
+              </div>
+
+              <div className="space-y-1.5">
+                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-10 w-full rounded-lg" />
+              </div>
+
+              <div className="space-y-1.5">
+                <Skeleton className="h-4 w-18" />
+                <Skeleton className="h-10 w-full rounded-lg" />
+              </div>
+
+              <div className="space-y-1.5">
+                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-10 w-full rounded-lg" />
+              </div>
+
+              <div className="grid grid-cols-2 gap-x-4 gap-y-3">
+                <div className="space-y-1.5">
+                  <Skeleton className="h-4 w-12" />
+                  <Skeleton className="h-10 w-full rounded-lg" />
+                </div>
+                <div className="space-y-1.5">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-10 w-full rounded-lg" />
+                </div>
+                <div className="space-y-1.5">
+                  <Skeleton className="h-4 w-20" />
+                  <Skeleton className="h-10 w-full rounded-lg" />
+                </div>
+                <div className="space-y-1.5">
+                  <Skeleton className="h-4 w-16" />
+                  <Skeleton className="h-10 w-full rounded-lg" />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Skeleton className="h-4 w-18" />
+                <Skeleton className="h-10 w-full rounded-lg" />
+              </div>
+
+              <div className="space-y-1.5">
+                <Skeleton className="h-4 w-16" />
+                <Skeleton className="h-10 w-full rounded-lg" />
+              </div>
+
+              <div className="space-y-1.5">
+                <Skeleton className="h-4 w-14" />
+                <Skeleton className="h-10 w-full rounded-lg" />
+              </div>
+
+              <div className="space-y-1.5">
+                <Skeleton className="h-4 w-14" />
+                <Skeleton className="h-10 w-full rounded-lg" />
+              </div>
+
+              <div className="space-y-1.5">
+                <Skeleton className="h-4 w-22" />
+                <Skeleton className="h-10 w-full rounded-lg" />
+              </div>
+
+              <div className="space-y-1.5">
+                <Skeleton className="h-4 w-14" />
+                <Skeleton className="h-24 w-full rounded-lg" />
+              </div>
+            </div>
+          </div>
+        ) : (
+          <Form {...vendorForm}>
           <form
             id="edit-vendor-form"
             onSubmit={vendorForm.handleSubmit((data) => handleSubmit(data))}
@@ -365,6 +449,7 @@ export default function EditVendor({
             </Tabs>
           </form>
         </Form>
+        )}
       </ScrollArea>
     </Drawer>
   );
