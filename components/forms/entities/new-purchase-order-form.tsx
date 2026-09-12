@@ -386,11 +386,12 @@ export default function NewPurchaseOrderForm({
               disabled={status !== "Closed"}
             />
           </div>
-          <div className="grid grid-cols-8 gap-4">
-            <div className="col-span-5 grid grid-cols-2 gap-2">
-              <div className="col-span-1 h-fit">
+          <div className="grid grid-cols-8 gap-4 items-start">
+            <div className="col-span-5 flex flex-col gap-3">
+              <div className="grid grid-cols-2 gap-2">
                 <Fieldset
                   legend="Vendor"
+                  className="h-full"
                   content={
                     <>
                       <ComboboxFieldWrapper
@@ -409,10 +410,9 @@ export default function NewPurchaseOrderForm({
                     </>
                   }
                 />
-              </div>
-              <div className="col-span-1 h-fit">
                 <Fieldset
                   legend="Ship To"
+                  className="h-full"
                   content={
                     <>
                       <ComboboxFieldWrapper
@@ -431,8 +431,7 @@ export default function NewPurchaseOrderForm({
                   }
                 />
               </div>
-              <div className="col-span-2 flex items-start">
-                <Tabs defaultValue="Items" className="w-full">
+              <Tabs defaultValue="Items" className="w-full">
                   <TabsList>
                     <TabsTrigger value="Items">Items</TabsTrigger>
                     <TabsTrigger value="Attachments">Attachments</TabsTrigger>
@@ -620,7 +619,6 @@ export default function NewPurchaseOrderForm({
                   </TabsContent>
                 </Tabs>
               </div>
-            </div>
             <div className="col-span-3 space-y-2">
               <Fieldset
                 legend="Miscellaneous"
