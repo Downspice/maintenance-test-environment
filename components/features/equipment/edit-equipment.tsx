@@ -7,13 +7,7 @@ import { Button } from "@/components/ui/button";
 import { LucideTrash2, Save } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CardContent } from "@/components/ui/card";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Drawer } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ComboboxFieldWrapper } from "@/components/forms/fields/ComboboxWrapper";
 import Fieldset from "@/components/customUI/fieldset";
@@ -168,13 +162,17 @@ export const equipmentSchema = z.object({
     .optional(),
 });
 
+interface EditEquipmentProps {
+  children: React.ReactNode;
+  data: any;
+  onSuccess?: () => void;
+}
+
 export default function EditEquipment({
   children,
   data,
-}: {
-  children: React.ReactNode;
-  data: any;
-}) {
+  onSuccess,
+}: EditEquipmentProps) {
   const { data: ownershipOptions } = useGetEquipmentOwnerships();
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -193,11 +191,10 @@ export default function EditEquipment({
     function onSubmit(data: EquipmentFormValues) {
       console.log("Form submitted with VALUES:", data);
   
-      toast("Equipment created successfully!", {
-        duration: 10000,
-      });
+      toast.success("Equipment updated successfully!");
   
       setOpen(false);
+      onSuccess?.();
       form.reset();
     }
     const watchHasMeter = form.watch("hasMeter");
@@ -232,23 +229,28 @@ export default function EditEquipment({
       });
     }
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>{children}</SheetTrigger>
-      <SheetContent className="w-3/4 ">
-        <SheetHeader>
-          <SheetTitle>
-            <div className="flex justify-between">
-              <div>{data.invoice_number}</div>
-            </div>
-          </SheetTitle>
-        </SheetHeader>
-        <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
-          <div>
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit, onError)}
-                className="space-y-6"
-              >
+    <Drawer
+      open={open}
+      onOpenChange={setOpen}
+      trigger={children}
+      title={`Edit Equipment${data?.name ? ` - ${data.name}` : ""}`}
+      description="Update the equipment details below."
+      closeable={true}
+      renderActions={
+        <Button form="edit-equipment-form" type="submit" variant="primary">
+          Save Equipment
+        </Button>
+      }
+      className="inset-0 w-full max-w-none sm:max-w-none lg:max-w-none"
+    >
+      <ScrollArea className="h-[calc(100vh-160px)] pr-4">
+        <div>
+          <Form {...form}>
+            <form
+              id="edit-equipment-form"
+              onSubmit={form.handleSubmit(onSubmit, onError)}
+              className="space-y-6"
+            >
                   <Tabs defaultValue="main" className="w-full">
                     <TabsList className="flex flex-wrap h-auto gap-1 mb-4">
                       <TabsTrigger value="main">Main</TabsTrigger>
@@ -957,28 +959,11 @@ export default function EditEquipment({
                         </div>
                       </TabsContent>
                   </Tabs>
-                <div className="flex justify-end">
-                  <Button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="min-w-32 my-4 w-full"
-                  >
-                    {isSubmitting ? (
-                      "Creating..."
-                    ) : (
-                      <>
-                        <Save className="mr-2 h-4 w-4" />
-                        Save Equipment
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </div>
-        </ScrollArea>
-      </SheetContent>
-    </Sheet>
+            </form>
+          </Form>
+        </div>
+      </ScrollArea>
+    </Drawer>
   );
 }
 

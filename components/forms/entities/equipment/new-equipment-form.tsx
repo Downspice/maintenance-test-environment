@@ -22,14 +22,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Fieldset from "@/components/customUI/fieldset";
 import { toast } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Drawer } from "@/components/ui/drawer";
 import { ComboboxFieldWrapper } from "@/components/forms/fields/ComboboxWrapper";
 import { Input } from "@/components/ui/input";
 import { EditableDataTable } from "@/components/customUI/editableTable";
@@ -170,7 +163,17 @@ export const equipmentSchema = z.object({
 
 export type EquipmentFormValues = z.infer<typeof equipmentSchema>;
 
-export function ActualEquipmentForm() {
+export interface ActualEquipmentFormProps {
+  formId?: string;
+  hideSubmitButton?: boolean;
+  onSuccess?: () => void;
+}
+
+export function ActualEquipmentForm({
+  formId = "new-equipment-form",
+  hideSubmitButton,
+  onSuccess,
+}: ActualEquipmentFormProps = {}) {
   const { mutateAsync, isPending: isSubmitting } = useAddEquipment();
   const { data: vendorOptions } = useGetVendorOptions<GenericObject[]>();
   const { data: categoryOptions } =
@@ -387,7 +390,10 @@ export function ActualEquipmentForm() {
     console.log("Form submitted with VALUES:", payload);
 
     const res = await mutateAsync(payload);
-    res && toast.success(res?.message);
+    if (res) {
+      toast.success(res?.message || "Equipment created successfully!");
+      onSuccess?.();
+    }
 
     form.reset();
   }
@@ -414,6 +420,7 @@ export function ActualEquipmentForm() {
   return (
     <Form {...form}>
       <form
+        id={formId}
         onSubmit={form.handleSubmit(onSubmit, onError)}
         className="space-y-6"
       >
@@ -893,22 +900,24 @@ export function ActualEquipmentForm() {
               </TabsContent>
           </Tabs>
 
-        <div className="flex justify-end">
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-            className="min-w-32 my-4 w-full"
-          >
-            {isSubmitting ? (
-              "Creating..."
-            ) : (
-              <>
-                <Save className="mr-2 h-4 w-4" />
-                Create Equipment
-              </>
-            )}
-          </Button>
-        </div>
+        {!hideSubmitButton && (
+          <div className="flex justify-end">
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="min-w-32 my-4 w-full"
+            >
+              {isSubmitting ? (
+                "Creating..."
+              ) : (
+                <>
+                  <Save className="mr-2 h-4 w-4" />
+                  Create Equipment
+                </>
+              )}
+            </Button>
+          </div>
+        )}
       </form>
     </Form>
   );
@@ -918,8 +927,10 @@ export default function EquipmentForm({ variant }: TriggerVariant) {
   const [open, setOpen] = useState(false);
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
+    <Drawer
+      open={open}
+      onOpenChange={setOpen}
+      trigger={
         <Button
           variant={variant === "icon" ? "ghost" : "primary"}
           size={variant === "icon" ? "icon" : "md"}
@@ -930,24 +941,29 @@ export default function EquipmentForm({ variant }: TriggerVariant) {
           ) : (
             <>
               <Plus className="size-4 mr-2" />
-              Create New Equipment
+              Create Equipment
             </>
           )}
         </Button>
-      </SheetTrigger>
-      <SheetContent className="w-3/4">
-        <SheetHeader>
-          <SheetTitle>Create New Equipment</SheetTitle>
-          <SheetDescription>
-            Fill out the form below to set up your new equipment.
-          </SheetDescription>
-        </SheetHeader>
-
-        <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
-          <ActualEquipmentForm />
-        </ScrollArea>
-      </SheetContent>
-    </Sheet>
+      }
+      title="Create Equipment"
+      description="Fill out the form below to create a new Equipment."
+      closeable={true}
+      renderActions={
+        <Button form="new-equipment-form" type="submit" variant="primary">
+          Save Equipment
+        </Button>
+      }
+      className="inset-0 w-full max-w-none sm:max-w-none lg:max-w-none"
+    >
+      <ScrollArea className="h-[calc(100vh-160px)] pr-4">
+        <ActualEquipmentForm
+          formId="new-equipment-form"
+          hideSubmitButton
+          onSuccess={() => setOpen(false)}
+        />
+      </ScrollArea>
+    </Drawer>
   );
 }
 

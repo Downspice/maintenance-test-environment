@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useSheet } from "@/lib/providers/sheet-providers";
-import EquipmentForm from "@/components/forms/entities/equipment/new-equipment-form";
+import EquipmentFormWrapper from "@/components/forms/fields/equipment-form-wrapper";
 import NewEquipmentDataTable from "./components/table/equipment-data-table";
 import UpdateMeters from "@/components/forms/entities/equipment/update-meters-form";
 
@@ -137,7 +137,7 @@ export default function EquipmentPage() {
           </Select>
         </div>
         <div className="flex flex-row space-x-2">
-          <EquipmentForm />
+          <EquipmentFormWrapper />
           <UpdateMeters />
         </div>
       </div>

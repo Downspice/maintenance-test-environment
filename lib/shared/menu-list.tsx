@@ -10,7 +10,7 @@ import {
   Building,
 } from "lucide-react";
 import React from "react";
-import EquipmentForm from "@/components/forms/entities/equipment/new-equipment-form";
+import EquipmentFormWrapper from "@/components/forms/fields/equipment-form-wrapper";
 import WorkOrderFormWrapper from "@/components/forms/fields/work-order-form-wrapper";
 import InventoryFormWrapper from "@/components/forms/fields/inventory-form-wrapper";
 import PurchaseOrderFormWrapper from "@/components/forms/fields/purchase-order-form-wrapper";
@@ -55,7 +55,7 @@ export function getMenuList(pathname: string): Group[] {
           label: "Equipment",
           icon: Cog,
           submenus: [],
-          button: <EquipmentForm variant="icon" />
+          button: <EquipmentFormWrapper variant="icon" />
         },
         {
           href: "/work-orders",
