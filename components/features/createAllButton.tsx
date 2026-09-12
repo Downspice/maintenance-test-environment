@@ -146,7 +146,13 @@ export default function CreateAllButton() {
         </DropdownMenuContent>
       </DropdownMenu>
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent className="w-[400px] sm:w-2/3">
+        <SheetContent
+          className={
+            selectedProjectType === "Purchase Order"
+              ? "inset-0 w-full max-w-none sm:max-w-none lg:max-w-none"
+              : "w-[400px] sm:w-2/3"
+          }
+        >
           <SheetHeader>
             <SheetTitle className="flex items-center gap-2">
               {/* {selectedType && <selectedType.icon className="h-5 w-5" />} */}

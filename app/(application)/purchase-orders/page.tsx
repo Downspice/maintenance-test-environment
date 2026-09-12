@@ -85,6 +85,7 @@ export default function PurchaseOrdersPage() {
     openSheet({
       title: "Create Purchase Order",
       description: "Fill out the form below to create a new Purchase Order.",
+      className: "inset-0 w-full max-w-none sm:max-w-none lg:max-w-none",
       content: (
         <NewPurchaseOrderForm
           formId="new-purchase-order-form"

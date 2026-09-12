@@ -42,7 +42,7 @@ export default function PurchaseOrderFormWrapper({ variant }: TriggerVariant) {
           Save Purchase Order
         </Button>
       }
-      className="w-3/4"
+      className="inset-0 w-full max-w-none sm:max-w-none lg:max-w-none"
     >
       <ScrollArea className="h-[calc(100vh-160px)] pr-4">
         <NewPurchaseOrderForm
