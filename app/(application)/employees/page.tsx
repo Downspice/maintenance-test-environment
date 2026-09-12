@@ -35,7 +35,7 @@ export default function EmployeesPage() {
   });
 
   const [debouncedSearch] = useDebounce(filters.search, 500);
-  const { openSheet } = useSheet();
+  const { openSheet, closeSheet } = useSheet();
 
   const buildURL = (updatedFilters: typeof filters) => {
     const queryParams = new URLSearchParams();
@@ -85,12 +85,18 @@ export default function EmployeesPage() {
     buildURL({ ...filters, search: debouncedSearch });
   }, [debouncedSearch]);
 
-  const createEquipment = () => {
-    console.log("ïn the function");
+  const createEmployee = () => {
     openSheet({
       title: "Create Employee",
       description: "Fill out the form below to create a new Employee.",
-      content: <NewEmployeeForm formId="new-employee-form" hideSubmitButton />,
+      className: "w-full sm:w-2/3 sm:min-w-[1200px] sm:max-w-none lg:max-w-none",
+      content: (
+        <NewEmployeeForm
+          formId="new-employee-form"
+          hideSubmitButton
+          onSuccess={() => closeSheet()}
+        />
+      ),
       renderActions: (
         <Button form="new-employee-form" type="submit" variant="primary">
           Save Employee
@@ -137,7 +143,7 @@ export default function EmployeesPage() {
           </Select>
         </div>
         <div className="flex flex-row space-x-0.5">
-          <Button onClick={createEquipment}>Create New Employee</Button>
+          <Button onClick={createEmployee}>Create New Employee</Button>
         </div>
       </div>
       <div className="flex-1 min-h-0 flex flex-col overflow-hidden">

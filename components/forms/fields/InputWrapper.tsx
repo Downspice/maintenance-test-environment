@@ -53,7 +53,9 @@ export default function InputWrapper({
         >
           <FormLabel
             className={cn(
-              direction === "horizontal" ? "w-[10rem] text-right" : "mb-1"
+              direction === "horizontal"
+                ? "w-[10rem] flex items-center justify-end text-right shrink-0"
+                : "mb-1"
             )}
           >
             {required && <span className="text-red-500 mr-1">*</span>}

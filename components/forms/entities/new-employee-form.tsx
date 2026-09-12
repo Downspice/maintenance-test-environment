@@ -95,9 +95,11 @@ export const employeeSchema = z.object({
 export default function NewEmployeeForm({
   formId = "new-employee-form",
   hideSubmitButton,
+  onSuccess,
 }: {
   formId?: string;
   hideSubmitButton?: boolean;
+  onSuccess?: () => void;
 } = {}) {
   const [miscellaneous, setCustomFields] = useState<
     { name: string; id: string }[]
@@ -163,11 +165,18 @@ export default function NewEmployeeForm({
   };
 
   async function handleSubmit(data: z.infer<typeof employeeSchema>) {
-    console.log(data);
-    const res = await mutateAsync(data);
-    toast.success(res?.message);
-    employeeForm.reset();
-    setRenewals([]);
+    try {
+      const res = await mutateAsync(data);
+      toast.success(res?.message ?? "Employee created successfully!");
+      employeeForm.reset();
+      setRenewals([]);
+      onSuccess?.();
+    } catch (error: unknown) {
+      const errorMessage =
+        (error as { response?: { data?: { message?: string } } })?.response
+          ?.data?.message ?? "Failed to create employee.";
+      toast.error(errorMessage);
+    }
   }
 
   return (
@@ -188,7 +197,7 @@ export default function NewEmployeeForm({
           })}
           className="w-full"
         >
-          <Tabs defaultValue="general" className="w-full">
+          <Tabs defaultValue="employee" className="w-full">
             <TabsList>
               <TabsTrigger value="employee">Employee</TabsTrigger>
               <TabsTrigger value="details">Details</TabsTrigger>

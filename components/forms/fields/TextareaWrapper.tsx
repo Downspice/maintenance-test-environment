@@ -4,6 +4,8 @@ import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/comp
 import { Textarea } from "@/components/ui/textarea"
 import type { Control } from "react-hook-form"
 
+import { cn } from "@/lib/shared/utils"
+
 interface TextareaWrapperProps {
   control: Control<any>
   name: string
@@ -14,6 +16,7 @@ interface TextareaWrapperProps {
   rows?: number
   disabled?: boolean
   required?: boolean
+  direction?: "horizontal" | "vertical"
 }
 
 export default function TextareaWrapper({
@@ -26,27 +29,45 @@ export default function TextareaWrapper({
   rows = 4,
   disabled = false,
   required = false,
+  direction = "vertical",
 }: TextareaWrapperProps) {
   return (
     <FormField
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem className="w-full">
-          <FormLabel>
-            {required && <span className="text-red-500 mr-1">*</span>}
-            {label}
-          </FormLabel>
-          <FormControl>
-            <Textarea
-              placeholder={placeholder || `Enter ${label?.toLowerCase()}`}
-              className={className}
-              rows={rows}
-              disabled={disabled}
-              {...field}
-            />
-          </FormControl>
-          <FormMessage />
+        <FormItem
+          className={cn(
+            "w-full",
+            direction === "horizontal"
+              ? "flex items-start gap-4"
+              : "flex flex-col"
+          )}
+        >
+          {label && (
+            <FormLabel
+              className={cn(
+                direction === "horizontal"
+                  ? "w-[10rem] flex items-center justify-end text-right shrink-0 pt-2"
+                  : "mb-1"
+              )}
+            >
+              {required && <span className="text-red-500 mr-1">*</span>}
+              {label}
+            </FormLabel>
+          )}
+          <div className="flex-1 w-full">
+            <FormControl>
+              <Textarea
+                placeholder={placeholder || `Enter ${label?.toLowerCase()}`}
+                className={className}
+                rows={rows}
+                disabled={disabled}
+                {...field}
+              />
+            </FormControl>
+            <FormMessage />
+          </div>
         </FormItem>
       )}
     />

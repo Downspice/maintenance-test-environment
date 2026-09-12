@@ -42,10 +42,14 @@ export default function EmployeeFormWrapper({ variant }: TriggerVariant) {
           Save Employee
         </Button>
       }
-      className="w-3/4"
+      className="w-full sm:w-2/3 sm:min-w-[1200px] sm:max-w-none lg:max-w-none"
     >
       <ScrollArea className="h-[calc(100vh-160px)] pr-4">
-        <NewEmployeeForm formId="new-employee-form" hideSubmitButton />
+        <NewEmployeeForm
+          formId="new-employee-form"
+          hideSubmitButton
+          onSuccess={() => setOpen(false)}
+        />
       </ScrollArea>
     </Drawer>
   );
