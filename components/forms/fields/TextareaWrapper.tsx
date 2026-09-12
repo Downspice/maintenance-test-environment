@@ -29,7 +29,7 @@ export default function TextareaWrapper({
   rows = 4,
   disabled = false,
   required = false,
-  direction = "vertical",
+  direction = "horizontal",
 }: TextareaWrapperProps) {
   return (
     <FormField
@@ -42,38 +42,44 @@ export default function TextareaWrapper({
           <FormItem
             className={cn(
               "w-full",
-              direction === "horizontal"
+              direction === "horizontal" && label
                 ? "flex items-start gap-4"
                 : "flex flex-col"
             )}
           >
-            {label && (
+            {label ? (
               <FormLabel
                 className={cn(
                   direction === "horizontal"
-                    ? "w-[10rem] flex items-center justify-end text-right shrink-0 pt-2"
+                    ? "w-[10rem] flex items-start justify-end text-right shrink-0 pt-2"
                     : "mb-1",
                   isMissingRequired && "text-red-500"
                 )}
               >
                 {label}
               </FormLabel>
-            )}
-          <div className="flex-1 w-full">
-            <FormControl>
-              <Textarea
-                placeholder={placeholder || `Enter ${label?.toLowerCase()}`}
-                className={className}
-                rows={rows}
-                disabled={disabled}
-                {...field}
-              />
-            </FormControl>
-            <FormMessage />
-          </div>
-        </FormItem>
+            ) : null}
+            <div className="flex-1 w-full flex flex-col">
+              <FormControl>
+                <Textarea
+                  placeholder={
+                    placeholder !== undefined
+                      ? placeholder
+                      : label
+                      ? `Enter ${label.toLowerCase()}`
+                      : ""
+                  }
+                  className={className}
+                  rows={rows}
+                  disabled={disabled}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </div>
+          </FormItem>
         );
       }}
     />
-  )
+  );
 }
