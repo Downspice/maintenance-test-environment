@@ -3,11 +3,12 @@
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Slider } from "@/components/ui/slider"
 import type { Control } from "react-hook-form"
+import { cn, isFieldEmpty } from "@/lib/shared/utils"
 
 interface SliderWrapperProps {
   control: Control<any>
   name: string
-  name: string
+  label?: string
   min?: number
   max?: number
   step?: number
@@ -31,15 +32,17 @@ export default function SliderWrapper({
     <FormField
       control={control}
       name={name}
-      render={({ field }) => (
-        <FormItem>
-          <div className="flex justify-between">
-            <FormLabel>
-              {required && <span className="text-red-500 mr-1">*</span>}
-              {label}
-            </FormLabel>
-            {showValue && <span className="text-sm text-muted-foreground">{field.value}</span>}
-          </div>
+      render={({ field }) => {
+        const isMissingRequired = required && isFieldEmpty(field.value);
+
+        return (
+          <FormItem>
+            <div className="flex justify-between">
+              <FormLabel className={cn(isMissingRequired && "text-red-500")}>
+                {label}
+              </FormLabel>
+              {showValue && <span className="text-sm text-muted-foreground">{field.value}</span>}
+            </div>
           <FormControl>
             <Slider
               min={min}
@@ -52,7 +55,8 @@ export default function SliderWrapper({
           </FormControl>
           <FormMessage />
         </FormItem>
-      )}
+        );
+      }}
     />
   )
 }

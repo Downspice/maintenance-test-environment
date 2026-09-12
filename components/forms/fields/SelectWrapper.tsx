@@ -1,6 +1,6 @@
 "use client"
 
-import { cn } from "@/lib/shared/utils"
+import { cn, isFieldEmpty } from "@/lib/shared/utils"
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import type { Control } from "react-hook-form"
@@ -33,25 +33,28 @@ export default function SelectWrapper({
     <FormField
       control={control}
       name={name}
-      render={({ field }) => (
-        <FormItem
-          className={cn(
-            "w-full",
-            direction === "horizontal"
-              ? "flex items-center gap-4"
-              : "flex flex-col"
-          )}
-        >
-          <FormLabel
+      render={({ field }) => {
+        const isMissingRequired = required && isFieldEmpty(field.value);
+
+        return (
+          <FormItem
             className={cn(
+              "w-full",
               direction === "horizontal"
-                ? "w-[10rem] flex items-center justify-end text-right shrink-0"
-                : "mb-1"
+                ? "flex items-center gap-4"
+                : "flex flex-col"
             )}
           >
-            {required && <span className="text-red-500 mr-1">*</span>}
-            {label}
-          </FormLabel>
+            <FormLabel
+              className={cn(
+                direction === "horizontal"
+                  ? "w-[10rem] flex items-center justify-end text-right shrink-0"
+                  : "mb-1",
+                isMissingRequired && "text-red-500"
+              )}
+            >
+              {label}
+            </FormLabel>
 
           <div className="flex-1 w-full">
             <Select onValueChange={field.onChange} defaultValue={field.value} disabled={disabled}>
@@ -71,7 +74,8 @@ export default function SelectWrapper({
             <FormMessage />
           </div>
         </FormItem>
-      )}
+        );
+      }}
     />
   )
 }

@@ -1,5 +1,6 @@
 "use client"
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { cn, isFieldEmpty } from "@/lib/shared/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -88,47 +89,49 @@ export default function CustomFieldsWrapper({
                 <FormField
                   control={control}
                   name={`${name}.${index}.name`}
-                  render={({ field: formField }) => (
-                    <FormItem>
-                      <FormLabel>
-                        <span className="text-red-500 mr-1">*</span>
-                        Field Name
-                      </FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter field name" disabled={disabled} {...formField} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  render={({ field: formField }) => {
+                    const isMissing = isFieldEmpty(formField.value);
+                    return (
+                      <FormItem>
+                        <FormLabel className={cn(isMissing && "text-red-500")}>
+                          Field Name
+                        </FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter field name" disabled={disabled} {...formField} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
                 />
 
                 <FormField
                   control={control}
                   name={`${name}.${index}.value`}
-                  render={({ field: formField }) => (
-                    <FormItem>
-                      <FormLabel className="flex items-center justify-between">
-                        <span>
-                          <span className="text-red-500 mr-1">*</span>
-                          Field Value
-                        </span>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeCustomField(index)}
-                          disabled={disabled}
-                          className="h-6 w-6 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter field value" disabled={disabled} {...formField} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  render={({ field: formField }) => {
+                    const isMissing = isFieldEmpty(formField.value);
+                    return (
+                      <FormItem>
+                        <FormLabel className={cn("flex items-center justify-between", isMissing && "text-red-500")}>
+                          <span>Field Value</span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeCustomField(index)}
+                            disabled={disabled}
+                            className="h-6 w-6 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter field value" disabled={disabled} {...formField} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
                 />
               </div>
             ))}

@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button"
 import { X, Upload, FileText } from "lucide-react"
 import type { Control } from "react-hook-form"
 
+import { cn, isFieldEmpty } from "@/lib/shared/utils"
+
 interface FileUploadWrapperProps {
   control: Control<any>
   name: string
@@ -69,12 +71,14 @@ export default function FileUploadWrapper({
     <FormField
       control={control}
       name={name}
-      render={({ field: { value, onChange, ...fieldProps } }) => (
-        <FormItem>
-          <FormLabel>
-            {required && <span className="text-red-500 mr-1">*</span>}
-            {label}
-          </FormLabel>
+      render={({ field: { value, onChange, ...fieldProps } }) => {
+        const isMissingRequired = required && isFieldEmpty(value);
+
+        return (
+          <FormItem>
+            <FormLabel className={cn(isMissingRequired && "text-red-500")}>
+              {label}
+            </FormLabel>
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2">
               <FormControl>
@@ -120,7 +124,8 @@ export default function FileUploadWrapper({
           </div>
           <FormMessage />
         </FormItem>
-      )}
+        );
+      }}
     />
   )
 }

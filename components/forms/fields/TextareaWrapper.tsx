@@ -4,7 +4,7 @@ import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/comp
 import { Textarea } from "@/components/ui/textarea"
 import type { Control } from "react-hook-form"
 
-import { cn } from "@/lib/shared/utils"
+import { cn, isFieldEmpty } from "@/lib/shared/utils"
 
 interface TextareaWrapperProps {
   control: Control<any>
@@ -35,27 +35,30 @@ export default function TextareaWrapper({
     <FormField
       control={control}
       name={name}
-      render={({ field }) => (
-        <FormItem
-          className={cn(
-            "w-full",
-            direction === "horizontal"
-              ? "flex items-start gap-4"
-              : "flex flex-col"
-          )}
-        >
-          {label && (
-            <FormLabel
-              className={cn(
-                direction === "horizontal"
-                  ? "w-[10rem] flex items-center justify-end text-right shrink-0 pt-2"
-                  : "mb-1"
-              )}
-            >
-              {required && <span className="text-red-500 mr-1">*</span>}
-              {label}
-            </FormLabel>
-          )}
+      render={({ field }) => {
+        const isMissingRequired = required && isFieldEmpty(field.value);
+
+        return (
+          <FormItem
+            className={cn(
+              "w-full",
+              direction === "horizontal"
+                ? "flex items-start gap-4"
+                : "flex flex-col"
+            )}
+          >
+            {label && (
+              <FormLabel
+                className={cn(
+                  direction === "horizontal"
+                    ? "w-[10rem] flex items-center justify-end text-right shrink-0 pt-2"
+                    : "mb-1",
+                  isMissingRequired && "text-red-500"
+                )}
+              >
+                {label}
+              </FormLabel>
+            )}
           <div className="flex-1 w-full">
             <FormControl>
               <Textarea
@@ -69,7 +72,8 @@ export default function TextareaWrapper({
             <FormMessage />
           </div>
         </FormItem>
-      )}
+        );
+      }}
     />
   )
 }

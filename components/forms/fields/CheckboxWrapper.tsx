@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { Control } from "react-hook-form";
+import { cn, isFieldEmpty } from "@/lib/shared/utils";
 
 interface CheckboxOption {
   id: string;
@@ -19,7 +20,7 @@ interface CheckboxOption {
 interface CheckboxWrapperProps {
   control: Control<any>;
   name: string;
-  name: string;
+  label: string;
   options: CheckboxOption[];
   disabled?: boolean;
   required?: boolean;
@@ -37,14 +38,16 @@ export default function CheckboxWrapper({
     <FormField
       control={control}
       name={name}
-      render={() => (
-        <FormItem>
-          <div className="mb-4">
-            <FormLabel className="text-base">
-              {required && <span className="text-red-500 mr-1">*</span>}
-              {label}
-            </FormLabel>
-          </div>
+      render={({ field }) => {
+        const isMissingRequired = required && isFieldEmpty(field.value);
+
+        return (
+          <FormItem>
+            <div className="mb-4">
+              <FormLabel className={cn("text-base", isMissingRequired && "text-red-500")}>
+                {label}
+              </FormLabel>
+            </div>
           <div className="grid grid-cols-4">
             {options.map((option) => (
               <FormField
@@ -90,7 +93,8 @@ export default function CheckboxWrapper({
           </div>
           <FormMessage />
         </FormItem>
-      )}
+        );
+      }}
     />
   );
 }

@@ -33,7 +33,7 @@ import {
   type ChoiceListGetHook,
   type ChoiceListKey,
 } from '@/lib/shared/choice-list-registry';
-import { cn } from '@/lib/shared/utils';
+import { cn, isFieldEmpty } from '@/lib/shared/utils';
 import type { GenericObject } from '@/types/types';
 
 const ADD_OPTION_PREFIX = '__add__';
@@ -197,6 +197,8 @@ export function ChoiceListComboboxFieldInner({
 
         const selectedLabel = options.find((o) => o.id === field.value)?.name;
 
+        const isMissingRequired = required && isFieldEmpty(field.value);
+
         return (
           <FormItem
             className={cn(
@@ -212,9 +214,9 @@ export function ChoiceListComboboxFieldInner({
                   direction === 'horizontal'
                     ? 'w-[10rem] flex items-center justify-end text-right shrink-0'
                     : 'mb-1',
+                  isMissingRequired && 'text-red-500',
                 )}
               >
-                {required && <span className="text-red-500 mr-1">*</span>}
                 {label}
               </FormLabel>
             )}

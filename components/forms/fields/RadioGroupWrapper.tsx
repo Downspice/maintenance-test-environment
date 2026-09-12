@@ -3,6 +3,7 @@
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import type { Control } from "react-hook-form"
+import { cn, isFieldEmpty } from "@/lib/shared/utils"
 
 export interface RadioOption {
   id: string
@@ -35,12 +36,14 @@ export default function RadioGroupWrapper({
     <FormField
       control={control}
       name={name}
-      render={({ field }) => (
-        <FormItem className="space-y-3 flex flex-row">
-          <FormLabel>
-            {required && <span className="text-red-500 mr-1">*</span>}
-            {label}
-          </FormLabel>
+      render={({ field }) => {
+        const isMissingRequired = required && isFieldEmpty(field.value);
+
+        return (
+          <FormItem className="space-y-3 flex flex-row">
+            <FormLabel className={cn(isMissingRequired && "text-red-500")}>
+              {label}
+            </FormLabel>
           <FormControl>
             <RadioGroup
               onValueChange={field.onChange}
@@ -63,7 +66,8 @@ export default function RadioGroupWrapper({
           </FormControl>
           <FormMessage />
         </FormItem>
-      )}
+        );
+      }}
     />
   )
 }

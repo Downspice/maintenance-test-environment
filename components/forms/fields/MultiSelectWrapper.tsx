@@ -19,7 +19,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Button } from "@/components/ui/button"
 import { Check, ChevronsUpDown, X } from "lucide-react"
-import { cn } from "@/lib/shared/utils"
+import { cn, isFieldEmpty } from "@/lib/shared/utils"
 import { Badge } from "@/components/ui/badge"
 import type { Control } from "react-hook-form"
 
@@ -92,6 +92,8 @@ export default function MultiSelectWrapper({
 
         const clearAll = () => field.onChange([])
 
+        const isMissingRequired = required && isFieldEmpty(field.value);
+
         return (
           <FormItem
             className={cn(
@@ -105,10 +107,10 @@ export default function MultiSelectWrapper({
             className={cn(
               direction === "horizontal"
                 ? "w-[10rem] flex items-center justify-end text-right shrink-0"
-                : "mb-1"
+                : "mb-1",
+              isMissingRequired && "text-red-500"
             )}
           >
-            {required && <span className="text-red-500 mr-1">*</span>}
             {label}
           </FormLabel>
 
