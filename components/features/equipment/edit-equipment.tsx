@@ -249,13 +249,23 @@ export default function EditEquipment({
                 onSubmit={form.handleSubmit(onSubmit, onError)}
                 className="space-y-6"
               >
-                <div className="flex">
-                  <Tabs
-                    defaultValue="main"
-                    orientation="vertical"
-                    className="w-full"
-                  >
-                    <div className="flex-1">
+                  <Tabs defaultValue="main" className="w-full">
+                    <TabsList className="flex flex-wrap h-auto gap-1 mb-4">
+                      <TabsTrigger value="main">Main</TabsTrigger>
+                      <TabsTrigger value="specifications">
+                        Specifications
+                      </TabsTrigger>
+                      <TabsTrigger value="warranty">Warranty/Misc</TabsTrigger>
+                      <TabsTrigger value="purchase">Purchase</TabsTrigger>
+                      <TabsTrigger value="images">Images</TabsTrigger>
+                      <TabsTrigger value="attachments">Attachments</TabsTrigger>
+                      <TabsTrigger value="notifications">
+                        Notifications
+                      </TabsTrigger>
+                      <TabsTrigger value="expenses">Expenses</TabsTrigger>
+                      <TabsTrigger value="notes">Notes</TabsTrigger>
+                      <TabsTrigger value="settings">Settings</TabsTrigger>
+                    </TabsList>
                       <TabsContent value="attachments">
                         <FileUploadWrapper
                           multiple={true}
@@ -946,28 +956,7 @@ export default function EditEquipment({
                           />
                         </div>
                       </TabsContent>
-                    </div>
-                    <TabsList
-                      orientation="vertical"
-                      className="border-l border-r-0"
-                    >
-                      <TabsTrigger value="main">Main</TabsTrigger>
-                      <TabsTrigger value="specifications">
-                        Specifications
-                      </TabsTrigger>
-                      <TabsTrigger value="warranty">Warranty/Misc</TabsTrigger>
-                      <TabsTrigger value="purchase">Purchase</TabsTrigger>
-                      <TabsTrigger value="images">Images</TabsTrigger>
-                      <TabsTrigger value="attachments">Attachments</TabsTrigger>
-                      <TabsTrigger value="notifications">
-                        Notifications
-                      </TabsTrigger>
-                      <TabsTrigger value="expenses">Expenses</TabsTrigger>
-                      <TabsTrigger value="notes">Notes</TabsTrigger>
-                      <TabsTrigger value="settings">Settings</TabsTrigger>
-                    </TabsList>
                   </Tabs>
-                </div>
                 <div className="flex justify-end">
                   <Button
                     type="submit"

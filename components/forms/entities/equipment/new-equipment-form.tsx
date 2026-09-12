@@ -417,11 +417,20 @@ export function ActualEquipmentForm() {
         onSubmit={form.handleSubmit(onSubmit, onError)}
         className="space-y-6"
       >
-        <div className="flex">
-          <Tabs defaultValue="main" orientation="vertical" className="w-full">
-            <div className="flex-1">
-              {/* Main Tab */}
-              <TabsContent value="main">
+        <Tabs defaultValue="main" className="w-full">
+          <TabsList className="flex flex-wrap h-auto gap-1 mb-4">
+            <TabsTrigger value="main">Main</TabsTrigger>
+            <TabsTrigger value="specifications">Specifications</TabsTrigger>
+            <TabsTrigger value="warranty">Warranty</TabsTrigger>
+            <TabsTrigger value="purchase">Purchase</TabsTrigger>
+            <TabsTrigger value="expenses">Expenses</TabsTrigger>
+            <TabsTrigger value="attachments">Attachments</TabsTrigger>
+            <TabsTrigger value="notes">Notes</TabsTrigger>
+            <TabsTrigger value="settings">Settings</TabsTrigger>
+          </TabsList>
+
+          {/* Main Tab */}
+          <TabsContent value="main">
                 <div className="grid grid-cols-2 space-x-2">
                   <div className="col-span-1 space-y-2">
                     <Fieldset
@@ -882,20 +891,7 @@ export function ActualEquipmentForm() {
                   }
                 />
               </TabsContent>
-            </div>
-
-            <TabsList orientation="vertical" className="border-l border-r-0">
-              <TabsTrigger value="main">Main</TabsTrigger>
-              <TabsTrigger value="specifications">Specifications</TabsTrigger>
-              <TabsTrigger value="warranty">Warranty</TabsTrigger>
-              <TabsTrigger value="purchase">Purchase</TabsTrigger>
-              <TabsTrigger value="expenses">Expenses</TabsTrigger>
-              <TabsTrigger value="attachments">Attachments</TabsTrigger>
-              <TabsTrigger value="notes">Notes</TabsTrigger>
-              <TabsTrigger value="settings">Settings</TabsTrigger>
-            </TabsList>
           </Tabs>
-        </div>
 
         <div className="flex justify-end">
           <Button
