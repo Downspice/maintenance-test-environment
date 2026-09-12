@@ -435,7 +435,7 @@ export default function EditInvoice({ children, invoiceId }: EditInvoiceProps) {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>{children}</SheetTrigger>
-      <SheetContent className="w-3/4">
+      <SheetContent className="inset-0 w-full max-w-none sm:max-w-none lg:max-w-none">
         <SheetHeader>
           <SheetTitle>
             <div className="flex justify-between">

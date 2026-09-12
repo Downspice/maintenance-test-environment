@@ -99,6 +99,7 @@ export default function EmployeesPage() {
     openSheet({
       title: "Create Invoice",
       description: "Fill out the form below to create a new Invoice.",
+      className: "inset-0 w-full max-w-none sm:max-w-none lg:max-w-none",
       content: <NewInvoiceForm formId="new-invoice-form" hideSubmitButton />,
       renderActions: (
         <Button form="new-invoice-form" type="submit" variant="primary">
