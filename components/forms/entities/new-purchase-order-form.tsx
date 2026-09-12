@@ -315,7 +315,7 @@ export default function NewPurchaseOrderForm({
       <form
         id={formId}
         onSubmit={form.handleSubmit(onSubmit, onError)}
-        className="space-y-6 w-7/8"
+        className="space-y-6 w-full"
       >
         <div className="flex flex-col space-y-2">
           <div className="flex flex-row gap-x-3">
