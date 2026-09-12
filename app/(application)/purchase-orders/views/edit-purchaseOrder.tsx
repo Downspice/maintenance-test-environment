@@ -648,7 +648,7 @@ export default function EditPurchaseOrderForm({
                       </Tabs>
                     </div>
                   </div>
-                  <div className="col-span-2">
+                  <div className="col-span-3 space-y-2">
                     <Fieldset
                       legend="Miscellaneous"
                       content={

@@ -621,7 +621,7 @@ export default function NewPurchaseOrderForm({
                 </Tabs>
               </div>
             </div>
-            <div className="col-span-3">
+            <div className="col-span-3 space-y-2">
               <Fieldset
                 legend="Miscellaneous"
                 content={
