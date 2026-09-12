@@ -347,7 +347,12 @@ export function InvoicesTableLoader({
         ];
 
         const formComponents: Record<string, React.ReactElement> = {
-          "Record Payment": <ActualRecordPaymentForm />,
+          "Record Payment": (
+            <ActualRecordPaymentForm
+              invoiceNumber={row.original.id}
+              onSuccess={() => setOpen(false)}
+            />
+          ),
         };
         const renderFormContent = () => {
           const SelectedComponent = selectedProjectType ? formComponents[selectedProjectType] : null;
@@ -412,7 +417,7 @@ export function InvoicesTableLoader({
               </DropdownMenuContent>
             </DropdownMenu>
             <Sheet open={open} onOpenChange={setOpen}>
-              <SheetContent className="w-[700px]">
+              <SheetContent className="w-full sm:w-[45%] sm:min-w-[600px] sm:max-w-none lg:max-w-none">
                 <SheetHeader>
                   <SheetTitle className="flex items-center gap-2">
                     {selectedType?.name}

@@ -360,8 +360,10 @@ export default function PaymentReceivedTable() {
   }
 
   return (
-    <div className="">
-      <RecordPaymentForm />
+    <div className="space-y-4">
+      <div className="flex justify-end">
+        <RecordPaymentForm />
+      </div>
       <AdvancedDataTable
         columns={columns}
         data={paginatedData} // Use paginated data
