@@ -35,7 +35,7 @@ const TableRow = React.forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTML
   ({ className, ...props }, ref) => (
     <tr
       ref={ref}
-      className={cn('transition-colors duration-100 hover:bg-bg-weak-50 data-[state=selected]:bg-bg-weak-50', className)}
+      className={cn('transition-colors duration-100 hover:bg-bg-weak-50 data-[state=selected]:bg-bg-weak-50 group/row', className)}
       {...props}
     />
   ),
@@ -44,7 +44,9 @@ TableRow.displayName = 'TableRow';
 
 const TableHead = React.forwardRef<HTMLTableCellElement, React.ThHTMLAttributes<HTMLTableCellElement>>(
   ({ className, style, children, ...props }, ref) => {
-    const isActions = typeof children === 'string' && /^actions?$/i.test(children.trim());
+    const isActions =
+      (typeof children === 'string' && /^actions?$/i.test(children.trim())) ||
+      (typeof className === 'string' && /(?:^|\s)(?:actions?|table-actions-sticky)(?:\s|$)/i.test(className));
     return (
       <th
         ref={ref}
@@ -53,7 +55,9 @@ const TableHead = React.forwardRef<HTMLTableCellElement, React.ThHTMLAttributes<
           'first:rounded-l-lg last:rounded-r-lg',
           'text-subheading-xs text-text-soft-400 uppercase tracking-wide',
           '[&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]',
-          isActions && 'w-px whitespace-nowrap',
+          isActions
+            ? 'sticky right-0 z-20 bg-bg-weak-50 shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.08)] border-l border-stroke-soft-200 w-px whitespace-nowrap'
+            : '',
           className,
         )}
         style={isActions ? { width: '1%', whiteSpace: 'nowrap', ...style } : style}
@@ -66,17 +70,29 @@ const TableHead = React.forwardRef<HTMLTableCellElement, React.ThHTMLAttributes<
 );
 TableHead.displayName = 'TableHead';
 
-const TableCell = React.forwardRef<HTMLTableCellElement, React.TdHTMLAttributes<HTMLTableCellElement>>(
-  ({ className, ...props }, ref) => (
-    <td
-      ref={ref}
-      className={cn(
-        'px-3 py-3 align-middle text-text-sub-600 border-b border-stroke-soft-200 [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]',
-        className,
-      )}
-      {...props}
-    />
-  ),
+export interface TableCellProps extends React.TdHTMLAttributes<HTMLTableCellElement> {
+  isActions?: boolean;
+}
+
+const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
+  ({ className, style, isActions, ...props }, ref) => {
+    const isActionsCell =
+      isActions ||
+      (typeof className === 'string' && /(?:^|\s)(?:actions?|table-actions-sticky)(?:\s|$)/i.test(className));
+    return (
+      <td
+        ref={ref}
+        className={cn(
+          'px-3 py-3 align-middle text-text-sub-600 border-b border-stroke-soft-200 [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]',
+          isActionsCell &&
+            'sticky right-0 z-10 bg-bg-white-0 group-hover/row:bg-bg-weak-50 group-data-[state=selected]/row:bg-bg-weak-50 transition-colors shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.08)] border-l border-stroke-soft-200 w-px whitespace-nowrap',
+          className,
+        )}
+        style={isActionsCell ? { width: '1%', whiteSpace: 'nowrap', ...style } : style}
+        {...props}
+      />
+    );
+  },
 );
 TableCell.displayName = 'TableCell';
 

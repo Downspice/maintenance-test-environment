@@ -665,7 +665,10 @@ export function AdvancedDataTable<TData, TValue>({
                   return (
                     <TableHead
                       key={header.id}
-                      className={cn(isActions && "w-px whitespace-nowrap")}
+                      className={cn(
+                        isActions &&
+                          "sticky right-0 z-20 bg-bg-weak-50 shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.08)] border-l border-stroke-soft-200 w-px whitespace-nowrap"
+                      )}
                       style={
                         isActions
                           ? { width: "1%", whiteSpace: "nowrap" }
@@ -696,7 +699,10 @@ export function AdvancedDataTable<TData, TValue>({
                     return (
                       <TableCell
                         key={`skeleton-cell-${idx}-${col.id}`}
-                        className={cn(isActions && "w-px whitespace-nowrap")}
+                        className={cn(
+                          isActions &&
+                            "sticky right-0 z-10 bg-bg-white-0 shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.08)] border-l border-stroke-soft-200 w-px whitespace-nowrap"
+                        )}
                         style={isActions ? { width: "1%", whiteSpace: "nowrap" } : undefined}
                       >
                         {col.id === "select" || col.id === "expand" ? (
@@ -719,7 +725,7 @@ export function AdvancedDataTable<TData, TValue>({
                   <React.Fragment key={row.id}>
                     <TableRow
                       data-state={row.getIsSelected() && "selected"}
-                      className={`cursor-pointer hover:bg-muted/50 ${getRowClassName ? getRowClassName(row) : ""}`}
+                      className={`group/row cursor-pointer hover:bg-muted/50 ${getRowClassName ? getRowClassName(row) : ""}`}
                       onClick={() => onRowClick?.(row)}
                     >
                       {row.getVisibleCells().map((cell) => {
@@ -731,7 +737,10 @@ export function AdvancedDataTable<TData, TValue>({
                         return (
                           <TableCell
                             key={cell.id}
-                            className={cn(isActions && "w-px whitespace-nowrap")}
+                            className={cn(
+                              isActions &&
+                                "sticky right-0 z-10 bg-bg-white-0 group-hover/row:bg-muted/50 transition-colors shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.08)] border-l border-stroke-soft-200 w-px whitespace-nowrap"
+                            )}
                             style={
                               isActions
                                 ? { width: "1%", whiteSpace: "nowrap" }

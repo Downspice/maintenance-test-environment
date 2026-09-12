@@ -1233,6 +1233,29 @@ body {
   .text-foreground { color: var(--foreground); }
   .border-border  { border-color: var(--border); }
   .outline-ring   { outline-color: var(--ring); }
+
+  /* Sticky Table Actions */
+  .table-actions-sticky {
+    position: sticky;
+    right: 0;
+    white-space: nowrap;
+    width: 1%;
+  }
+  th.table-actions-sticky {
+    z-index: 20;
+    background-color: var(--color-bg-weak-50);
+    box-shadow: -4px 0 8px -4px rgba(0, 0, 0, 0.08);
+    border-left: 1px solid var(--color-stroke-soft-200);
+  }
+  td.table-actions-sticky {
+    z-index: 10;
+    background-color: var(--color-bg-white-0);
+    box-shadow: -4px 0 8px -4px rgba(0, 0, 0, 0.08);
+    border-left: 1px solid var(--color-stroke-soft-200);
+  }
+  tr:hover td.table-actions-sticky {
+    background-color: var(--color-bg-weak-50);
+  }
 }
 
 /* ── Base Reset ── */
