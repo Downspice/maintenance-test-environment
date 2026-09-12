@@ -3,13 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { EllipsisVertical, Pen } from "lucide-react";
 import EditEquipment from "./edit-equipment";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Drawer } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useState } from "react";
 import {
@@ -104,17 +98,25 @@ export default function EquipmentProfile({
   ];
   return (
     <>
-      <Sheet open={open} onOpenChange={setOpen}>
-        <SheetTrigger asChild>{children}</SheetTrigger>
-        <SheetContent className="w-5/6 p-2">
-          <SheetHeader>
-            <SheetTitle>
-              <div className="flex justify-between">
-                <div>{data.invoice_number}</div>
-              </div>
-            </SheetTitle>
-          </SheetHeader>
-          <ScrollArea className="h-[calc(100vh-20px)] pr-4 mt-6">
+      <Drawer
+        open={open}
+        onOpenChange={setOpen}
+        trigger={children}
+        title={
+          (equipmentData as any)?.unit_number
+            ? `Equipment - ${(equipmentData as any)?.unit_number}`
+            : data?.name || data?.unit_number || "Equipment Details"
+        }
+        description={
+          (equipmentData as any)?.type_name ||
+          "View equipment details, history, and tasks."
+        }
+        closeable={true}
+        showFooter={false}
+        className="inset-0 w-full max-w-none sm:max-w-none lg:max-w-none p-2"
+        bodyClassName="p-0 overflow-hidden"
+      >
+        <ScrollArea className="h-[calc(100vh-80px)] pr-4 mt-2">
             <SidebarLayout
               menuItems={sidebarMenu}
               defaultActiveId="summary"
@@ -175,8 +177,7 @@ export default function EquipmentProfile({
               }
             />
           </ScrollArea>
-        </SheetContent>
-      </Sheet>
+        </Drawer>
     </>
   );
 }
