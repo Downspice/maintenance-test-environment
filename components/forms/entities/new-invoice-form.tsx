@@ -420,11 +420,12 @@ export default function NewInvoiceForm({
               />
             </div>
           </div>
-          <div className="grid grid-cols-8 gap-4">
-            <div className="col-span-5 grid grid-cols-2 gap-1">
-              <div className="col-span-1">
+          <div className="grid grid-cols-8 gap-4 items-start">
+            <div className="col-span-5 flex flex-col gap-3">
+              <div className="grid grid-cols-2 gap-2">
                 <Fieldset
                   legend="Billing"
+                  className="h-full"
                   content={
                     <TextareaWrapper
                       control={form.control}
@@ -435,10 +436,9 @@ export default function NewInvoiceForm({
                     />
                   }
                 />
-              </div>
-              <div className="col-span-1">
                 <Fieldset
                   legend="Shipping"
+                  className="h-full"
                   content={
                     <TextareaWrapper
                       control={form.control}
@@ -450,8 +450,7 @@ export default function NewInvoiceForm({
                   }
                 />
               </div>
-              <div className="col-span-2">
-                <Tabs defaultValue="Items" className="w-full">
+              <Tabs defaultValue="Items" className="w-full">
                   <TabsList>
                     <TabsTrigger value="Items">Items</TabsTrigger>
                     <TabsTrigger value="Payments">Payments</TabsTrigger>
@@ -745,7 +744,6 @@ export default function NewInvoiceForm({
                     />
                   </TabsContent>
                 </Tabs>
-              </div>
             </div>
             <div className="col-span-3">
               <Fieldset
