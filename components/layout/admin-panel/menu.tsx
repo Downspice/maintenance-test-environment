@@ -63,14 +63,14 @@ export function Menu({ isOpen }: MenuProps) {
                     active;
 
                   return !submenus || submenus.length === 0 ? (
-                    <div className="w-full" key={index}>
+                    <div className="w-full relative flex items-center mb-1" key={index}>
                       <TooltipProvider disableHoverableContent>
                         <Tooltip delayDuration={100}>
                           <TooltipTrigger asChild>
                             <Button
                               variant="ghost"
                               className={cn(
-                                "w-full h-10 mb-1 transition-colors duration-150",
+                                "w-full h-10 transition-colors duration-150",
                                 isOpen === false ? "justify-center px-0" : "justify-start px-3",
                                 isActive
                                   ? "bg-gray-100 text-text-strong-950 font-semibold dark:bg-zinc-800 dark:text-zinc-50"
@@ -82,7 +82,8 @@ export function Menu({ isOpen }: MenuProps) {
                                 href={href}
                                 className={cn(
                                   "flex items-center w-full",
-                                  isOpen === false ? "justify-center" : "justify-between"
+                                  isOpen === false ? "justify-center" : "justify-start",
+                                  isOpen && button ? "pr-8" : ""
                                 )}
                               >
                                 {/* Icon and Label */}
@@ -105,18 +106,6 @@ export function Menu({ isOpen }: MenuProps) {
                                     {label}
                                   </p>
                                 </div>
-
-                                {/* Plus button */}
-                                {isOpen && button && (
-                                  <div
-                                    className="ml-auto shrink-0 flex items-center justify-center [&_button]:size-6 [&_button]:p-0 [&_button]:h-6 [&_button]:w-6 [&_button]:rounded-md [&_button]:text-text-soft-400 hover:[&_button]:text-text-strong-950 hover:[&_button]:bg-gray-200/70 dark:hover:[&_button]:bg-zinc-700 transition-colors"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                    }}
-                                  >
-                                    {button} 
-                                  </div>
-                                )}
                               </Link>
                             </Button>
                           </TooltipTrigger>
@@ -127,6 +116,22 @@ export function Menu({ isOpen }: MenuProps) {
                           )}
                         </Tooltip>
                       </TooltipProvider>
+
+                      {/* Plus button */}
+                      {isOpen && button && (
+                        <div
+                          className="absolute right-2 shrink-0 flex items-center justify-center z-10 [&_button]:size-6 [&_button]:p-0 [&_button]:h-6 [&_button]:w-6 [&_button]:rounded-md [&_button]:text-text-soft-400 hover:[&_button]:text-text-strong-950 hover:[&_button]:bg-gray-200/70 dark:hover:[&_button]:bg-zinc-700 transition-colors"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                          }}
+                          onPointerDown={(e) => {
+                            e.stopPropagation();
+                          }}
+                        >
+                          {button}
+                        </div>
+                      )}
                     </div>
                   ) : (
                     <div className="w-full" key={index}>
