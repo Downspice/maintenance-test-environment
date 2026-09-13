@@ -8,13 +8,7 @@ import {
 } from "../ui/dropdown-menu";
 import { Plus } from "lucide-react";
 import { useState } from "react";
-import {
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-  Sheet,
-} from "@/components/ui/sheet";
+import { Drawer } from "@/components/ui/drawer";
 import NewEmployeeForm from "../forms/entities/new-employee-form";
 import InspectionForm from "../forms/entities/new-inspection";
 import NewVendor from "../forms/entities/new-vendor-form";
@@ -70,33 +64,115 @@ export default function CreateAllButton() {
     { name: "Receive Purchase Order", onSelect: genericDropdown },
   ];
 
-  const formComponents = {
-    "Equipment": <ActualEquipmentForm />,
+  const formComponents: Record<string, React.ReactNode> = {
+    Equipment: (
+      <ActualEquipmentForm
+        formId="new-equipment-form"
+        hideSubmitButton
+        onSuccess={() => setOpen(false)}
+      />
+    ),
     "Repair Request": <ActualRepairRequestForm />,
     "Daily Inspection": <InspectionForm />,
-    "Work Order": <ActualWorkOrderForm />,
+    "Work Order": (
+      <ActualWorkOrderForm
+        formId="actual-work-order-form"
+        hideSubmitButton
+      />
+    ),
     Expense: <GeneralExpense />,
     Assignment: <EquipmentAssignment />,
     Accident: <NewAccident />,
     Part: <NewPart />,
-    "Purchase Order": <NewPurchaseOrderForm />,
-    Employee: <NewEmployeeForm />,
-    Vendor: <NewVendor />,
+    "Purchase Order": (
+      <NewPurchaseOrderForm
+        formId="new-purchase-order-form"
+        hideSubmitButton
+      />
+    ),
+    Employee: (
+      <NewEmployeeForm
+        formId="new-employee-form"
+        hideSubmitButton
+        onSuccess={() => setOpen(false)}
+      />
+    ),
+    Vendor: (
+      <NewVendor
+        formId="new-vendor-form"
+        hideSubmitButton
+      />
+    ),
     "Receive | Adjust Inventory": <AdjustInventoryForm data={undefined} />,
     "Receive Purchase Order": <QuickActionsReceivePurchaseOrder />,
   };
+
   const renderFormContent = () => {
     const SelectedComponent = formComponents[selectedProjectType || ""];
     console.log("new selected", SelectedComponent);
     return SelectedComponent ? SelectedComponent : null;
   };
 
-  // const selectedType = [
-  //   ...dropdownItems1,
-  //   ...dropdownItems2,
-  //   ...dropdownItems3,
-  // ].find((type) => type.label === selectedProjectType);
-  // const currentForm = getCurrentForm();
+  const isFullscreen =
+    selectedProjectType === "Purchase Order" ||
+    selectedProjectType === "Equipment" ||
+    selectedProjectType === "Receive Purchase Order";
+
+  const drawerClassName = isFullscreen
+    ? "inset-0 w-full max-w-none sm:max-w-none lg:max-w-none"
+    : "w-full sm:w-[45%] sm:min-w-[600px] sm:max-w-none lg:max-w-none";
+
+  const getDrawerTitle = () => {
+    if (!selectedProjectType) return "Create Item";
+    if (selectedProjectType.startsWith("Receive")) return selectedProjectType;
+    return `Create ${selectedProjectType}`;
+  };
+
+  const getDrawerDescription = () => {
+    if (!selectedProjectType) return "";
+    if (selectedProjectType.startsWith("Receive")) {
+      return `Fill out the details below to ${selectedProjectType.toLowerCase()}.`;
+    }
+    return `Fill out the form below to create a new ${selectedProjectType.toLowerCase()}.`;
+  };
+
+  const renderSubmitAction = () => {
+    switch (selectedProjectType) {
+      case "Equipment":
+        return (
+          <Button form="new-equipment-form" type="submit" variant="primary">
+            Save Equipment
+          </Button>
+        );
+      case "Purchase Order":
+        return (
+          <Button form="new-purchase-order-form" type="submit" variant="primary">
+            Save Purchase Order
+          </Button>
+        );
+      case "Employee":
+        return (
+          <Button form="new-employee-form" type="submit" variant="primary">
+            Save Employee
+          </Button>
+        );
+      case "Vendor":
+        return (
+          <Button form="new-vendor-form" type="submit" variant="primary">
+            Save Vendor
+          </Button>
+        );
+      case "Work Order":
+        return (
+          <Button form="actual-work-order-form" type="submit" variant="primary">
+            Create Work Order
+          </Button>
+        );
+      default:
+        return undefined;
+    }
+  };
+
   return (
     <>
       <DropdownMenu>
@@ -108,12 +184,9 @@ export default function CreateAllButton() {
         </DropdownMenuTrigger>
         <DropdownMenuContent
           className="w-64 rounded-lg"
-        // side={isMobile ? "bottom" : "right"}
-        // align={isMobile ? "end" : "start"}
         >
-          <div className="w-full  *:p-3 items-end flex justify-between">
+          <div className="w-full *:p-3 items-end flex justify-between">
             <div className="text-md font-semibold">Create New</div>
-            {/* <Button variant="ghost">clear All</Button> */}
           </div>
 
           {dropdownItems1.map((item) => (
@@ -145,32 +218,19 @@ export default function CreateAllButton() {
           ))}
         </DropdownMenuContent>
       </DropdownMenu>
-      <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent
-          className={
-            selectedProjectType === "Purchase Order"
-              ? "inset-0 w-full max-w-none sm:max-w-none lg:max-w-none"
-              : "w-[400px] sm:w-2/3"
-          }
-        >
-          <SheetHeader>
-            <SheetTitle className="flex items-center gap-2">
-              {/* {selectedType && <selectedType.icon className="h-5 w-5" />} */}
-              {selectedProjectType?.startsWith("Receive")
-                ? selectedProjectType
-                : `Create New ${selectedProjectType || "Project"}`}
-            </SheetTitle>
-            <SheetDescription>
-              {/* {selectedType?.label ||
-                "Fill out the form below to set up your new development project."} */}
-            </SheetDescription>
-          </SheetHeader>
-
-          <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
-            {renderFormContent() || "nothing else"}
-          </ScrollArea>
-        </SheetContent>
-      </Sheet>
+      <Drawer
+        open={open}
+        onOpenChange={setOpen}
+        title={getDrawerTitle()}
+        description={getDrawerDescription()}
+        closeable={true}
+        renderActions={renderSubmitAction()}
+        className={drawerClassName}
+      >
+        <ScrollArea className="h-[calc(100vh-160px)] pr-4">
+          {renderFormContent() || "nothing else"}
+        </ScrollArea>
+      </Drawer>
     </>
   );
 }
