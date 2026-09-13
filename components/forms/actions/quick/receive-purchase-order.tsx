@@ -5,6 +5,16 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
 import { Save } from "lucide-react";
 // Form wrappers
 import DatePickerWrapper from "@/components/forms/fields/DatePickerWrapper";
@@ -198,47 +208,61 @@ export default function QuickActionsReceivePurchaseOrder({
                   <div className="border rounded p-4">
                     <div className="flex items-center justify-between mb-2">
                       <span className="font-medium text-sm">Receive Items</span>
-                      <label className="flex items-center gap-2 text-sm">
-                        <input
-                          type="checkbox"
-                          onChange={(e) =>
-                            e.target.checked && updateAllReceived()
+                      <label className="flex items-center gap-2 text-sm cursor-pointer">
+                        <Checkbox
+                          onCheckedChange={(checked) =>
+                            checked && updateAllReceived()
                           }
                         />
                         All items are received in full
                       </label>
                     </div>
-                    <div className="grid grid-cols-2 text-sm font-semibold border-b pb-1">
-                      <div>Description</div>
-                      <div className="grid grid-cols-3 gap-2">
-                        <span>Ordered</span>
-                        <span>Received (Total)</span>
-                        <span>Received</span>
-                      </div>
+                    <div className="rounded-md border overflow-hidden mt-3">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Description</TableHead>
+                            <TableHead className="w-[100px] text-center">Ordered</TableHead>
+                            <TableHead className="w-[140px] text-center">Received (Total)</TableHead>
+                            <TableHead className="w-[140px] text-right">Received</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {watchItems.length === 0 ? (
+                            <TableRow>
+                              <TableCell colSpan={4} className="text-center text-text-soft-400 py-4">
+                                No items to receive
+                              </TableCell>
+                            </TableRow>
+                          ) : (
+                            watchItems.map((item, index) => (
+                              <TableRow key={index}>
+                                <TableCell className="font-medium text-text-strong-950">
+                                  {item.description || item.partNumber}
+                                </TableCell>
+                                <TableCell className="text-center">{item.orderQuantity}</TableCell>
+                                <TableCell className="text-center">{item.receivedQuantity || 0}</TableCell>
+                                <TableCell className="text-right">
+                                  <Input
+                                    type="number"
+                                    size="sm"
+                                    min={0}
+                                    className="w-24 ml-auto text-right"
+                                    value={item.newReceivedQuantity || 0}
+                                    onChange={(e) => {
+                                      const val = Number(e.target.value);
+                                      const updatedItems = [...watchItems];
+                                      updatedItems[index].newReceivedQuantity = val;
+                                      form.setValue("items", updatedItems);
+                                    }}
+                                  />
+                                </TableCell>
+                              </TableRow>
+                            ))
+                          )}
+                        </TableBody>
+                      </Table>
                     </div>
-                    {watchItems.map((item, index) => (
-                      <div
-                        key={index}
-                        className="grid grid-cols-2 items-center border-b py-1 text-sm"
-                      >
-                        <div>{item.description || item.partNumber}</div>
-                        <div className="grid grid-cols-3 gap-2">
-                          <span>{item.orderQuantity}</span>
-                          <span>{item.receivedQuantity || 0}</span>
-                          <input
-                            type="number"
-                            className="border rounded px-2 py-1"
-                            value={item.newReceivedQuantity || 0}
-                            onChange={(e) => {
-                              const val = Number(e.target.value);
-                              const updatedItems = [...watchItems];
-                              updatedItems[index].newReceivedQuantity = val;
-                              form.setValue("items", updatedItems);
-                            }}
-                          />
-                        </div>
-                      </div>
-                    ))}
                     <div className="flex justify-end pt-2">
                       <button
                         type="button"
