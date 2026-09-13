@@ -45,7 +45,17 @@ export const generalExpenseSchema = z.object({
 type GeneralExpenseFormValues = z.infer<typeof generalExpenseSchema>;
 const partOptions = [{ name: "Filter", id: "filter" }];
 
-export default function GeneralExpense() {
+interface GeneralExpenseProps {
+  formId?: string;
+  hideSubmitButton?: boolean;
+  onSuccess?: () => void;
+}
+
+export default function GeneralExpense({
+  formId = "new-general-expense-form",
+  hideSubmitButton,
+  onSuccess,
+}: GeneralExpenseProps = {}) {
   const form = useForm<GeneralExpenseFormValues>({
     resolver: zodResolver(generalExpenseSchema),
     defaultValues: {},
@@ -62,6 +72,7 @@ export default function GeneralExpense() {
     toast("Project created successfully!", {
       duration: 10000,
     });
+    onSuccess?.();
   }
 
   function onError(errors: any) {
@@ -92,6 +103,7 @@ export default function GeneralExpense() {
   return (
     <Form {...form}>
       <form
+        id={formId}
         onSubmit={form.handleSubmit(onSubmit, onError)}
         className="space-y-6"
       >
@@ -175,12 +187,14 @@ export default function GeneralExpense() {
             </div>
           </div>
         </div>
-        <div className="flex justify-end">
-          <Button type="submit" className="min-w-32 my-4 w-full">
-            <Save className="mr-2 h-4 w-4" />
-            Save
-          </Button>
-        </div>
+        {!hideSubmitButton && (
+          <div className="flex justify-end">
+            <Button type="submit" className="min-w-32 my-4 w-full">
+              <Save className="mr-2 h-4 w-4" />
+              Save
+            </Button>
+          </div>
+        )}
       </form>
     </Form>
   );

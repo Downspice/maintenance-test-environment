@@ -40,34 +40,41 @@ export const AdjustInventorySchema = z.object({
   reason: z.string().optional(),
 });
 
-export type AdjustInventoryInterface =z.infer<typeof AdjustInventorySchema>
- export default function AdjustInventoryForm({
-   
-   data,
- }: { 
-   data: AdjustInventoryInterface;
- }) { 
+export type AdjustInventoryInterface = z.infer<typeof AdjustInventorySchema>;
 
-    const { data: warehouseOptions } = useGetWarehouses();
-    const { data: vendorOptions } = useGetVendors();
-    
-  
+interface AdjustInventoryFormProps {
+  data?: AdjustInventoryInterface;
+  formId?: string;
+  hideSubmitButton?: boolean;
+  onSuccess?: () => void;
+}
+
+export default function AdjustInventoryForm({
+  data,
+  formId = "adjust-inventory-form",
+  hideSubmitButton,
+  onSuccess,
+}: AdjustInventoryFormProps) {
+  const { data: warehouseOptions } = useGetWarehouses();
+  const { data: vendorOptions } = useGetVendors();
+
   const AdjustInventoryForm = useForm<z.infer<typeof AdjustInventorySchema>>({
     resolver: zodResolver(AdjustInventorySchema),
-    defaultValues: {...data},
+    defaultValues: { ...data },
   });
 
   async function handleSubmit(data: z.infer<typeof AdjustInventorySchema>) {
     console.log(data);
     // Here you would typically send the data to your API
-    toast.success("Work Order submitted successfully!");
+    toast.success("Inventory adjusted successfully!");
+    onSuccess?.();
   }
 
   return (
-   
     <div className="w-full">
       <Form {...AdjustInventoryForm}>
         <form
+          id={formId}
           onSubmit={AdjustInventoryForm.handleSubmit((data) => handleSubmit(data))}
           className="w-full"
         >
@@ -169,11 +176,13 @@ export type AdjustInventoryInterface =z.infer<typeof AdjustInventorySchema>
             />
           </div>
 
-          <div className="flex justify-between gap-x-4 my-8 w-full">
-            <Button className=" w-full">
-              <GitPullRequestArrow className="mr-2" /> Save
-            </Button>
-          </div>
+          {!hideSubmitButton && (
+            <div className="flex justify-between gap-x-4 my-8 w-full">
+              <Button type="submit" className="w-full">
+                <GitPullRequestArrow className="mr-2" /> Save
+              </Button>
+            </div>
+          )}
         </form>
       </Form>
     </div> )

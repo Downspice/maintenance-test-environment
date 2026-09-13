@@ -39,8 +39,16 @@ import {
 
 interface triggerVariant {
   variant?: "icon" | "default";
+  formId?: string;
+  hideSubmitButton?: boolean;
+  onSuccess?: () => void;
 }
-export default function EquipmentAssignment({ variant }: triggerVariant) {
+export default function EquipmentAssignment({
+  variant,
+  formId = "assign-equipment-form",
+  hideSubmitButton,
+  onSuccess,
+}: triggerVariant) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const {
@@ -76,6 +84,7 @@ export default function EquipmentAssignment({ variant }: triggerVariant) {
 
     setOpen(false);
     form.reset();
+    onSuccess?.();
   }
 
   function onError(errors: any) {
@@ -107,6 +116,7 @@ export default function EquipmentAssignment({ variant }: triggerVariant) {
   return (
     <Form {...form}>
       <form
+        id={formId}
         onSubmit={form.handleSubmit(onSubmit, onError)}
         className="space-y-6"
       >
@@ -282,22 +292,24 @@ export default function EquipmentAssignment({ variant }: triggerVariant) {
             </Tabs>
           </div>
         </div>
-        <div className="flex justify-end">
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-            className="min-w-32 my-4 w-full"
-          >
-            {isSubmitting ? (
-              "Creating..."
-            ) : (
-              <>
-                <Save className="mr-2 h-4 w-4" />
-                Save
-              </>
-            )}
-          </Button>
-        </div>
+        {!hideSubmitButton && (
+          <div className="flex justify-end">
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="min-w-32 my-4 w-full"
+            >
+              {isSubmitting ? (
+                "Creating..."
+              ) : (
+                <>
+                  <Save className="mr-2 h-4 w-4" />
+                  Save
+                </>
+              )}
+            </Button>
+          </div>
+        )}
       </form>
     </Form>
   );

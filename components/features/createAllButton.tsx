@@ -72,18 +72,54 @@ export default function CreateAllButton() {
         onSuccess={() => setOpen(false)}
       />
     ),
-    "Repair Request": <ActualRepairRequestForm />,
-    "Daily Inspection": <InspectionForm />,
+    "Repair Request": (
+      <ActualRepairRequestForm
+        formId="repair-request-form"
+        hideSubmitButton
+        onSuccess={() => setOpen(false)}
+      />
+    ),
+    "Daily Inspection": (
+      <InspectionForm
+        formId="new-inspection-form"
+        hideSubmitButton
+        onSuccess={() => setOpen(false)}
+      />
+    ),
     "Work Order": (
       <ActualWorkOrderForm
         formId="actual-work-order-form"
         hideSubmitButton
       />
     ),
-    Expense: <GeneralExpense />,
-    Assignment: <EquipmentAssignment />,
-    Accident: <NewAccident />,
-    Part: <NewPart />,
+    Expense: (
+      <GeneralExpense
+        formId="new-general-expense-form"
+        hideSubmitButton
+        onSuccess={() => setOpen(false)}
+      />
+    ),
+    Assignment: (
+      <EquipmentAssignment
+        formId="assign-equipment-form"
+        hideSubmitButton
+        onSuccess={() => setOpen(false)}
+      />
+    ),
+    Accident: (
+      <NewAccident
+        formId="new-accident-form"
+        hideSubmitButton
+        onSuccess={() => setOpen(false)}
+      />
+    ),
+    Part: (
+      <NewPart
+        formId="new-part-form"
+        hideSubmitButton
+        onSuccess={() => setOpen(false)}
+      />
+    ),
     "Purchase Order": (
       <NewPurchaseOrderForm
         formId="new-purchase-order-form"
@@ -103,8 +139,21 @@ export default function CreateAllButton() {
         hideSubmitButton
       />
     ),
-    "Receive | Adjust Inventory": <AdjustInventoryForm data={undefined} />,
-    "Receive Purchase Order": <QuickActionsReceivePurchaseOrder />,
+    "Receive | Adjust Inventory": (
+      <AdjustInventoryForm
+        data={undefined}
+        formId="adjust-inventory-form"
+        hideSubmitButton
+        onSuccess={() => setOpen(false)}
+      />
+    ),
+    "Receive Purchase Order": (
+      <QuickActionsReceivePurchaseOrder
+        formId="receive-purchase-order-form"
+        hideSubmitButton
+        onSuccess={() => setOpen(false)}
+      />
+    ),
   };
 
   const renderFormContent = () => {
@@ -144,6 +193,48 @@ export default function CreateAllButton() {
             Save Equipment
           </Button>
         );
+      case "Repair Request":
+        return (
+          <Button form="repair-request-form" type="submit" variant="primary">
+            Save Repair Request
+          </Button>
+        );
+      case "Daily Inspection":
+        return (
+          <Button form="new-inspection-form" type="submit" variant="primary">
+            Save Inspection
+          </Button>
+        );
+      case "Work Order":
+        return (
+          <Button form="actual-work-order-form" type="submit" variant="primary">
+            Create Work Order
+          </Button>
+        );
+      case "Expense":
+        return (
+          <Button form="new-general-expense-form" type="submit" variant="primary">
+            Save Expense
+          </Button>
+        );
+      case "Assignment":
+        return (
+          <Button form="assign-equipment-form" type="submit" variant="primary">
+            Save Assignment
+          </Button>
+        );
+      case "Accident":
+        return (
+          <Button form="new-accident-form" type="submit" variant="primary">
+            Save Accident
+          </Button>
+        );
+      case "Part":
+        return (
+          <Button form="new-part-form" type="submit" variant="primary">
+            Save Part
+          </Button>
+        );
       case "Purchase Order":
         return (
           <Button form="new-purchase-order-form" type="submit" variant="primary">
@@ -162,10 +253,16 @@ export default function CreateAllButton() {
             Save Vendor
           </Button>
         );
-      case "Work Order":
+      case "Receive | Adjust Inventory":
         return (
-          <Button form="actual-work-order-form" type="submit" variant="primary">
-            Create Work Order
+          <Button form="adjust-inventory-form" type="submit" variant="primary">
+            Save Adjustment
+          </Button>
+        );
+      case "Receive Purchase Order":
+        return (
+          <Button form="receive-purchase-order-form" type="submit" variant="primary">
+            Receive Purchase Order
           </Button>
         );
       default:

@@ -24,7 +24,17 @@ import { useGetPurchaseOrders } from "@/services/setups/purchaseOrder";
 
 type ItemFormValues = z.infer<typeof PurchaseOrderItemSchema>;
 
-export default function QuickActionsReceivePurchaseOrder() {
+interface QuickActionsReceivePurchaseOrderProps {
+  formId?: string;
+  hideSubmitButton?: boolean;
+  onSuccess?: () => void;
+}
+
+export default function QuickActionsReceivePurchaseOrder({
+  formId = "receive-purchase-order-form",
+  hideSubmitButton,
+  onSuccess,
+}: QuickActionsReceivePurchaseOrderProps = {}) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editIndex, setEditIndex] = useState<number | null>(null);
@@ -98,6 +108,7 @@ export default function QuickActionsReceivePurchaseOrder() {
 
     setOpen(false);
     form.reset();
+    onSuccess?.();
   }
 
   function onError(errors: any) {
@@ -159,13 +170,13 @@ export default function QuickActionsReceivePurchaseOrder() {
     form.setValue("items", updatedItems);
   };
 
-  return (
-    <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit, onError)}
-          className="space-y-6"
-        >
+  const content = (
+    <Form {...form}>
+      <form
+        id={formId}
+        onSubmit={form.handleSubmit(onSubmit, onError)}
+        className="space-y-6"
+      >
           <div className="flex flex-col space-y-2">
             <div className="flex flex-row w-1/2 gap-x-3">
               <ComboboxFieldWrapper
@@ -242,24 +253,35 @@ export default function QuickActionsReceivePurchaseOrder() {
               }
             />
           </div>
-          <div className="flex justify-end">
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="min-w-32 my-4 w-full"
-            >
-              {isSubmitting ? (
-                "Creating..."
-              ) : (
-                <>
-                  <Save className="mr-2 h-4 w-4" />
-                  Save
-                </>
-              )}
-            </Button>
-          </div>
+          {!hideSubmitButton && (
+            <div className="flex justify-end">
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="min-w-32 my-4 w-full"
+              >
+                {isSubmitting ? (
+                  "Creating..."
+                ) : (
+                  <>
+                    <Save className="mr-2 h-4 w-4" />
+                    Save
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
         </form>
       </Form>
+  );
+
+  if (hideSubmitButton) {
+    return <div className="w-full">{content}</div>;
+  }
+
+  return (
+    <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
+      {content}
     </ScrollArea>
   );
 }

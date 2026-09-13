@@ -84,8 +84,17 @@ export const repairRequestSchema = z.object({
 interface triggerVariant {
   variant?: "icon" | "default";
   equipmentId?: string | number;
+  formId?: string;
+  hideSubmitButton?: boolean;
+  onSuccess?: () => void;
 }
-export default function ActualRepairRequestForm({ variant, equipmentId }: triggerVariant) {
+export default function ActualRepairRequestForm({
+  variant,
+  equipmentId,
+  formId = "repair-request-form",
+  hideSubmitButton,
+  onSuccess,
+}: triggerVariant) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { mutate: updateRepairRequest, isPending } = useUpdateEquipmentRepairRequest();
@@ -260,6 +269,7 @@ export default function ActualRepairRequestForm({ variant, equipmentId }: trigge
         toast.success("Repair request created successfully!");
         setOpen(false);
         form.reset();
+        onSuccess?.();
       },
       onError: () => {
         toast.error("Failed to create repair request.");
@@ -291,6 +301,7 @@ export default function ActualRepairRequestForm({ variant, equipmentId }: trigge
   return (
     <Form {...form}>
       <form
+        id={formId}
         onSubmit={form.handleSubmit(onSubmit, onError)}
         className="space-y-6"
       >
@@ -344,22 +355,24 @@ export default function ActualRepairRequestForm({ variant, equipmentId }: trigge
             }
           />
         </div>
-        <div className="flex justify-end">
-          <Button
-            type="submit"
-            disabled={isPending}
-            className="min-w-32 my-4 w-full"
-          >
-            {isPending ? (
-              "Submitting..."
-            ) : (
-              <>
-                <Save className="mr-2 h-4 w-4" />
-                Submit
-              </>
-            )}
-          </Button>
-        </div>
+        {!hideSubmitButton && (
+          <div className="flex justify-end">
+            <Button
+              type="submit"
+              disabled={isPending}
+              className="min-w-32 my-4 w-full"
+            >
+              {isPending ? (
+                "Submitting..."
+              ) : (
+                <>
+                  <Save className="mr-2 h-4 w-4" />
+                  Submit
+                </>
+              )}
+            </Button>
+          </div>
+        )}
       </form>
     </Form>
   );

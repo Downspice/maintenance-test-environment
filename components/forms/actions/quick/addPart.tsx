@@ -29,7 +29,17 @@ import {
   useGetVendorOptions,
 } from "@/services/setups/vendor";
 
-export default function NewPart() {
+interface NewPartProps {
+  formId?: string;
+  hideSubmitButton?: boolean;
+  onSuccess?: () => void;
+}
+
+export default function NewPart({
+  formId = "new-part-form",
+  hideSubmitButton,
+  onSuccess,
+}: NewPartProps = {}) {
     const { data: equipmentManufacturerOptions } = useGetInventoryManufacturers();
     const { data:   unitOptions } = useGetInventoryUnitTypes();
   const { data: costCenterOptions } = useGetCostCenters();
@@ -50,12 +60,14 @@ export default function NewPart() {
     console.log(data);
     // Here you would typically send the data to your API
 
-    toast.success("Work Order submitted successfully!");
+    toast.success("Part created successfully!");
+    onSuccess?.();
   }
   return (
     <div>
       <Form {...inventoryForm}>
         <form
+          id={formId}
           onSubmit={inventoryForm.handleSubmit((data) => handleSubmit(data))}
           className="flex flex-col gap-2"
         >
@@ -417,11 +429,13 @@ export default function NewPart() {
             </Button>
           </div> */}
 
-          <div className="flex justify-between gap-x-4 my-8 w-full">
-            <Button className=" w-full">
-              <GitPullRequestArrow className="mr-2" /> Create Inspection
-            </Button>
-          </div>
+          {!hideSubmitButton && (
+            <div className="flex justify-between gap-x-4 my-8 w-full">
+              <Button type="submit" className="w-full">
+                <GitPullRequestArrow className="mr-2" /> Save Part
+              </Button>
+            </div>
+          )}
         </form>
       </Form>
     </div>

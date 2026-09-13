@@ -63,8 +63,16 @@ export const accidentFormSchema = z.object({
 export type AccidentFormValues = z.infer<typeof accidentFormSchema>;
 interface triggerVariant {
   variant?: "icon" | "default";
+  formId?: string;
+  hideSubmitButton?: boolean;
+  onSuccess?: () => void;
 }
-export default function NewAccident({ variant }: triggerVariant) {
+export default function NewAccident({
+  variant,
+  formId = "new-accident-form",
+  hideSubmitButton,
+  onSuccess,
+}: triggerVariant) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { data: costCenterOptions } = useGetCostCenters();
@@ -98,6 +106,7 @@ export default function NewAccident({ variant }: triggerVariant) {
 
     setOpen(false);
     form.reset();
+    onSuccess?.();
   }
 
   function onError(errors: any) {
@@ -129,6 +138,7 @@ export default function NewAccident({ variant }: triggerVariant) {
   return (
     <Form {...form}>
       <form
+        id={formId}
         onSubmit={form.handleSubmit(onSubmit, onError)}
         className="space-y-1"
       >
@@ -326,22 +336,24 @@ export default function NewAccident({ variant }: triggerVariant) {
             </Tabs>
           </div>
         </div>
-        <div className="flex justify-end">
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-            className="min-w-32 my-4 w-full"
-          >
-            {isSubmitting ? (
-              "Creating..."
-            ) : (
-              <>
-                <Save className="mr-2 h-4 w-4" />
-                Save
-              </>
-            )}
-          </Button>
-        </div>
+        {!hideSubmitButton && (
+          <div className="flex justify-end">
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="min-w-32 my-4 w-full"
+            >
+              {isSubmitting ? (
+                "Creating..."
+              ) : (
+                <>
+                  <Save className="mr-2 h-4 w-4" />
+                  Save
+                </>
+              )}
+            </Button>
+          </div>
+        )}
       </form>
     </Form>
   );

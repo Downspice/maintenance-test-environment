@@ -58,7 +58,17 @@ export const inspectionFormSchema = z.object({
 export type InspectionFormValues = z.infer<typeof inspectionFormSchema>;
 export type InspectionItem = z.infer<typeof inspectionItemSchema>;
 
-export default function InspectionForm() {
+interface InspectionFormProps {
+  formId?: string;
+  hideSubmitButton?: boolean;
+  onSuccess?: () => void;
+}
+
+export default function InspectionForm({
+  formId = "new-inspection-form",
+  hideSubmitButton,
+  onSuccess,
+}: InspectionFormProps = {}) {
      const { 
     data: locationOptionsList, 
     isLoading:locationOptionsListLoading, 
@@ -77,6 +87,7 @@ export default function InspectionForm() {
     });
 
     form.reset();
+    onSuccess?.();
   }
 
   function onError(errors: any) {
@@ -108,6 +119,7 @@ export default function InspectionForm() {
   return (
     <Form {...form}>
       <form
+        id={formId}
         onSubmit={form.handleSubmit(onSubmit, onError)}
         className="space-y-6"
       >
@@ -169,12 +181,14 @@ export default function InspectionForm() {
             }
           />
         </div>
-        <div className="flex justify-end">
-          <Button type="submit" className="min-w-32 my-4 w-full">
-            <Save className="mr-2 h-4 w-4" />
-            Create Inspection
-          </Button>
-        </div>
+        {!hideSubmitButton && (
+          <div className="flex justify-end">
+            <Button type="submit" className="min-w-32 my-4 w-full">
+              <Save className="mr-2 h-4 w-4" />
+              Create Inspection
+            </Button>
+          </div>
+        )}
       </form>
     </Form>
   );
