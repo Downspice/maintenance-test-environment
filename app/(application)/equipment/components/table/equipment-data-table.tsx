@@ -523,7 +523,15 @@ export function EquipmentTableLoader({ locationId }: { locationId?: string }) {
             </DropdownMenu>
 
             <Sheet open={open} onOpenChange={setOpen}>
-              <SheetContent className="w-[400px] sm:w-4/5">
+              <SheetContent
+                className={
+                  selectedProjectType === "Repair Request" ||
+                  selectedProjectType === "Issue WO" ||
+                  selectedProjectType === "New (Duplicate)"
+                    ? "inset-0 w-full max-w-none sm:max-w-none lg:max-w-none"
+                    : "w-[400px] sm:w-4/5"
+                }
+              >
                 <SheetHeader>
                   <SheetTitle className="flex items-center gap-2">
                     {selectedType?.label}

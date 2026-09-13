@@ -75,7 +75,7 @@ export default function NewRepairRequestForm() {
   const handleRepairChange = (index: number, id: string) => {
     const priority = "Medium";
     const laborTime = 0;
-    update(index, { ...fields[index], repair: value, priority, laborTime });
+    update(index, { ...fields[index], repair: id, priority, laborTime });
   };
 
   const handleImageUpload = (index: number, file: File) => {

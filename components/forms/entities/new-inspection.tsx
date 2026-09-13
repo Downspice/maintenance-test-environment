@@ -69,12 +69,6 @@ export default function InspectionForm({
   hideSubmitButton,
   onSuccess,
 }: InspectionFormProps = {}) {
-     const { 
-    data: locationOptionsList, 
-    isLoading:locationOptionsListLoading, 
-    error: locationOptionsListError
-  } = useGetLocations<Array<{ id: string, name: string }>>();
-
   const form = useForm<InspectionFormValues>({
     resolver: zodResolver(inspectionFormSchema),
     defaultValues: {},
@@ -242,7 +236,7 @@ export const columns: ColumnDef<RepairRequestInterface>[] = [
     header: "Notes",
     cell: ({ row, updateRow, rowIndex }: any) => (
       <Input
-        value={row.original.name}
+        value={row.original.notes || ""}
         onChange={(e) => updateRow(rowIndex, "notes", e.target.value)}
       />
     ),
@@ -252,40 +246,42 @@ export const columns: ColumnDef<RepairRequestInterface>[] = [
   {
     id: "actions",
     header: "Actions",
-    cell: ({ row }) => {
-      const person = row.original;
-      const [sheetOpen, setSheetOpen] = useState(false);
-      return (
-        <div className="flex justify-end  gap-2">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => alert(`upload the picture ${person.ok}`)}
-          >
-            <Camera />
-          </Button>
-          <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-            <SheetTrigger asChild>
-              <Button className="flex items-center gap-2">
-                <WrenchIcon className="w-4 h-4" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent className=" ">
-              <SheetHeader>
-                <SheetTitle>New Repair Request</SheetTitle>
-              </SheetHeader>
-              <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
-                <NewRepairRequestForm />
-              </ScrollArea>
-            </SheetContent>
-          </Sheet>
-        </div>
-      );
-    },
+    cell: ({ row }: any) => <InspectionActionCell person={row.original} />,
     enableSorting: false,
     enableHiding: false,
   },
 ];
+
+function InspectionActionCell({ person }: { person: RepairRequestInterface }) {
+  const [sheetOpen, setSheetOpen] = useState(false);
+  return (
+    <div className="flex justify-end gap-2">
+      <Button
+        variant="outline"
+        size="icon"
+        type="button"
+        onClick={() => alert(`upload the picture ${person.ok}`)}
+      >
+        <Camera />
+      </Button>
+      <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+        <SheetTrigger asChild>
+          <Button type="button" className="flex items-center gap-2">
+            <WrenchIcon className="w-4 h-4" />
+          </Button>
+        </SheetTrigger>
+        <SheetContent className=" ">
+          <SheetHeader>
+            <SheetTitle>New Repair Request</SheetTitle>
+          </SheetHeader>
+          <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
+            <NewRepairRequestForm />
+          </ScrollArea>
+        </SheetContent>
+      </Sheet>
+    </div>
+  );
+}
 
 export function EditInspectionForm({
   children,

@@ -15,6 +15,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { Drawer } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useState } from "react";
 import React from "react";
@@ -148,17 +149,29 @@ export function TasksTab({ equipmentId }: { equipmentId?: string | number }) {
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">Repair Requests</h2>
 
-          <Sheet open={openRepair} onOpenChange={setOpenRepair}>
-            <SheetTrigger asChild>
-              <Button>Add Repair Request</Button>
-            </SheetTrigger>
-            <SheetContent side="right">
-              <SheetHeader>
-                <SheetTitle>Add Repair Request</SheetTitle>
-              </SheetHeader>
-              <ActualRepairRequestForm equipmentId={equipmentId} />
-            </SheetContent>
-          </Sheet>
+          <Drawer
+            open={openRepair}
+            onOpenChange={setOpenRepair}
+            trigger={<Button>Add Repair Request</Button>}
+            title="Create Repair Request"
+            description="Fill out the form below to create a repair request."
+            closeable={true}
+            renderActions={
+              <Button form="task-repair-request-form" type="submit" variant="primary">
+                Save Repair Request
+              </Button>
+            }
+            className="inset-0 w-full max-w-none sm:max-w-none lg:max-w-none"
+          >
+            <ScrollArea className="h-[calc(100vh-160px)] pr-4">
+              <ActualRepairRequestForm
+                equipmentId={equipmentId}
+                formId="task-repair-request-form"
+                hideSubmitButton
+                onSuccess={() => setOpenRepair(false)}
+              />
+            </ScrollArea>
+          </Drawer>
         </div>
 
         {isRepairLoading ? (

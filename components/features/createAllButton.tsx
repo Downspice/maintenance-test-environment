@@ -64,107 +64,120 @@ export default function CreateAllButton() {
     { name: "Receive Purchase Order", onSelect: genericDropdown },
   ];
 
-  const formComponents: Record<string, React.ReactNode> = {
-    Equipment: (
-      <ActualEquipmentForm
-        formId="new-equipment-form"
-        hideSubmitButton
-        onSuccess={() => setOpen(false)}
-      />
-    ),
-    "Repair Request": (
-      <ActualRepairRequestForm
-        formId="repair-request-form"
-        hideSubmitButton
-        onSuccess={() => setOpen(false)}
-      />
-    ),
-    "Daily Inspection": (
-      <InspectionForm
-        formId="new-inspection-form"
-        hideSubmitButton
-        onSuccess={() => setOpen(false)}
-      />
-    ),
-    "Work Order": (
-      <ActualWorkOrderForm
-        formId="actual-work-order-form"
-        hideSubmitButton
-      />
-    ),
-    Expense: (
-      <GeneralExpense
-        formId="new-general-expense-form"
-        hideSubmitButton
-        onSuccess={() => setOpen(false)}
-      />
-    ),
-    Assignment: (
-      <EquipmentAssignment
-        formId="assign-equipment-form"
-        hideSubmitButton
-        onSuccess={() => setOpen(false)}
-      />
-    ),
-    Accident: (
-      <NewAccident
-        formId="new-accident-form"
-        hideSubmitButton
-        onSuccess={() => setOpen(false)}
-      />
-    ),
-    Part: (
-      <NewPart
-        formId="new-part-form"
-        hideSubmitButton
-        onSuccess={() => setOpen(false)}
-      />
-    ),
-    "Purchase Order": (
-      <NewPurchaseOrderForm
-        formId="new-purchase-order-form"
-        hideSubmitButton
-      />
-    ),
-    Employee: (
-      <NewEmployeeForm
-        formId="new-employee-form"
-        hideSubmitButton
-        onSuccess={() => setOpen(false)}
-      />
-    ),
-    Vendor: (
-      <NewVendor
-        formId="new-vendor-form"
-        hideSubmitButton
-      />
-    ),
-    "Receive | Adjust Inventory": (
-      <AdjustInventoryForm
-        data={undefined}
-        formId="adjust-inventory-form"
-        hideSubmitButton
-        onSuccess={() => setOpen(false)}
-      />
-    ),
-    "Receive Purchase Order": (
-      <QuickActionsReceivePurchaseOrder
-        formId="receive-purchase-order-form"
-        hideSubmitButton
-        onSuccess={() => setOpen(false)}
-      />
-    ),
-  };
-
   const renderFormContent = () => {
-    const SelectedComponent = formComponents[selectedProjectType || ""];
-    console.log("new selected", SelectedComponent);
-    return SelectedComponent ? SelectedComponent : null;
+    if (!open || !selectedProjectType) return null;
+    switch (selectedProjectType) {
+      case "Equipment":
+        return (
+          <ActualEquipmentForm
+            formId="new-equipment-form"
+            hideSubmitButton
+            onSuccess={() => setOpen(false)}
+          />
+        );
+      case "Repair Request":
+        return (
+          <ActualRepairRequestForm
+            formId="repair-request-form"
+            hideSubmitButton
+            onSuccess={() => setOpen(false)}
+          />
+        );
+      case "Daily Inspection":
+        return (
+          <InspectionForm
+            formId="new-inspection-form"
+            hideSubmitButton
+            onSuccess={() => setOpen(false)}
+          />
+        );
+      case "Work Order":
+        return (
+          <ActualWorkOrderForm
+            formId="actual-work-order-form"
+            hideSubmitButton
+          />
+        );
+      case "Expense":
+        return (
+          <GeneralExpense
+            formId="new-general-expense-form"
+            hideSubmitButton
+            onSuccess={() => setOpen(false)}
+          />
+        );
+      case "Assignment":
+        return (
+          <EquipmentAssignment
+            formId="assign-equipment-form"
+            hideSubmitButton
+            onSuccess={() => setOpen(false)}
+          />
+        );
+      case "Accident":
+        return (
+          <NewAccident
+            formId="new-accident-form"
+            hideSubmitButton
+            onSuccess={() => setOpen(false)}
+          />
+        );
+      case "Part":
+        return (
+          <NewPart
+            formId="new-part-form"
+            hideSubmitButton
+            onSuccess={() => setOpen(false)}
+          />
+        );
+      case "Purchase Order":
+        return (
+          <NewPurchaseOrderForm
+            formId="new-purchase-order-form"
+            hideSubmitButton
+          />
+        );
+      case "Employee":
+        return (
+          <NewEmployeeForm
+            formId="new-employee-form"
+            hideSubmitButton
+            onSuccess={() => setOpen(false)}
+          />
+        );
+      case "Vendor":
+        return (
+          <NewVendor
+            formId="new-vendor-form"
+            hideSubmitButton
+          />
+        );
+      case "Receive | Adjust Inventory":
+        return (
+          <AdjustInventoryForm
+            data={undefined}
+            formId="adjust-inventory-form"
+            hideSubmitButton
+            onSuccess={() => setOpen(false)}
+          />
+        );
+      case "Receive Purchase Order":
+        return (
+          <QuickActionsReceivePurchaseOrder
+            formId="receive-purchase-order-form"
+            hideSubmitButton
+            onSuccess={() => setOpen(false)}
+          />
+        );
+      default:
+        return null;
+    }
   };
 
   const isFullscreen =
     selectedProjectType === "Purchase Order" ||
     selectedProjectType === "Equipment" ||
+    selectedProjectType === "Repair Request" ||
     selectedProjectType === "Receive Purchase Order";
 
   const drawerClassName = isFullscreen
