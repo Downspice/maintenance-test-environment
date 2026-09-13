@@ -110,13 +110,12 @@ export default function EmployeesPage() {
   };
 
   const managePayments = () => {
-    console.log("ïn the function");
     openSheet({
       title: "Manage Payments",
       description: "Fill out the form below to create a payment.",
-      className: "w-full sm:w-2/3 sm:min-w-[950px] sm:max-w-none lg:max-w-none",
+      className: "inset-0 w-full max-w-none sm:max-w-none lg:max-w-none",
       content: (
-        <div className="flex flex-end">
+        <div className="w-full">
           <PaymentReceivedTable />
         </div>
       ),
