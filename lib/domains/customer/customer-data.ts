@@ -4,25 +4,37 @@ export const customerSchema = z.object({
   id: z.string().optional(),
 
   // Billing Info
-  company_name: z.string({ required_error: "Name is required" }),
+  company_name: z
+    .string({ required_error: "Company name is required" })
+    .min(1, "Company name is required"),
   contact: z.string().optional(),
   address: z.string().optional(),
   city: z.string().optional(),
-  state: z.string({ required_error: "State is required" }),
+  state: z
+    .string({ required_error: "State is required" })
+    .min(1, "State is required"),
   postal_code: z.string().optional(),
   country: z.string().optional(),
-  location_id: z.string({ required_error: "Location is required" }),
-  type_id: z.string({ required_error: "Type is required" }),
+  location_id: z
+    .string({ required_error: "Location is required" })
+    .min(1, "Location is required"),
+  type_id: z
+    .string({ required_error: "Customer type is required" })
+    .min(1, "Customer type is required"),
 
   // Contact Info
-  phone_one: z.string({ required_error: "Phone 1 is required" }),
+  phone_one: z
+    .string({ required_error: "Primary phone is required" })
+    .min(1, "Primary phone is required"),
   phone_two: z.string().optional(),
   fax: z.string().optional(),
   website: z.string().optional(),
   email: z.string().optional(),
 
   // Payment Info
-  term_id: z.string({ required_error: "Term is required" }),
+  term_id: z
+    .string({ required_error: "Payment terms are required" })
+    .min(1, "Payment terms are required"),
   term_days: z.coerce.number().optional(),
   discount_type: z.string().optional(),
   discount_percent: z.string().optional(),
@@ -49,24 +61,43 @@ export const customerSchema = z.object({
   // Notes & Attachments
   notes: z.string().optional(),
   Attachments: z.array(z.instanceof(File)).optional(),
-}).refine((data) => {
-  // If is_same is false or undefined, shipping company_name, contact, and phone_one are required
-  if (!data.is_same) {
-    if (!data.shipping.company_name || data.shipping.company_name.trim() === "") {
-      return false;
+})
+  .refine(
+    (data) => {
+      if (!data.is_same) {
+        return !!data.shipping.company_name && data.shipping.company_name.trim() !== "";
+      }
+      return true;
+    },
+    {
+      message: "Shipping company name is required when 'Same as billing' is not checked",
+      path: ["shipping", "company_name"],
     }
-    if (!data.shipping.contact || data.shipping.contact.trim() === "") {
-      return false;
+  )
+  .refine(
+    (data) => {
+      if (!data.is_same) {
+        return !!data.shipping.contact && data.shipping.contact.trim() !== "";
+      }
+      return true;
+    },
+    {
+      message: "Shipping contact is required when 'Same as billing' is not checked",
+      path: ["shipping", "contact"],
     }
-    if (!data.shipping.phone_one || data.shipping.phone_one.trim() === "") {
-      return false;
+  )
+  .refine(
+    (data) => {
+      if (!data.is_same) {
+        return !!data.shipping.phone_one && data.shipping.phone_one.trim() !== "";
+      }
+      return true;
+    },
+    {
+      message: "Shipping phone is required when 'Same as billing' is not checked",
+      path: ["shipping", "phone_one"],
     }
-  }
-  return true;
-}, {
-  message: "Name, Contact, and Phone are required when 'Same as billing' is not checked",
-  path: ["shipping", "company_name"],
-});
+  );
 
 export type CustomerInterface = z.infer<typeof customerSchema>;
 

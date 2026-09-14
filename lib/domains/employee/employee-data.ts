@@ -3,22 +3,22 @@ import { z } from "zod";
 export const EmployeeSchema = z.object({
   // Name
   id: z.string().optional(),
-  first: z.string(),
-  last: z.string(),
+  first: z.string().min(1, "First name is required"),
+  last: z.string().min(1, "Last name is required"),
   middle: z.string().optional(),
 
   // Address
-  street1: z.string(),
+  street1: z.string().min(1, "Street address is required"),
   street2: z.string().optional(),
-  city: z.string(),
-  state: z.string(), 
-  postal_code: z.string(),
+  city: z.string().min(1, "City is required"),
+  state: z.string().min(1, "State is required"),
+  postal_code: z.string().min(1, "Postal code is required"),
 
   // Contact
   home: z.coerce.number().or(z.string()).optional(),
   altPhone: z.coerce.number().or(z.string()).optional(),
   cell: z.coerce.number().or(z.string()).optional(),
-  email: z.string().email(),
+  email: z.string().email("Please enter a valid email address"),
 
   // Notes
   notes: z.string().optional(),
@@ -27,23 +27,23 @@ export const EmployeeSchema = z.object({
   customFields: z.any().optional(),
 
   // Details
-  status: z.string(),
+  status: z.string().min(1, "Status is required"),
   date: z.string().or(z.date()), // start date
   leaveDate: z.string().or(z.date()).optional(),
   dob: z.string().or(z.date()),
 
   ssn: z.string().optional(),
-  type: z.string(),
+  type: z.string().min(1, "Employee type is required"),
 
   labor_rate: z.coerce.number().optional(),
-  billing_rate: z.coerce.number(),
+  billing_rate: z.coerce.number().min(0, "Billing rate must be 0 or greater"),
 
-  location: z.string(),
-  category: z.string(),
+  location: z.string().min(1, "Location is required"),
+  category: z.string().min(1, "Category is required"),
 
   // Driver's license
-  driverNumber: z.string(),
-  driverClass: z.string(),
+  driverNumber: z.string().min(1, "Driver's license number is required"),
+  driverClass: z.string().min(1, "Driver's license class is required"),
 
   // Notifications (checkboxes)
   tracker: z.array(z.string()).optional(),

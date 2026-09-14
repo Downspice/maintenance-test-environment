@@ -28,8 +28,8 @@ export const vendorSchema = z.object({
   contact: z.string().optional(),
   address: z.string().optional(),
   city: z.string().optional(),
-  state: z.string().min(1, { message: "Vendor number is required" }),
-  postal_code: z.string().min(1, { message: "Vendor number is required" }),
+  state: z.string().min(1, { message: "State / Province is required" }),
+  postal_code: z.string().min(1, { message: "Postal code is required" }),
   country: z.string().optional(),
 
   location_id: z.string().min(1, { message: "Location is required" }),

@@ -49,7 +49,7 @@ export const inspectionFormSchema = z.object({
   equipment: z.string().min(1, "Equipment is required"),
   inspectedBy: z.string().min(1, "Inspected By is required"),
   dueDate: z.string().min(1, "Date is required"),
-  units: z.coerce.number().min(0, "Units required"),
+  units: z.coerce.number().min(0, "Meter reading is required"),
   condition: z.string().min(1, "Condition is required"),
   conditionNotes: z.string().optional(),
   inspectionItems: z.array(inspectionItemSchema).optional(),

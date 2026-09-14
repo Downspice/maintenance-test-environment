@@ -34,17 +34,17 @@ import {
 } from "@/services/setups/lookups";
 
 const ScheduledReportSchema = z.object({
-  report: z.string(),
-  frequency: z.string(),
-  dateField: z.string(),
-  location: z.string(),
-  category: z.string(),
+  report: z.string().min(1, "Report type is required"),
+  frequency: z.string().min(1, "Frequency is required"),
+  dateField: z.string().min(1, "Date field is required"),
+  location: z.string().min(1, "Location is required"),
+  category: z.string().min(1, "Category is required"),
   equipmentFilter: z.array(z.string()),
-  dateInterval: z.string(),
+  dateInterval: z.string().min(1, "Date interval is required"),
   recipients: z.array(
     z.object({
-      name: z.string(),
-      email: z.string().email(),
+      name: z.string().min(1, "Recipient name is required"),
+      email: z.string().email("Please enter a valid email address"),
     })
   ),
 });

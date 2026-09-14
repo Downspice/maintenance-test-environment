@@ -128,7 +128,7 @@ export type Part = z.infer<typeof PartSchema>;
 export type WorkOrderInterface = z.infer<typeof WorkOrderSchema>;
 
 export const CreateWorkOrderSchema = z.object({
-  wo_number: z.coerce.number(),
+  wo_number: z.coerce.number().min(1, "Work order number is required"),
   priority_id: z.string().min(1, "Priority is required"),
   scheduled_date: z.date().optional(),
   due_date: z.date().optional(),
