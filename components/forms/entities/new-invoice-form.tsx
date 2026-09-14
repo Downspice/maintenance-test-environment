@@ -22,13 +22,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { z } from "zod";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { Modal } from "@/components/ui/modal";
 import {
   useGetLocations,
@@ -633,76 +626,107 @@ export default function NewInvoiceForm({
                   </TabsContent>
                   <TabsContent value="Payments">
                     <div className="flex justify-end mb-2">
-                      <Dialog
-                        open={openPayments}
-                        onOpenChange={setOpenPayments}
+                      <Button
+                        type="button"
+                        variant="primary"
+                        onClick={() => {
+                          setEditPaymentIndex(null);
+                          setEditPayment(null);
+                          PaymentsForm.reset({
+                            amount_received: 0,
+                            metadata: {},
+                          });
+                          setOpenPayments(true);
+                        }}
                       >
-                        <DialogTrigger asChild>
-                          <Button variant="outline">Add Payment</Button>
-                        </DialogTrigger>
-
-                        <DialogContent className="max-w-2xl">
-                          <DialogHeader>
-                            <DialogTitle>
-                              {editPaymentIndex !== null
-                                ? "Edit Payment"
-                                : "Add Payment"}
-                            </DialogTitle>
-                          </DialogHeader>
-
-                          <div>
-                            <DatePickerWrapper
-                              name="date_received"
-                              label="Date Received"
-                              control={PaymentsForm.control}
-                            />
-                            <InputWrapper
-                              name="amount_received"
-                              type="number"
-                              label="Amount Received"
-                              control={PaymentsForm.control}
-                              value=""
-                            />
-                            <ComboboxFieldWrapper
-                              control={PaymentsForm.control}
-                              name="payment_method_id"
-                              label="Payment Method"
-                              options={invoicePaymentMethodOptionsList ?? []}
-                            />
-                            <InputWrapper
-                              name="metadata.cheque_number"
-                              type="text"
-                              label="Cheque Number"
-                              control={PaymentsForm.control}
-                              value=""
-                            />
-                            <Button
-                              type="button"
-                              onClick={PaymentsForm.handleSubmit(
-                                onSubmitPayment,
-                                (errors) => {
-                                  console.log(errors);
-                                  const firstErrorField =
-                                    Object.values(errors)[0];
-                                  const message = firstErrorField?.message;
-
-                                  if (message) {
-                                    toast.error(message);
-                                  } else {
-                                    toast.error(
-                                      "Please check the form for errors."
-                                    );
-                                  }
-                                }
-                              )}
-                              className="grid gap-4 mt-4"
-                            >
-                              Save Payment
-                            </Button>
-                          </div>
-                        </DialogContent>
-                      </Dialog>
+                        <Plus className="mr-2 h-4 w-4" /> Add Payment
+                      </Button>
                     </div>
+
+                    <Modal
+                      open={openPayments}
+                      onOpenChange={(val) => {
+                        setOpenPayments(val);
+                        if (!val) {
+                          setEditPaymentIndex(null);
+                          setEditPayment(null);
+                        }
+                      }}
+                      title={
+                        editPaymentIndex !== null
+                          ? "Edit Payment"
+                          : "Add Payment"
+                      }
+                      description={
+                        editPaymentIndex !== null
+                          ? "Update the details for this payment."
+                          : "Fill out the details below to record a payment for this invoice."
+                      }
+                      size="lg"
+                      closeable={true}
+                      renderActions={
+                        <Button
+                          form="invoice-payment-form"
+                          type="submit"
+                          variant="primary"
+                        >
+                          {editPaymentIndex !== null
+                            ? "Update Payment"
+                            : "Save Payment"}
+                        </Button>
+                      }
+                    >
+                      <Form {...PaymentsForm}>
+                        <form
+                          id="invoice-payment-form"
+                          onSubmit={PaymentsForm.handleSubmit(
+                            onSubmitPayment,
+                            (errors) => {
+                              console.log(errors);
+                              const firstErrorField =
+                                Object.values(errors)[0];
+                              const message = firstErrorField?.message;
+
+                              if (message) {
+                                toast.error(message);
+                              } else {
+                                toast.error(
+                                  "Please check the form for errors."
+                                );
+                              }
+                            }
+                          )}
+                          className="flex flex-col gap-1 py-1"
+                        >
+                          <DatePickerWrapper
+                            name="date_received"
+                            label="Date Received"
+                            control={PaymentsForm.control}
+                            required
+                          />
+                          <InputWrapper
+                            name="amount_received"
+                            type="number"
+                            label="Amount Received"
+                            control={PaymentsForm.control}
+                            required
+                          />
+                          <ComboboxFieldWrapper
+                            control={PaymentsForm.control}
+                            name="payment_method_id"
+                            label="Payment Method"
+                            options={invoicePaymentMethodOptionsList ?? []}
+                            required
+                          />
+                          <InputWrapper
+                            name="metadata.cheque_number"
+                            type="text"
+                            label="Cheque Number"
+                            control={PaymentsForm.control}
+                          />
+                        </form>
+                      </Form>
+                    </Modal>
 
                     <Table>
                       <TableHeader>

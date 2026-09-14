@@ -6,20 +6,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Save, Trash2 } from "lucide-react";
+import { Plus, Save, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useConfirmDialog } from "@/lib/shared/confirm-dialog";
 import {
   ComboboxFieldWrapper,
   MultiComboboxWrapper,
 } from "@/components/forms/fields/ComboboxWrapper";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Modal } from "@/components/ui/modal";
 import {
   Tabs,
   TabsList,
@@ -163,44 +157,62 @@ export default function NewScheduledReportForm() {
           <div className="my-6">
             <div className="flex justify-between items-center mb-2">
               <h3 className="text-lg font-medium">Recipients</h3>
-              <Dialog open={open} onOpenChange={setOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="outline">Add Recipients</Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-2xl">
-                  <DialogHeader>
-                    <DialogTitle>Select Recipients</DialogTitle>
-                  </DialogHeader>
-                  <Tabs value={tab} onValueChange={setTab} className="mt-4">
-                    <TabsList>
-                      <TabsTrigger value="employees">Employees</TabsTrigger>
-                      <TabsTrigger value="customers">Customers</TabsTrigger>
-                      <TabsTrigger value="vendors">Vendors</TabsTrigger>
-                    </TabsList>
-                    {Object.entries(sampleUsers).map(([key, users]) => (
-                      <TabsContent key={key} value={key}>
-                        <div className="space-y-2">
-                          {users.map(user => (
-                            <div
-                              key={user.email}
-                              className="flex items-center justify-between border border-border p-2 rounded"
-                            >
-                              <div className="flex items-center space-x-2">
-                                <Checkbox
-                                  checked={!!recipients.find(r => r.email === user.email)}
-                                  onCheckedChange={() => toggleRecipient(user.name, user.email)}
-                                />
-                                <span>{user.name}</span>
-                              </div>
-                              <span className="text-muted-foreground text-sm">{user.email}</span>
+              <Button
+                type="button"
+                variant="primary"
+                onClick={() => setOpen(true)}
+              >
+                <Plus className="mr-2 h-4 w-4" /> Add Recipients
+              </Button>
+
+              <Modal
+                open={open}
+                onOpenChange={setOpen}
+                title="Select Recipients"
+                description="Choose the users who should receive this scheduled report."
+                size="lg"
+                closeable={true}
+                closeText="Done"
+              >
+                <Tabs value={tab} onValueChange={setTab} className="w-full">
+                  <TabsList>
+                    <TabsTrigger value="employees">Employees</TabsTrigger>
+                    <TabsTrigger value="customers">Customers</TabsTrigger>
+                    <TabsTrigger value="vendors">Vendors</TabsTrigger>
+                  </TabsList>
+                  {Object.entries(sampleUsers).map(([key, users]) => (
+                    <TabsContent key={key} value={key}>
+                      <div className="space-y-2 mt-2">
+                        {users.map((user) => (
+                          <div
+                            key={user.email}
+                            className="flex items-center justify-between border border-stroke-soft-200 p-2.5 rounded-lg bg-bg-white-0"
+                          >
+                            <div className="flex items-center space-x-2.5">
+                              <Checkbox
+                                checked={
+                                  !!recipients.find(
+                                    (r) => r.email === user.email
+                                  )
+                                }
+                                onCheckedChange={() =>
+                                  toggleRecipient(user.name, user.email)
+                                }
+                              />
+                              <span className="text-sm font-medium">
+                                {user.name}
+                              </span>
                             </div>
-                          ))}
-                        </div>
-                      </TabsContent>
-                    ))}
-                  </Tabs>
-                </DialogContent>
-              </Dialog>
+                            <span className="text-text-sub-600 text-xs">
+                              {user.email}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </TabsContent>
+                  ))}
+                </Tabs>
+              </Modal>
             </div>
             <div className="border rounded-md overflow-hidden">
               <table className="w-full text-sm">

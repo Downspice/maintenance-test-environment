@@ -484,13 +484,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
+import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -931,68 +925,65 @@ export default function HierarchicalTaxTable({
           {/* Add Buttons Section */}
           <AddButtons />
         </div>
-        {/* Dialog */}
-        <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Edit {editData?.type}</DialogTitle>
-            </DialogHeader>
-
-            {editData && (
-              <div className="space-y-4">
-                <div>
-                  <Label>Name</Label>
-                  <Input
-                    value={editData.name || ""}
-                    onChange={(e) =>
-                      setEditData((prev) => prev && { ...prev, name: e.target.value })
-                    }
-                  />
-                </div>
-                {editData.type !== "category" && (
-                  <>
-                    <div>
-                      <Label>Tax Rate 1</Label>
-                      <Input
-                        type="number"
-                        value={editData.tax_rate1 ?? ""}
-                        onChange={(e) =>
-                          setEditData((prev) => prev && { ...prev, tax_rate1: parseFloat(e.target.value) })
-                        }
-                      />
-                    </div>
-                    <div>
-                      <Label>Tax Rate 2</Label>
-                      <Input
-                        type="number"
-                        value={editData.tax_rate2 ?? ""}
-                        onChange={(e) =>
-                          setEditData((prev) => prev && { ...prev, tax_rate2: parseFloat(e.target.value) })
-                        }
-                      />
-                    </div>
-                  </>
-                )}
-              </div>
-            )}
-
-            <DialogFooter>
-              <Button variant="ghost" onClick={() => setEditDialogOpen(false)}>
-                Cancel
-              </Button>
-              <Button
-                onClick={() => {
-                  if (confirm("Are you sure you want to apply these changes?")) {
-                    onEdit(editData!.type, editData!.id);
-                    setEditDialogOpen(false);
+        <Modal
+          open={editDialogOpen}
+          onOpenChange={setEditDialogOpen}
+          title={`Edit ${editData?.type ?? "Item"}`}
+          description={`Update the details for this ${editData?.type ?? "item"}.`}
+          size="md"
+          closeable={true}
+          renderActions={
+            <Button
+              variant="primary"
+              onClick={() => {
+                if (confirm("Are you sure you want to apply these changes?")) {
+                  onEdit(editData!.type, editData!.id);
+                  setEditDialogOpen(false);
+                }
+              }}
+            >
+              Save Changes
+            </Button>
+          }
+        >
+          {editData && (
+            <div className="space-y-4 py-2">
+              <div>
+                <Label>Name</Label>
+                <Input
+                  value={editData.name || ""}
+                  onChange={(e) =>
+                    setEditData((prev) => prev && { ...prev, name: e.target.value })
                   }
-                }}
-              >
-                Save Changes
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+                />
+              </div>
+              {editData.type !== "category" && (
+                <>
+                  <div>
+                    <Label>Tax Rate 1</Label>
+                    <Input
+                      type="number"
+                      value={editData.tax_rate1 ?? ""}
+                      onChange={(e) =>
+                        setEditData((prev) => prev && { ...prev, tax_rate1: parseFloat(e.target.value) })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label>Tax Rate 2</Label>
+                    <Input
+                      type="number"
+                      value={editData.tax_rate2 ?? ""}
+                      onChange={(e) =>
+                        setEditData((prev) => prev && { ...prev, tax_rate2: parseFloat(e.target.value) })
+                      }
+                    />
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+        </Modal>
 
         {/* Add Buttons Section */}
         <AddButtons />

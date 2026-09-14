@@ -6,16 +6,8 @@ import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { AddNoteSchema, AddNoteInterface } from "@/lib/domains/work-order/workOrder-data";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
+import { Modal } from "@/components/ui/modal";
+import TextareaWrapper from "@/components/forms/fields/TextareaWrapper";
 
 interface AddNoteProps {
     open: boolean;
@@ -58,42 +50,30 @@ export default function AddNote({ open, setOpen, onAdd, data }: AddNoteProps) {
     };
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent className="sm:max-w-[525px]">
-                <DialogHeader>
-                    <DialogTitle>{data ? "Edit Note" : "Add Note"}</DialogTitle>
-                    <DialogDescription>
-                        {data ? "Update the note below." : "Add a new note for this unit."}
-                    </DialogDescription>
-                </DialogHeader>
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="note">Note</Label>
-                            <Textarea
-                                id="note"
-                                placeholder="Enter your note here..."
-                                className="min-h-[120px]"
-                                {...form.register("note")}
-                            />
-                            {form.formState.errors.note && (
-                                <p className="text-sm text-red-600">
-                                    {form.formState.errors.note.message}
-                                </p>
-                            )}
-                        </div>
-
-                        <DialogFooter>
-                            <Button type="button" variant="outline" onClick={handleCancel}>
-                                Cancel
-                            </Button>
-                            <Button type="submit">
-                                {data ? "Update Note" : "Add Note"}
-                            </Button>
-                        </DialogFooter>
-                    </form>
-                </Form>
-            </DialogContent>
-        </Dialog>
+        <Modal
+            open={open}
+            onOpenChange={setOpen}
+            title={data ? "Edit Note" : "Add Note"}
+            description={data ? "Update the note below." : "Add a new note for this unit."}
+            size="md"
+            closeable={true}
+            renderActions={
+                <Button form="add-note-form" type="submit" variant="primary">
+                    {data ? "Update Note" : "Add Note"}
+                </Button>
+            }
+        >
+            <Form {...form}>
+                <form id="add-note-form" onSubmit={form.handleSubmit(handleSubmit)} className="flex flex-col gap-1">
+                    <TextareaWrapper
+                        control={form.control}
+                        name="note"
+                        label="Note"
+                        placeholder="Enter your note here..."
+                        rows={4}
+                    />
+                </form>
+            </Form>
+        </Modal>
     );
 }

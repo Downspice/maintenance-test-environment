@@ -1,13 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useCallback } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
+import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/shared/utils";
@@ -201,41 +195,47 @@ export default function TabbedMenuEditor({ tabs, contents }: Props) {
         </ul>
       </main>
 
-      {/* Dialog */}
-      <Dialog
+      <Modal
         open={dialog.open}
         onOpenChange={(open) => setDialog((d) => ({ ...d, open }))}
+        title={
+          dialog.mode === "new"
+            ? `Add to ${currentTabLabel}`
+            : `Edit ${currentTabLabel}`
+        }
+        description={`Enter the name for this ${currentTabLabel.toLowerCase()} choice option.`}
+        size="md"
+        closeable={true}
+        renderActions={
+          <Button
+            variant="primary"
+            onClick={handleSubmit}
+            disabled={!dialog.input.trim() || dialog.loading}
+          >
+            {dialog.loading ? "Saving..." : "Submit"}
+          </Button>
+        }
       >
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-lg font-semibold">
-              {dialog.mode === "new"
-                ? `Add to ${currentTabLabel}`
-                : `Edit ${currentTabLabel}`}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="py-2">
-            <Input
-              value={dialog.input}
-              onChange={(e) =>
-                setDialog((d) => ({ ...d, input: e.target.value }))
-              }
-              placeholder="Enter name"
-              className="h-11 text-base"
-              autoFocus
-            />
-          </div>
-          <DialogFooter>
-            <Button
-              onClick={handleSubmit}
-              disabled={!dialog.input.trim() || dialog.loading}
-              className="w-full sm:w-auto"
-            >
-              {dialog.loading ? "Saving..." : "Submit"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (dialog.input.trim() && !dialog.loading) {
+              handleSubmit();
+            }
+          }}
+          className="py-2"
+        >
+          <Input
+            value={dialog.input}
+            onChange={(e) =>
+              setDialog((d) => ({ ...d, input: e.target.value }))
+            }
+            placeholder="Enter name"
+            className="h-10 text-base"
+            autoFocus
+          />
+        </form>
+      </Modal>
     </div>
   );
 }

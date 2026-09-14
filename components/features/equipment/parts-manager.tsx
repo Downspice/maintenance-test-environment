@@ -5,18 +5,14 @@
 import { Button } from "@/components/ui/button";
 import {
   Pencil,
+  Plus,
   Trash2,
 } from "lucide-react";
 
 
 import { useEffect, useState } from "react";
 import React from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Modal } from "@/components/ui/modal";
 import {
   Table,
   TableBody,
@@ -176,7 +172,10 @@ export function PartsManager({ equipmentId }: PartsProps) {
     <div className="space-y-4">
       {/* Add Button */}
       <div className="flex justify-end">
-        <Button onClick={handleAddNew}>+ Add Part</Button>
+        <Button variant="primary" onClick={handleAddNew}>
+          <Plus className="size-4 mr-2" />
+          Add Part
+        </Button>
       </div>
 
       {/* Table */}
@@ -236,102 +235,105 @@ export function PartsManager({ equipmentId }: PartsProps) {
         </div>
       )}
 
-      {/* Dialog Form */}
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>{editingPart ? "Edit Part" : "Add Part"}</DialogTitle>
-          </DialogHeader>
-          <Form {...form}>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      {/* Modal Form */}
+      <Modal
+        open={open}
+        onOpenChange={setOpen}
+        title={editingPart ? "Edit Part" : "Add Part"}
+        description="Fill out the form below to configure the part."
+        size="md"
+        closeable={true}
+        renderActions={
+          <Button form="part-form" type="submit" variant="primary">
+            {editingPart ? "Update Part" : "Add Part"}
+          </Button>
+        }
+      >
+        <Form {...form}>
+          <form id="part-form" onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-1">
+            <InputWrapper
+              control={form.control}
+              name="equipment"
+              label="Equipment"
+              type="number"
+              disabled
+            />
+
+            <ComboboxFieldWrapper
+              control={form.control}
+              disabled={!!editingPart}
+              name="service"
+              label="Service"
+              options={serviceOptions}
+            />
+
+            <RadioGroupWrapper
+              control={form.control}
+              name="mode"
+              label="Part Type"
+              disabled={!!editingPart}
+              options={[
+                { name: "Assigned Part", id: "assigned" },
+                { name: "Fixed Cost", id: "fixed" },
+              ]}
+            />
+
+            {mode === "fixed" ? (
               <InputWrapper
                 control={form.control}
-                name="equipment"
-                label="Equipment"
+                name="cost"
+                label="Cost"
                 type="number"
-                disabled
-              />
-
-              <ComboboxFieldWrapper
-                control={form.control}
                 disabled={!!editingPart}
-                name="service"
-                label="Service"
-                options={serviceOptions}
               />
-
-              <RadioGroupWrapper
-                control={form.control}
-                name="mode"
-                label="Part Type"
-                disabled={!!editingPart}
-                options={[
-                  { name: "Assigned Part", id: "assigned" },
-                  { name: "Fixed Cost", id: "fixed" },
-                ]}
-              />
-
-              {mode === "fixed" ? (
-                <InputWrapper
+            ) : (
+              <>
+                <ComboboxFieldWrapper
                   control={form.control}
-                  name="cost"
-                  label="Cost"
-                  type="number"
+                  name="partNumber"
+                  label="Part Number"
+                  options={partOptions.map((p) => ({
+                    name: p.label,
+                    id: p.value,
+                  }))}
+                  placeholder="Select part"
+                  emptyText="No part found"
+                  searchPlaceholder="Search parts..."
                   disabled={!!editingPart}
                 />
-              ) : (
-                <>
-                  <ComboboxFieldWrapper
-                    control={form.control}
-                    name="partNumber"
-                    label="Part Number"
-                    options={partOptions.map((p) => ({
-                      name: p.label,
-                      id: p.value,
-                    }))}
-                    placeholder="Select part"
-                    emptyText="No part found"
-                    searchPlaceholder="Search parts..."
-                    disabled={!!editingPart}
-                  />
-                  <InputWrapper
-                    control={form.control}
-                    name="warehouse"
-                    label="Warehouse"
-                    disabled
-                    type="text"
-                  />
-                  <InputWrapper
-                    control={form.control}
-                    name="name"
-                    label="Name"
-                    disabled
-                    type="text"
-                  />
-                  <InputWrapper
-                    control={form.control}
-                    name="description"
-                    label="Description"
-                    disabled
-                    type="text"
-                  />
-                  <InputWrapper
-                    control={form.control}
-                    name="quantity"
-                    label="Quantity"
-                    type="number"
-                    disabled={!!editingPart && mode === "fixed"}
-                  />
-                </>
-              )}
-
-              <div className="flex justify-end">
-                <Button type="submit">{editingPart ? "Update" : "Add"}</Button>
-              </div>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
+                <InputWrapper
+                  control={form.control}
+                  name="warehouse"
+                  label="Warehouse"
+                  disabled
+                  type="text"
+                />
+                <InputWrapper
+                  control={form.control}
+                  name="name"
+                  label="Name"
+                  disabled
+                  type="text"
+                />
+                <InputWrapper
+                  control={form.control}
+                  name="description"
+                  label="Description"
+                  disabled
+                  type="text"
+                />
+                <InputWrapper
+                  control={form.control}
+                  name="quantity"
+                  label="Quantity"
+                  type="number"
+                  disabled={!!editingPart && mode === "fixed"}
+                />
+              </>
+            )}
+          </form>
+        </Form>
+      </Modal>
     </div >
   );
 }

@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Pen, Save, Trash2 } from "lucide-react";
+import { Pen, Plus, Save, Trash2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 // Form wrappers
 import InputWrapper from "@/components/forms/fields/InputWrapper";
@@ -24,13 +24,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Modal } from "@/components/ui/modal";
 import SelectWrapper from "../fields/SelectWrapper";
 
 import FileUploadWrapper from "../fields/FileUploadWrapper";
@@ -439,123 +433,145 @@ export default function NewPurchaseOrderForm({
                   </TabsList>
                   <TabsContent value="Items">
                     <div className="flex justify-end mb-2">
-                      <Dialog open={openItems} onOpenChange={setOpenItems}>
-                        <DialogTrigger
-                          asChild
-                          onClick={() => {
-                            setEditIndex(null);
-                            setEditItems(null);
-                            Itemsform.reset({
-                              item_type_id: "",
-                              item: "",
-                              warehouse_id: "",
-                              quantity: 1,
-                              cost: 0,
-                              amount: 0,
-                              extended_cost: 0,
-                              notes: "",
-                              tax_one: 0,
-                              tax_two: 0,
-                              discount: 0,
-                            });
-                            setOpenItems(true);
-                          }}
-                        >
-                          <Button variant="outline">Add Item</Button>
-                        </DialogTrigger>
-                        <DialogContent className="max-w-2xl">
-                          <DialogHeader>
-                            <DialogTitle>
-                              {editIndex !== null
-                                ? "Edit Purchase Order Item"
-                                : "Add Purchase Order Item"}
-                            </DialogTitle>
-                          </DialogHeader>
-                          <form
-                            onSubmit={Itemsform.handleSubmit(onSubmitItems)}
-                            className="grid gap-4 mt-4"
-                          >
-                            <div className="grid grid-cols-2 gap-2">
-                              <ComboboxFieldWrapper
-                                control={Itemsform.control}
-                                name="item_type_id"
-                                label="Item Type"
-                                options={itemTypesOptionsList ?? []}
-                              />
-                              <InputWrapper
-                                control={Itemsform.control}
-                                name="item"
-                                label="Part # / Item"
-                                type="text"
-                                value=""
-                              />
-                              <ComboboxFieldWrapper
-                                control={Itemsform.control}
-                                name="warehouse_id"
-                                label="Warehouse"
-                                options={warehouseOptionsList ?? []}
-                              />
-                              <InputWrapper
-                                control={Itemsform.control}
-                                name="quantity"
-                                label="Order Quantity"
-                                type="number"
-                                value="1"
-                              />
-                              <InputWrapper
-                                control={Itemsform.control}
-                                name="cost"
-                                label="Unit Cost"
-                                type="number"
-                                value="0"
-                              />
-                              <InputWrapper
-                                control={Itemsform.control}
-                                name="amount"
-                                label="Amount"
-                                type="number"
-                                value="0"
-                                disabled
-                              />
-                              <InputWrapper
-                                control={Itemsform.control}
-                                name="extended_cost"
-                                label="Extended Cost"
-                                type="number"
-                                value="0"
-                                disabled
-                              />
-                            </div>
-                            <TextareaWrapper
-                              control={Itemsform.control}
-                              name="notes"
-                              label="Notes"
-                              value=""
-                            />
-                            <div className="grid grid-cols-3 gap-2">
-                              <SingleCheckboxWrapper
-                                control={Itemsform.control}
-                                name="tax_one"
-                                label="Apply Tax 1"
-                              />
-                              <SingleCheckboxWrapper
-                                control={Itemsform.control}
-                                name="tax_two"
-                                label="Apply Tax 2"
-                              />
-                              <SingleCheckboxWrapper
-                                control={Itemsform.control}
-                                name="discount"
-                                label="Apply Discount"
-                              />
-                            </div>
-                            <Button type="submit">
-                              {editIndex !== null ? "Update Item" : "Save Item"}
-                            </Button>
-                          </form>
-                        </DialogContent>
-                      </Dialog>
+                      <Button
+                        type="button"
+                        variant="primary"
+                        onClick={() => {
+                          setEditIndex(null);
+                          setEditItems(null);
+                          Itemsform.reset({
+                            item_type_id: "",
+                            item: "",
+                            warehouse_id: "",
+                            quantity: 1,
+                            cost: 0,
+                            amount: 0,
+                            extended_cost: 0,
+                            notes: "",
+                            tax_one: 0,
+                            tax_two: 0,
+                            discount: 0,
+                          });
+                          setOpenItems(true);
+                        }}
+                      >
+                        <Plus className="mr-2 h-4 w-4" /> Add Item
+                      </Button>
                     </div>
+
+                    <Modal
+                      open={openItems}
+                      onOpenChange={(val) => {
+                        setOpenItems(val);
+                        if (!val) {
+                          setEditIndex(null);
+                          setEditItems(null);
+                        }
+                      }}
+                      title={
+                        editIndex !== null
+                          ? "Edit Purchase Order Item"
+                          : "Add Purchase Order Item"
+                      }
+                      description={
+                        editIndex !== null
+                          ? "Update the details for this purchase order line item."
+                          : "Fill out the details below to add an item to this purchase order."
+                      }
+                      size="lg"
+                      closeable={true}
+                      renderActions={
+                        <Button
+                          form="po-item-form"
+                          type="submit"
+                          variant="primary"
+                        >
+                          {editIndex !== null ? "Update Item" : "Save Item"}
+                        </Button>
+                      }
+                    >
+                      <Form {...Itemsform}>
+                        <form
+                          id="po-item-form"
+                          onSubmit={Itemsform.handleSubmit(onSubmitItems)}
+                          className="flex flex-col gap-1 py-1"
+                        >
+                          <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                            <ComboboxFieldWrapper
+                              control={Itemsform.control}
+                              name="item_type_id"
+                              label="Item Type"
+                              options={itemTypesOptionsList ?? []}
+                              required
+                            />
+                            <InputWrapper
+                              control={Itemsform.control}
+                              name="item"
+                              label="Part # / Item"
+                              type="text"
+                              required
+                            />
+                            <ComboboxFieldWrapper
+                              control={Itemsform.control}
+                              name="warehouse_id"
+                              label="Warehouse"
+                              options={warehouseOptionsList ?? []}
+                              required
+                            />
+                            <InputWrapper
+                              control={Itemsform.control}
+                              name="quantity"
+                              label="Order Quantity"
+                              type="number"
+                              required
+                            />
+                            <InputWrapper
+                              control={Itemsform.control}
+                              name="cost"
+                              label="Unit Cost"
+                              type="number"
+                              required
+                            />
+                            <InputWrapper
+                              control={Itemsform.control}
+                              name="amount"
+                              label="Amount"
+                              type="number"
+                              disabled
+                            />
+                            <InputWrapper
+                              control={Itemsform.control}
+                              name="extended_cost"
+                              label="Extended Cost"
+                              type="number"
+                              disabled
+                            />
+                          </div>
+                          <TextareaWrapper
+                            control={Itemsform.control}
+                            name="notes"
+                            label="Notes"
+                          />
+                          <div className="grid grid-cols-3 gap-2">
+                            <SingleCheckboxWrapper
+                              control={Itemsform.control}
+                              name="tax_one"
+                              label="Apply Tax 1"
+                            />
+                            <SingleCheckboxWrapper
+                              control={Itemsform.control}
+                              name="tax_two"
+                              label="Apply Tax 2"
+                            />
+                            <SingleCheckboxWrapper
+                              control={Itemsform.control}
+                              name="discount"
+                              label="Apply Discount"
+                            />
+                          </div>
+                        </form>
+                      </Form>
+                    </Modal>
 
                     <Table>
                       <TableHeader>

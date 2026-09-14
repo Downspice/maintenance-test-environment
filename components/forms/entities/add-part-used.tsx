@@ -5,13 +5,7 @@ import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog";
+import { Modal } from "@/components/ui/modal";
 import InputWrapper from "../fields/InputWrapper";
 import { ComboboxFieldWrapper } from "../fields/ComboboxWrapper";
 import SingleCheckboxWrapper from "../fields/SingleCheckboxWrapper";
@@ -134,159 +128,149 @@ export default function AddPartUsed({
     }
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent className="w-full sm:max-w-2xl max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                    <DialogTitle>Add Part Used</DialogTitle>
-                    <DialogDescription>
-                        {data ? "Update the" : "Add a"} part used details below.
-                    </DialogDescription>
-                </DialogHeader>
-
-                <Form {...form}>
-                    <form
-                        onSubmit={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            form.handleSubmit(handleSubmit)(e);
-                        }}
-                        className="space-y-4 mt-4"
+        <Modal
+            open={open}
+            onOpenChange={setOpen}
+            title={data ? "Edit Part Used" : "Add Part Used"}
+            description={`${data ? "Update the" : "Add a"} part used details below.`}
+            size="lg"
+            closeable={true}
+            renderActions={
+                <div className="flex items-center gap-2">
+                    <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={handleSaveAndAdd}
                     >
-                        <ComboboxFieldWrapper
-                            control={form.control}
-                            name="part_id"
-                            label="Part Number"
-                            options={partOptions}
-                        />
+                        Save +
+                    </Button>
+                    <Button form="add-part-used-form" type="submit" variant="primary">
+                        {data ? "Update Part" : "Save Part"}
+                    </Button>
+                </div>
+            }
+        >
+            <Form {...form}>
+                <form
+                    id="add-part-used-form"
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        form.handleSubmit(handleSubmit)(e);
+                    }}
+                    className="flex flex-col gap-1"
+                >
+                    <ComboboxFieldWrapper
+                        control={form.control}
+                        name="part_id"
+                        label="Part Number"
+                        options={partOptions}
+                    />
 
-                        <InputWrapper
-                            control={form.control}
-                            name="name"
-                            label="Name"
-                            readOnly
-                            placeholder="Auto-filled"
-                        />
+                    <InputWrapper
+                        control={form.control}
+                        name="name"
+                        label="Name"
+                        readOnly
+                        placeholder="Auto-filled"
+                    />
 
-                        <InputWrapper
-                            control={form.control}
-                            name="description"
-                            label="Description"
-                            readOnly
-                            placeholder="Auto-filled"
-                        />
-                        <ComboboxFieldWrapper
-                            control={form.control}
-                            name="vendor_id"
-                            label="Vendor"
-                            options={vendorOptions || []}
-                        />
-                        <ComboboxFieldWrapper
-                            control={form.control}
-                            name="cost_center_id"
-                            label="Cost Center"
-                            options={costCenterOptions || []}
-                        />
+                    <InputWrapper
+                        control={form.control}
+                        name="description"
+                        label="Description"
+                        readOnly
+                        placeholder="Auto-filled"
+                    />
+                    <ComboboxFieldWrapper
+                        control={form.control}
+                        name="vendor_id"
+                        label="Vendor"
+                        options={vendorOptions || []}
+                    />
+                    <ComboboxFieldWrapper
+                        control={form.control}
+                        name="cost_center_id"
+                        label="Cost Center"
+                        options={costCenterOptions || []}
+                    />
 
+                    <InputWrapper
+                        control={form.control}
+                        name="quantity"
+                        label="Quantity Used"
+                        type="number"
+                        placeholder="1"
+                    />
+                    <InputWrapper
+                        control={form.control}
+                        name="unit_cost"
+                        label="Unit Cost"
+                        type="number"
+                        readOnly
+                        placeholder="0.00"
+                    />
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-1">
                         <InputWrapper
                             control={form.control}
-                            name="quantity"
-                            label="Quantity Used"
-                            type="number"
-                            placeholder="1"
-                        />
-                        <InputWrapper
-                            control={form.control}
-                            name="unit_cost"
-                            label="Unit Cost"
+                            name="extended_cost"
+                            label="Extended Cost"
                             type="number"
                             readOnly
                             placeholder="0.00"
                         />
-                        <div className="grid grid-cols-2 gap-4">
-                            <InputWrapper
-                                control={form.control}
-                                name="extended_cost"
-                                label="Extended Cost"
-                                type="number"
-                                readOnly
-                                placeholder="0.00"
-                            />
-                            <SingleCheckboxWrapper
-                                control={form.control}
-                                name="is_warranty_replaced"
-                                label="Replaced under warranty"
-                            />
-                        </div>
-
-
-                        <ComboboxFieldWrapper
+                        <SingleCheckboxWrapper
                             control={form.control}
-                            name="po_id"
-                            label="PO #"
-                            options={convertToOptionList(purchaseOrderOptions ?? [], "id", "po_number")}
+                            name="is_warranty_replaced"
+                            label="Replaced under warranty"
                         />
+                    </div>
 
+                    <ComboboxFieldWrapper
+                        control={form.control}
+                        name="po_id"
+                        label="PO #"
+                        options={convertToOptionList(purchaseOrderOptions ?? [], "id", "po_number")}
+                    />
 
-                        <Fieldset
-                            legend="Warranty"
-                            content={
-                                <>
-                                    <SingleCheckboxWrapper
-                                        control={form.control}
-                                        name="is_part_under_warranty"
-                                        label="Part under warranty"
-                                    />
+                    <Fieldset
+                        legend="Warranty"
+                        content={
+                            <>
+                                <SingleCheckboxWrapper
+                                    control={form.control}
+                                    name="is_part_under_warranty"
+                                    label="Part under warranty"
+                                />
 
-                                    <div className="grid grid-cols-2 gap-4 mt-3">
-                                        <div>
-                                            <InputWrapper
-                                                control={form.control}
-                                                name="days"
-                                                label="Days"
-                                                type="number"
-                                                placeholder="0"
-                                            />
-                                            <InputWrapper
-                                                control={form.control}
-                                                name="hours"
-                                                label="Hours"
-                                                type="number"
-                                                placeholder="0"
-                                            />
-                                        </div>
-                                        <DatePickerWrapper
+                                <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-3">
+                                    <div className="flex flex-col gap-1">
+                                        <InputWrapper
                                             control={form.control}
-                                            name="expiry_date"
-                                            label="Expires"
+                                            name="days"
+                                            label="Days"
+                                            type="number"
+                                            placeholder="0"
+                                        />
+                                        <InputWrapper
+                                            control={form.control}
+                                            name="hours"
+                                            label="Hours"
+                                            type="number"
+                                            placeholder="0"
                                         />
                                     </div>
-                                </>
-                            }
-                        />
-
-                        <div className="flex gap-2">
-                            <Button type="submit" className="flex-1">
-                                Save
-                            </Button>
-                            <Button
-                                type="button"
-                                variant="secondary"
-                                onClick={handleSaveAndAdd}
-                                className="flex-1"
-                            >
-                                Save +
-                            </Button>
-                            <Button
-                                type="button"
-                                variant="outline"
-                                onClick={() => setOpen(false)}
-                            >
-                                Cancel
-                            </Button>
-                        </div>
-                    </form>
-                </Form>
-            </DialogContent>
-        </Dialog>
+                                    <DatePickerWrapper
+                                        control={form.control}
+                                        name="expiry_date"
+                                        label="Expires"
+                                    />
+                                </div>
+                            </>
+                        }
+                    />
+                </form>
+            </Form>
+        </Modal>
     );
 }
