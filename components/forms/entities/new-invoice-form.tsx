@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Pen, Save, Trash2 } from "lucide-react";
+import { Pen, Plus, Save, Trash2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import InputWrapper from "@/components/forms/fields/InputWrapper";
 import DatePickerWrapper from "@/components/forms/fields/DatePickerWrapper";
@@ -29,6 +29,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Modal } from "@/components/ui/modal";
 import {
   useGetLocations,
   useGetPurchaseOrderTerms,
@@ -458,105 +459,132 @@ export default function NewInvoiceForm({
                   </TabsList>
                   <TabsContent value="Items">
                     <div className="flex justify-end mb-2">
-                      <Dialog open={openItems} onOpenChange={setOpenItems}>
-                        <DialogTrigger
-                          asChild
-                          onClick={() => {
-                            setEditIndex(null);
-                            setEditItems(null);
-                            Itemsform.reset({
-                              quantity: 1,
-                              item: "",
-                              cost: 0,
-                              amount: 0,
-                              item_type_id: "",
-                              warehouse_id: "",
-                              extended_cost: 0,
-                            });
-                            setOpenItems(true);
-                          }}
-                        >
-                          <Button variant="outline">Add Item</Button>
-                        </DialogTrigger>
-                        <DialogContent className="max-w-2xl">
-                          <DialogHeader>
-                            <DialogTitle>
-                              {editIndex !== null
-                                ? "Edit Invoice Item"
-                                : "Add Invoice Item"}
-                            </DialogTitle>
-                          </DialogHeader>
-                          <div className="grid gap-4 mt-4">
-                            <div className="grid grid-cols-2 gap-2">
-                              <InputWrapper
-                                control={Itemsform.control}
-                                name="quantity"
-                                label="Quantity"
-                                type="number"
-                                value=""
-                              />
-                              <InputWrapper
-                                control={Itemsform.control}
-                                name="item"
-                                label="Item Name"
-                                type="text"
-                                value=""
-                              />
-                            </div>
-                            <ComboboxFieldWrapper
-                              control={Itemsform.control}
-                              name="item_type_id"
-                              label="Item Type"
-                              options={itemTypesOptionsList ?? []}
-                            />
-                            <ComboboxFieldWrapper
-                              control={Itemsform.control}
-                              name="warehouse_id"
-                              label="Warehouse"
-                              options={warehouseOptionsList ?? []}
-                            />
-                            <div className="grid grid-cols-2 gap-2">
-                              <InputWrapper
-                                control={Itemsform.control}
-                                name="cost"
-                                label="Unit Cost"
-                                type="number"
-                                value=""
-                              />
-                              <InputWrapper
-                                control={Itemsform.control}
-                                name="discount"
-                                label="Discount"
-                                type="number"
-                                value=""
-                              />
-                            </div>
-                            <Button
-                              type="button"
-                              onClick={Itemsform.handleSubmit(
-                                onSubmitItems,
-                                (errors) => {
-                                  console.log(errors);
-                                  const firstErrorField =
-                                    Object.values(errors)[0];
-                                  const message = firstErrorField?.message;
-
-                                  if (message) {
-                                    toast.error(message);
-                                  } else {
-                                    toast.error(
-                                      "Please check the form for errors."
-                                    );
-                                  }
-                                }
-                              )}
-                            >
-                              Save Item
-                            </Button>
-                          </div>
-                        </DialogContent>
-                      </Dialog>
+                      <Button
+                        type="button"
+                        variant="primary"
+                        onClick={() => {
+                          setEditIndex(null);
+                          setEditItems(null);
+                          Itemsform.reset({
+                            quantity: 1,
+                            item: "",
+                            cost: 0,
+                            amount: 0,
+                            item_type_id: "",
+                            warehouse_id: "",
+                            extended_cost: 0,
+                            tax_one: 0,
+                            tax_two: 0,
+                            discount: 0,
+                          });
+                          setOpenItems(true);
+                        }}
+                      >
+                        <Plus className="mr-2 h-4 w-4" /> Add Item
+                      </Button>
                     </div>
+
+                    <Modal
+                      open={openItems}
+                      onOpenChange={(val) => {
+                        setOpenItems(val);
+                        if (!val) {
+                          setEditIndex(null);
+                          setEditItems(null);
+                        }
+                      }}
+                      title={
+                        editIndex !== null
+                          ? "Edit Invoice Item"
+                          : "Add Invoice Item"
+                      }
+                      description={
+                        editIndex !== null
+                          ? "Update the details for this invoice line item."
+                          : "Fill out the details below to add an item to this invoice."
+                      }
+                      size="lg"
+                      closeable={true}
+                      renderActions={
+                        <Button
+                          form="invoice-item-form"
+                          type="submit"
+                          variant="primary"
+                        >
+                          {editIndex !== null ? "Update Item" : "Save Item"}
+                        </Button>
+                      }
+                    >
+                      <Form {...Itemsform}>
+                        <form
+                          id="invoice-item-form"
+                          onSubmit={Itemsform.handleSubmit(
+                            onSubmitItems,
+                            (errors) => {
+                              console.log(errors);
+                              const firstErrorField =
+                                Object.values(errors)[0];
+                              const message = firstErrorField?.message;
+
+                              if (message) {
+                                toast.error(message);
+                              } else {
+                                toast.error(
+                                  "Please check the form for errors."
+                                );
+                              }
+                            }
+                          )}
+                          className="flex flex-col gap-1 py-1"
+                        >
+                          <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                            <InputWrapper
+                              control={Itemsform.control}
+                              name="quantity"
+                              label="Quantity"
+                              type="number"
+                              required
+                            />
+                            <InputWrapper
+                              control={Itemsform.control}
+                              name="item"
+                              label="Item Name"
+                              type="text"
+                              required
+                            />
+                          </div>
+                          <ComboboxFieldWrapper
+                            control={Itemsform.control}
+                            name="item_type_id"
+                            label="Item Type"
+                            options={itemTypesOptionsList ?? []}
+                            required
+                          />
+                          <ComboboxFieldWrapper
+                            control={Itemsform.control}
+                            name="warehouse_id"
+                            label="Warehouse"
+                            options={warehouseOptionsList ?? []}
+                            required
+                          />
+                          <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                            <InputWrapper
+                              control={Itemsform.control}
+                              name="cost"
+                              label="Unit Cost"
+                              type="number"
+                              required
+                            />
+                            <InputWrapper
+                              control={Itemsform.control}
+                              name="discount"
+                              label="Discount"
+                              type="number"
+                            />
+                          </div>
+                        </form>
+                      </Form>
+                    </Modal>
 
                     <Table>
                       <TableHeader>
