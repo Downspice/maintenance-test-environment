@@ -5,35 +5,34 @@ import { AdvancedDataTable } from "@/components/customUI/advanced-data-table";
 import { SortableHeader } from "@/components/customUI/sortable-header";
 import { Button } from "@/components/ui/button";
 import { Trash2, FilePenIcon } from "lucide-react";
-
-
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import React from "react";
 import { matchesSearchAllFields } from "@/lib/shared/utils";
 import { MoreButtonRequestInterface } from "./repairRequestForm";
 import EditRepairRequestForm from "./edit-repairRequestForm";
 import { toast } from "sonner";
 import { useConfirmDialog } from "@/lib/shared/confirm-dialog";
+import { format } from "date-fns";
 
-const DummyRepairRequests: MoreButtonRequestInterface[] = [
+export const DummyRepairRequests: MoreButtonRequestInterface[] = [
   {
     equipment: "Excavator A",
     requestedBy: "John Doe",
-    dueDate: "2025-07-20",
+    dueDate: "2025-07-20" as any,
     repairBy: 2,
     repairRequestId: "RR-001",
     repairsNeeded: [
       {
         repair: "Hydraulic Leak",
         type: "Mechanical",
-        priority: "Medium",
+        priority: "High",
         laborTime: 1.5,
         notes: "Leak near cylinder",
         image: undefined,
       },
       {
         repair: "Engine Noise",
-        type: "Engine",
+        type: "Mechanical",
         priority: "Medium",
         laborTime: 2,
         notes: "Rattling during acceleration",
@@ -44,7 +43,7 @@ const DummyRepairRequests: MoreButtonRequestInterface[] = [
   {
     equipment: "Bulldozer B",
     requestedBy: "Jane Smith",
-    dueDate: "2025-07-22",
+    dueDate: "2025-07-22" as any,
     repairBy: 1,
     repairRequestId: "RR-002",
     repairsNeeded: [
@@ -61,7 +60,7 @@ const DummyRepairRequests: MoreButtonRequestInterface[] = [
   {
     equipment: "Loader C",
     requestedBy: "Alex Johnson",
-    dueDate: "2025-07-25",
+    dueDate: "2025-07-25" as any,
     repairBy: 3,
     repairRequestId: "RR-003",
     repairsNeeded: [
@@ -85,119 +84,139 @@ const DummyRepairRequests: MoreButtonRequestInterface[] = [
   },
 ];
 
-const getAllEmployees = (
-  employees: MoreButtonRequestInterface[]
-): MoreButtonRequestInterface[] => {
-  const result: MoreButtonRequestInterface[] = [];
-  const traverse = (emps: MoreButtonRequestInterface[]) => {
-    emps.forEach((emp) => {
-      result.push(emp);
-    });
-  };
-  traverse(employees);
-  return result;
-};
+interface RepairRequestTableProps {
+  data?: MoreButtonRequestInterface[];
+  onUpdate?: (updated: MoreButtonRequestInterface) => void;
+  onDelete?: (id: string) => void;
+  onDeleteMany?: (ids: string[]) => void;
+}
 
-const flatEmployees = getAllEmployees(DummyRepairRequests);
-const dueDate = [...new Set(flatEmployees.map((emp) => emp.dueDate))];
-const equipment = [...new Set(flatEmployees.map((emp) => emp.equipment))];
-const task = [
-  ...new Set(flatEmployees.map((emp) => emp.repairsNeeded[0].repair)),
-];
-const type = [
-  ...new Set(flatEmployees.map((emp) => emp.repairsNeeded[0].type)),
-];
-const requestedBy = [...new Set(flatEmployees.map((emp) => emp.requestedBy))];
-const priority = [
-  ...new Set(flatEmployees.map((emp) => emp.repairsNeeded[0].priority)),
-];
-const notes = [
-  ...new Set(flatEmployees.map((emp) => emp.repairsNeeded[0].notes ?? "")),
-];
+export default function RepairRequestTable({
+  data: externalData,
+  onUpdate,
+  onDelete,
+  onDeleteMany,
+}: RepairRequestTableProps) {
+  const [internalData, setInternalData] = useState<MoreButtonRequestInterface[]>(
+    DummyRepairRequests
+  );
+  const data = externalData ?? internalData;
 
-export default function RepairRequestTable() {
   const [isServerMode, setIsServerMode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const confirmDialog = useConfirmDialog();
-  const [currentData, setCurrentData] = useState(
-    DummyRepairRequests.slice(0, 5)
-  ); // Show first 5 for demo
+  const [currentData, setCurrentData] = useState(data.slice(0, 5));
   const [paginationInfo, setPaginationInfo] = useState({
     pageIndex: 0,
     pageSize: 5,
-    totalPages: Math.ceil(DummyRepairRequests.length / 5),
-    totalRows: DummyRepairRequests.length,
+    totalPages: Math.ceil(data.length / 5),
+    totalRows: data.length,
   });
+
+  const dueDate = useMemo(
+    () => [...new Set(data.map((emp) => String(emp.dueDate)))],
+    [data]
+  );
+  const equipment = useMemo(
+    () => [...new Set(data.map((emp) => emp.equipment))],
+    [data]
+  );
+  const task = useMemo(
+    () => [
+      ...new Set(
+        data.map((emp) => emp.repairsNeeded?.[0]?.repair).filter(Boolean)
+      ),
+    ],
+    [data]
+  );
+  const type = useMemo(
+    () => [
+      ...new Set(
+        data.map((emp) => emp.repairsNeeded?.[0]?.type).filter(Boolean)
+      ),
+    ],
+    [data]
+  );
+  const requestedBy = useMemo(
+    () => [...new Set(data.map((emp) => emp.requestedBy))],
+    [data]
+  );
+  const priority = useMemo(
+    () => [
+      ...new Set(
+        data.map((emp) => emp.repairsNeeded?.[0]?.priority).filter(Boolean)
+      ),
+    ],
+    [data]
+  );
+  const notes = useMemo(
+    () => [
+      ...new Set(
+        data.map((emp) => emp.repairsNeeded?.[0]?.notes ?? "").filter(Boolean)
+      ),
+    ],
+    [data]
+  );
 
   const handleRowClick = (row: any) => {
     console.log("Row clicked:", row.original);
-    // alert(`Row clicked: ${row.original.name} (Depth: ${row.depth})`);
   };
 
   const handleCellClick = (cell: any, row: any) => {
     console.log("Cell clicked:", cell.column.id, cell.getValue());
-    // alert(`Cell clicked: ${cell.column.id} = ${cell.getValue()}`);
   };
 
   const handlePrintSelected = (selectedRows: any[]) => {
-    console.log(
-      "Print selected rows:",
-      selectedRows.map((row) => row.original)
-    );
     toast.info(`Printing ${selectedRows.length} selected rows`);
   };
 
   const handleEmailSelected = (selectedRows: any[]) => {
-    console.log(
-      "Email selected rows:",
-      selectedRows.map((row) => row.original)
-    );
     toast.info(`Emailing ${selectedRows.length} selected rows`);
   };
 
   const handleDeleteSelected = async (selectedRows: any[]) => {
-    console.log(
-      "Delete selected rows:",
-      selectedRows.map((row) => row.original)
-    );
+    const ids = selectedRows
+      .map((r) => r.original.repairRequestId)
+      .filter(Boolean);
     const ok = await confirmDialog({
       title: "Delete selected repair requests?",
       description: `This will delete ${selectedRows.length} request(s). This action cannot be undone.`,
       confirmText: "Delete",
-    })
+    });
     if (ok) {
-      toast.success(`Deleted ${selectedRows.length} rows`)
+      if (onDeleteMany) {
+        onDeleteMany(ids);
+      } else {
+        setInternalData((prev) =>
+          prev.filter((r) => !ids.includes(r.repairRequestId || ""))
+        );
+      }
+      toast.success(`Deleted ${selectedRows.length} rows`);
     }
   };
 
   const handlePrintRow = (row: any) => {
-    const employee = row.original;
+    const item = row.original;
     const printWindow = window.open("", "_blank");
     if (printWindow) {
-      const formattedSalary = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(employee.salary);
-
       printWindow.document.write(`
         <html>
           <head>
-            <title>Work In Progress</title>
+            <title>Repair Request - ${item.repairRequestId || item.equipment}</title>
             <style>
               body { font-family: Arial, sans-serif; margin: 20px; }
               .header { border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px; }
               .field { margin-bottom: 10px; }
-              .label { font-weight: bold; display: inline-block; width: 120px; }
-              .status { padding: 4px 8px; border-radius: 4px; font-size: 12px; }
-              .status.active { background-color: #d4edda; color: #155724; }
-              .status.inactive { background-color: #f8d7da; color: #721c24; }
-              .status.pending { background-color: #fff3cd; color: #856404; }
+              .label { font-weight: bold; display: inline-block; width: 140px; }
             </style>
           </head>
           <body>
             <div class="header">
-              <h1>Working On This Feature</h1>
-            </div> 
+              <h1>Repair Request ${item.repairRequestId || ""}</h1>
+              <p>Equipment: ${item.equipment}</p>
+              <p>Requested By: ${item.requestedBy}</p>
+              <p>Due Date: ${item.dueDate}</p>
+            </div>
             <script>window.print(); window.close();</script>
           </body>
         </html>
@@ -206,16 +225,10 @@ export default function RepairRequestTable() {
     }
   };
 
-  // Server-side pagination handler
   const handlePaginationChange = (action: "next" | "previous" | number) => {
-    console.log(`🔄 Server Pagination Action: ${action}`);
-
     setIsLoading(true);
-
-    // Simulate server delay
     setTimeout(() => {
       let newPageIndex = paginationInfo.pageIndex;
-
       if (action === "next") {
         newPageIndex = Math.min(
           paginationInfo.pageIndex + 1,
@@ -226,40 +239,29 @@ export default function RepairRequestTable() {
       } else if (typeof action === "number") {
         newPageIndex = action;
       }
-
-      // Simulate fetching data for the new page
       const startIndex = newPageIndex * paginationInfo.pageSize;
       const endIndex = startIndex + paginationInfo.pageSize;
-      const newData = DummyRepairRequests.slice(startIndex, endIndex);
+      const newData = data.slice(startIndex, endIndex);
 
       setCurrentData(newData);
       setPaginationInfo((prev) => ({
         ...prev,
         pageIndex: newPageIndex,
       }));
-
       setIsLoading(false);
-    }, 1000); // 1 second delay to simulate server response
+    }, 500);
   };
 
-  // Server-side search handler
   const handleServerSearch = React.useCallback(
-    (searchid: string) => {
-      console.log(`🔍 Server Search: "${searchValue}"`);
-
+    (searchValue: string) => {
       setIsLoading(true);
-
-      // Simulate server delay
       setTimeout(() => {
-        let filteredData = DummyRepairRequests;
-
+        let filteredData = data;
         if (searchValue.trim()) {
-          filteredData = DummyRepairRequests.filter((emp) =>
-            matchesSearchAllFields(emp, searchValue.trim())
+          filteredData = data.filter((item) =>
+            matchesSearchAllFields(item, searchValue.trim())
           );
         }
-
-        // Reset to first page and update data
         const newData = filteredData.slice(0, paginationInfo.pageSize);
         setCurrentData(newData);
         setPaginationInfo((prev) => ({
@@ -268,14 +270,12 @@ export default function RepairRequestTable() {
           totalPages: Math.ceil(filteredData.length / prev.pageSize),
           totalRows: filteredData.length,
         }));
-
         setIsLoading(false);
-      }, 800); // 800ms delay to simulate server response
+      }, 500);
     },
-    [paginationInfo.pageSize]
-  ); // Add dependencies that actually matter
+    [data, paginationInfo.pageSize]
+  );
 
-  // Column definitions
   const columns: ColumnDef<MoreButtonRequestInterface>[] = [
     {
       accessorKey: "dueDate",
@@ -287,6 +287,16 @@ export default function RepairRequestTable() {
           filterOptions={dueDate}
         />
       ),
+      cell: ({ row }) => {
+        const val = row.original.dueDate;
+        if (!val) return "-";
+        try {
+          const d = typeof val === "string" ? new Date(val) : val;
+          return <span>{format(d, "yyyy-MM-dd")}</span>;
+        } catch {
+          return <span>{String(val)}</span>;
+        }
+      },
     },
     {
       accessorKey: "equipment",
@@ -310,8 +320,8 @@ export default function RepairRequestTable() {
         />
       ),
       cell: ({ row }) => (
-        <div className="   flex flex-col">
-          {row.original.repairsNeeded[0].repair}
+        <div className="flex flex-col">
+          {row.original.repairsNeeded?.[0]?.repair || "-"}
         </div>
       ),
       filterFn: (row, id, value) => {
@@ -329,8 +339,8 @@ export default function RepairRequestTable() {
         />
       ),
       cell: ({ row }) => (
-        <div className="   flex flex-col">
-          {row.original.repairsNeeded[0].type}
+        <div className="flex flex-col">
+          {row.original.repairsNeeded?.[0]?.type || "-"}
         </div>
       ),
       filterFn: (row, id, value) => {
@@ -362,8 +372,8 @@ export default function RepairRequestTable() {
         />
       ),
       cell: ({ row }) => (
-        <div className="   flex flex-col">
-          {row.original.repairsNeeded[0].priority}
+        <div className="flex flex-col">
+          {row.original.repairsNeeded?.[0]?.priority || "-"}
         </div>
       ),
     },
@@ -378,8 +388,8 @@ export default function RepairRequestTable() {
         />
       ),
       cell: ({ row }) => (
-        <div className="   flex flex-col">
-          {row.original.repairsNeeded[0].notes}
+        <div className="flex flex-col">
+          {row.original.repairsNeeded?.[0]?.notes || "-"}
         </div>
       ),
       filterFn: (row, id, value) => {
@@ -390,73 +400,67 @@ export default function RepairRequestTable() {
       id: "actions",
       header: "Actions",
       cell: ({ row }) => {
-        const handleDeleteRow = (row: any) => {
-          console.log("Delete row:", row.original);
+        const handleDeleteRow = (targetRow: any) => {
           (async () => {
             const ok = await confirmDialog({
               title: "Delete repair request?",
-              description: `Are you sure you want to delete ${row.original.name}?`,
+              description: `Are you sure you want to delete repair request for ${targetRow.original.equipment}?`,
               confirmText: "Delete",
-            })
+            });
             if (ok) {
-              toast.success(`Deleted ${row.original.name}`)
+              if (onDelete && targetRow.original.repairRequestId) {
+                onDelete(targetRow.original.repairRequestId);
+              } else {
+                setInternalData((prev) =>
+                  prev.filter(
+                    (r) =>
+                      r.repairRequestId !== targetRow.original.repairRequestId
+                  )
+                );
+              }
+              toast.success(
+                `Deleted repair request ${targetRow.original.repairRequestId || ""}`
+              );
             }
-          })()
+          })();
         };
 
         return (
-          <div className="flex flex-row gap-1 justify-between ">
+          <div
+            className="flex flex-row gap-1 items-center"
+            onClick={(e) => e.stopPropagation()}
+          >
             <EditRepairRequestForm
-              children={
-                <Button variant={"secondary"} size={"icon"}>
-                  <FilePenIcon />
-                </Button>
-              }
               data={row.original}
-            />
+              onUpdate={onUpdate}
+            >
+              <Button variant="secondary" size="icon">
+                <FilePenIcon className="size-4" />
+              </Button>
+            </EditRepairRequestForm>
 
             <Button
-              variant={"secondary"}
-              size={"icon"}
+              variant="secondary"
+              size="icon"
               onClick={(e) => {
                 e.stopPropagation();
                 handleDeleteRow(row);
               }}
               className="text-destructive focus:text-destructive"
             >
-              <Trash2 />
+              <Trash2 className="size-4" />
             </Button>
           </div>
         );
       },
-      enableSorting: false,
-      enableHiding: false,
     },
   ];
 
   return (
-    <div className="w-full overflow-x-auto ">
-      {/* <div className="mb-8">
-         
-
-        <div className="flex items-center gap-4 mb-4">
-          <Button
-            variant={isServerMode ? "default" : "outline"}
-            onClick={() => setIsServerMode(!isServerMode)}
-          >
-            {isServerMode ? "Server Mode ON" : "Client Mode ON"}
-          </Button>
-          {isServerMode && (
-            <Badge variant="secondary">
-              Page {paginationInfo.pageIndex + 1} of {paginationInfo.totalPages}
-            </Badge>
-          )}
-        </div>
-      </div> */}
-
+    <div className="w-full overflow-x-auto">
       <AdvancedDataTable
         columns={columns}
-        data={isServerMode ? currentData : DummyRepairRequests}
+        data={isServerMode ? currentData : data}
         defaultVisibleColumns={[
           "dueDate",
           "equipment",
@@ -474,7 +478,6 @@ export default function RepairRequestTable() {
         onDeleteSelected={handleDeleteSelected}
         onPrintRow={handlePrintRow}
         storageKey="repair-request-more-button-table-visibility"
-        // Server-side props
         realServerPagination={isServerMode}
         paginationInfo={isServerMode ? paginationInfo : undefined}
         onPaginationChange={isServerMode ? handlePaginationChange : undefined}
