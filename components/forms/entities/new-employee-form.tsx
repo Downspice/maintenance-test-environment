@@ -25,13 +25,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Modal } from "@/components/ui/modal";
 import {
   useAddEmployee,
   useGetEmployeeCategories,
@@ -138,16 +132,22 @@ export default function NewEmployeeForm({
     isLoading: categoryOptionsLoading,
     error: categoryOptionsError,
   } = useGetEmployeeCategories<Array<{ id: string; name: string }>>();
+  const { data: renewalOptionsList } = useGetEmployeeRenewals();
   const { mutateAsync, isPending } = useAddEmployee();
 
   const handleAddRenewal = (newRenewal: RenewalData) => {
+    let updatedRenewals: RenewalData[];
     if (editingId) {
-      setRenewals(renewals.map((r) => (r.id === editingId ? newRenewal : r)));
+      updatedRenewals = renewals.map((r) => (r.id === editingId ? newRenewal : r));
       setEditingId(null);
     } else {
-      setRenewals([...renewals, newRenewal]);
+      updatedRenewals = [
+        ...renewals,
+        { ...newRenewal, id: newRenewal.id || crypto.randomUUID() },
+      ];
     }
-    employeeForm.setValue("renewals", [...renewals, newRenewal]);
+    setRenewals(updatedRenewals);
+    employeeForm.setValue("renewals", updatedRenewals);
     setOpen(false);
     toast.success(editingId ? "Renewal updated" : "Renewal added");
   };
@@ -452,29 +452,48 @@ export default function NewEmployeeForm({
             <TabsContent value="renewals">
               <div className="flex flex-col gap-4">
                 <div className="flex justify-end">
-                  <Sheet open={open} onOpenChange={setOpen}>
-                    <SheetTrigger asChild>
-                      <Button onClick={() => setEditingId(null)}>
-                        <Plus className="mr-2 h-4 w-4" /> Add Renewal
-                      </Button>
-                    </SheetTrigger>
-                    <SheetContent>
-                      <SheetHeader>
-                        <SheetTitle>
-                          {editingId ? "Edit Renewal" : "Add Renewal"}
-                        </SheetTitle>
-                      </SheetHeader>
-                      <RenewalFormContent
-                        onSubmit={handleAddRenewal}
-                        editingRenewal={
-                          editingId
-                            ? renewals.find((r) => r.id === editingId)
-                            : undefined
-                        }
-                      />
-                    </SheetContent>
-                  </Sheet>
+                  <Button
+                    type="button"
+                    variant="primary"
+                    onClick={() => {
+                      setEditingId(null);
+                      setOpen(true);
+                    }}
+                  >
+                    <Plus className="mr-2 h-4 w-4" /> Add Renewal
+                  </Button>
                 </div>
+
+                <Modal
+                  open={open}
+                  onOpenChange={(val) => {
+                    setOpen(val);
+                    if (!val) setEditingId(null);
+                  }}
+                  title={editingId ? "Edit Renewal" : "Add Renewal"}
+                  description={
+                    editingId
+                      ? "Update the details of this employee renewal."
+                      : "Fill out the information below to add a renewal for this employee."
+                  }
+                  closeable={true}
+                  renderActions={
+                    <Button form="renewal-form" type="submit" variant="primary">
+                      {editingId ? "Update Renewal" : "Add Renewal"}
+                    </Button>
+                  }
+                >
+                  <RenewalFormContent
+                    formId="renewal-form"
+                    key={editingId || "new"}
+                    onSubmit={handleAddRenewal}
+                    editingRenewal={
+                      editingId
+                        ? renewals.find((r) => r.id === editingId)
+                        : undefined
+                    }
+                  />
+                </Modal>
 
                 {renewals.length > 0 ? (
                   <Table>
@@ -488,34 +507,45 @@ export default function NewEmployeeForm({
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {renewals.map((data) => (
-                        <TableRow key={data.id}>
-                          <TableCell>{data.renewal_id}</TableCell>
-                          <TableCell>
-                            {data.issued_date.toLocaleDateString()}
-                          </TableCell>
-                          <TableCell>
-                            {data.expiry_date.toLocaleDateString()}
-                          </TableCell>
-                          <TableCell>{data.notes || "-"}</TableCell>
-                          <TableCell className="flex gap-2">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleEditRenewal(data.id)}
-                            >
-                              <Pen className="h-4 w-4 text-blue-400" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleDeleteRenewal(data.id)}
-                            >
-                              <Trash2 className="h-4 w-4 text-destructive" />
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                      {renewals.map((data) => {
+                        const renewalName =
+                          renewalOptionsList?.find((r) => r.id === data.renewal_id)?.name ||
+                          data.renewal_id;
+                        return (
+                          <TableRow key={data.id}>
+                            <TableCell>{renewalName}</TableCell>
+                            <TableCell>
+                              {data.issued_date
+                                ? new Date(data.issued_date).toLocaleDateString()
+                                : "-"}
+                            </TableCell>
+                            <TableCell>
+                              {data.expiry_date
+                                ? new Date(data.expiry_date).toLocaleDateString()
+                                : "-"}
+                            </TableCell>
+                            <TableCell>{data.notes || "-"}</TableCell>
+                            <TableCell className="flex gap-2">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                type="button"
+                                onClick={() => handleEditRenewal(data.id)}
+                              >
+                                <Pen className="h-4 w-4 text-blue-400" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                type="button"
+                                onClick={() => handleDeleteRenewal(data.id)}
+                              >
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
                     </TableBody>
                   </Table>
                 ) : (
@@ -541,53 +571,76 @@ export default function NewEmployeeForm({
 }
 
 interface RenewalFormContentProps {
+  formId?: string;
   onSubmit: (data: RenewalData) => void;
   editingRenewal?: RenewalData;
 }
 
 function RenewalFormContent({
+  formId = "renewal-form",
   onSubmit,
   editingRenewal,
 }: RenewalFormContentProps) {
   const { data: renewalOptionsList } = useGetEmployeeRenewals();
 
-  const form = useForm({
-    defaultValues: editingRenewal || {
-      renewal_id: "",
-      issued_date: new Date(),
-      expiry_date: new Date(),
-      notes: "",
-    },
+  const form = useForm<Omit<RenewalData, "id">>({
+    defaultValues: editingRenewal
+      ? {
+          renewal_id: editingRenewal.renewal_id || "",
+          issued_date: editingRenewal.issued_date
+            ? new Date(editingRenewal.issued_date)
+            : new Date(),
+          expiry_date: editingRenewal.expiry_date
+            ? new Date(editingRenewal.expiry_date)
+            : new Date(),
+          notes: editingRenewal.notes || "",
+        }
+      : {
+          renewal_id: "",
+          issued_date: new Date(),
+          expiry_date: new Date(),
+          notes: "",
+        },
   });
 
   return (
     <Form {...form}>
       <form
+        id={formId}
         onSubmit={form.handleSubmit((data) => {
           if (data.renewal_id && data.issued_date && data.expiry_date) {
-            onSubmit(data as RenewalData);
+            onSubmit({
+              id: editingRenewal?.id || crypto.randomUUID(),
+              renewal_id: data.renewal_id,
+              issued_date: data.issued_date,
+              expiry_date: data.expiry_date,
+              notes: data.notes || "",
+            });
             form.reset();
           } else {
             toast.error("Please fill in all required fields");
           }
         })}
-        className="mt-6 space-y-4"
+        className="flex flex-col gap-1 py-1"
       >
         <SelectWrapper
           control={form.control}
           name="renewal_id"
           label="Renewal Type"
           options={renewalOptionsList ?? []}
+          required
         />
         <DatePickerWrapper
           control={form.control}
           name="issued_date"
           label="Date Issued"
+          required
         />
         <DatePickerWrapper
           control={form.control}
           name="expiry_date"
           label="Date Expired"
+          required
         />
         <InputWrapper
           control={form.control}
@@ -596,9 +649,6 @@ function RenewalFormContent({
           type="text"
           value=""
         />
-        <Button type="submit" className="w-full">
-          {editingRenewal ? "Update Renewal" : "Add Renewal"}
-        </Button>
       </form>
     </Form>
   );
