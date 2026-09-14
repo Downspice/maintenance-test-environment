@@ -73,6 +73,7 @@ export default function WorkOrdersPage() {
     openSheet({
       title: "Create New Work Order",
       description: "Fill out the form below to create a new work order.",
+      className: "inset-0 w-full max-w-none sm:max-w-none lg:max-w-none",
       content: (
         <ActualWorkOrderForm formId="actual-work-order-form" hideSubmitButton />
       ),

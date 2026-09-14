@@ -87,6 +87,7 @@ export default function CustomersPage() {
     openSheet({
       title: "Create Customer",
       description: "Fill out the form below to create a new customer.",
+      className: "w-full sm:w-[45%] sm:min-w-[600px] sm:max-w-none lg:max-w-none",
       content: <NewCustomer formId="new-customer-form" hideSubmitButton />,
       renderActions: (
         <Button form="new-customer-form" type="submit" variant="primary">

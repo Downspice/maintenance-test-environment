@@ -79,6 +79,7 @@ export default function InventoryPage() {
     openSheet({
       title: "Create Inventory",
       description: "Fill out the form below to create a new Inventory.",
+      className: "w-full sm:w-[45%] sm:min-w-[600px] sm:max-w-none lg:max-w-none",
       content: <NewInventory formId="new-inventory-form" hideSubmitButton />,
       renderActions: (
         <Button form="new-inventory-form" type="submit" variant="primary">

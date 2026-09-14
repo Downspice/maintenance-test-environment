@@ -23,7 +23,7 @@ export const vendorSchema = z.object({
   notes: z.string().optional(),
 });
 
-export default function NewLocation() {
+export default function NewLocation({ formId = "new-location-form", hideSubmitButton }: { formId?: string; hideSubmitButton?: boolean }) {
   const [customFields, setCustomFields] = useState<
     { name: string; id: string }[]
   >([]);
@@ -37,7 +37,7 @@ export default function NewLocation() {
     console.log(data);
     // Here you would typically send the data to your API
 
-    toast.success("Work Order submitted successfully!");
+    toast.success("Location saved successfully!");
   }
 
   const addCustomField = () => {
@@ -47,7 +47,7 @@ export default function NewLocation() {
   return (
     <div>
       <Form {...vendorForm}>
-        <form onSubmit={vendorForm.handleSubmit((data) => handleSubmit(data))}>
+        <form id={formId} onSubmit={vendorForm.handleSubmit((data) => handleSubmit(data))}>
           <div className="grid grid-cols-2 gap-x-2">
             <div className="col-span-2 flex flex-col">
               <InputWrapper
@@ -87,11 +87,13 @@ export default function NewLocation() {
               />
             </div>
           </div>
-          <div className="flex justify-between gap-x-4 my-8 w-full">
-            <Button className=" w-full">
-              <GitPullRequestArrow className="mr-2" /> Save
-            </Button>
-          </div>
+          {!hideSubmitButton && (
+            <div className="flex justify-between gap-x-4 my-8 w-full">
+              <Button className=" w-full">
+                <GitPullRequestArrow className="mr-2" /> Save
+              </Button>
+            </div>
+          )}
         </form>
       </Form>
     </div>

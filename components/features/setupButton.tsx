@@ -9,17 +9,11 @@ import {
 } from "../ui/dropdown-menu";
 import { Separator } from "../ui/separator";
 import { useState } from "react";
-import {
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-  Sheet,
-} from "../ui/sheet";
+import { Drawer } from "@/components/ui/drawer";
+import { ScrollArea } from "../ui/scroll-area";
 import NewEmployeeForm from "../forms/entities/new-employee-form";
 import NotCompleteMessage from "@/app/(application)/workInprogress/working";
 import CompanySettings from "../forms/entities/company-setting-form";
-import { ScrollArea } from "../ui/scroll-area";
 import LocationView from "./locationView";
 import WarehouseSetup from "./warehouseView";
 import ShippingView from "./shipping/shipping-view";
@@ -31,20 +25,42 @@ import AssignmentConfigurations from "../forms/setup/assignment/assignmentManage
 import ManagePMScheduleManager from "../forms/setup/managePMSchedule/ManagePMScheduleManager";
 import { ActualEquipmentForm } from "@/components/forms/entities/equipment/new-equipment-form";
 
+type SetupItem = {
+  name: string;
+  formId?: string;
+  saveLabel?: string;
+  fullscreen?: boolean;
+  noFooter?: boolean;
+};
+
+const SETUP_ITEMS: SetupItem[] = [
+  { name: "Settings", formId: "company-settings-form", saveLabel: "Save Settings", fullscreen: false },
+  { name: "Locations", noFooter: true },
+  { name: "Warehouses", noFooter: true },
+  { name: "Manage Users", noFooter: true },
+  { name: "User Preferences", noFooter: true },
+  { name: "PO Shipping Address", noFooter: true },
+  { name: "PM Schedule Templates", noFooter: true },
+  { name: "Associations", noFooter: true },
+  { name: "Part Kits", noFooter: true },
+  { name: "Choice Lists", noFooter: true },
+  { name: "Scheduled reports", noFooter: true },
+  { name: "Equipment", formId: "setup-equipment-form", saveLabel: "Save Equipment", fullscreen: true },
+  { name: "Employees", formId: "setup-employee-form", saveLabel: "Save Employee", fullscreen: true },
+  { name: "Vendors", formId: "setup-vendor-form", saveLabel: "Save Vendor", fullscreen: false },
+  { name: "Parts Inventory", noFooter: true },
+];
+
 export default function HeaderSettingsButton() {
   const [open, setOpen] = useState(false);
-  const [selectedProjectType, setSelectedProjectType] = useState<string | null>(
-    null
-  );
+  const [selectedProjectType, setSelectedProjectType] = useState<string | null>(null);
 
   const handleDropdownOptionSelect = (x: string) => {
-    console.log("f", x);
     setSelectedProjectType(x);
     setOpen(true);
   };
 
   const genericDropdown = (x: string) => {
-    console.log("did something", x);
     handleDropdownOptionSelect(x);
   };
 
@@ -75,44 +91,72 @@ export default function HeaderSettingsButton() {
   const handleCloseSheet = () => {
     setOpen(false);
     setSelectedProjectType(null);
-    // Reset all forms
-    // webForm.reset()
-    // mobileForm.reset()
-    // apiForm.reset()
-    // desktopForm.reset()
-    // designForm.reset()
-    // aiForm.reset()
   };
-
-  // const selectedType = [
-  //   ...dropdownItemsSection1,
-  //   ...dropdownItemsSection2,
-  //   ...dropdownItemsSection3,
-  // ].find((type) => type.label === selectedProjectType);
 
   const renderFormContent = () => {
-    const SelectedComponent = formComponents[selectedProjectType ?? ""];
-    console.log("new selected", SelectedComponent);
-    return SelectedComponent ? SelectedComponent : null;
+    switch (selectedProjectType) {
+      case "Settings":
+        return <CompanySettings formId="company-settings-form" hideSubmitButton />;
+      case "Locations":
+        return <LocationView />;
+      case "Warehouses":
+        return <WarehouseSetup />;
+      case "Manage Users":
+        return <NotCompleteMessage />;
+      case "User Preferences":
+        return <NotCompleteMessage />;
+      case "PO Shipping Address":
+        return <ShippingView />;
+      case "PM Schedule Templates":
+        return <ManagePMScheduleManager />;
+      case "Associations":
+        return <AssignmentConfigurations />;
+      case "Part Kits":
+        return <PartKitManager />;
+      case "Choice Lists":
+        return <ChoiceList />;
+      case "Scheduled reports":
+        return <ScheduledReportView />;
+      case "Equipment":
+        return (
+          <ActualEquipmentForm
+            formId="setup-equipment-form"
+            hideSubmitButton
+            onSuccess={handleCloseSheet}
+          />
+        );
+      case "Employees":
+        return (
+          <NewEmployeeForm
+            formId="setup-employee-form"
+            hideSubmitButton
+            onSuccess={handleCloseSheet}
+          />
+        );
+      case "Vendors":
+        return <NewVendor formId="setup-vendor-form" hideSubmitButton />;
+      case "Parts Inventory":
+        return <NotCompleteMessage />;
+      default:
+        return null;
+    }
   };
 
-  const formComponents: any = {
-    Settings: <CompanySettings />,
-    Locations: <LocationView />,
-    Warehouses: <WarehouseSetup />,
-    "Manage Users": <NotCompleteMessage />,
-    "User Preferences": <NotCompleteMessage />,
-    "PO Shipping Address": <ShippingView />,
-    "PM Schedule Templates": <ManagePMScheduleManager />,
-    Associations: <AssignmentConfigurations />,
-    "Part Kits": <PartKitManager />,
-    "Choice Lists": <ChoiceList />,
-    "Scheduled reports": <ScheduledReportView />,
-    Equipment: <ActualEquipmentForm />,
-    Employees: <NewEmployeeForm />,
-    Vendors: <NewVendor />,
-    "Parts Inventory": <NotCompleteMessage />,
-  };
+  const getActiveItem = (): SetupItem | undefined =>
+    SETUP_ITEMS.find((i) => i.name === selectedProjectType);
+
+  const activeItem = getActiveItem();
+
+  const drawerClassName = activeItem?.fullscreen
+    ? "inset-0 w-full max-w-none sm:max-w-none lg:max-w-none"
+    : "w-full sm:w-[45%] sm:min-w-[600px] sm:max-w-none lg:max-w-none";
+
+  const renderActions = activeItem?.formId ? (
+    <Button form={activeItem.formId} type="submit" variant="primary">
+      {activeItem.saveLabel ?? "Save"}
+    </Button>
+  ) : undefined;
+
   return (
     <>
       <DropdownMenu>
@@ -121,11 +165,7 @@ export default function HeaderSettingsButton() {
             <Cog /> Setup
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent
-          className="w-64 rounded-lg"
-        // side={isMobile ? "bottom" : "right"}
-        // align={isMobile ? "end" : "start"}
-        >
+        <DropdownMenuContent className="w-64 rounded-lg">
           <span className="font-bold">Company</span>
           {dropdownItemsSection1.map((item) => (
             <DropdownMenuItem
@@ -158,24 +198,24 @@ export default function HeaderSettingsButton() {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent className="w-[400px] sm:w-3/4">
-          <SheetHeader>
-            <SheetTitle className="flex items-center gap-2">
-              {/* {selectedType && <selectedType.icon className="h-5 w-5" />} */}
-              {selectedProjectType || "Setup"}
-            </SheetTitle>
-            <SheetDescription>
-              {/* {selectedType?.label ||
-                "Fill out the form below to set up your new development project."} */}
-            </SheetDescription>
-          </SheetHeader>
-
-          <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
-            {renderFormContent() || "nothing else"}
-          </ScrollArea>
-        </SheetContent>
-      </Sheet>
+      <Drawer
+        open={open}
+        onOpenChange={setOpen}
+        title={selectedProjectType || "Setup"}
+        description={
+          activeItem?.formId
+            ? `Fill out the form below to configure ${selectedProjectType?.toLowerCase()}.`
+            : undefined
+        }
+        closeable={true}
+        showFooter={!activeItem?.noFooter}
+        renderActions={renderActions}
+        className={drawerClassName}
+      >
+        <ScrollArea className="h-[calc(100vh-160px)] pr-4">
+          {renderFormContent() || "nothing else"}
+        </ScrollArea>
+      </Drawer>
     </>
   );
 }

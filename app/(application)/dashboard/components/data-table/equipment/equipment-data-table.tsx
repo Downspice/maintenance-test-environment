@@ -572,7 +572,13 @@ export function EquipmentDataTable({ realServer }: DataTableProps) {
       title: "Create Work Order",
       description:
         "Fill out the form below to create a new work order for equipment maintenance or repair.",
-      content: <ActualWorkOrderForm />,
+      className: "inset-0 w-full max-w-none sm:max-w-none lg:max-w-none",
+      content: <ActualWorkOrderForm formId="create-wo-equipment-form" hideSubmitButton />,
+      renderActions: (
+        <Button form="create-wo-equipment-form" type="submit" variant="primary">
+          Create Work Order
+        </Button>
+      ),
     });
   };
 

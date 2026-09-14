@@ -42,7 +42,7 @@ export default function InventoryFormWrapper({ variant }: TriggerVariant) {
           Save Inventory
         </Button>
       }
-      className="w-3/4"
+      className="w-full sm:w-[45%] sm:min-w-[600px] sm:max-w-none lg:max-w-none"
     >
       <ScrollArea className="h-[calc(100vh-160px)] pr-4">
         <NewInventory formId="new-inventory-form" hideSubmitButton />

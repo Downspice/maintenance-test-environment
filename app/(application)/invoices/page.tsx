@@ -114,6 +114,7 @@ export default function EmployeesPage() {
       title: "Manage Payments",
       description: "Fill out the form below to create a payment.",
       className: "inset-0 w-full max-w-none sm:max-w-none lg:max-w-none",
+      showFooter: false,
       content: (
         <div className="w-full">
           <PaymentReceivedTable />

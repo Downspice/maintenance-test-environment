@@ -314,6 +314,7 @@ export function InventoryDataTable({ realServer }: InventoryDataTableProps) {
       openSheet({
         title: `Receipt: ${item.partNumber} ${item.name}`,
         description: "",
+        className: "w-full sm:w-[45%] sm:min-w-[600px] sm:max-w-none lg:max-w-none",
         content: (
           <NotCompleteMessage/>
         ),
