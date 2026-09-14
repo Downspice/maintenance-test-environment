@@ -12,8 +12,8 @@ const checkboxVariants = tv({
     'transition-all duration-150 outline-none',
     'hover:ring-stroke-sub-300',
     'focus-visible:ring-2 focus-visible:ring-stroke-strong-950',
-    'data-[state=checked]:bg-text-strong-950 data-[state=checked]:ring-text-strong-950',
-    'data-[state=indeterminate]:bg-text-strong-950 data-[state=indeterminate]:ring-text-strong-950',
+    'data-[state=checked]:bg-primary-base data-[state=checked]:ring-primary-base data-[state=checked]:hover:bg-primary-dark data-[state=checked]:hover:ring-primary-dark',
+    'data-[state=indeterminate]:bg-primary-base data-[state=indeterminate]:ring-primary-base',
     'disabled:pointer-events-none disabled:opacity-40',
   ],
   variants: {
