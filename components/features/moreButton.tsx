@@ -16,15 +16,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Button } from "../ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+import { SectionedHeaderMenu } from "./header/sectioned-header-menu";
 import { Drawer } from "@/components/ui/drawer";
 import { useState, type ReactNode } from "react";
 import { cn } from "@/utils/cn";
@@ -165,10 +157,7 @@ export default function HeaderUploadButton() {
   );
   const handleActionSelect = (id: MoreActionId) => {
     setSelectedAction(id);
-    // Defer until after the dropdown closes so the same pointer event cannot dismiss the drawer.
-    window.setTimeout(() => {
-      setOpen(true);
-    }, 0);
+    window.setTimeout(() => setOpen(true), 0);
   };
 
   const formComponents: Record<MoreActionId, ReactNode> = {
@@ -196,42 +185,16 @@ export default function HeaderUploadButton() {
 
   return (
     <>
-      <DropdownMenu modal={false}>
-        <DropdownMenuTrigger asChild>
-          <Button variant="secondary">
+      <SectionedHeaderMenu
+        sections={MORE_MENU_SECTIONS}
+        onSelect={handleActionSelect}
+        trigger={
+          <Button variant="secondary" className="gap-2">
             <LucideEllipsisVertical className="size-4" />
             More
           </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent
-          align="end"
-          side="bottom"
-          sideOffset={8}
-          className="w-[min(100vw-2rem,17.5rem)] rounded-xl p-1.5"
-        >
-          {MORE_MENU_SECTIONS.map((section, sectionIndex) => (
-            <DropdownMenuGroup key={section.label}>
-              {sectionIndex > 0 && <DropdownMenuSeparator className="my-1.5" />}
-              <DropdownMenuLabel className="px-2 pb-1 pt-1.5">
-                {section.label}
-              </DropdownMenuLabel>
-              {section.items.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <DropdownMenuItem
-                    key={item.id}
-                    className="whitespace-normal py-2 leading-snug"
-                    onSelect={() => handleActionSelect(item.id)}
-                  >
-                    <Icon className="size-4 shrink-0 text-text-soft-400" />
-                    <span className="text-text-strong-950">{item.label}</span>
-                  </DropdownMenuItem>
-                );
-              })}
-            </DropdownMenuGroup>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
+        }
+      />
 
       <Drawer
         open={open}

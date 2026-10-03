@@ -1,54 +1,47 @@
 "use client";
-import {
-  Database,
-} from "lucide-react";
+
+import { Database, Download, HardDriveDownload, Trash2, Wrench } from "lucide-react";
 import { Button } from "../ui/button";
+import { toast } from "sonner";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import { Separator } from "../ui/separator";
-const genericDropdown = () => {
-  console.log("did something");
-};
+  SectionedHeaderMenu,
+  type HeaderMenuSection,
+} from "./header/sectioned-header-menu";
 
-const dropdownItemsSection1 = [
-  { name: "Backup", onSelect: genericDropdown },
-  { name: "Restore", onSelect: genericDropdown },
-];
+type DbToolsMenuId = "backup" | "restore" | "optimize" | "purge";
 
-const dropdownItemsSection2 = [
-  { name: "Optimize/Repair", onSelect: genericDropdown },
-  { name: "Purge", onSelect: genericDropdown },
+const DB_TOOLS_SECTIONS: HeaderMenuSection<DbToolsMenuId>[] = [
+  {
+    label: "Backup & restore",
+    items: [
+      { id: "backup", label: "Backup database", icon: Download },
+      { id: "restore", label: "Restore database", icon: HardDriveDownload },
+    ],
+  },
+  {
+    label: "Maintenance",
+    items: [
+      { id: "optimize", label: "Optimize / repair", icon: Wrench },
+      { id: "purge", label: "Purge old data", icon: Trash2, emphasize: true },
+    ],
+  },
 ];
 
 export default function DBToolsButton() {
+  const handleSelect = (id: DbToolsMenuId) => {
+    toast.info(`Database tool "${id}" — coming soon`);
+  };
+
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="secondary">
-          <Database />Tools
+    <SectionedHeaderMenu
+      sections={DB_TOOLS_SECTIONS}
+      onSelect={handleSelect}
+      trigger={
+        <Button variant="secondary" className="gap-2">
+          <Database className="size-4" />
+          Tools
         </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent
-        className="w-48 rounded-lg"
-        // side={isMobile ? "bottom" : "right"}
-        // align={isMobile ? "end" : "start"}
-      >
-        {dropdownItemsSection1.map((item) => (
-          <DropdownMenuItem key={item.name} onSelect={item.onSelect}>
-            <span>{item.name}</span>
-          </DropdownMenuItem>
-        ))}
-        <Separator orientation="horizontal" />
-        {dropdownItemsSection2.map((item) => (
-          <DropdownMenuItem key={item.name} onSelect={item.onSelect}>
-            <span>{item.name}</span>
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+      }
+    />
   );
 }

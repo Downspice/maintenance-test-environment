@@ -7,14 +7,12 @@ import LocationView from "./locationView";
 import WarehouseSetup from "./warehouseView";
 import { Button } from "../ui/button";
 import { Drawer } from "@/components/ui/drawer";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+import { MapPin, Settings, Warehouse } from "lucide-react";
 import { ScrollArea } from "../ui/scroll-area";
-import { Separator } from "../ui/separator";
+import {
+  SectionedHeaderMenu,
+  type HeaderMenuSection,
+} from "./header/sectioned-header-menu";
 
 const STANDARD_DRAWER_CLASS =
   "w-full sm:w-[45%] sm:min-w-[600px] sm:max-w-none lg:max-w-none";
@@ -29,6 +27,17 @@ type CompanyMenuItem = {
   saveLabel?: string;
   showFooter?: boolean;
 };
+
+const COMPANY_MENU_SECTIONS: HeaderMenuSection<CompanyMenuKey>[] = [
+  {
+    label: "Our company",
+    items: [
+      { id: "Settings", label: "Company settings", icon: Settings },
+      { id: "Locations", label: "Locations", icon: MapPin },
+      { id: "Warehouses", label: "Warehouses", icon: Warehouse },
+    ],
+  },
+];
 
 const COMPANY_MENU_ITEMS: CompanyMenuItem[] = [
   {
@@ -68,7 +77,7 @@ export default function OrganizationHeaderButton() {
 
   const handleSelect = (key: CompanyMenuKey) => {
     setSelectedKey(key);
-    setOpen(true);
+    window.setTimeout(() => setOpen(true), 0);
   };
 
   const renderContent = () => {
@@ -92,25 +101,15 @@ export default function OrganizationHeaderButton() {
 
   return (
     <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="secondary">
-            <span className="text-nowrap">Our Company</span>
+      <SectionedHeaderMenu
+        sections={COMPANY_MENU_SECTIONS}
+        onSelect={handleSelect}
+        trigger={
+          <Button variant="secondary" className="gap-2">
+            <span className="text-nowrap">Our company</span>
           </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-48 rounded-lg">
-          <DropdownMenuItem onClick={() => handleSelect("Settings")}>
-            <span>Settings</span>
-          </DropdownMenuItem>
-          <Separator orientation="horizontal" />
-          <DropdownMenuItem onClick={() => handleSelect("Locations")}>
-            <span>Locations</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleSelect("Warehouses")}>
-            <span>Warehouses</span>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+        }
+      />
 
       <Drawer
         open={open}

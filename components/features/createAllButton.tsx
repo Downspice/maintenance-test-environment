@@ -1,12 +1,22 @@
 "use client";
 import { Button } from "../ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import { Plus } from "lucide-react";
+  AlertTriangle,
+  ArrowLeftRight,
+  Briefcase,
+  ClipboardCheck,
+  Package,
+  Plus,
+  ShoppingCart,
+  Truck,
+  UserPlus,
+  Users,
+  Wrench,
+} from "lucide-react";
+import {
+  SectionedHeaderMenu,
+  type HeaderMenuSection,
+} from "./header/sectioned-header-menu";
 import { useState } from "react";
 import { Drawer } from "@/components/ui/drawer";
 import NewEmployeeForm from "../forms/entities/new-employee-form";
@@ -21,48 +31,72 @@ import AdjustInventoryForm from "../forms/entities/adjust-inventory-form";
 import { ScrollArea } from "../ui/scroll-area";
 import QuickActionsReceivePurchaseOrder from "../forms/actions/quick/receive-purchase-order";
 import NewPart from "../forms/actions/quick/addPart";
-import { Separator } from "../ui/separator";
 import { ActualEquipmentForm } from "@/components/forms/entities/equipment/new-equipment-form";
 import ActualRepairRequestForm from "../forms/entities/repairRequest";
 
+type CreateActionId =
+  | "Equipment"
+  | "Repair Request"
+  | "Daily Inspection"
+  | "Work Order"
+  | "Expense"
+  | "Assignment"
+  | "Accident"
+  | "Part"
+  | "Purchase Order"
+  | "Employee"
+  | "Vendor"
+  | "Receive | Adjust Inventory"
+  | "Receive Purchase Order";
+
+const CREATE_MENU_SECTIONS: HeaderMenuSection<CreateActionId>[] = [
+  {
+    label: "Operations",
+    items: [
+      { id: "Equipment", label: "Equipment", icon: Truck },
+      { id: "Repair Request", label: "Repair request", icon: Wrench },
+      { id: "Daily Inspection", label: "Daily inspection", icon: ClipboardCheck },
+      { id: "Work Order", label: "Work order", icon: Briefcase },
+      { id: "Expense", label: "Expense", icon: ArrowLeftRight },
+      { id: "Assignment", label: "Equipment assignment", icon: Users },
+      { id: "Accident", label: "Accident report", icon: AlertTriangle },
+    ],
+  },
+  {
+    label: "People & purchasing",
+    items: [
+      { id: "Part", label: "Part / inventory item", icon: Package },
+      { id: "Purchase Order", label: "Purchase order", icon: ShoppingCart },
+      { id: "Employee", label: "Employee", icon: UserPlus },
+      { id: "Vendor", label: "Vendor", icon: Users },
+    ],
+  },
+  {
+    label: "Receiving",
+    items: [
+      {
+        id: "Receive | Adjust Inventory",
+        label: "Receive or adjust inventory",
+        icon: Package,
+      },
+      {
+        id: "Receive Purchase Order",
+        label: "Receive purchase order",
+        icon: ShoppingCart,
+      },
+    ],
+  },
+];
+
 export default function CreateAllButton() {
   const [open, setOpen] = useState(false);
-  const [selectedProjectType, setSelectedProjectType] = useState<string | null>(
-    null
-  );
+  const [selectedProjectType, setSelectedProjectType] =
+    useState<CreateActionId | null>(null);
 
-  const handleDropdownOptionSelect = (x: string) => {
-    console.log("f", x);
-    setSelectedProjectType(x);
-    setOpen(true);
+  const handleActionSelect = (id: CreateActionId) => {
+    setSelectedProjectType(id);
+    window.setTimeout(() => setOpen(true), 0);
   };
-
-  const genericDropdown = (x: string) => {
-    console.log("did something", x);
-    handleDropdownOptionSelect(x);
-  };
-
-  const dropdownItems1 = [
-    { name: "Equipment", onSelect: genericDropdown },
-    { name: "Repair Request", onSelect: genericDropdown },
-    { name: "Daily Inspection", onSelect: genericDropdown },
-    { name: "Work Order", onSelect: genericDropdown },
-    { name: "Expense", onSelect: genericDropdown },
-    { name: "Assignment", onSelect: genericDropdown },
-    { name: "Accident", onSelect: genericDropdown },
-  ];
-
-  const dropdownItems2 = [
-    { name: "Part", onSelect: genericDropdown },
-    { name: "Purchase Order", onSelect: genericDropdown },
-    { name: "Employee", onSelect: genericDropdown },
-    { name: "Vendor", onSelect: genericDropdown },
-  ];
-
-  const dropdownItems3 = [
-    { name: "Receive | Adjust Inventory", onSelect: genericDropdown },
-    { name: "Receive Purchase Order", onSelect: genericDropdown },
-  ];
 
   const renderFormContent = () => {
     if (!open || !selectedProjectType) return null;
@@ -285,49 +319,17 @@ export default function CreateAllButton() {
 
   return (
     <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button>
-            <Plus /> Quick Actions
-            <span className="sr-only">Create Something</span>
+      <SectionedHeaderMenu
+        sections={CREATE_MENU_SECTIONS}
+        onSelect={handleActionSelect}
+        align="start"
+        trigger={
+          <Button variant="primary" className="gap-2">
+            <Plus className="size-4" />
+            Quick actions
           </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent
-          className="w-64 rounded-lg"
-        >
-          <div className="w-full *:p-3 items-end flex justify-between">
-            <div className="text-md font-semibold">Create New</div>
-          </div>
-
-          {dropdownItems1.map((item) => (
-            <DropdownMenuItem
-              key={item.name}
-              onClick={() => item.onSelect(item.name)}
-            >
-              <span>{item.name}</span>
-            </DropdownMenuItem>
-          ))}
-          <Separator className="text-gray-900" orientation="horizontal" />
-          {dropdownItems2.map((item) => (
-            <DropdownMenuItem
-              key={item.name}
-              onClick={() => item.onSelect(item.name)}
-            >
-              <span>{item.name}</span>
-            </DropdownMenuItem>
-          ))}
-          <span className="font-bold">Other actions</span>
-          <Separator orientation="horizontal" />
-          {dropdownItems3.map((item) => (
-            <DropdownMenuItem
-              key={item.name}
-              onClick={() => item.onSelect(item.name)}
-            >
-              <span>{item.name}</span>
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
+        }
+      />
       <Drawer
         open={open}
         onOpenChange={setOpen}

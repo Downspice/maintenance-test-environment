@@ -1,56 +1,54 @@
 "use client";
+
+import { KeyRound, Settings, Users } from "lucide-react";
 import { Button } from "../ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import { Separator } from "../ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { toast } from "sonner";
-const genericDropdown = () => {
-  toast("did something");
-};
+import {
+  SectionedHeaderMenu,
+  type HeaderMenuSection,
+} from "./header/sectioned-header-menu";
 
-const dropdownItemsSection1 = [
-  { name: "User Preferences", onSelect: genericDropdown },
-];
+type ProfileMenuId = "user-preferences" | "manage-users" | "change-password";
 
-const dropdownItemsSection2 = [
-  { name: "Manage Users", onSelect: genericDropdown },
-  { name: "Change Password", onSelect: genericDropdown },
+const PROFILE_MENU_SECTIONS: HeaderMenuSection<ProfileMenuId>[] = [
+  {
+    label: "Account",
+    items: [
+      {
+        id: "user-preferences",
+        label: "User preferences",
+        icon: Settings,
+      },
+    ],
+  },
+  {
+    label: "Security & admin",
+    items: [
+      { id: "manage-users", label: "Manage users", icon: Users },
+      { id: "change-password", label: "Change password", icon: KeyRound },
+    ],
+  },
 ];
 
 export default function HeaderProfileButton() {
+  const handleSelect = (id: ProfileMenuId) => {
+    toast.info(`"${id.replace(/-/g, " ")}" — coming soon`);
+  };
+
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="secondary">
+    <SectionedHeaderMenu
+      sections={PROFILE_MENU_SECTIONS}
+      onSelect={handleSelect}
+      trigger={
+        <Button variant="secondary" className="max-w-[12rem] gap-2 px-2">
           <Avatar size="sm">
-            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+            <AvatarImage src="https://github.com/shadcn.png" alt="Profile" />
             <AvatarFallback>YS</AvatarFallback>
-          </Avatar>{" "}
-          <span className="text-nowrap">Mr. Yaw Sarfo</span>
+          </Avatar>
+          <span className="truncate text-nowrap">Mr. Yaw Sarfo</span>
         </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent
-        className="w-48 rounded-lg"
-        // side={isMobile ? "bottom" : "right"}
-        // align={isMobile ? "end" : "start"}
-      >
-        {dropdownItemsSection1.map((item) => (
-          <DropdownMenuItem key={item.name} onSelect={item.onSelect}>
-            <span>{item.name}</span>
-          </DropdownMenuItem>
-        ))}
-        <Separator orientation="horizontal" />
-        {dropdownItemsSection2.map((item) => (
-          <DropdownMenuItem key={item.name} onSelect={item.onSelect}>
-            <span>{item.name}</span>
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+      }
+    />
   );
 }

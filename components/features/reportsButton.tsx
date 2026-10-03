@@ -1,119 +1,153 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import {
+  BarChart3,
   BarChartBig,
+  Fuel,
+  History,
+  LayoutGrid,
+  Package,
+  Truck,
 } from "lucide-react";
 import { Button } from "../ui/button";
+import { Modal } from "@/components/ui/modal";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import { Separator } from "../ui/separator";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
+  SectionedHeaderMenu,
+  type HeaderMenuSection,
+} from "./header/sectioned-header-menu";
 import HistoryReportGeneration from "./reportDialogs/history";
 import FuelReportGeneration from "./reportDialogs/fuel";
 import EquipmentReportGeneration from "./reportDialogs/equipments";
 import InventoryReportGeneration from "./reportDialogs/inventory";
 import InventoryUsageReportGeneration from "./reportDialogs/inventoryUsage";
 
-export default function HeaderMeterButton() {
-  const [openDialog, setOpenDialog] = useState(false);
-  const [dialogContent, setDialogContent] = useState<React.ReactNode>(null);
-  const [dialogTitle, setDialogTitle] = useState("");
+type ReportMenuId =
+  | "history-cost"
+  | "fuel-history"
+  | "equipment-usage"
+  | "inventory-listing"
+  | "inventory-update"
+  | "charts"
+  | "view-all";
 
-  const handleDropdownSelect = (name: string, content: React.ReactNode) => {
-    setDialogTitle(label);
-    setDialogContent(content);
-    setOpenDialog(true);
+const REPORT_MENU_SECTIONS: HeaderMenuSection<ReportMenuId>[] = [
+  {
+    label: "Common reports",
+    items: [
+      {
+        id: "history-cost",
+        label: "History (cost summary)",
+        icon: History,
+      },
+      { id: "fuel-history", label: "Fuel history", icon: Fuel },
+      {
+        id: "equipment-usage",
+        label: "Equipment usage",
+        icon: Truck,
+      },
+      {
+        id: "inventory-listing",
+        label: "Inventory listing",
+        icon: Package,
+      },
+      {
+        id: "inventory-update",
+        label: "Inventory update",
+        icon: Package,
+      },
+    ],
+  },
+  {
+    label: "Analytics",
+    items: [{ id: "charts", label: "Charts", icon: BarChart3 }],
+  },
+  {
+    label: "Browse",
+    items: [
+      {
+        id: "view-all",
+        label: "View all reports",
+        icon: LayoutGrid,
+        emphasize: true,
+      },
+    ],
+  },
+];
+
+const REPORT_CONTENT: Record<ReportMenuId, { title: string; content: ReactNode }> =
+  {
+    "history-cost": {
+      title: "History (Cost Summary)",
+      content: <HistoryReportGeneration />,
+    },
+    "fuel-history": {
+      title: "Fuel History",
+      content: <FuelReportGeneration />,
+    },
+    "equipment-usage": {
+      title: "Equipment Usage",
+      content: <EquipmentReportGeneration />,
+    },
+    "inventory-listing": {
+      title: "Inventory Listing",
+      content: <InventoryReportGeneration />,
+    },
+    "inventory-update": {
+      title: "Inventory Update",
+      content: <InventoryUsageReportGeneration />,
+    },
+    charts: {
+      title: "Charts",
+      content: <div className="py-8 text-center text-text-sub-600">Charts view</div>,
+    },
+    "view-all": {
+      title: "All Reports",
+      content: (
+        <div className="py-8 text-center text-text-sub-600">
+          All reports listed here…
+        </div>
+      ),
+    },
   };
 
-  const dropdownItemsSection1 = [
-    {
-      name: "History (Cost Summary)",
-      content: <HistoryReportGeneration/>,
-    },
-    {
-      name: "Fuel History",
-      content: <FuelReportGeneration/>,
-    },
-    {
-      name: "Equipment Usage",
-      content: <EquipmentReportGeneration/>,
-    },
-    {
-      name: "Inventory Listing",
-      content: <InventoryReportGeneration/>,
-    },
-    {
-      name: " Inventory Update",
-      content: <InventoryUsageReportGeneration/>,
-    },
-  ];
+export default function HeaderMeterButton() {
+  const [openDialog, setOpenDialog] = useState(false);
+  const [activeReport, setActiveReport] = useState<ReportMenuId | null>(null);
 
-  const dropdownItemsSection2 = [
-    {
-      name: "Charts",
-      content: <div>Charts view</div>,
-    },
-  ];
+  const handleReportSelect = (id: ReportMenuId) => {
+    setActiveReport(id);
+    window.setTimeout(() => setOpenDialog(true), 0);
+  };
 
-  const dropdownItemsSection3 = [
-    {
-      name: "View All Reports",
-      content: <div>All reports listed here...</div>,
-    },
-  ];
+  const report = activeReport ? REPORT_CONTENT[activeReport] : null;
 
   return (
     <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="secondary">
-            <BarChartBig className="mr-2 h-4 w-4" /> Reports
+      <SectionedHeaderMenu
+        sections={REPORT_MENU_SECTIONS}
+        onSelect={handleReportSelect}
+        align="start"
+        trigger={
+          <Button variant="secondary" className="gap-2">
+            <BarChartBig className="size-4" />
+            Reports
           </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56 rounded-lg">
-          <span className="font-bold px-2 py-1">Common Reports</span>
-          {dropdownItemsSection1.map((item) => (
-            <DropdownMenuItem
-              key={item.name}
-              onSelect={() => handleDropdownSelect(item.name, item.content)}
-            >
-              {item.name}
-            </DropdownMenuItem>
-          ))}
-          <Separator />
-          {dropdownItemsSection2.map((item) => (
-            <DropdownMenuItem
-              key={item.name}
-              onSelect={() => handleDropdownSelect(item.name, item.content)}
-            >
-              {item.name}
-            </DropdownMenuItem>
-          ))}
-          <Separator />
-          {dropdownItemsSection3.map((item) => (
-            <DropdownMenuItem
-              key={item.name}
-              onSelect={() => handleDropdownSelect(item.name, item.content)}
-            >
-              <span className="font-bold">{item.name}</span>
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
+        }
+      />
 
-      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-        <DialogContent className="max-w-xl">
-          <DialogHeader>
-            <DialogTitle>{dialogTitle}</DialogTitle>
-          </DialogHeader>
-          {dialogContent}
-        </DialogContent>
-      </Dialog>
+      <Modal
+        open={openDialog}
+        onOpenChange={(next) => {
+          setOpenDialog(next);
+          if (!next) setActiveReport(null);
+        }}
+        title={report?.title ?? "Report"}
+        size="lg"
+        closeable
+      >
+        {report?.content}
+      </Modal>
     </>
   );
 }

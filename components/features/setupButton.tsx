@@ -1,13 +1,22 @@
 "use client";
-import { Cog } from "lucide-react";
+import {
+  Boxes,
+  Cog,
+  Link2,
+  ListTree,
+  MapPin,
+  Package,
+  CalendarClock,
+  Settings,
+  Ship,
+  Users,
+  Warehouse,
+} from "lucide-react";
 import { Button } from "../ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import { Separator } from "../ui/separator";
+  SectionedHeaderMenu,
+  type HeaderMenuSection,
+} from "./header/sectioned-header-menu";
 import { useState } from "react";
 import { Drawer } from "@/components/ui/drawer";
 import { ScrollArea } from "../ui/scroll-area";
@@ -104,42 +113,61 @@ const SETUP_ITEMS: SetupItem[] = [
   { name: "Parts Inventory", noFooter: true },
 ];
 
+type SetupMenuId = (typeof SETUP_ITEMS)[number]["name"];
+
+const SETUP_MENU_SECTIONS: HeaderMenuSection<SetupMenuId>[] = [
+  {
+    label: "Company",
+    items: [
+      { id: "Settings", label: "Settings", icon: Settings },
+      { id: "Locations", label: "Locations", icon: MapPin },
+      { id: "Warehouses", label: "Warehouses", icon: Warehouse },
+      { id: "Manage Users", label: "Manage users", icon: Users },
+      { id: "User Preferences", label: "User preferences", icon: Settings },
+      {
+        id: "PO Shipping Address",
+        label: "PO shipping address",
+        icon: Ship,
+      },
+    ],
+  },
+  {
+    label: "Maintenance",
+    items: [
+      {
+        id: "PM Schedule Templates",
+        label: "PM schedule templates",
+        icon: CalendarClock,
+      },
+      { id: "Associations", label: "Associations", icon: Link2 },
+      { id: "Part Kits", label: "Part kits", icon: Package },
+      { id: "Choice Lists", label: "Choice lists", icon: ListTree },
+      {
+        id: "Scheduled reports",
+        label: "Scheduled reports",
+        icon: CalendarClock,
+      },
+    ],
+  },
+  {
+    label: "Import",
+    items: [
+      { id: "Equipment", label: "Equipment", icon: Boxes },
+      { id: "Employees", label: "Employees", icon: Users },
+      { id: "Vendors", label: "Vendors", icon: Users },
+      { id: "Parts Inventory", label: "Parts inventory", icon: Package },
+    ],
+  },
+];
+
 export default function HeaderSettingsButton() {
   const [open, setOpen] = useState(false);
   const [selectedProjectType, setSelectedProjectType] = useState<string | null>(null);
 
-  const handleDropdownOptionSelect = (x: string) => {
-    setSelectedProjectType(x);
-    setOpen(true);
+  const handleActionSelect = (name: SetupMenuId) => {
+    setSelectedProjectType(name);
+    window.setTimeout(() => setOpen(true), 0);
   };
-
-  const genericDropdown = (x: string) => {
-    handleDropdownOptionSelect(x);
-  };
-
-  const dropdownItemsSection1 = [
-    { name: "Settings", onSelect: genericDropdown },
-    { name: "Locations", onSelect: genericDropdown },
-    { name: "Warehouses", onSelect: genericDropdown },
-    { name: "Manage Users", onSelect: genericDropdown },
-    { name: "User Preferences", onSelect: genericDropdown },
-    { name: "PO Shipping Address", onSelect: genericDropdown },
-  ];
-
-  const dropdownItemsSection2 = [
-    { name: "PM Schedule Templates", onSelect: genericDropdown },
-    { name: "Associations", onSelect: genericDropdown },
-    { name: "Part Kits", onSelect: genericDropdown },
-    { name: "Choice Lists", onSelect: genericDropdown },
-    { name: "Scheduled reports", onSelect: genericDropdown },
-  ];
-
-  const dropdownItemsSection3 = [
-    { name: "Equipment", onSelect: genericDropdown },
-    { name: "Employees", onSelect: genericDropdown },
-    { name: "Vendors", onSelect: genericDropdown },
-    { name: "Parts Inventory", onSelect: genericDropdown },
-  ];
 
   const handleCloseSheet = () => {
     setOpen(false);
@@ -243,44 +271,17 @@ export default function HeaderSettingsButton() {
 
   return (
     <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="secondary">
-            <Cog /> Setup
+      <SectionedHeaderMenu
+        sections={SETUP_MENU_SECTIONS}
+        onSelect={handleActionSelect}
+        align="start"
+        trigger={
+          <Button variant="secondary" className="gap-2">
+            <Cog className="size-4" />
+            Setup
           </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-64 rounded-lg">
-          <span className="font-bold">Company</span>
-          {dropdownItemsSection1.map((item) => (
-            <DropdownMenuItem
-              key={item.name}
-              onClick={() => item.onSelect(item.name)}
-            >
-              <span>{item.name}</span>
-            </DropdownMenuItem>
-          ))}
-          <span className="font-bold">Maintenance</span>
-          <Separator className="text-red-900" orientation="horizontal" />
-          {dropdownItemsSection2.map((item) => (
-            <DropdownMenuItem
-              key={item.name}
-              onClick={() => item.onSelect(item.name)}
-            >
-              <span>{item.name}</span>
-            </DropdownMenuItem>
-          ))}
-          <span className="font-bold">Import</span>
-          <Separator orientation="horizontal" />
-          {dropdownItemsSection3.map((item) => (
-            <DropdownMenuItem
-              key={item.name}
-              onClick={() => item.onSelect(item.name)}
-            >
-              <span>{item.name}</span>
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
+        }
+      />
 
       <Drawer
         open={open}
