@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Pen, Plus, Save, Trash2 } from "lucide-react";
+import { FilePenIcon, Plus, Save, Trash2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 // Form wrappers
 import InputWrapper from "@/components/forms/fields/InputWrapper";
@@ -587,49 +587,56 @@ export default function NewPurchaseOrderForm({
                       </Form>
                     </Modal>
 
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Item</TableHead>
-                          <TableHead>Quantity</TableHead>
-                          <TableHead>Unit Cost</TableHead>
-                          <TableHead>Amount</TableHead>
-                          <TableHead>Notes</TableHead>
-                          <TableHead>Actions</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {items.map((item, idx) => (
-                          <TableRow key={idx}>
-                            <TableCell>{item.item}</TableCell>
-                            <TableCell>{item.quantity}</TableCell>
-                            <TableCell>${item.cost.toFixed(2)}</TableCell>
-                            <TableCell>${item.amount.toFixed(2)}</TableCell>
-                            <TableCell>{item.notes}</TableCell>
-                            <TableCell>
-                              <div className="flex gap-2">
-                                <Button
-                                  type="button"
-                                  size="icon"
-                                  variant="ghost"
-                                  onClick={() => handleEditItem(item, idx)}
-                                >
-                                  <Pen className="w-4 h-4 text-blue-500" />
-                                </Button>
-                                <Button
-                                  type="button"
-                                  size="icon"
-                                  variant="ghost"
-                                  onClick={() => handleDeleteItem(idx)}
-                                >
-                                  <Trash2 className="w-4 h-4 text-red-500" />
-                                </Button>
-                              </div>
-                            </TableCell>
+                    <div className="overflow-hidden rounded-md ring-1 ring-inset ring-stroke-soft-200">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Item</TableHead>
+                            <TableHead>Quantity</TableHead>
+                            <TableHead>Unit cost</TableHead>
+                            <TableHead>Amount</TableHead>
+                            <TableHead>Notes</TableHead>
+                            <TableHead className="w-[5.5rem] text-right">
+                              Actions
+                            </TableHead>
                           </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
+                        </TableHeader>
+                        <TableBody>
+                          {items.map((item, idx) => (
+                            <TableRow key={idx}>
+                              <TableCell>{item.item}</TableCell>
+                              <TableCell>{item.quantity}</TableCell>
+                              <TableCell>${item.cost.toFixed(2)}</TableCell>
+                              <TableCell>${item.amount.toFixed(2)}</TableCell>
+                              <TableCell>{item.notes}</TableCell>
+                              <TableCell className="align-middle">
+                                <div className="flex justify-end gap-2">
+                                  <Button
+                                    type="button"
+                                    variant="secondary"
+                                    size="icon"
+                                    aria-label={`Edit line item ${item.item}`}
+                                    onClick={() => handleEditItem(item, idx)}
+                                  >
+                                    <FilePenIcon className="size-4" />
+                                  </Button>
+                                  <Button
+                                    type="button"
+                                    variant="secondary"
+                                    size="icon"
+                                    aria-label={`Delete line item ${item.item}`}
+                                    className="text-destructive focus:text-destructive"
+                                    onClick={() => handleDeleteItem(idx)}
+                                  >
+                                    <Trash2 className="size-4" />
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
                   </TabsContent>
                   <TabsContent
                     value="Attachments"
