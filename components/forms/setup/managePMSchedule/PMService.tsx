@@ -6,9 +6,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
- import InputWrapper from "@/components/forms/fields/InputWrapper";
+import InputWrapper from "@/components/forms/fields/InputWrapper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
+import { Plus } from "lucide-react";
 import { ComboboxFieldWrapper } from "@/components/forms/fields/ComboboxWrapper";
 
 const partOptions = [
@@ -70,15 +71,29 @@ export default function FullMaintenanceForm() {
   };
 
   return (
-    <Tabs defaultValue="parts" className="space-y-4">
-      <TabsList>
-        <TabsTrigger value="parts" onClick={() => setOpenTab("parts")}>Parts</TabsTrigger>
-        <TabsTrigger value="labor" onClick={() => setOpenTab("labor")}>Labor</TabsTrigger>
-      </TabsList>
+    <Tabs
+      value={openTab}
+      onValueChange={(value) => setOpenTab(value as "parts" | "labor")}
+      className="space-y-4"
+    >
+      <div className="flex items-center justify-between gap-2">
+        <TabsList>
+          <TabsTrigger value="parts">Parts</TabsTrigger>
+          <TabsTrigger value="labor">Labor</TabsTrigger>
+        </TabsList>
+        <Button
+          type="button"
+          size="sm"
+          variant="primary"
+          onClick={() => setOpenDialog(true)}
+        >
+          <Plus className="mr-2 size-4" />
+          {openTab === "parts" ? "Add Part" : "Add Labor"}
+        </Button>
+      </div>
 
       <TabsContent value="parts">
-        <Button onClick={() => setOpenDialog(true)}>Add Part</Button>
-        <table className="w-full mt-4 border">
+        <table className="mt-4 w-full border">
           <thead>
             <tr className="bg-gray-100 text-left">
               <th className="p-2">Part Number</th>
@@ -101,8 +116,7 @@ export default function FullMaintenanceForm() {
       </TabsContent>
 
       <TabsContent value="labor">
-        <Button onClick={() => setOpenDialog(true)}>Add Labor</Button>
-        <table className="w-full mt-4 border">
+        <table className="mt-4 w-full border">
           <thead>
             <tr className="bg-gray-100 text-left">
               <th className="p-2">Equipment</th>

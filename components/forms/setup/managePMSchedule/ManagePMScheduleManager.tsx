@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/table";
 import FullMaintenanceForm from "./PMService";
 import { toast } from "sonner";
+import { useConfirmDialog } from "@/lib/shared/confirm-dialog";
 
 const initial: ManagePMScheduleFormValues[] = [
   {
@@ -48,6 +49,7 @@ export default function ManagePMScheduleManager({
   hideSubmitButton = false,
   onSuccess,
 }: ManagePMScheduleManagerProps) {
+  const confirmDialog = useConfirmDialog();
   const form = useForm<PartKitsSubmission>({
     resolver: zodResolver(PartKitsSchema),
     defaultValues: { partKits: initial },
@@ -148,13 +150,25 @@ export default function ManagePMScheduleManager({
                             size="icon"
                             className="text-destructive hover:text-destructive"
                             onClick={() => {
-                              const next = form
-                                .getValues("partKits")
-                                .filter((k) => k.id !== kit.id);
-                              form.setValue("partKits", next);
-                              if (selectedId === kit.id) {
-                                setSelectedId(next[0]?.id ?? "");
-                              }
+                              void (async () => {
+                                const ok = await confirmDialog({
+                                  title: "Delete PM schedule template?",
+                                  description: `Are you sure you want to delete "${kit.name}"? Services and parts configured on this template will be removed.`,
+                                  confirmText: "Delete template",
+                                  tone: "danger",
+                                  item: { name: kit.name },
+                                });
+                                if (!ok) return;
+
+                                const next = form
+                                  .getValues("partKits")
+                                  .filter((k) => k.id !== kit.id);
+                                form.setValue("partKits", next);
+                                if (selectedId === kit.id) {
+                                  setSelectedId(next[0]?.id ?? "");
+                                }
+                                toast.success(`Deleted "${kit.name}"`);
+                              })();
                             }}
                           >
                             <Trash2 className="size-4" />
