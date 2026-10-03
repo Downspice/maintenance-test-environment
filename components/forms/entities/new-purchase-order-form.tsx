@@ -99,6 +99,7 @@ export default function NewPurchaseOrderForm({
     null
   );
   const [openItems, setOpenItems] = useState(false);
+  const [poDetailTab, setPoDetailTab] = useState("Items");
   const { data: warehouseOptionsList } =
     useGetWarehouses<Array<{ id: string; name: string }>>();
 
@@ -126,6 +127,25 @@ export default function NewPurchaseOrderForm({
     setEditIndex(index);
     setEditItems(item);
     Itemsform.reset(item);
+    setOpenItems(true);
+  };
+
+  const openAddItemModal = () => {
+    setEditIndex(null);
+    setEditItems(null);
+    Itemsform.reset({
+      item_type_id: "",
+      item: "",
+      warehouse_id: "",
+      quantity: 1,
+      cost: 0,
+      amount: 0,
+      extended_cost: 0,
+      notes: "",
+      tax_one: 0,
+      tax_two: 0,
+      discount: 0,
+    });
     setOpenItems(true);
   };
 
@@ -425,40 +445,30 @@ export default function NewPurchaseOrderForm({
                   }
                 />
               </div>
-              <Tabs defaultValue="Items" className="w-full">
+              <Tabs
+                value={poDetailTab}
+                onValueChange={setPoDetailTab}
+                className="w-full"
+              >
+                <div className="flex items-center justify-between gap-2">
                   <TabsList>
                     <TabsTrigger value="Items">Items</TabsTrigger>
                     <TabsTrigger value="Attachments">Attachments</TabsTrigger>
                     <TabsTrigger value="Notes">Notes</TabsTrigger>
                   </TabsList>
-                  <TabsContent value="Items">
-                    <div className="flex justify-end mb-2">
-                      <Button
-                        type="button"
-                        variant="primary"
-                        onClick={() => {
-                          setEditIndex(null);
-                          setEditItems(null);
-                          Itemsform.reset({
-                            item_type_id: "",
-                            item: "",
-                            warehouse_id: "",
-                            quantity: 1,
-                            cost: 0,
-                            amount: 0,
-                            extended_cost: 0,
-                            notes: "",
-                            tax_one: 0,
-                            tax_two: 0,
-                            discount: 0,
-                          });
-                          setOpenItems(true);
-                        }}
-                      >
-                        <Plus className="mr-2 h-4 w-4" /> Add Item
-                      </Button>
-                    </div>
-
+                  {poDetailTab === "Items" ? (
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="primary"
+                      onClick={openAddItemModal}
+                    >
+                      <Plus className="mr-2 size-4" />
+                      Add Item
+                    </Button>
+                  ) : null}
+                </div>
+                  <TabsContent value="Items" className="mt-4">
                     <Modal
                       open={openItems}
                       onOpenChange={(val) => {
@@ -617,7 +627,7 @@ export default function NewPurchaseOrderForm({
                       </TableBody>
                     </Table>
                   </TabsContent>
-                  <TabsContent value="Attachments">
+                  <TabsContent value="Attachments" className="mt-4">
                     <FileUploadWrapper
                       multiple={true}
                       control={form.control}
@@ -625,7 +635,7 @@ export default function NewPurchaseOrderForm({
                       label="Attachments"
                     />
                   </TabsContent>
-                  <TabsContent value="Notes">
+                  <TabsContent value="Notes" className="mt-4">
                     <TextareaWrapper
                       label="Notes"
                       name="notes"

@@ -214,9 +214,13 @@ export default function CreateAllButton() {
     selectedProjectType === "Repair Request" ||
     selectedProjectType === "Receive Purchase Order";
 
+  const isWideDrawer = selectedProjectType === "Assignment";
+
   const drawerClassName = isFullscreen
     ? "inset-0 w-full max-w-none sm:max-w-none lg:max-w-none"
-    : "w-full sm:w-[45%] sm:min-w-[600px] sm:max-w-none lg:max-w-none";
+    : isWideDrawer
+      ? "w-full sm:w-[60%] sm:min-w-[800px] sm:max-w-none lg:max-w-none"
+      : "w-full sm:w-[45%] sm:min-w-[600px] sm:max-w-none lg:max-w-none";
 
   const getDrawerTitle = () => {
     if (!selectedProjectType) return "Create Item";

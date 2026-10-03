@@ -118,17 +118,15 @@ export default function EquipmentAssignment({
       <form
         id={formId}
         onSubmit={form.handleSubmit(onSubmit, onError)}
-        className="space-y-6"
+        className="flex min-w-0 flex-col gap-1"
       >
-        <div className="flex flex-col">
-          <div className="grid grid-cols-2 space-x-3">
-            <Tabs defaultValue="Assignment">
-              <TabsList>
-                <TabsTrigger value="Assignment">Assignment</TabsTrigger>
-                <TabsTrigger value="Expenses">Expenses</TabsTrigger>
-                <TabsTrigger value="Notes">Notes</TabsTrigger>
-              </TabsList>
-              <TabsContent value="Assignment" className="space-y-2">
+        <Tabs defaultValue="Assignment" className="w-full min-w-0">
+          <TabsList>
+            <TabsTrigger value="Assignment">Assignment</TabsTrigger>
+            <TabsTrigger value="Expenses">Expenses</TabsTrigger>
+            <TabsTrigger value="Notes">Notes</TabsTrigger>
+          </TabsList>
+          <TabsContent value="Assignment" className="mt-4 flex min-w-0 flex-col gap-1">
                 <ComboboxFieldWrapper
                   control={form.control}
                   name="inspectedBy"
@@ -140,6 +138,7 @@ export default function EquipmentAssignment({
                   name="usage"
                   label="Usage"
                   options={usageOptions}
+                  orientation="horizontal"
                 />
                 <ComboboxFieldWrapper
                   control={form.control}
@@ -168,70 +167,75 @@ export default function EquipmentAssignment({
 
                 <Fieldset
                   legend="Duration"
+                  className="rounded-2xl border-0 bg-bg-weak-50/40 p-4 ring-1 ring-inset ring-stroke-soft-200"
                   content={
-                    <>
-                      <div className="flex items-end">
-                        <span>OUT</span>
-                        <DatePickerWrapper
-                          control={form.control}
-                          name="outDate"
-                          label="Date"
-                        />
-
-                        <DatePickerWrapper
-                          control={form.control}
-                          name="outTime"
-                          label="Time"
-                        />
-                        <InputWrapper
-                          control={form.control}
-                          name="outHours"
-                          label="Hours"
-                          placeholder="Enter Hours"
-                          type={""}
-                          value={""}
-                        />
-                      </div>
-                      <div className="flex ">
-                        <span>{"INT  "}</span>
-                        <DatePickerWrapper
-                          control={form.control}
-                          name="inDate"
-                          label=" "
-                        />
-                        <DatePickerWrapper
-                          control={form.control}
-                          name="inTime"
-                          label=" "
-                        />
-                        <InputWrapper
-                          control={form.control}
-                          name="inHours"
-                          label=" "
-                          placeholder="Enter Hours"
-                          type={""}
-                          value={""}
-                        />
-                      </div>
-                      <div className="flex justify-between ">
-                        <div className="text-primary">
-                          Assigned Period : 4 week(s)
-                        </div>
-                        <div className="">
-                          <SingleCheckboxWrapper
+                    <div className="flex flex-col gap-4">
+                      <div className="flex min-w-0 flex-col gap-1">
+                        <span className="text-label-sm font-medium text-text-sub-600">
+                          OUT
+                        </span>
+                        <div className="grid grid-cols-1 gap-x-4 gap-y-1 sm:grid-cols-3">
+                          <DatePickerWrapper
                             control={form.control}
-                            name={"excludeWeeekend"}
-                            label={"Exclude Weekends"}
+                            name="outDate"
+                            label="Date"
+                          />
+                          <DatePickerWrapper
+                            control={form.control}
+                            name="outTime"
+                            label="Time"
+                          />
+                          <InputWrapper
+                            control={form.control}
+                            name="outHours"
+                            label="Hours"
+                            placeholder="Enter hours"
+                            type="number"
                           />
                         </div>
                       </div>
-                    </>
+                      <div className="flex min-w-0 flex-col gap-1">
+                        <span className="text-label-sm font-medium text-text-sub-600">
+                          IN
+                        </span>
+                        <div className="grid grid-cols-1 gap-x-4 gap-y-1 sm:grid-cols-3">
+                          <DatePickerWrapper
+                            control={form.control}
+                            name="inDate"
+                            label="Date"
+                          />
+                          <DatePickerWrapper
+                            control={form.control}
+                            name="inTime"
+                            label="Time"
+                          />
+                          <InputWrapper
+                            control={form.control}
+                            name="inHours"
+                            label="Hours"
+                            placeholder="Enter hours"
+                            type="number"
+                          />
+                        </div>
+                      </div>
+                      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="text-paragraph-sm text-primary-base">
+                          Assigned period: 4 week(s)
+                        </div>
+                        <SingleCheckboxWrapper
+                          control={form.control}
+                          name="excludeWeeekend"
+                          label="Exclude weekends"
+                        />
+                      </div>
+                    </div>
                   }
                 />
                 <Fieldset
                   legend="Optional Details"
+                  className="rounded-2xl border-0 bg-bg-weak-50/40 p-4 ring-1 ring-inset ring-stroke-soft-200"
                   content={
-                    <div className="grid grid-cols-2">
+                    <div className="grid grid-cols-1 gap-x-4 gap-y-1 sm:grid-cols-2">
                       <ComboboxFieldWrapper
                         className="cols-span-2"
                         control={form.control}
@@ -270,28 +274,27 @@ export default function EquipmentAssignment({
                     </div>
                   }
                 />
-              </TabsContent>
-              <TabsContent value="Expenses" className="space-y-2">
-                <EditableDataTable
-                  data={people}
-                  columns={columns}
-                  defaultRow={{ id: "", description: "", cost: "" }}
-                  onDataChange={(newData) => {
-                    console.log("Updated Data:", newData);
-                  }}
-                />
-              </TabsContent>
-              <TabsContent value="Notes" className="space-y-2">
-                <TextareaWrapper
-                  control={form.control}
-                  name={"notes"}
-                  label={"Notes"}
-                  value={""}
-                />
-              </TabsContent>
-            </Tabs>
-          </div>
-        </div>
+          </TabsContent>
+          <TabsContent value="Expenses" className="mt-4 min-w-0">
+            <div className="min-w-0 overflow-x-auto">
+              <EditableDataTable
+                data={people}
+                columns={columns}
+                defaultRow={{ id: "", description: "", cost: "" }}
+                onDataChange={(newData) => {
+                  console.log("Updated Data:", newData);
+                }}
+              />
+            </div>
+          </TabsContent>
+          <TabsContent value="Notes" className="mt-4 flex flex-col gap-1">
+            <TextareaWrapper
+              control={form.control}
+              name="notes"
+              label="Notes"
+            />
+          </TabsContent>
+        </Tabs>
         {!hideSubmitButton && (
           <div className="flex justify-end">
             <Button
@@ -371,19 +374,7 @@ export const columns: ColumnDef<RepairRequestInterface>[] = [
 ];
 
 export const usageOptions: RadioOption[] = [
-  {
-    name: "Job site",
-    id: "Attachments",
-    description: " ",
-  },
-  {
-    name: "Employee",
-    id: "Attachments",
-    description: " ",
-  },
-  {
-    name: "Customer",
-    id: "Attachments",
-    description: " ",
-  },
+  { name: "Job site", id: "jobSite", description: " " },
+  { name: "Employee", id: "employee", description: " " },
+  { name: "Customer", id: "customer", description: " " },
 ];

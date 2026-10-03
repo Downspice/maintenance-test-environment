@@ -460,7 +460,7 @@ function EditInventoryContent({
                           Alternate UPC Codes
                         </TabsTrigger>
                       </TabsList>
-                      <TabsContent value="Part Substitutions">
+                      <TabsContent value="Part Substitutions" className="mt-4 min-w-0">
                         <PartSubstitutionTable
                           parts={partOptions ?? []}
                           value={partSubs}

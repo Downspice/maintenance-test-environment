@@ -5,12 +5,20 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { FormModal } from "@/components/ui/form-modal";
 import InputWrapper from "@/components/forms/fields/InputWrapper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import { ComboboxFieldWrapper } from "@/components/forms/fields/ComboboxWrapper";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 const partOptions = [
   { name: "Oil Filter (PN-123)", id: "PN-123" },
@@ -22,52 +30,82 @@ const equipmentOptions = [
   { name: "Light System", id: "lights" },
 ];
 
-const MaintenanceFormSchema = z.object({
-  parts_equipment: z.string().min(1),
+const pmPartSchema = z.object({
+  parts_equipment: z.string().min(1, "Equipment is required"),
   partNumber: z.string().optional(),
   part_quantity: z.coerce.number().optional(),
   part_cost: z.coerce.number().optional(),
-  labor_equipment: z.string().min(1),
+});
+
+const pmLaborSchema = z.object({
+  labor_equipment: z.string().min(1, "Equipment is required"),
   labor_rate: z.coerce.number().optional(),
   labor_hours: z.coerce.number().optional(),
   labor_cost: z.coerce.number().optional(),
-  instruction_equipment: z.string().min(1),
-  photos: z.any().optional(),
-  generalNotes: z.string().optional(),
-  estimatedLaborTime: z.coerce.number().optional(),
-  includePMServiceEmail: z.boolean().optional(),
-  linkedPMService: z.boolean().optional(),
-  linkedServiceOption: z.string().optional(),
-  terminateOnDate: z.boolean().optional(),
-  terminateDate: z.date().optional(),
-  terminateAtMeter: z.boolean().optional(),
-  meterReading: z.coerce.number().optional(),
-  ignorePMInDateRange: z.boolean().optional(),
-  ignoreStartDate: z.date().optional(),
-  ignoreEndDate: z.date().optional(),
 });
 
-type MaintenanceFormValues = z.infer<typeof MaintenanceFormSchema>;
+type PmPartFormValues = z.infer<typeof pmPartSchema>;
+type PmLaborFormValues = z.infer<typeof pmLaborSchema>;
 
 export default function FullMaintenanceForm() {
-  const form = useForm<MaintenanceFormValues>({
-    resolver: zodResolver(MaintenanceFormSchema),
+  const partForm = useForm<PmPartFormValues>({
+    resolver: zodResolver(pmPartSchema),
+    defaultValues: {
+      parts_equipment: "",
+      partNumber: "",
+      part_quantity: undefined,
+      part_cost: undefined,
+    },
   });
-  const { handleSubmit, control, watch, reset } = form;
+
+  const laborForm = useForm<PmLaborFormValues>({
+    resolver: zodResolver(pmLaborSchema),
+    defaultValues: {
+      labor_equipment: "",
+      labor_rate: undefined,
+      labor_hours: undefined,
+      labor_cost: undefined,
+    },
+  });
 
   const [openTab, setOpenTab] = useState<"parts" | "labor">("parts");
   const [openDialog, setOpenDialog] = useState(false);
-  const [partsRecords, setPartsRecords] = useState<any[]>([]);
-  const [laborRecords, setLaborRecords] = useState<any[]>([]);
+  const [partsRecords, setPartsRecords] = useState<PmPartFormValues[]>([]);
+  const [laborRecords, setLaborRecords] = useState<PmLaborFormValues[]>([]);
 
-  const onSubmit = (data: MaintenanceFormValues) => {
-    if (openTab === "parts") {
-      setPartsRecords(prev => [...prev, data]);
+  const isParts = openTab === "parts";
+
+  useEffect(() => {
+    if (!openDialog) return;
+    if (isParts) {
+      partForm.reset({
+        parts_equipment: "",
+        partNumber: "",
+        part_quantity: undefined,
+        part_cost: undefined,
+      });
     } else {
-      setLaborRecords(prev => [...prev, data]);
+      laborForm.reset({
+        labor_equipment: "",
+        labor_rate: undefined,
+        labor_hours: undefined,
+        labor_cost: undefined,
+      });
     }
-    reset();
+  }, [openDialog, isParts, partForm, laborForm]);
+
+  const onPartSubmit = (data: PmPartFormValues) => {
+    setPartsRecords((prev) => [...prev, data]);
     setOpenDialog(false);
+  };
+
+  const onLaborSubmit = (data: PmLaborFormValues) => {
+    setLaborRecords((prev) => [...prev, data]);
+    setOpenDialog(false);
+  };
+
+  const openAddDialog = () => {
+    setOpenDialog(true);
   };
 
   return (
@@ -85,86 +123,140 @@ export default function FullMaintenanceForm() {
           type="button"
           size="sm"
           variant="primary"
-          onClick={() => setOpenDialog(true)}
+          onClick={openAddDialog}
         >
           <Plus className="mr-2 size-4" />
-          {openTab === "parts" ? "Add Part" : "Add Labor"}
+          {isParts ? "Add Part" : "Add Labor"}
         </Button>
       </div>
 
       <TabsContent value="parts">
-        <table className="mt-4 w-full border">
-          <thead>
-            <tr className="bg-gray-100 text-left">
-              <th className="p-2">Part Number</th>
-              <th className="p-2">Quantity</th>
-              <th className="p-2">Cost</th>
-              <th className="p-2">Equipment</th>
-            </tr>
-          </thead>
-          <tbody>
-            {partsRecords.map((item, i) => (
-              <tr key={i} className="border-t">
-                <td className="p-2">{item.partNumber}</td>
-                <td className="p-2">{item.part_quantity}</td>
-                <td className="p-2">{item.part_cost}</td>
-                <td className="p-2">{item.parts_equipment}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="mt-4 overflow-hidden rounded-md ring-1 ring-inset ring-stroke-soft-200">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Part number</TableHead>
+                <TableHead>Quantity</TableHead>
+                <TableHead>Cost</TableHead>
+                <TableHead>Equipment</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {partsRecords.map((item, i) => (
+                <TableRow key={i}>
+                  <TableCell>{item.partNumber}</TableCell>
+                  <TableCell>{item.part_quantity}</TableCell>
+                  <TableCell>{item.part_cost}</TableCell>
+                  <TableCell>{item.parts_equipment}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </TabsContent>
 
       <TabsContent value="labor">
-        <table className="mt-4 w-full border">
-          <thead>
-            <tr className="bg-gray-100 text-left">
-              <th className="p-2">Equipment</th>
-              <th className="p-2">Rate</th>
-              <th className="p-2">Hours</th>
-              <th className="p-2">Cost</th>
-            </tr>
-          </thead>
-          <tbody>
-            {laborRecords.map((item, i) => (
-              <tr key={i} className="border-t">
-                <td className="p-2">{item.labor_equipment}</td>
-                <td className="p-2">{item.labor_rate}</td>
-                <td className="p-2">{item.labor_hours}</td>
-                <td className="p-2">{item.labor_cost}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="mt-4 overflow-hidden rounded-md ring-1 ring-inset ring-stroke-soft-200">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Equipment</TableHead>
+                <TableHead>Rate</TableHead>
+                <TableHead>Hours</TableHead>
+                <TableHead>Cost</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {laborRecords.map((item, i) => (
+                <TableRow key={i}>
+                  <TableCell>{item.labor_equipment}</TableCell>
+                  <TableCell>{item.labor_rate}</TableCell>
+                  <TableCell>{item.labor_hours}</TableCell>
+                  <TableCell>{item.labor_cost}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </TabsContent>
 
-      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-        <DialogContent className="max-w-xl">
-          <DialogHeader>
-            <DialogTitle>{openTab === "parts" ? "Add Part" : "Add Labor"}</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            {openTab === "parts" ? (
-              <>
-                <ComboboxFieldWrapper control={control} name="parts_equipment" label="Equipment" options={equipmentOptions} />
-                <ComboboxFieldWrapper control={control} name="partNumber" label="Part Number" options={partOptions} />
-                <InputWrapper control={control} name="part_quantity" label="Quantity" type="number" />
-                <InputWrapper control={control} name="part_cost" label="Cost" type="number" />
-              </>
-            ) : (
-              <>
-                <ComboboxFieldWrapper control={control} name="labor_equipment" label="Equipment" options={equipmentOptions} />
-                <InputWrapper control={control} name="labor_rate" label="Rate" type="number" />
-                <InputWrapper control={control} name="labor_hours" label="Hours" type="number" />
-                <InputWrapper control={control} name="labor_cost" label="Cost" type="number" />
-              </>
-            )}
-            <div className="flex justify-end">
-              <Button type="submit">Save</Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
+      {isParts ? (
+        <FormModal
+          open={openDialog}
+          onOpenChange={setOpenDialog}
+          title="Add part"
+          description="Assign a part, quantity, and cost to this PM template service."
+          formId="pm-template-part-form"
+          form={partForm}
+          onSubmit={onPartSubmit}
+          submitLabel="Add part"
+          size="md"
+          scrollable
+        >
+          <ComboboxFieldWrapper
+            control={partForm.control}
+            name="parts_equipment"
+            label="Equipment"
+            options={equipmentOptions}
+          />
+          <ComboboxFieldWrapper
+            control={partForm.control}
+            name="partNumber"
+            label="Part number"
+            options={partOptions}
+          />
+          <InputWrapper
+            control={partForm.control}
+            name="part_quantity"
+            label="Quantity"
+            type="number"
+          />
+          <InputWrapper
+            control={partForm.control}
+            name="part_cost"
+            label="Cost"
+            type="number"
+          />
+        </FormModal>
+      ) : (
+        <FormModal
+          open={openDialog}
+          onOpenChange={setOpenDialog}
+          title="Add labor"
+          description="Add labor rate, hours, and cost for this PM template service."
+          formId="pm-template-labor-form"
+          form={laborForm}
+          onSubmit={onLaborSubmit}
+          submitLabel="Add labor"
+          size="md"
+          scrollable
+        >
+          <ComboboxFieldWrapper
+            control={laborForm.control}
+            name="labor_equipment"
+            label="Equipment"
+            options={equipmentOptions}
+          />
+          <InputWrapper
+            control={laborForm.control}
+            name="labor_rate"
+            label="Rate"
+            type="number"
+          />
+          <InputWrapper
+            control={laborForm.control}
+            name="labor_hours"
+            label="Hours"
+            type="number"
+          />
+          <InputWrapper
+            control={laborForm.control}
+            name="labor_cost"
+            label="Cost"
+            type="number"
+          />
+        </FormModal>
+      )}
     </Tabs>
   );
 }

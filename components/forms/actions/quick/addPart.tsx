@@ -273,8 +273,7 @@ export default function NewPart({
                       Alternate UPC Codes
                     </TabsTrigger>
                   </TabsList>
-                  <TabsContent value="Part Substitutions">
-                    {/* A table that has button to add a new row and the headers are part#, name, manufacturer, description. */}
+                  <TabsContent value="Part Substitutions" className="mt-4 min-w-0">
                     <PartSubstitutionTable
                       parts={partOptions}
                       value={partSubs}
