@@ -1,63 +1,95 @@
 "use client";
+
+import { useState } from "react";
+
+import CompanySettings from "../forms/entities/company-setting-form";
+import LocationView from "./locationView";
+import WarehouseSetup from "./warehouseView";
 import { Button } from "../ui/button";
+import { Drawer } from "@/components/ui/drawer";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { Separator } from "../ui/separator";
-import {
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-  Sheet,
-} from "@/components/ui/sheet";
-import { useState } from "react";
 import { ScrollArea } from "../ui/scroll-area";
-import CompanySettings from "../forms/entities/company-setting-form";
-import LocationView from "./locationView";
-import WarehouseSetup from "./warehouseView";
+import { Separator } from "../ui/separator";
+
+const STANDARD_DRAWER_CLASS =
+  "w-full sm:w-[45%] sm:min-w-[600px] sm:max-w-none lg:max-w-none";
+
+type CompanyMenuKey = "Settings" | "Locations" | "Warehouses";
+
+type CompanyMenuItem = {
+  key: CompanyMenuKey;
+  title: string;
+  description?: string;
+  formId?: string;
+  saveLabel?: string;
+  showFooter?: boolean;
+};
+
+const COMPANY_MENU_ITEMS: CompanyMenuItem[] = [
+  {
+    key: "Settings",
+    title: "Company Settings",
+    description: "Fill out the form below to update company settings.",
+    formId: "company-settings-form",
+    saveLabel: "Save Settings",
+    showFooter: true,
+  },
+  {
+    key: "Locations",
+    title: "Locations",
+    description: "Manage company locations.",
+    showFooter: false,
+  },
+  {
+    key: "Warehouses",
+    title: "Warehouses",
+    description: "Manage warehouse setup.",
+    showFooter: false,
+  },
+];
 
 export default function OrganizationHeaderButton() {
   const [open, setOpen] = useState(false);
-  const [selectedProjectType, setSelectedProjectType] = useState<string | null>(
-    null
-  );
+  const [selectedKey, setSelectedKey] = useState<CompanyMenuKey | null>(null);
 
-  const handleDropdownOptionSelect = (x: string) => {
-    console.log("f", x);
-    setSelectedProjectType(x);
+  const activeItem = COMPANY_MENU_ITEMS.find((item) => item.key === selectedKey);
+
+  const handleOpenChange = (nextOpen: boolean) => {
+    setOpen(nextOpen);
+    if (!nextOpen) {
+      setSelectedKey(null);
+    }
+  };
+
+  const handleSelect = (key: CompanyMenuKey) => {
+    setSelectedKey(key);
     setOpen(true);
   };
 
-  const genericDropdown = (x: string) => {
-    console.log("did something", x);
-    handleDropdownOptionSelect(x);
+  const renderContent = () => {
+    switch (selectedKey) {
+      case "Settings":
+        return (
+          <CompanySettings
+            formId="company-settings-form"
+            hideSubmitButton
+            onSuccess={() => handleOpenChange(false)}
+          />
+        );
+      case "Locations":
+        return <LocationView />;
+      case "Warehouses":
+        return <WarehouseSetup />;
+      default:
+        return null;
+    }
   };
 
-  const dropdownItems1 = [{ name: "Settings", onSelect: genericDropdown }];
-
-  const dropdownItems2 = [
-    { name: "Locations", onSelect: genericDropdown },
-    { name: "Warehouses", onSelect: genericDropdown },
-  ];
-
-  const formComponents = {
-    Settings: <CompanySettings />,
-    Locations: <LocationView />,
-    Warehouses: <WarehouseSetup />,
-  };
-  const renderFormContent = () => {
-    const SelectedComponent = formComponents[selectedProjectType || ""];
-    console.log("new selected", SelectedComponent);
-    return SelectedComponent ? SelectedComponent : null;
-  };
-
-  const selectedType = [...dropdownItems1, ...dropdownItems2].find(
-    (type) => type.label === selectedProjectType
-  );
   return (
     <>
       <DropdownMenu>
@@ -66,48 +98,40 @@ export default function OrganizationHeaderButton() {
             <span className="text-nowrap">Our Company</span>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent
-          className="w-48 rounded-lg"
-          // side={isMobile ? "bottom" : "right"}
-          // align={isMobile ? "end" : "start"}
-        >
-          {dropdownItems1.map((item) => (
-            <DropdownMenuItem
-              key={item.name}
-              onClick={() => item.onSelect(item.name)}
-            >
-              <span>{item.name}</span>
-            </DropdownMenuItem>
-          ))}
+        <DropdownMenuContent className="w-48 rounded-lg">
+          <DropdownMenuItem onClick={() => handleSelect("Settings")}>
+            <span>Settings</span>
+          </DropdownMenuItem>
           <Separator orientation="horizontal" />
-          {dropdownItems2.map((item) => (
-            <DropdownMenuItem
-              key={item.name}
-              onClick={() => item.onSelect(item.name)}
-            >
-              <span>{item.name}</span>
-            </DropdownMenuItem>
-          ))}
+          <DropdownMenuItem onClick={() => handleSelect("Locations")}>
+            <span>Locations</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => handleSelect("Warehouses")}>
+            <span>Warehouses</span>
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent className="w-[400px] sm:w-2/3">
-          <SheetHeader>
-            <SheetTitle className="flex items-center gap-2">
-              {/* {selectedType && <selectedType.icon className="h-5 w-5" />} */}
-              Create New {selectedType?.label || "Project"}
-            </SheetTitle>
-            <SheetDescription>
-              {/* {selectedType?.label ||
-                    "Fill out the form below to set up your new development project."} */}
-            </SheetDescription>
-          </SheetHeader>
 
-          <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
-            {renderFormContent() || "nothing else"}
-          </ScrollArea>
-        </SheetContent>
-      </Sheet>
+      <Drawer
+        open={open}
+        onOpenChange={handleOpenChange}
+        title={activeItem?.title ?? "Our Company"}
+        description={activeItem?.description}
+        closeable
+        showFooter={activeItem?.showFooter ?? true}
+        renderActions={
+          activeItem?.formId ? (
+            <Button form={activeItem.formId} type="submit" variant="primary">
+              {activeItem.saveLabel ?? "Save"}
+            </Button>
+          ) : undefined
+        }
+        className={STANDARD_DRAWER_CLASS}
+      >
+        <ScrollArea className="h-[calc(100vh-160px)] pr-4">
+          {renderContent()}
+        </ScrollArea>
+      </Drawer>
     </>
   );
 }

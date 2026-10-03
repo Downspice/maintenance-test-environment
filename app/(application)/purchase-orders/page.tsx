@@ -101,7 +101,7 @@ export default function PurchaseOrdersPage() {
   };
 
   return (
-    <div className="flex flex-col flex-1 min-h-0 container mx-auto p-4 md:p-6 space-y-4 overflow-hidden">
+    <div className="flex flex-col flex-1 min-h-0 w-full p-4 md:p-6 space-y-4 overflow-hidden">
       <div className="flex flex-row items-center space-x-2 shrink-0">
         <h1 className="text-xl font-semibold">Purchase Orders</h1>
         {/* <Badge>8</Badge> */}

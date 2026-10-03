@@ -26,7 +26,15 @@ export const vendorSchema = z.object({
   notes: z.string().optional(),
 });
 
-export default function CompanySettings({ formId = "company-settings-form", hideSubmitButton }: { formId?: string; hideSubmitButton?: boolean }) {
+export default function CompanySettings({
+  formId = "company-settings-form",
+  hideSubmitButton,
+  onSuccess,
+}: {
+  formId?: string;
+  hideSubmitButton?: boolean;
+  onSuccess?: () => void;
+}) {
   const [customFields, setCustomFields] = useState<
     { name: string; id: string }[]
   >([]);
@@ -41,6 +49,7 @@ export default function CompanySettings({ formId = "company-settings-form", hide
     // Here you would typically send the data to your API
 
     toast.success("Settings saved successfully!");
+    onSuccess?.();
   }
 
   const addCustomField = () => {

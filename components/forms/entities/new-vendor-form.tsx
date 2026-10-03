@@ -98,7 +98,7 @@ export default function NewVendor({
       ],
     },
   });
-  const formControl = vendorForm.control;
+  const formControl = vendorForm.control as any;
 
   const { mutateAsync, isPending } = useAddVendor();
 

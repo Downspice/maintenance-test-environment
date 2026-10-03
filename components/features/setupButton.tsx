@@ -27,14 +27,26 @@ import { ActualEquipmentForm } from "@/components/forms/entities/equipment/new-e
 
 type SetupItem = {
   name: string;
+  title?: string;
+  description?: string;
   formId?: string;
   saveLabel?: string;
   fullscreen?: boolean;
   noFooter?: boolean;
 };
 
+const STANDARD_DRAWER_CLASS =
+  "w-full sm:w-[45%] sm:min-w-[600px] sm:max-w-none lg:max-w-none";
+
 const SETUP_ITEMS: SetupItem[] = [
-  { name: "Settings", formId: "company-settings-form", saveLabel: "Save Settings", fullscreen: false },
+  {
+    name: "Settings",
+    title: "Company Settings",
+    description: "Fill out the form below to update company settings.",
+    formId: "company-settings-form",
+    saveLabel: "Save Settings",
+    fullscreen: false,
+  },
   { name: "Locations", noFooter: true },
   { name: "Warehouses", noFooter: true },
   { name: "Manage Users", noFooter: true },
@@ -96,7 +108,13 @@ export default function HeaderSettingsButton() {
   const renderFormContent = () => {
     switch (selectedProjectType) {
       case "Settings":
-        return <CompanySettings formId="company-settings-form" hideSubmitButton />;
+        return (
+          <CompanySettings
+            formId="company-settings-form"
+            hideSubmitButton
+            onSuccess={handleCloseSheet}
+          />
+        );
       case "Locations":
         return <LocationView />;
       case "Warehouses":
@@ -149,7 +167,7 @@ export default function HeaderSettingsButton() {
 
   const drawerClassName = activeItem?.fullscreen
     ? "inset-0 w-full max-w-none sm:max-w-none lg:max-w-none"
-    : "w-full sm:w-[45%] sm:min-w-[600px] sm:max-w-none lg:max-w-none";
+    : STANDARD_DRAWER_CLASS;
 
   const renderActions = activeItem?.formId ? (
     <Button form={activeItem.formId} type="submit" variant="primary">
@@ -200,12 +218,18 @@ export default function HeaderSettingsButton() {
 
       <Drawer
         open={open}
-        onOpenChange={setOpen}
-        title={selectedProjectType || "Setup"}
+        onOpenChange={(nextOpen) => {
+          setOpen(nextOpen);
+          if (!nextOpen) {
+            setSelectedProjectType(null);
+          }
+        }}
+        title={activeItem?.title ?? selectedProjectType ?? "Setup"}
         description={
-          activeItem?.formId
+          activeItem?.description ??
+          (activeItem?.formId
             ? `Fill out the form below to configure ${selectedProjectType?.toLowerCase()}.`
-            : undefined
+            : undefined)
         }
         closeable={true}
         showFooter={!activeItem?.noFooter}

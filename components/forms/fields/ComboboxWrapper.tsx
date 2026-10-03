@@ -1,6 +1,6 @@
 "use client";
 import { Check, ChevronsUpDown, X } from "lucide-react";
-import type { Control } from "react-hook-form";
+import type { Control, FieldValues } from "react-hook-form";
 import { useState, useMemo } from "react";
 
 import { cn, isFieldEmpty } from "@/lib/shared/utils";
@@ -28,8 +28,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { GenericObject } from "@/types/types";
 
-interface BaseFieldProps {
-  control: Control<any>;
+interface BaseFieldProps<TFieldValues extends FieldValues = FieldValues> {
+  control: Control<TFieldValues>;
   label: string;
   name: string;
   className?: string;
@@ -43,11 +43,14 @@ interface BaseFieldProps {
   showLabel?: boolean;
 }
 
-interface ComboboxFieldProps extends BaseFieldProps {
+interface ComboboxFieldProps<TFieldValues extends FieldValues = FieldValues>
+  extends BaseFieldProps<TFieldValues> {
   options: GenericObject[];
 }
 
-export function ComboboxFieldWrapper({
+export function ComboboxFieldWrapper<
+  TFieldValues extends FieldValues = FieldValues,
+>({
   control,
   name,
   label,
@@ -61,7 +64,7 @@ export function ComboboxFieldWrapper({
   searchPlaceholder = "Search...",
   direction = "horizontal",
   showLabel = true,
-}: ComboboxFieldProps) {
+}: ComboboxFieldProps<TFieldValues>) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
 
@@ -190,13 +193,17 @@ export function ComboboxFieldWrapper({
   );
 }
 
-interface MultiComboboxFieldProps extends BaseFieldProps {
+interface MultiComboboxFieldProps<
+  TFieldValues extends FieldValues = FieldValues,
+> extends BaseFieldProps<TFieldValues> {
   options: GenericObject[];
   minSelections?: number;
   maxSelections?: number;
 }
 
-export function MultiComboboxWrapper({
+export function MultiComboboxWrapper<
+  TFieldValues extends FieldValues = FieldValues,
+>({
   control,
   name,
   label,
@@ -212,7 +219,7 @@ export function MultiComboboxWrapper({
   maxSelections,
   direction = "horizontal",
   showLabel = true,
-}: MultiComboboxFieldProps) {
+}: MultiComboboxFieldProps<TFieldValues>) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
 
