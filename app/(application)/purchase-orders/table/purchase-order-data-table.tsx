@@ -447,6 +447,7 @@ export function PurchaseOrderDataLoader({
       <AdvancedDataTable
         columns={columns}
         data={serverRows}
+        emptyEntity="purchase-orders"
         defaultVisibleColumns={[
           "po_number",
           "status.name",

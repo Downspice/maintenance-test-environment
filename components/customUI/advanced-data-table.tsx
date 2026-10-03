@@ -38,6 +38,11 @@ import { Table, TableBody, TableCell, TableHead, TableRow } from "@/components/u
 import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  DataTableEmptyState,
+  type DataTableEntityKey,
+  type DataTableEmptyStateProps,
+} from "@/components/data-table/data-table-empty-state"
 
 interface PaginationInfo {
   pageIndex: number
@@ -77,6 +82,10 @@ interface DataTableProps<TData, TValue> {
   // Page size control
   onPageSizeChange?: (pageSize: number) => void
   pageSizeOptions?: number[]
+  /** Icon + copy for the empty table body (matches main nav entities). */
+  emptyEntity?: DataTableEntityKey
+  emptyState?: React.ReactNode
+  emptyStateProps?: Omit<DataTableEmptyStateProps, "entity">
 }
 
 export function AdvancedDataTable<TData, TValue>({
@@ -106,6 +115,9 @@ export function AdvancedDataTable<TData, TValue>({
   serverSorting,
   onServerSortingChange,
   getRowClassName,
+  emptyEntity,
+  emptyState,
+  emptyStateProps,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>(serverSorting ?? [])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
@@ -773,9 +785,17 @@ export function AdvancedDataTable<TData, TValue>({
                   </React.Fragment>
                 ))
             ) : (
-              <TableRow>
-                <TableCell colSpan={columnsWithSelection.length} className="h-24 text-center">
-                  No results.
+              <TableRow className="hover:bg-transparent">
+                <TableCell
+                  colSpan={columnsWithSelection.length}
+                  className="p-0 align-middle"
+                >
+                  {emptyState ?? (
+                    <DataTableEmptyState
+                      entity={emptyEntity}
+                      {...emptyStateProps}
+                    />
+                  )}
                 </TableCell>
               </TableRow>
             )}

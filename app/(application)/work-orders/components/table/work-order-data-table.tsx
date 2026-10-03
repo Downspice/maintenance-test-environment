@@ -544,6 +544,7 @@ export function WorkOrderDataLoader({
       <AdvancedDataTable
         columns={columns}
         data={serverRows}
+        emptyEntity="work-orders"
         defaultVisibleColumns={[
           "wo_number",
           "equipment",

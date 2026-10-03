@@ -363,6 +363,7 @@ export function CustomerTableLoader({ locationId, typeId }: { locationId?: strin
       <AdvancedDataTable
         columns={columns}
         data={serverRows}
+        emptyEntity="customers"
         defaultVisibleColumns={[
           "company_name",
           "type",

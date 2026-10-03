@@ -454,6 +454,7 @@ export function InventoryDataLoader({
       <AdvancedDataTable
         columns={columns}
         data={serverRows}
+        emptyEntity="inventory"
         defaultVisibleColumns={["part_number", "name", "category", "vendor", "quantity", "unit_cost", "number", "actions"]}
         onRowClick={handleRowClick}
         onCellClick={handleCellClick}

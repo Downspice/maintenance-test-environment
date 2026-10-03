@@ -367,6 +367,7 @@ export default function PaymentReceivedTable() {
       <AdvancedDataTable
         columns={columns}
         data={paginatedData} // Use paginated data
+        emptyEntity="payments"
         defaultVisibleColumns={[
           "date_received",
           "invoice_number",

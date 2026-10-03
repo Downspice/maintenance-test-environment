@@ -576,6 +576,7 @@ export function EquipmentTableLoader({ locationId }: { locationId?: string }) {
       <AdvancedDataTable
         columns={columns}
         data={serverRows}
+        emptyEntity="equipment"
         defaultVisibleColumns={[
           "unit_number",
           "year",

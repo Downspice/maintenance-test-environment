@@ -462,6 +462,7 @@ export function InvoicesTableLoader({
       <AdvancedDataTable
         columns={columns}
         data={serverRows}
+        emptyEntity="invoices"
         defaultVisibleColumns={[
           "invoice_number",
           "status",

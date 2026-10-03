@@ -398,6 +398,7 @@ export function EmployeeTableLoader({ locationId, typeId }: { locationId?: strin
       <AdvancedDataTable
         columns={columns}
         data={serverRows}
+        emptyEntity="employees"
         defaultVisibleColumns={[
           "employee_number",
           "name",

@@ -419,6 +419,7 @@ export function VendorTableLoader({ locationId, typeId }: { locationId?: string;
       <AdvancedDataTable
         columns={columns}
         data={serverRows}
+        emptyEntity="vendors"
         defaultVisibleColumns={[
           "name",
           "type",

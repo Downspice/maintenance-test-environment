@@ -29,4 +29,13 @@ next-env.d.ts
 # scaffold / unused generated apps
 /generated/
 
-agent*
+# AI / coding agent local config
+.agents/
+.codebuddy/
+.codestudio/
+.commandcode/
+.continue/
+.cortex/
+.devin/
+.kode/
+.mcpjam/
