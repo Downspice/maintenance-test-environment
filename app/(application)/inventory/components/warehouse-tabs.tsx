@@ -1,4 +1,5 @@
 "use client";
+
 import {
   Select,
   SelectContent,
@@ -7,10 +8,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { Label } from "@/components/ui/label";
+import { Trash2, Plus, Warehouse } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { SelectActionModal } from "@/components/ui/select-action-modal";
 import SelectWrapper from "@/components/forms/fields/SelectWrapper";
 import InputWrapper from "@/components/forms/fields/InputWrapper";
 
@@ -33,10 +35,12 @@ export default function WarehouseTabs({
   costCenterOptions: any[];
   inventoryMovement: any[];
 }) {
+  const [addOpen, setAddOpen] = useState(false);
   const [selected, setSelected] = useState<string | undefined>();
-  const [warehouseNames, setWarehouseNames] = useState<Record<string, string>>({});
+  const [warehouseNames, setWarehouseNames] = useState<Record<string, string>>(
+    {}
+  );
 
-  // Build a map of warehouse IDs to names for display
   useEffect(() => {
     const nameMap: Record<string, string> = {};
     options.forEach((opt) => {
@@ -45,10 +49,16 @@ export default function WarehouseTabs({
     setWarehouseNames(nameMap);
   }, [options]);
 
-  const handleAddWarehouse = (val: string) => {
-    if (!warehouses.includes(val)) {
-      setWarehouses([...warehouses, val]);
-    }
+  const availableOptions = useMemo(
+    () => options.filter((opt) => !warehouses.includes(opt.id)),
+    [options, warehouses]
+  );
+
+  const handleAddWarehouse = () => {
+    if (!selected || warehouses.includes(selected)) return;
+    setWarehouses([...warehouses, selected]);
+    setSelected(undefined);
+    setAddOpen(false);
   };
 
   const handleDeleteWarehouse = (val: string) => {
@@ -57,34 +67,61 @@ export default function WarehouseTabs({
 
   return (
     <div className="space-y-2">
-      <div className="flex justify-between items-center">
-        <h2 className="text-lg font-semibold">Warehouses</h2>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button type="button">+ Add Warehouse</Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-sm">
-            <Select onValueChange={(val) => setSelected(val)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select Warehouse" />
-              </SelectTrigger>
-              <SelectContent>
-                {options.map((opt) => (
-                  <SelectItem key={opt.id} value={opt.id}>
-                    {opt.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Button
-              type="button"
-              onClick={() => selected && handleAddWarehouse(selected)}
-              className="mt-4"
-            >
-              Add
+      <div className="flex items-center justify-between">
+        <h2 className="text-label-md font-semibold text-text-strong-950">
+          Warehouses
+        </h2>
+        <SelectActionModal
+          open={addOpen}
+          onOpenChange={(next) => {
+            setAddOpen(next);
+            if (!next) setSelected(undefined);
+          }}
+          trigger={
+            <Button type="button" variant="secondary" size="sm" className="gap-2">
+              <Plus className="size-4" />
+              Add warehouse
             </Button>
-          </DialogContent>
-        </Dialog>
+          }
+          title="Add warehouse"
+          description="Select a warehouse to track aisle, row, bin, and stock settings for this item."
+          confirmLabel="Add warehouse"
+          confirmDisabled={!selected || availableOptions.length === 0}
+          onConfirm={handleAddWarehouse}
+        >
+          <div className="flex flex-col gap-1.5">
+            <Label
+              htmlFor="warehouse-picker"
+              className="text-label-sm font-medium text-text-strong-950"
+            >
+              Warehouse
+            </Label>
+            {availableOptions.length === 0 ? (
+              <p className="text-paragraph-sm text-text-sub-600">
+                All available warehouses are already linked to this item.
+              </p>
+            ) : (
+              <Select
+                value={selected}
+                onValueChange={setSelected}
+              >
+                <SelectTrigger id="warehouse-picker" className="w-full">
+                  <SelectValue placeholder="Select warehouse" />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableOptions.map((opt) => (
+                    <SelectItem key={opt.id} value={opt.id}>
+                      <span className="flex items-center gap-2">
+                        <Warehouse className="size-4 text-text-soft-400" />
+                        {opt.name}
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          </div>
+        </SelectActionModal>
       </div>
 
       {warehouses.length > 0 && (
@@ -92,24 +129,21 @@ export default function WarehouseTabs({
           <TabsList className="flex gap-2 overflow-x-auto">
             {warehouses.map((w) => (
               <div key={w} className="flex items-center gap-1">
-                <TabsTrigger value={w}>
-                  {warehouseNames[w] || w}
-                </TabsTrigger>
+                <TabsTrigger value={w}>{warehouseNames[w] || w}</TabsTrigger>
                 <Button
                   type="button"
                   variant="ghost"
                   size="icon"
                   onClick={() => handleDeleteWarehouse(w)}
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <Trash2 className="size-4" />
                 </Button>
               </div>
             ))}
           </TabsList>
 
           {warehouses.map((w, index) => (
-            <TabsContent key={w} value={w} className="border rounded p-4 mt-2">
-              {/* Hidden field to store warehouse ID */}
+            <TabsContent key={w} value={w} className="mt-2 rounded-lg border p-4">
               <InputWrapper
                 control={control}
                 name={`inventory_trackings.${index}.warehouse`}
@@ -157,7 +191,7 @@ export default function WarehouseTabs({
                 options={costCenterOptions}
               />
               {enableTrackingWatch && (
-                <div className="grid grid-cols-3 gap-2 mt-4">
+                <div className="mt-4 grid grid-cols-3 gap-2">
                   <div className="col-span-1">
                     <InputWrapper
                       control={control}
@@ -168,8 +202,8 @@ export default function WarehouseTabs({
                       value={0}
                     />
                   </div>
-                  <div className="col-span-1"></div>
-                  <div className="col-span-1"></div>
+                  <div className="col-span-1" />
+                  <div className="col-span-1" />
 
                   <div className="col-span-1">
                     <InputWrapper

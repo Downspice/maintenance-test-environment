@@ -6,12 +6,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Modal } from "@/components/ui/modal";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -173,10 +169,11 @@ const laborForm = useForm<LaborAssociationFormValues>({
       return (
         <Form {...laborForm}>
           <form
+            id="association-labor-form"
             onSubmit={laborForm.handleSubmit((data) =>
               console.log("submit:", data)
             )}
-            className="space-y-4"
+            className="flex flex-col gap-1"
           >
             <RadioGroupWrapper
               control={laborForm.control}
@@ -287,9 +284,6 @@ const laborForm = useForm<LaborAssociationFormValues>({
               />
             )}
 
-            <div className="flex justify-end">
-              <Button type="submit">Save</Button>
-            </div>
           </form>
         </Form>
       );
@@ -298,10 +292,11 @@ const laborForm = useForm<LaborAssociationFormValues>({
       return (
         <Form {...partForm}>
           <form
+            id="association-part-form"
             onSubmit={partForm.handleSubmit((data) =>
               console.log("part submit:", data)
             )}
-            className="space-y-4"
+            className="flex flex-col gap-1"
           >
             <ComboboxFieldWrapper
               control={partForm.control}
@@ -397,9 +392,6 @@ const laborForm = useForm<LaborAssociationFormValues>({
               />
             )}
 
-            <div className="flex justify-end">
-              <Button type="submit">Save</Button>
-            </div>
           </form>
         </Form>
       );
@@ -409,6 +401,7 @@ const laborForm = useForm<LaborAssociationFormValues>({
       return (
         <Form {...partForm}>
           <form
+            id="association-instruction-form"
             onSubmit={partForm.handleSubmit((data) => {
               const newEntry = {
                 service: data.instructionService || "",
@@ -417,7 +410,7 @@ const laborForm = useForm<LaborAssociationFormValues>({
               setInstructions((prev) => [...prev, newEntry]);
               setOpenDialog(false);
             })}
-            className="space-y-4"
+            className="flex flex-col gap-1"
           >
             <ComboboxFieldWrapper
               control={partForm.control}
@@ -447,9 +440,6 @@ const laborForm = useForm<LaborAssociationFormValues>({
               label="Upload Files"
             />
 
-            <div className="flex justify-end">
-              <Button type="submit">Attach</Button>
-            </div>
           </form>
         </Form>
       );
@@ -689,16 +679,40 @@ const laborForm = useForm<LaborAssociationFormValues>({
                 </TabsContent>
               </Tabs>
 
-              <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-                <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-                  <DialogHeader>
-                    <DialogTitle>
-                      {isEditing ? "Edit Association" : "Add New Association"}
-                    </DialogTitle>
-                  </DialogHeader>
+              <Modal
+                open={openDialog}
+                onOpenChange={setOpenDialog}
+                title={
+                  isEditing
+                    ? `Edit ${activeTab === "labor" ? "labor" : activeTab === "parts" ? "part" : "instruction"} association`
+                    : `Add ${activeTab === "labor" ? "labor" : activeTab === "parts" ? "part" : "instruction"} association`
+                }
+                description="Configure how this equipment links to services, parts, labor, or instruction files."
+                size="xl"
+                renderActions={
+                  <Button
+                    form={
+                      activeTab === "labor"
+                        ? "association-labor-form"
+                        : activeTab === "parts"
+                          ? "association-part-form"
+                          : "association-instruction-form"
+                    }
+                    type="submit"
+                    variant="primary"
+                  >
+                    {activeTab === "instructions"
+                      ? "Attach files"
+                      : isEditing
+                        ? "Save changes"
+                        : "Add association"}
+                  </Button>
+                }
+              >
+                <ScrollArea className="max-h-[min(70vh,28rem)] pr-3">
                   {renderDialogContent()}
-                </DialogContent>
-              </Dialog>
+                </ScrollArea>
+              </Modal>
             </>
           ) : (
             <p className="text-paragraph-sm text-text-sub-600">
