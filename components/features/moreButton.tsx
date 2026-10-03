@@ -26,7 +26,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Drawer } from "@/components/ui/drawer";
-import { useRef, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { cn } from "@/utils/cn";
 import EmailHistoryDataTable from "../forms/actions/more/emailHistory";
 import JobSiteAssignment from "../forms/actions/more/jobsiteassignment/jobsiteAssignments";
@@ -163,25 +163,12 @@ export default function HeaderUploadButton() {
   const [selectedAction, setSelectedAction] = useState<MoreActionId | null>(
     null
   );
-  const [menuOpen, setMenuOpen] = useState(false);
-  const pendingActionRef = useRef<MoreActionId | null>(null);
-
-  const queueAction = (id: MoreActionId) => {
-    pendingActionRef.current = id;
-    setMenuOpen(false);
-  };
-
-  const handleMenuOpenChange = (nextOpen: boolean) => {
-    setMenuOpen(nextOpen);
-    if (!nextOpen && pendingActionRef.current) {
-      const id = pendingActionRef.current;
-      pendingActionRef.current = null;
-      setSelectedAction(id);
-      // Open after the dropdown unmounts so the pointer event does not dismiss the drawer.
-      requestAnimationFrame(() => {
-        setOpen(true);
-      });
-    }
+  const handleActionSelect = (id: MoreActionId) => {
+    setSelectedAction(id);
+    // Defer until after the dropdown closes so the same pointer event cannot dismiss the drawer.
+    window.setTimeout(() => {
+      setOpen(true);
+    }, 0);
   };
 
   const formComponents: Record<MoreActionId, ReactNode> = {
@@ -209,7 +196,7 @@ export default function HeaderUploadButton() {
 
   return (
     <>
-      <DropdownMenu open={menuOpen} onOpenChange={handleMenuOpenChange}>
+      <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
           <Button variant="secondary">
             <LucideEllipsisVertical className="size-4" />
@@ -234,7 +221,7 @@ export default function HeaderUploadButton() {
                   <DropdownMenuItem
                     key={item.id}
                     className="whitespace-normal py-2 leading-snug"
-                    onClick={() => queueAction(item.id)}
+                    onSelect={() => handleActionSelect(item.id)}
                   >
                     <Icon className="size-4 shrink-0 text-text-soft-400" />
                     <span className="text-text-strong-950">{item.label}</span>
