@@ -329,9 +329,9 @@ export default function NewPurchaseOrderForm({
       <form
         id={formId}
         onSubmit={form.handleSubmit(onSubmit, onError)}
-        className="space-y-6 w-full"
+        className="flex h-full min-h-0 w-full flex-col gap-2"
       >
-        <div className="flex flex-col space-y-2">
+        <div className="shrink-0 space-y-2">
           <div className="flex flex-row gap-x-3">
             <InputWrapper
               control={form.control}
@@ -400,8 +400,9 @@ export default function NewPurchaseOrderForm({
               disabled={status !== "Closed"}
             />
           </div>
-          <div className="grid grid-cols-8 gap-4 items-start">
-            <div className="col-span-5 flex flex-col gap-3">
+        </div>
+        <div className="grid min-h-0 flex-1 grid-cols-8 items-stretch gap-4">
+            <div className="col-span-5 flex min-h-0 flex-col gap-3">
               <div className="grid grid-cols-2 gap-2">
                 <Fieldset
                   legend="Vendor"
@@ -448,7 +449,7 @@ export default function NewPurchaseOrderForm({
               <Tabs
                 value={poDetailTab}
                 onValueChange={setPoDetailTab}
-                className="w-full"
+                className="flex min-h-0 w-full flex-1 flex-col"
               >
                 <div className="flex items-center justify-between gap-2">
                   <TabsList>
@@ -468,7 +469,10 @@ export default function NewPurchaseOrderForm({
                     </Button>
                   ) : null}
                 </div>
-                  <TabsContent value="Items" className="mt-4">
+                  <TabsContent
+                    value="Items"
+                    className="mt-4 min-h-0 flex-1 overflow-y-auto data-[state=inactive]:hidden"
+                  >
                     <Modal
                       open={openItems}
                       onOpenChange={(val) => {
@@ -627,7 +631,10 @@ export default function NewPurchaseOrderForm({
                       </TableBody>
                     </Table>
                   </TabsContent>
-                  <TabsContent value="Attachments" className="mt-4">
+                  <TabsContent
+                    value="Attachments"
+                    className="mt-4 min-h-0 flex-1 overflow-y-auto data-[state=inactive]:hidden"
+                  >
                     <FileUploadWrapper
                       multiple={true}
                       control={form.control}
@@ -635,17 +642,21 @@ export default function NewPurchaseOrderForm({
                       label="Attachments"
                     />
                   </TabsContent>
-                  <TabsContent value="Notes" className="mt-4">
+                  <TabsContent
+                    value="Notes"
+                    className="mt-4 flex min-h-0 flex-1 flex-col overflow-hidden data-[state=inactive]:hidden"
+                  >
                     <TextareaWrapper
-                      label="Notes"
                       name="notes"
                       control={form.control}
-                      value=""
+                      fillSpace
+                      direction="vertical"
+                      placeholder="Enter notes for this purchase order…"
                     />
                   </TabsContent>
                 </Tabs>
               </div>
-            <div className="col-span-3 space-y-2">
+            <div className="col-span-3 min-h-0 space-y-2 overflow-y-auto">
               <Fieldset
                 legend="Miscellaneous"
                 content={
@@ -780,7 +791,6 @@ export default function NewPurchaseOrderForm({
               />
             </div>
           </div>
-        </div>
         {!hideSubmitButton && (
           <div className="flex justify-end">
             <Button

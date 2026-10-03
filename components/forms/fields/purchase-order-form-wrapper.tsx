@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { Drawer } from "@/components/ui/drawer";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import NewPurchaseOrderForm from "@/components/forms/entities/new-purchase-order-form";
 
 interface TriggerVariant {
@@ -43,13 +42,14 @@ export default function PurchaseOrderFormWrapper({ variant }: TriggerVariant) {
         </Button>
       }
       className="inset-0 w-full max-w-none sm:max-w-none lg:max-w-none"
+      bodyClassName="flex min-h-0 flex-1 flex-col overflow-hidden !px-0 !py-0"
     >
-      <ScrollArea className="h-[calc(100vh-160px)] pr-4">
+      <div className="flex h-[calc(100dvh-9.75rem)] min-h-0 flex-col overflow-y-auto px-6 py-4 pr-4">
         <NewPurchaseOrderForm
           formId="new-purchase-order-form"
           hideSubmitButton
         />
-      </ScrollArea>
+      </div>
     </Drawer>
   );
 }

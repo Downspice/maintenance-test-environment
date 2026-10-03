@@ -54,6 +54,8 @@ export function SheetProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const isFullscreenSheet = Boolean(content?.className?.includes("inset-0"));
+
   return (
     <SheetContext.Provider value={{ open, content, openSheet, closeSheet }}>
       {children}
@@ -69,7 +71,11 @@ export function SheetProvider({ children }: { children: ReactNode }) {
         footer={content?.footer}
         showFooter={content?.showFooter ?? true}
         side={content?.side}
-        bodyClassName="min-w-0 overflow-hidden flex flex-col min-h-0"
+        bodyClassName={
+          isFullscreenSheet
+            ? "flex min-h-0 flex-1 flex-col overflow-hidden !px-0 !py-0"
+            : "flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden"
+        }
         className={cn("w-full sm:max-w-2xl lg:max-w-3xl", content?.className)}
         onInteractOutside={(e) => {
           if (isDialogOpen) {
@@ -78,7 +84,13 @@ export function SheetProvider({ children }: { children: ReactNode }) {
         }}
       >
         <DialogProvider onOpenChange={setIsDialogOpen}>
-          {content?.content}
+          {isFullscreenSheet ? (
+            <div className="flex h-[calc(100dvh-9.75rem)] min-h-0 flex-col overflow-y-auto px-6 py-4 pr-4">
+              {content?.content}
+            </div>
+          ) : (
+            content?.content
+          )}
         </DialogProvider>
       </Drawer>
     </SheetContext.Provider>

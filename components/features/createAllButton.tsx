@@ -342,10 +342,21 @@ export default function CreateAllButton() {
         closeable={true}
         renderActions={renderSubmitAction()}
         className={drawerClassName}
+        bodyClassName={
+          isFullscreen
+            ? "flex min-h-0 flex-1 flex-col overflow-hidden !px-0 !py-0"
+            : undefined
+        }
       >
-        <ScrollArea className="h-[calc(100vh-160px)] pr-4">
-          {renderFormContent() || "nothing else"}
-        </ScrollArea>
+        {isFullscreen ? (
+          <div className="flex h-[calc(100dvh-9.75rem)] min-h-0 flex-col overflow-y-auto px-6 py-4 pr-4">
+            {renderFormContent() || "nothing else"}
+          </div>
+        ) : (
+          <ScrollArea className="h-[calc(100vh-160px)] pr-4">
+            {renderFormContent() || "nothing else"}
+          </ScrollArea>
+        )}
       </Drawer>
     </>
   );

@@ -17,6 +17,8 @@ interface TextareaWrapperProps {
   disabled?: boolean
   required?: boolean
   direction?: "horizontal" | "vertical"
+  /** When true (typically with no label), textarea grows to fill the parent flex column */
+  fillSpace?: boolean
 }
 
 export default function TextareaWrapper({
@@ -30,6 +32,7 @@ export default function TextareaWrapper({
   disabled = false,
   required = false,
   direction = "horizontal",
+  fillSpace = false,
 }: TextareaWrapperProps) {
   return (
     <FormField
@@ -42,9 +45,11 @@ export default function TextareaWrapper({
           <FormItem
             className={cn(
               "w-full",
-              direction === "horizontal" && label
-                ? "flex items-start gap-4"
-                : "flex flex-col"
+              fillSpace && "flex min-h-0 flex-1 flex-col",
+              !fillSpace &&
+                (direction === "horizontal" && label
+                  ? "flex items-start gap-4"
+                  : "flex flex-col")
             )}
           >
             {label ? (
@@ -59,18 +64,27 @@ export default function TextareaWrapper({
                 {label}
               </FormLabel>
             ) : null}
-            <div className="flex-1 w-full flex flex-col">
+            <div
+              className={cn(
+                "flex w-full flex-col",
+                fillSpace ? "min-h-0 flex-1" : "flex-1"
+              )}
+            >
               <FormControl>
                 <Textarea
                   placeholder={
                     placeholder !== undefined
                       ? placeholder
                       : label
-                      ? `Enter ${label.toLowerCase()}`
-                      : ""
+                        ? `Enter ${label.toLowerCase()}`
+                        : ""
                   }
-                  className={className}
-                  rows={rows}
+                  className={cn(
+                    fillSpace &&
+                      "h-full min-h-[8rem] max-h-full w-full flex-1 resize-none",
+                    className
+                  )}
+                  rows={fillSpace ? undefined : rows}
                   disabled={disabled}
                   {...field}
                 />
