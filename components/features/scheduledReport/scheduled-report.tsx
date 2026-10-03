@@ -1,46 +1,55 @@
+"use client";
+
 import NewScheduledReportForm from "@/components/forms/entities/new-scheduled-report-form";
 import ScheduledReportDataTable from "./scheduledReportDataTable";
 import { Button } from "@/components/ui/button";
-
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Drawer } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Plus } from "lucide-react";
 import { useState } from "react";
+
+const NESTED_DRAWER_CLASS =
+  "w-full sm:w-[45%] sm:min-w-[600px] sm:max-w-none lg:max-w-none";
+
 export default function ScheduledReportView() {
-  const [open, setOpen] = useState(false);
+  const [newOpen, setNewOpen] = useState(false);
 
   return (
-    <div className="flex flex-col mx-auto py-10 space-y-4">
-      <div className="flex justify-between items-center space-x-4">
-        <div className="flex flex-row items-center space-x-2">
-          <h1 className="text-xl font-semibold">Manage Scheduled Report</h1>
-        </div>
-        <div className="flex flex-row space-x-2">
-          <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger asChild>
-              <Button>New</Button>
-            </SheetTrigger>
-            <SheetContent className="w-3/4 ">
-              <SheetHeader>
-                <SheetTitle>
-                  <div className="flex justify-between">
-                    <div>New Scheduled report</div>
-                  </div>
-                </SheetTitle>
-              </SheetHeader>
-              <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
-                <NewScheduledReportForm />
-              </ScrollArea>
-            </SheetContent>
-          </Sheet>
-        </div>
+    <div className="flex h-full min-h-0 w-full min-w-0 flex-col gap-4">
+      <div className="flex shrink-0 flex-row items-center justify-end gap-2">
+        <Drawer
+          open={newOpen}
+          onOpenChange={setNewOpen}
+          trigger={
+            <Button variant="primary">
+              <Plus className="size-4" />
+              New Scheduled Report
+            </Button>
+          }
+          title="New Scheduled Report"
+          description="Configure report filters, schedule, and recipients."
+          className={NESTED_DRAWER_CLASS}
+          renderActions={
+            <Button
+              form="new-scheduled-report-form"
+              type="submit"
+              variant="primary"
+            >
+              Save Report
+            </Button>
+          }
+        >
+          <ScrollArea className="h-[calc(100vh-160px)] pr-4">
+            <NewScheduledReportForm
+              formId="new-scheduled-report-form"
+              hideSubmitButton
+              onSuccess={() => setNewOpen(false)}
+            />
+          </ScrollArea>
+        </Drawer>
       </div>
-      <div>
+
+      <div className="min-h-0 min-w-0 flex-1">
         <ScheduledReportDataTable />
       </div>
     </div>

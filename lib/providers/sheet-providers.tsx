@@ -40,10 +40,18 @@ export function SheetProvider({ children }: { children: ReactNode }) {
 
   const closeSheet = () => {
     setOpen(false);
-    // We don't immediately clear content so the drawer can animate out nicely
     setTimeout(() => {
       setContent(null);
     }, 300);
+  };
+
+  const handleSheetOpenChange = (nextOpen: boolean) => {
+    setOpen(nextOpen);
+    if (!nextOpen) {
+      setTimeout(() => {
+        setContent(null);
+      }, 300);
+    }
   };
 
   return (
@@ -51,15 +59,17 @@ export function SheetProvider({ children }: { children: ReactNode }) {
       {children}
       <Drawer
         open={open}
-        onOpenChange={setOpen}
+        onOpenChange={handleSheetOpenChange}
+        modal={false}
         title={content?.title}
         description={content?.description}
         closeable={content?.closeable ?? true}
         renderActions={content?.renderActions ?? content?.actions}
         closeText={content?.closeText}
         footer={content?.footer}
-        showFooter={content?.showFooter}
+        showFooter={content?.showFooter ?? true}
         side={content?.side}
+        bodyClassName="min-w-0 overflow-hidden flex flex-col min-h-0"
         className={cn("w-full sm:max-w-2xl lg:max-w-3xl", content?.className)}
         onInteractOutside={(e) => {
           if (isDialogOpen) {

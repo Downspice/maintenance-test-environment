@@ -1,15 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { FilePenIcon, Trash2 } from "lucide-react";
 import InputWrapper from "@/components/forms/fields/InputWrapper";
 import { ComboboxFieldWrapper } from "@/components/forms/fields/ComboboxWrapper";
 import { PartType } from "@/lib/schemas/part-kits-schema";
 import z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 const catalog = [
   { partNumber: "P001", name: "Oil Filter", warehouse: "Warehouse A", onHandQuantity: 100 },
@@ -17,77 +25,116 @@ const catalog = [
   { partNumber: "P003", name: "Air Filter", warehouse: "Warehouse C", onHandQuantity: 75 },
 ];
 
-const options = catalog.map(c => ({ name: c.partNumber, id: c.partNumber }));
+export type PartKitPartsTableHandle = {
+  openAddPart: () => void;
+};
 
-export default function PartKitPartsTable({
-  parts,
-  onUpdateParts,
-}: {
-  parts: PartType[];
-  onUpdateParts: (updated: PartType[]) => void;
-}) {
+const PartKitPartsTable = forwardRef<
+  PartKitPartsTableHandle,
+  {
+    parts: PartType[];
+    onUpdateParts: (updated: PartType[]) => void;
+  }
+>(function PartKitPartsTable({ parts, onUpdateParts }, ref) {
   const [editPart, setEditPart] = useState<PartType | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
+  useImperativeHandle(ref, () => ({
+    openAddPart: () => {
+      setEditPart(null);
+      setDialogOpen(true);
+    },
+  }));
+
   const savePart = (newPart: PartType) => {
     const updated = editPart
-      ? parts.map(p => (p.id === newPart.id ? newPart : p))
+      ? parts.map((p) => (p.id === newPart.id ? newPart : p))
       : [...parts, { ...newPart, id: Date.now().toString() }];
     onUpdateParts(updated);
     setDialogOpen(false);
   };
 
   const deletePart = (id: string) => {
-    onUpdateParts(parts.filter(p => p.id !== id));
+    onUpdateParts(parts.filter((p) => p.id !== id));
   };
 
+  const rows = parts ?? [];
+
   return (
-    <div className="border rounded-md">
-      <div className="grid grid-cols-6 bg-gray-100 p-2 font-semibold text-sm">
-        <span>Part #</span>
-        <span>Name</span>
-        <span>Warehouse</span>
-        <span>Qty</span>
-        <span>On-Hand</span>
-        <span>Actions</span>
+    <>
+      <div className="overflow-auto rounded-md border">
+        <Table>
+          <TableHeader className="sticky top-0 z-10 bg-bg-white-0">
+            <TableRow>
+              <TableHead>Part #</TableHead>
+              <TableHead>Name</TableHead>
+              <TableHead>Warehouse</TableHead>
+              <TableHead>Qty</TableHead>
+              <TableHead>On-Hand</TableHead>
+              <TableHead className="w-[5.5rem] text-right">ACTIONS</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {rows.length === 0 ? (
+              <TableRow className="hover:bg-transparent">
+                <TableCell
+                  colSpan={6}
+                  className="py-8 text-center text-paragraph-sm text-text-sub-600"
+                >
+                  No parts in this kit yet. Use Add Part to include inventory items.
+                </TableCell>
+              </TableRow>
+            ) : (
+              rows.map((part) => (
+                <TableRow key={part.id}>
+                  <TableCell>{part.partNumber}</TableCell>
+                  <TableCell>{part.name}</TableCell>
+                  <TableCell>{part.warehouse}</TableCell>
+                  <TableCell>{part.quantityUsed}</TableCell>
+                  <TableCell>{part.onHandQuantity}</TableCell>
+                  <TableCell>
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        size="icon"
+                        onClick={() => {
+                          setEditPart(part);
+                          setDialogOpen(true);
+                        }}
+                      >
+                        <FilePenIcon className="size-4" />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        size="icon"
+                        className="text-destructive hover:text-destructive"
+                        onClick={() => deletePart(part.id)}
+                      >
+                        <Trash2 className="size-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
       </div>
-
-      {(parts ?? []).map(part => (
-        <div key={part.id} className="grid grid-cols-6 p-2 border-b items-center text-sm">
-          <span>{part.partNumber}</span>
-          <span>{part.name}</span>
-          <span>{part.warehouse}</span>
-          <span>{part.quantityUsed}</span>
-          <span>{part.onHandQuantity}</span>
-          <div className="space-x-1">
-            <Button variant="ghost" size="icon" onClick={() => { setEditPart(part); setDialogOpen(true); }}>
-              <Pencil size={16} />
-            </Button>
-            <Button variant="ghost" size="icon" onClick={() => deletePart(part.id)}>
-              <Trash2 size={16} />
-            </Button>
-          </div>
-        </div>
-      ))}
-
-      <Button className="w-full mt-2" onClick={() => { setEditPart(null); setDialogOpen(true); }}>
-        <Plus size={16} className="mr-2" />
-        Add Part
-      </Button>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-md">
-          <PartForm
-            part={editPart}
-            onSave={savePart}
-          />
+          <PartForm part={editPart} onSave={savePart} />
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
-}
- 
-const partOptions = catalog.map(c => ({
+});
+
+export default PartKitPartsTable;
+
+const partOptions = catalog.map((c) => ({
   name: c.partNumber,
   id: c.partNumber,
 }));
@@ -99,7 +146,7 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>;
 
-export  function PartForm({
+export function PartForm({
   part,
   onSave,
 }: {
@@ -114,8 +161,7 @@ export  function PartForm({
     },
   });
 
-  // Find selected part details
-  const selectedPart = catalog.find(c => c.partNumber === form.watch("partNumber"));
+  const selectedPart = catalog.find((c) => c.partNumber === form.watch("partNumber"));
 
   useEffect(() => {
     if (part) {
@@ -127,7 +173,7 @@ export  function PartForm({
   }, [part, form]);
 
   const handleSubmit = (data: FormValues) => {
-    const selected = catalog.find(p => p.partNumber === data.partNumber);
+    const selected = catalog.find((p) => p.partNumber === data.partNumber);
     if (!selected) return;
 
     onSave({
@@ -156,21 +202,24 @@ export  function PartForm({
         name="name"
         label="Name"
         value={selectedPart?.name || ""}
-        disabled type={""}      />
+        disabled
+        type=""
+      />
 
       <InputWrapper
         control={form.control}
         name="warehouse"
         label="Warehouse"
         value={selectedPart?.warehouse || ""}
-        disabled type={""} 
+        disabled
+        type=""
       />
 
       <InputWrapper
         control={form.control}
         name="quantityUsed"
         label="Quantity Used"
-        type="number" 
+        type="number"
       />
 
       <div className="flex justify-end">

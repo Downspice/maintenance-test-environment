@@ -109,6 +109,7 @@ export default function EditPaymentReceived({
     <Drawer
       open={open}
       onOpenChange={setOpen}
+      modal={false}
       trigger={children}
       title="Edit Payment"
       description="Update the payment record details below."

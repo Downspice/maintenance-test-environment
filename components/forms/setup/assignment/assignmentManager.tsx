@@ -6,13 +6,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import {
@@ -42,7 +40,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { FilePenIcon, Trash2Icon } from "lucide-react";
+import { FilePenIcon, Plus, Trash2 } from "lucide-react";
 
 const pmTemplates = [
   "Drill Press",
@@ -460,7 +458,7 @@ const laborForm = useForm<LaborAssociationFormValues>({
 
   const renderInstructionTable = () => {
     return (
-      <div className="mt-6">
+      <div className="overflow-auto rounded-md border">
         <Table>
           <TableHeader>
             <TableRow>
@@ -487,17 +485,43 @@ const laborForm = useForm<LaborAssociationFormValues>({
     );
   };
 
+  const openAddAssociation = () => {
+    setEditingLaborIndex(null);
+    setEditingPartIndex(null);
+    setOpenDialog(true);
+  };
+
+  const renderAssociationActions = (
+    onEdit: () => void,
+    onDelete: () => void,
+  ) => (
+    <div className="flex justify-end gap-2">
+      <Button type="button" variant="secondary" size="icon" onClick={onEdit}>
+        <FilePenIcon className="size-4" />
+      </Button>
+      <Button
+        type="button"
+        variant="secondary"
+        size="icon"
+        className="text-destructive hover:text-destructive"
+        onClick={onDelete}
+      >
+        <Trash2 className="size-4" />
+      </Button>
+    </div>
+  );
+
   const renderLaborTable = () => (
-    <div className="mt-6">
+    <div className="overflow-auto rounded-md border">
       <Table>
-        <TableHeader>
+        <TableHeader className="sticky top-0 z-10 bg-bg-white-0">
           <TableRow>
             <TableHead>Name</TableHead>
             <TableHead>Rate</TableHead>
             <TableHead>Labour Hours</TableHead>
             <TableHead>Service</TableHead>
             <TableHead>Cost</TableHead>
-            <TableHead className="w-28">Actions</TableHead>
+            <TableHead className="w-[5.5rem] text-right">ACTIONS</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -509,17 +533,13 @@ const laborForm = useForm<LaborAssociationFormValues>({
               <TableCell>{item.service}</TableCell>
               <TableCell>{item.cost}</TableCell>
               <TableCell>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => handleEditLabor(idx)}
-                >
-                  <FilePenIcon/>
-                </Button>
-                <Button size="sm"
-                  variant="outline" className="ml-2">
-                  <Trash2Icon/>
-                </Button>
+                {renderAssociationActions(
+                  () => handleEditLabor(idx),
+                  () =>
+                    setLaborAssociations((rows) =>
+                      rows.filter((_, i) => i !== idx),
+                    ),
+                )}
               </TableCell>
             </TableRow>
           ))}
@@ -529,9 +549,9 @@ const laborForm = useForm<LaborAssociationFormValues>({
   );
 
   const renderPartTable = () => (
-    <div className="mt-6">
+    <div className="overflow-auto rounded-md border">
       <Table>
-        <TableHeader>
+        <TableHeader className="sticky top-0 z-10 bg-bg-white-0">
           <TableRow>
             <TableHead>Part Number</TableHead>
             <TableHead>Name</TableHead>
@@ -539,7 +559,7 @@ const laborForm = useForm<LaborAssociationFormValues>({
             <TableHead>Quantity</TableHead>
             <TableHead>Service</TableHead>
             <TableHead>Cost</TableHead>
-            <TableHead className="w-28">Actions</TableHead>
+            <TableHead className="w-[5.5rem] text-right">ACTIONS</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -552,17 +572,13 @@ const laborForm = useForm<LaborAssociationFormValues>({
               <TableCell>{item.service}</TableCell>
               <TableCell>{item.cost}</TableCell>
               <TableCell>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => handleEditPart(idx)}
-                >
-                  <FilePenIcon/>
-                </Button>
-                <Button size="sm"
-                  variant="outline" className="ml-2">
-                  <Trash2Icon/>
-                </Button>
+                {renderAssociationActions(
+                  () => handleEditPart(idx),
+                  () =>
+                    setPartAssociations((rows) =>
+                      rows.filter((_, i) => i !== idx),
+                    ),
+                )}
               </TableCell>
             </TableRow>
           ))}
@@ -572,94 +588,124 @@ const laborForm = useForm<LaborAssociationFormValues>({
   );
 
   return (
-    <div className="flex h-full gap-4 p-4">
-      {/* Left Panel */}
-      <div className="w-1/4 space-y-4 h-full bg-accent">
-        <div>
-          <Label>PM Template</Label>
-          <Select onValueChange={setSelectedPM} defaultValue={selectedPM}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select PM Template" />
-            </SelectTrigger>
-            <SelectContent>
-              {pmTemplates.map((template) => (
-                <SelectItem key={template} value={template}>
-                  {template}
-                </SelectItem>
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 lg:grid-cols-[minmax(260px,1fr)_2.5fr]">
+        <div className="flex min-h-0 flex-col gap-3">
+          <div className="shrink-0 space-y-1">
+            <Label className="text-label-sm text-text-sub-600">PM Template</Label>
+            <Select
+              value={selectedPM}
+              onValueChange={(value) => {
+                setSelectedPM(value);
+                setSelectedEquipment(null);
+              }}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select PM Template" />
+              </SelectTrigger>
+              <SelectContent>
+                {pmTemplates.map((template) => (
+                  <SelectItem key={template} value={template}>
+                    {template}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex min-h-0 flex-1 flex-col gap-1">
+            <span className="shrink-0 text-label-sm font-medium text-text-sub-600">
+              Equipment in Schedule
+            </span>
+            <div className="min-h-0 flex-1 overflow-auto rounded-md border p-1">
+              {equipmentList.map((equip) => (
+                <button
+                  key={equip}
+                  type="button"
+                  onClick={() => handleSelectEquipment(equip)}
+                  className={`w-full cursor-pointer rounded-md px-2 py-2 text-left text-paragraph-sm transition-colors hover:bg-bg-weak-50 ${
+                    selectedEquipment === equip ? "bg-muted font-medium" : ""
+                  }`}
+                >
+                  {equip}
+                </button>
               ))}
-            </SelectContent>
-          </Select>
+            </div>
+          </div>
         </div>
 
-        <div>
-          <h2 className="text-sm font-semibold mt-4 mb-2">
-            Equipment in Schedule
-          </h2>
-          <ScrollArea className="h-[calc(100vh-200px)] border rounded p-2">
-            {equipmentList.map((equip) => (
-              <div
-                key={equip}
-                onClick={() => handleSelectEquipment(equip)}
-                className={`cursor-pointer p-2 rounded hover:bg-muted ${
-                  selectedEquipment === equip ? "bg-muted" : ""
-                }`}
-              >
-                {equip}
+        <div className="flex min-h-0 min-w-0 flex-col gap-1">
+          {selectedEquipment ? (
+            <>
+              <div className="flex shrink-0 items-center justify-between gap-2">
+                <p className="text-label-md font-medium text-text-strong-950">
+                  {selectedPM} — {selectedEquipment}
+                </p>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="primary"
+                  onClick={openAddAssociation}
+                >
+                  <Plus className="mr-2 size-4" />
+                  Add New
+                </Button>
               </div>
-            ))}
-          </ScrollArea>
-        </div>
-      </div>
 
-      {/* Right Panel */}
-      <div className="flex-1">
-        {selectedEquipment ? (
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <h1 className="text-lg font-semibold">
-                {selectedPM} - {selectedEquipment}
-              </h1>
+              <Tabs
+                value={activeTab}
+                onValueChange={setActiveTab}
+                className="flex min-h-0 flex-1 flex-col gap-2"
+              >
+                <TabsList className="shrink-0 w-full justify-start">
+                  <TabsTrigger value="parts">
+                    Part Associations ({partAssociations.length})
+                  </TabsTrigger>
+                  <TabsTrigger value="labor">
+                    Labor Associations ({laborAssociations.length})
+                  </TabsTrigger>
+                  <TabsTrigger value="instructions">Instructions</TabsTrigger>
+                </TabsList>
+
+                <TabsContent
+                  value="labor"
+                  className="mt-0 min-h-0 flex-1 overflow-auto data-[state=inactive]:hidden"
+                >
+                  {renderLaborTable()}
+                </TabsContent>
+
+                <TabsContent
+                  value="parts"
+                  className="mt-0 min-h-0 flex-1 overflow-auto data-[state=inactive]:hidden"
+                >
+                  {renderPartTable()}
+                </TabsContent>
+
+                <TabsContent
+                  value="instructions"
+                  className="mt-0 min-h-0 flex-1 overflow-auto data-[state=inactive]:hidden"
+                >
+                  {renderInstructionTable()}
+                </TabsContent>
+              </Tabs>
+
               <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-                <DialogTrigger asChild>
-                  <Button>Add New</Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-3xl">
+                <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
-                    <DialogTitle>Add New Association</DialogTitle>
+                    <DialogTitle>
+                      {isEditing ? "Edit Association" : "Add New Association"}
+                    </DialogTitle>
                   </DialogHeader>
                   {renderDialogContent()}
                 </DialogContent>
               </Dialog>
-            </div>
-
-            <Tabs defaultValue="labor" onValueChange={setActiveTab}>
-              <TabsList>
-                <TabsTrigger value="parts">Part Associations (2)</TabsTrigger>
-                <TabsTrigger value="labor">Labor Associations (3)</TabsTrigger>
-                <TabsTrigger value="instructions">Instructions</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="labor">
-                {/* Labor table and add dialog will go here */}
-                {renderLaborTable()}
-              </TabsContent>
-
-              <TabsContent value="parts">
-                {/* Part Association table and dialog will go here */}
-                {renderPartTable()}
-              </TabsContent>
-
-              <TabsContent value="instructions">
-                {/* Service combobox + file uploader */}
-                {renderInstructionTable()}
-              </TabsContent>
-            </Tabs>
-          </div>
-        ) : (
-          <p className="text-muted-foreground">
-            Select equipment to configure...
-          </p>
-        )}
+            </>
+          ) : (
+            <p className="text-paragraph-sm text-text-sub-600">
+              Select equipment on the left to configure associations.
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );

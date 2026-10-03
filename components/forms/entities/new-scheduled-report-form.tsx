@@ -49,9 +49,19 @@ const ScheduledReportSchema = z.object({
   ),
 });
 
-export default function NewScheduledReportForm() {
+type NewScheduledReportFormProps = {
+  formId?: string;
+  hideSubmitButton?: boolean;
+  onSuccess?: () => void;
+};
+
+export default function NewScheduledReportForm({
+  formId = "new-scheduled-report-form",
+  hideSubmitButton = false,
+  onSuccess,
+}: NewScheduledReportFormProps) {
   const confirmDialog = useConfirmDialog();
-  const [open, setOpen] = useState(false);
+  const [recipientModalOpen, setRecipientModalOpen] = useState(false);
   const { 
       data: locationOptionsList, 
       isLoading:locationOptionsListLoading, 
@@ -68,10 +78,10 @@ export default function NewScheduledReportForm() {
 
   function onSubmit(data: z.infer<typeof ScheduledReportSchema>) {
     console.log("Form submitted with VALUES:", data);
-    toast("Project created successfully!", { duration: 10000 });
-    setOpen(false);
+    toast.success("Scheduled report created");
     form.reset();
-    form.setValue("recipients", []);
+    setRecipients([]);
+    onSuccess?.();
   }
 
   function onError(errors: any) {
@@ -104,11 +114,19 @@ export default function NewScheduledReportForm() {
 
   const handleDelete = (email: string) => {
     (async () => {
+      const recipient = recipients.find((r) => r.email === email);
       const ok = await confirmDialog({
         title: "Delete recipient?",
-        description: "This action cannot be undone.",
-        confirmText: "Delete",
-      })
+        description:
+          "This person will be removed from the scheduled report recipients list.",
+        confirmText: "Yes, Delete Recipient",
+        item: recipient
+          ? {
+              name: recipient.name,
+              description: recipient.email,
+            }
+          : undefined,
+      });
       if (ok) {
         setRecipients(prev => prev.filter(r => r.email !== email));
         toast.success("Recipient deleted")
@@ -142,6 +160,7 @@ export default function NewScheduledReportForm() {
     
     <Form {...form}>
       <form
+        id={formId}
         onSubmit={form.handleSubmit(onSubmit, onError)}
         className="space-y-6"
       >
@@ -149,7 +168,7 @@ export default function NewScheduledReportForm() {
           <ComboboxFieldWrapper control={form.control} name="report" label="Report" options={reportTypeOptionsList} />
           <ComboboxFieldWrapper control={form.control} name="frequency" label="Frequency" options={reportFrequencyTypeOptionsList} />
           <ComboboxFieldWrapper control={form.control} name="dateField" label="Date Field" options={dateFieldTypeOptionsList} />
-          <ComboboxFieldWrapper control={form.control} name="location_id" label="Location Filter" options={locationOptionsList} />
+          <ComboboxFieldWrapper control={form.control} name="location" label="Location Filter" options={locationOptionsList} />
           <ComboboxFieldWrapper control={form.control} name="category" label="Category Filter" options={reportCategoryTypeOptionsList} />
           <MultiComboboxWrapper control={form.control} name="equipmentFilter" label="Equipment Filter" options={equipmentOptionsList} />
           <ComboboxFieldWrapper control={form.control} name="dateInterval" label="Date Interval" options={dateIntervalOptionsList} />
@@ -160,14 +179,14 @@ export default function NewScheduledReportForm() {
               <Button
                 type="button"
                 variant="primary"
-                onClick={() => setOpen(true)}
+                onClick={() => setRecipientModalOpen(true)}
               >
                 <Plus className="mr-2 h-4 w-4" /> Add Recipients
               </Button>
 
               <Modal
-                open={open}
-                onOpenChange={setOpen}
+                open={recipientModalOpen}
+                onOpenChange={setRecipientModalOpen}
                 title="Select Recipients"
                 description="Choose the users who should receive this scheduled report."
                 size="lg"
@@ -252,11 +271,24 @@ export default function NewScheduledReportForm() {
             </div>
           </div>
         </div>
-        <div className="flex justify-end">
-          <Button type="submit" disabled={isSubmitting} className="min-w-32 my-4 w-full">
-            {isSubmitting ? "Creating..." : (<><Save className="mr-2 h-4 w-4" /> Submit</>)}
-          </Button>
-        </div>
+        {!hideSubmitButton && (
+          <div className="flex justify-end">
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              variant="primary"
+              className="min-w-32 my-4"
+            >
+              {isSubmitting ? (
+                "Saving..."
+              ) : (
+                <>
+                  <Save className="mr-2 h-4 w-4" /> Save Report
+                </>
+              )}
+            </Button>
+          </div>
+        )}
       </form>
     </Form>
   );

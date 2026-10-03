@@ -133,40 +133,47 @@ const DrawerComponent = ({
   showFooter = true,
   onInteractOutside,
   onEscapeKeyDown,
+  open,
+  modal,
   children,
   ...rootProps
 }: DrawerProps) => {
+  const shouldMountContent =
+    Boolean(trigger) || open === true || (open === undefined && !trigger);
+
   return (
-    <AlignDrawer {...rootProps}>
+    <AlignDrawer {...rootProps} open={open} modal={modal ?? true}>
       {trigger && <DrawerTrigger asChild>{trigger}</DrawerTrigger>}
-      <DrawerContent
-        side={side}
-        closeable={closeable}
-        className={cn(contentClassName, className)}
-        onInteractOutside={onInteractOutside}
-        onEscapeKeyDown={onEscapeKeyDown}
-      >
-        {(title || description) && (
-          <DrawerHeader className={headerClassName}>
-            {title && <DrawerTitle>{title}</DrawerTitle>}
-            {description && (
-              <DrawerDescription>{description}</DrawerDescription>
-            )}
-          </DrawerHeader>
-        )}
-        <DrawerBody className={bodyClassName}>{children}</DrawerBody>
-        {showFooter &&
-          (footer !== undefined ? (
-            footer
-          ) : (
-            <DrawerFooter
-              closeable={closeable}
-              renderActions={renderActions ?? actions}
-              closeText={closeText}
-              className={footerClassName}
-            />
-          ))}
-      </DrawerContent>
+      {shouldMountContent && (
+        <DrawerContent
+          side={side}
+          closeable={closeable}
+          className={cn(contentClassName, className)}
+          onInteractOutside={onInteractOutside}
+          onEscapeKeyDown={onEscapeKeyDown}
+        >
+          {(title || description) && (
+            <DrawerHeader className={headerClassName}>
+              {title && <DrawerTitle>{title}</DrawerTitle>}
+              {description && (
+                <DrawerDescription>{description}</DrawerDescription>
+              )}
+            </DrawerHeader>
+          )}
+          <DrawerBody className={bodyClassName}>{children}</DrawerBody>
+          {showFooter &&
+            (footer !== undefined ? (
+              footer
+            ) : (
+              <DrawerFooter
+                closeable={closeable}
+                renderActions={renderActions ?? actions}
+                closeText={closeText}
+                className={footerClassName}
+              />
+            ))}
+        </DrawerContent>
+      )}
     </AlignDrawer>
   );
 };

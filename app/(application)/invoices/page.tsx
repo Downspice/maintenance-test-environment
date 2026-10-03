@@ -72,12 +72,12 @@ export default function EmployeesPage() {
     key: "equipment" | "location" | "custom" | "search",
     id: string
   ) => {
-    if (value === "new") {
+    if (id === "new") {
       console.log("Launching new location modal...");
       return;
     }
 
-    const updated = { ...filters, [key]: value };
+    const updated = { ...filters, [key]: id };
     setFilters(updated);
 
     if (key !== "search") {
@@ -112,11 +112,12 @@ export default function EmployeesPage() {
   const managePayments = () => {
     openSheet({
       title: "Manage Payments",
-      description: "Fill out the form below to create a payment.",
-      className: "inset-0 w-full max-w-none sm:max-w-none lg:max-w-none",
+      description: "View payments received and record new payments against invoices.",
+      className:
+        "w-full sm:w-[92%] sm:min-w-[960px] sm:max-w-none lg:max-w-none",
       showFooter: false,
       content: (
-        <div className="w-full">
+        <div className="flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden">
           <PaymentReceivedTable />
         </div>
       ),

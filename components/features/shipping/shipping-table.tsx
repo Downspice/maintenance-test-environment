@@ -419,7 +419,7 @@ export default function ShippingSheetTable() {
   ];
 
   return (
-    <div className="max-w-full">
+    <div className="w-full min-w-0 max-w-none">
       {/* <div className="mb-8">
          
 
@@ -441,6 +441,7 @@ export default function ShippingSheetTable() {
       <AdvancedDataTable
         columns={columns}
         data={isServerMode ? currentData : VendorData}
+        emptyEntity="vendors"
         defaultVisibleColumns={[
           "name",
           "type",

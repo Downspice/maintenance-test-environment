@@ -12,16 +12,9 @@ import EditScheduledReportForm, {
   ScheduledReportInterface,
 } from "@/components/forms/setup/edit-scheduled-report-form";
 import { ScheduledReportData } from "./scheduleReportDummy";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
 import { useConfirmDialog } from "@/lib/shared/confirm-dialog";
+import { CalendarClock } from "lucide-react";
 
 // Get unique values for filter options (including sub-rows)
 const getAllEmployees = (
@@ -36,6 +29,38 @@ const getAllEmployees = (
   traverse(employees);
   return result;
 };
+
+function ScheduledReportRowActions({
+  row,
+  onDelete,
+}: {
+  row: { original: ScheduledReportInterface };
+  onDelete: () => void;
+}) {
+  const formId = `edit-scheduled-report-${row.original.report.replace(/\s+/g, "-").toLowerCase()}`;
+
+  return (
+    <div className="flex flex-row justify-end gap-2">
+      <EditScheduledReportForm data={row.original} formId={formId}>
+        <Button variant="secondary" size="icon" type="button">
+          <FilePenIcon className="size-4" />
+        </Button>
+      </EditScheduledReportForm>
+      <Button
+        variant="secondary"
+        size="icon"
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          onDelete();
+        }}
+        className="text-destructive focus:text-destructive"
+      >
+        <Trash2 className="size-4" />
+      </Button>
+    </div>
+  );
+}
 
 const flatEmployees = getAllEmployees(ScheduledReportData);
 const report = [...new Set(flatEmployees.map((emp) => emp.report))];
@@ -177,7 +202,7 @@ export default function ScheduledReportDataTable() {
 
   // Server-side search handler
   const handleServerSearch = React.useCallback(
-    (searchid: string) => {
+    (searchValue: string) => {
       console.log(`🔍 Server Search: "${searchValue}"`);
 
       setIsLoading(true);
@@ -298,113 +323,21 @@ export default function ScheduledReportDataTable() {
       id: "actions",
       header: "Actions",
       cell: ({ row }) => {
-        const handleDeleteRow = (row: any) => {
-          console.log("Delete row:", row.original);
+        const handleDeleteRow = () => {
           (async () => {
             const ok = await confirmDialog({
               title: "Delete scheduled report?",
-              description: `Are you sure you want to delete ${row.original.ScheduledReportNumber}?`,
+              description: `Are you sure you want to delete the report "${row.original.report}"?`,
               confirmText: "Delete",
-            })
+            });
             if (ok) {
-              toast.success(`Deleted ${row.original.ScheduledReportNumber}`)
+              toast.success(`Deleted "${row.original.report}"`);
             }
-          })()
+          })();
         };
-
-        const [open, setOpen] = useState(false);
-        const [selectedProjectType, setSelectedProjectType] = useState<
-          string | null
-        >(null);
-
-        const genericDropdown = (x: string) => {
-          console.log("did something", x);
-          setSelectedProjectType(x);
-          setOpen(true);
-        };
-const dropdownItems = [
-  {
-    name: "Edit",
-    component: (
-      <EditScheduledReportForm
-        trigger={
-          <Button
-            variant="secondary"
-            size="icon"
-            onClick={() => {
-              setSelectedProjectType("Adjust");
-              setOpen(true);
-            }}
-          >
-            <FilePenIcon />
-          </Button>
-        }
-        data={row.original}
-      />
-    ),
-  },
-];
-        const formComponents = {
-          Adjust: (
-            <EditScheduledReportForm
-              children={
-                <Button variant={"secondary"} size={"icon"}>
-                  <FilePenIcon />
-                </Button>
-              }
-              data={row.original}
-            />
-          ),
-        };
-        const renderFormContent = () => {
-          const SelectedComponent = formComponents[selectedProjectType || ""];
-          console.log("new selected", SelectedComponent);
-          return SelectedComponent ? SelectedComponent : null;
-        };
-        const selectedType = dropdownItems.find(
-          (type) => type.label === selectedProjectType
-        );
 
         return (
-          <div className="flex flex-row gap-2 justify-between ">
-            <EditScheduledReportForm
-              children={
-                <Button variant={"secondary"} size={"icon"}>
-                  <FilePenIcon />
-                </Button>
-              }
-              data={row.original}
-            />
-            <Button
-              variant={"secondary"}
-              size={"icon"}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleDeleteRow(row);
-              }}
-              className="text-destructive focus:text-destructive"
-            >
-              <Trash2 className="mr-2 h-4 w-4" />
-            </Button>
-            <Sheet open={open} onOpenChange={setOpen}>
-              <SheetContent className="w-[400px] sm:w-2/3">
-                <SheetHeader>
-                  <SheetTitle className="flex items-center gap-2">
-                    {selectedType?.label}
-                    {/* Receive Purchase Order */}
-                  </SheetTitle>
-                  <SheetDescription>
-                    {/* {selectedType?.label ||
-                                        "Fill out the form below to set up your new development project."} */}
-                  </SheetDescription>
-                </SheetHeader>
-
-                <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
-                  {renderFormContent() || "nothing else"}
-                </ScrollArea>
-              </SheetContent>
-            </Sheet>
-          </div>
+          <ScheduledReportRowActions row={row} onDelete={handleDeleteRow} />
         );
       },
       enableSorting: false,
@@ -413,7 +346,7 @@ const dropdownItems = [
   ];
 
   return (
-    <div className="">
+    <div className="flex h-full min-h-0 w-full min-w-0 flex-col">
       {/* <div className="mb-8">
          
 
@@ -457,6 +390,22 @@ const dropdownItems = [
         onPaginationChange={isServerMode ? handlePaginationChange : undefined}
         onServerSearch={isServerMode ? handleServerSearch : undefined}
         isLoading={isLoading}
+        emptyState={
+          <div className="flex min-h-[12rem] flex-col items-center justify-center gap-3 px-6 py-10 text-center">
+            <div className="flex size-14 items-center justify-center rounded-full bg-bg-weak-50 text-primary-base ring-1 ring-stroke-soft-200">
+              <CalendarClock className="size-7" strokeWidth={1.75} aria-hidden />
+            </div>
+            <div className="max-w-md space-y-1">
+              <p className="text-label-md font-medium text-text-strong-950">
+                No scheduled reports
+              </p>
+              <p className="text-paragraph-sm text-text-sub-600">
+                Automated exports you configure will appear here. Use New
+                Scheduled Report to create one.
+              </p>
+            </div>
+          </div>
+        }
       />
     </div>
   );

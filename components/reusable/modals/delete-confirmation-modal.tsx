@@ -36,6 +36,8 @@ export interface DeleteConfirmationModalProps {
   isLoading?: boolean;
   /** Optional mode where flipping the switch immediately fires onDelete */
   autoDeleteOnSwitch?: boolean;
+  /** When false, hide the switch and enable confirm immediately (non-destructive confirms). */
+  requireSwitch?: boolean;
   className?: string;
 }
 
@@ -65,6 +67,7 @@ export function DeleteConfirmationModal({
   onDelete,
   isLoading = false,
   autoDeleteOnSwitch = false,
+  requireSwitch = true,
   className,
 }: DeleteConfirmationModalProps) {
   const [internalOpen, setInternalOpen] = React.useState(false);
@@ -86,7 +89,7 @@ export function DeleteConfirmationModal({
   };
 
   const handleDelete = async () => {
-    if (!isConfirmed && !autoDeleteOnSwitch) return;
+    if (requireSwitch && !isConfirmed && !autoDeleteOnSwitch) return;
     try {
       setDeleting(true);
       await onDelete?.();
@@ -137,7 +140,7 @@ export function DeleteConfirmationModal({
           <Button
             variant="destructive"
             type="button"
-            disabled={!isConfirmed || isActionLoading}
+            disabled={(requireSwitch && !isConfirmed) || isActionLoading}
             onClick={handleDelete}
             className="transition-all duration-200"
           >
@@ -192,33 +195,34 @@ export function DeleteConfirmationModal({
           </div>
         )}
 
-        {/* Switch Confirmation Section */}
-        <div
-          className={cn(
-            "flex items-center justify-between rounded-xl border p-4 transition-all duration-200",
-            isConfirmed
-              ? "border-red-300/80 bg-red-50/30 dark:border-red-900/50 dark:bg-red-950/10"
-              : "border-stroke-soft-200 bg-bg-weak-50/50"
-          )}
-        >
-          <div className="space-y-0.5 pr-4">
-            <Label
-              htmlFor="confirm-delete-switch"
-              className="text-label-sm font-medium text-text-strong-950 cursor-pointer"
-            >
-              {switchLabel}
-            </Label>
-            <p className="text-paragraph-xs text-text-soft-400">
-              {switchDescription}
-            </p>
+        {requireSwitch && (
+          <div
+            className={cn(
+              "flex items-center justify-between rounded-xl border p-4 transition-all duration-200",
+              isConfirmed
+                ? "border-red-300/80 bg-red-50/30 dark:border-red-900/50 dark:bg-red-950/10"
+                : "border-stroke-soft-200 bg-bg-weak-50/50"
+            )}
+          >
+            <div className="space-y-0.5 pr-4">
+              <Label
+                htmlFor="confirm-delete-switch"
+                className="text-label-sm font-medium text-text-strong-950 cursor-pointer"
+              >
+                {switchLabel}
+              </Label>
+              <p className="text-paragraph-xs text-text-soft-400">
+                {switchDescription}
+              </p>
+            </div>
+            <Switch
+              id="confirm-delete-switch"
+              checked={isConfirmed}
+              disabled={isActionLoading}
+              onCheckedChange={handleSwitchChange}
+            />
           </div>
-          <Switch
-            id="confirm-delete-switch"
-            checked={isConfirmed}
-            disabled={isActionLoading}
-            onCheckedChange={handleSwitchChange}
-          />
-        </div>
+        )}
       </div>
     </Modal>
   );

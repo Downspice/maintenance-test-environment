@@ -8,15 +8,9 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Separator } from "../ui/separator";
-import {
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-  Sheet,
-} from "@/components/ui/sheet";
+import { Drawer } from "@/components/ui/drawer";
 import { useState } from "react";
-import { ScrollArea } from "../ui/scroll-area";
+import { cn } from "@/utils/cn";
 import EmailHistoryDataTable from "../forms/actions/more/emailHistory";
 import JobSiteAssignment from "../forms/actions/more/jobsiteassignment/jobsiteAssignments";
 import MeterUpdatesMoreButton from "../forms/actions/more/meterUpdate/meterUpdateView";
@@ -84,13 +78,33 @@ export default function HeaderUploadButton() {
       return SelectedComponent ? SelectedComponent : null;
     };
 
-    const selectedType = [
-      ...dropdownItemsSection1,
-      ...dropdownItemsSection2,
-      ...dropdownItemsSection3,
-    ].find((type) => type.label === selectedProjectType);
+    const MORE_DESCRIPTIONS: Record<string, string> = {
+      "Email history": "Review emails sent from the system.",
+      "Job site Assignments": "Manage equipment assignments to job sites.",
+      "Meter Updates": "Bulk update equipment meter readings.",
+      "Repair Request (Outstanding)": "View and manage open repair requests.",
+      "PM Forecaster": "Forecast upcoming preventive maintenance.",
+      "Generate Purchase Orders": "Create purchase orders in bulk.",
+      "Generate Work Orders": "Create work orders in bulk.",
+      "Physical Inventory Count": "Update physical inventory counts.",
+      "Update Meters": "Edit current meter readings across equipment.",
+      "Meter Replacements": "Log and review equipment meter replacement history.",
+      "Import Meter Readings": "Import meter readings from a file.",
+    };
 
- 
+    const WIDE_MORE_VIEWS = new Set([
+      "Meter Replacements",
+      "Update Meters",
+      "Email history",
+      "Repair Request (Outstanding)",
+      "Meter Updates",
+      "Job site Assignments",
+      "Generate Work Orders",
+      "Generate Purchase Orders",
+      "PM Forecaster",
+      "Physical Inventory Count",
+    ]);
+
   return (
     <>
       <DropdownMenu>
@@ -134,24 +148,34 @@ export default function HeaderUploadButton() {
           ))}
         </DropdownMenuContent>
       </DropdownMenu>
-      <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent className="w-[400px] sm:w-5/6">
-          <SheetHeader>
-            <SheetTitle className="flex items-center gap-2">
-              {/* {selectedType && <selectedType.icon className="h-5 w-5" />} */}
-              {selectedType?.label || "nothing"}
-            </SheetTitle>
-            <SheetDescription>
-              {/* {selectedType?.label ||
-                "Fill out the form below to set up your new development project."} */}
-            </SheetDescription>
-          </SheetHeader>
-
-          <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
-            {renderFormContent() || "nothing else"}
-          </ScrollArea>
-        </SheetContent>
-      </Sheet>
+      <Drawer
+        open={open}
+        onOpenChange={(nextOpen) => {
+          setOpen(nextOpen);
+          if (!nextOpen) {
+            setSelectedProjectType(null);
+          }
+        }}
+        modal={false}
+        title={selectedProjectType ?? "More"}
+        description={
+          selectedProjectType
+            ? MORE_DESCRIPTIONS[selectedProjectType]
+            : undefined
+        }
+        showFooter={false}
+        className={cn(
+          "w-full sm:max-w-2xl lg:max-w-3xl",
+          selectedProjectType &&
+            WIDE_MORE_VIEWS.has(selectedProjectType) &&
+            "w-full sm:w-[92%] sm:min-w-[960px] sm:max-w-none lg:max-w-none",
+        )}
+        bodyClassName="flex min-h-0 flex-col overflow-hidden p-0"
+      >
+        <div className="flex h-[calc(100vh-160px)] min-h-0 flex-col overflow-hidden px-6 py-4">
+          {renderFormContent()}
+        </div>
+      </Drawer>
     </>
   );
 }

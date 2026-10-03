@@ -9,10 +9,10 @@ import {
 } from "@/lib/schemas/part-kits-schema";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import PartKitDialog, {
+import ManagePMScheduleDialog, {
   ManagePMScheduleFormValues,
 } from "./ManagePMScheduleDialog";
-import { Pencil, Trash2, Plus, Save } from "lucide-react";
+import { FilePenIcon, Trash2, Plus } from "lucide-react";
 import { useState } from "react";
 import {
   Table,
@@ -23,6 +23,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import FullMaintenanceForm from "./PMService";
+import { toast } from "sonner";
 
 const initial: ManagePMScheduleFormValues[] = [
   {
@@ -36,149 +37,169 @@ const initial: ManagePMScheduleFormValues[] = [
   },
 ];
 
-export default function ManagePMScheduleManager() {
+type ManagePMScheduleManagerProps = {
+  formId?: string;
+  hideSubmitButton?: boolean;
+  onSuccess?: () => void;
+};
+
+export default function ManagePMScheduleManager({
+  formId = "pm-schedule-templates-form",
+  hideSubmitButton = false,
+  onSuccess,
+}: ManagePMScheduleManagerProps) {
   const form = useForm<PartKitsSubmission>({
     resolver: zodResolver(PartKitsSchema),
     defaultValues: { partKits: initial },
   });
 
+  const schedules = form.watch("partKits");
   const [selectedId, setSelectedId] = useState(initial[0].id);
-  const selected = form.watch("partKits").find((k) => k.id === selectedId);
+  const selected = schedules.find((k) => k.id === selectedId);
   const [editDialog, setEditDialog] = useState<PartKitType | null>(null);
-  const [open, setOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
-  const updateKit = (kit: Partial<PartKitType> & { id?: string }) => {
+  const updateSchedule = (kit: ManagePMScheduleFormValues) => {
     const current = form.getValues("partKits");
     if (kit.id) {
       form.setValue(
         "partKits",
-        current.map((k) => (k.id === kit.id ? { ...k, ...kit } : k))
+        current.map((k) => (k.id === kit.id ? { ...k, ...kit } : k)),
       );
     } else {
       const newKit = {
         ...kit,
         id: Date.now().toString(),
         parts: [],
-      } as PartKitType;
+      } as PartKitType & ManagePMScheduleFormValues;
       form.setValue("partKits", [...current, newKit]);
       setSelectedId(newKit.id);
     }
-    setOpen(false);
+    setDialogOpen(false);
+  };
+
+  const handleSubmit = (data: PartKitsSubmission) => {
+    console.log(data);
+    toast.success("PM schedule templates saved.");
+    onSuccess?.();
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(console.log)}>
-        <div className="grid grid-cols-3 gap-6 h-[calc(100vh-160px)]">
-          {" "}
-          {/* Adjust 100px as needed */}
-          <div className="h-full flex flex-col overflow-hidden">
-            <h2 className="font-bold mb-2">Maintenance Schedule Templates</h2>
-            <div className="flex-1 overflow-auto border rounded-md h-full">
-              <Table className="h-full">
-                <TableHeader>
+      <form
+        id={formId}
+        onSubmit={form.handleSubmit(handleSubmit)}
+        className="flex min-h-0 flex-1 flex-col"
+      >
+        <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 lg:grid-cols-[minmax(300px,1fr)_2fr]">
+          <div className="flex min-h-0 flex-col gap-1">
+            <div className="flex shrink-0 items-center justify-between gap-2">
+              <span className="text-label-sm font-medium text-text-sub-600">
+                Templates
+              </span>
+              <Button
+                type="button"
+                size="sm"
+                variant="primary"
+                onClick={() => {
+                  setEditDialog(null);
+                  setDialogOpen(true);
+                }}
+              >
+                <Plus className="mr-2 size-4" />
+                Add Template
+              </Button>
+            </div>
+            <div className="min-h-0 flex-1 overflow-auto rounded-md border">
+              <Table>
+                <TableHeader className="sticky top-0 z-10 bg-bg-white-0">
                   <TableRow>
                     <TableHead>Name</TableHead>
-                    <TableHead className="w-26">Actions</TableHead>
+                    <TableHead className="w-[5.5rem] text-right">ACTIONS</TableHead>
                   </TableRow>
                 </TableHeader>
-
                 <TableBody>
-                  {form.watch("partKits").map((kit) => (
+                  {schedules.map((kit) => (
                     <TableRow
                       key={kit.id}
-                      className={`${selectedId === kit.id ? "bg-muted" : ""}`}
+                      className={`cursor-pointer ${selectedId === kit.id ? "bg-muted" : ""}`}
                       onClick={() => setSelectedId(kit.id)}
                     >
-                      <TableCell>{kit.name}</TableCell>
-                      <TableCell className="space-x-1">
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setEditDialog(kit);
-                            setOpen(true);
-                          }}
-                        >
-                          <Pencil size={16} />
-                        </Button>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            form.setValue(
-                              "partKits",
-                              form
+                      <TableCell className="align-middle">{kit.name}</TableCell>
+                      <TableCell
+                        className="align-middle"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            size="icon"
+                            onClick={() => {
+                              setEditDialog(kit);
+                              setDialogOpen(true);
+                            }}
+                          >
+                            <FilePenIcon className="size-4" />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            size="icon"
+                            className="text-destructive hover:text-destructive"
+                            onClick={() => {
+                              const next = form
                                 .getValues("partKits")
-                                .filter((k) => k.id !== kit.id)
-                            );
-                          }}
-                        >
-                          <Trash2 size={16} />
-                        </Button>
+                                .filter((k) => k.id !== kit.id);
+                              form.setValue("partKits", next);
+                              if (selectedId === kit.id) {
+                                setSelectedId(next[0]?.id ?? "");
+                              }
+                            }}
+                          >
+                            <Trash2 className="size-4" />
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
             </div>
-
-            <Button
-              className="w-full mt-2"
-              onClick={() => {
-                setEditDialog(null);
-                setOpen(true);
-              }}
-            >
-              <Plus size={16} className="mr-2" /> Add
-            </Button>
           </div>
-          <div className="col-span-2 h-full flex flex-col overflow-hidden">
+
+          <div className="flex min-h-0 min-w-0 flex-col gap-1">
             {selected ? (
               <>
-                <h2 className="font-semibold text-lg mb-2">{selected.name}</h2>
-                <div className="flex-1 overflow-auto">
-                  {/* <DailyInspectionTable/> */}
-                  {/* <ManagePMSchedulePartsTab serviceName={selected.name}/> */}
-                  {/* <ManageSchedulePMLaborTab serviceName={selected.name}/> */}
-                  {/* <ManagePMAdvancedTab /> */}
-                  <FullMaintenanceForm/>
-                  {/* <PartKitPartsTable
-                    parts={selected.parts}
-                    onUpdateParts={(updated) => {
-                      form.setValue(
-                        "partKits",
-                        form
-                          .getValues("partKits")
-                          .map((k) =>
-                            k.id === selected.id ? { ...k, parts: updated } : k
-                          )
-                      );
-                    }}
-                  /> */}
+                <p className="shrink-0 text-label-md font-medium text-text-strong-950">
+                  {selected.name}
+                </p>
+                <div className="min-h-0 flex-1 overflow-auto">
+                  <FullMaintenanceForm />
                 </div>
               </>
             ) : (
-              <p>Select a kit</p>
+              <p className="text-paragraph-sm text-text-sub-600">
+                Select a template to configure parts and labor.
+              </p>
             )}
           </div>
         </div>
 
-        <div className="flex justify-end  ">
-          <Button type="submit">
-            <Save className="mr-2 h-4 w-4" />
-            Submit All Kits
-          </Button>
-        </div>
+        {!hideSubmitButton && (
+          <div className="mt-4 flex shrink-0 justify-end">
+            <Button type="submit" variant="primary">
+              Save Templates
+            </Button>
+          </div>
+        )}
       </form>
 
-      <PartKitDialog
-        open={open}
-        onOpenChange={setOpen}
+      <ManagePMScheduleDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
         initialData={editDialog}
-        onSave={updateKit}
+        onSave={updateSchedule}
       />
     </Form>
   );

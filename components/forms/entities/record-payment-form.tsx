@@ -275,6 +275,7 @@ export default function RecordPaymentForm({
     <Drawer
       open={open}
       onOpenChange={setOpen}
+      modal={false}
       trigger={
         trigger ? (
           trigger

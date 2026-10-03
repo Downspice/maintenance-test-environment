@@ -65,8 +65,8 @@ export default function ShippingView() {
     error: locationOptionsListError,
   } = useGetLocations<Array<{ id: string; name: string }>>();
   return (
-    <>
-      <div className="flex flex-row justify-between">
+    <div className="flex w-full min-w-0 flex-col gap-4">
+      <div className="flex flex-row justify-between gap-2 shrink-0">
         <div className="flex flex-row">
           <Select onValueChange={(val) => handleSelectChange("custom", val)}>
             <SelectTrigger className="w-[180px]">
@@ -96,7 +96,9 @@ export default function ShippingView() {
         <NewShipToForm />
       </div>
 
-      <ShippingSheetTable />
-    </>
+      <div className="min-w-0 w-full">
+        <ShippingSheetTable />
+      </div>
+    </div>
   );
 }
