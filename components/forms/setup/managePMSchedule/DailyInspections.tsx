@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { FormModal } from "@/components/ui/form-modal";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { Pencil, Trash2, Plus } from "lucide-react";
@@ -152,15 +147,18 @@ export default function DailyInspectionTable() {
         Add Inspection
       </Button>
 
-      {/* Form Dialog */}
-      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>
-              {editingIndex !== null ? "Edit Inspection" : "Create Inspection"}
-            </DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-2">
+      <FormModal
+        open={openDialog}
+        onOpenChange={setOpenDialog}
+        title={
+          editingIndex !== null ? "Edit inspection" : "Create inspection"
+        }
+        description="Link an inspection type and priority to this PM service."
+        formId="pm-daily-inspection-form"
+        form={form}
+        submitLabel={editingIndex !== null ? "Save changes" : "Create inspection"}
+        onSubmit={onSubmit}
+      >
             <InputWrapper
               control={control}
               name="pmService"
@@ -178,14 +176,8 @@ export default function DailyInspectionTable() {
               label="Type"
               options={typeOptions}
             />
-            <div className="flex justify-end pt-2">
-              <Button type="submit">
-                {editingIndex !== null ? "Update" : "Create"}
-              </Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
+
+      </FormModal>
 
       {/* Delete Alert Dialog */}
       <AlertDialog

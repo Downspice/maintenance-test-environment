@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"; 
+import { FormModal } from "@/components/ui/form-modal";
 import InputWrapper from "@/components/forms/fields/InputWrapper";
 import { ComboboxFieldWrapper } from "@/components/forms/fields/ComboboxWrapper";
 import RadioGroupWrapper from "@/components/forms/fields/RadioGroupWrapper";
@@ -157,13 +157,17 @@ export default function ManageSchedulePMLaborTab({ serviceName }: Props) {
         </table>
       </div>
 
-      {/* Dialog Form */}
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>{editingLabor ? "Edit Labor" : "Add Labor"}</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <FormModal
+        open={open}
+        onOpenChange={setOpen}
+        title={editingLabor ? "Edit labor" : "Add labor"}
+        description="Assign labor or a fixed cost to this PM service."
+        formId="pm-service-labor-form"
+        form={form}
+        submitLabel={editingLabor ? "Save changes" : "Add labor"}
+        scrollable
+        onSubmit={onSubmit}
+      >
             <ComboboxFieldWrapper
               control={form.control}
               name="equipment"
@@ -256,12 +260,8 @@ export default function ManageSchedulePMLaborTab({ serviceName }: Props) {
               </>
             )}
 
-            <div className="flex justify-end">
-              <Button type="submit">{editingLabor ? "Update" : "Add"}</Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
+
+      </FormModal>
     </div>
   );
 }

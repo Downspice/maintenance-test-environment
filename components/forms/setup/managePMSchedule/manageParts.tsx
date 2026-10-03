@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"; 
+import { FormModal } from "@/components/ui/form-modal";
 import InputWrapper from "@/components/forms/fields/InputWrapper";
 import RadioGroupWrapper from "@/components/forms/fields/RadioGroupWrapper";
 import { ComboboxFieldWrapper } from "@/components/forms/fields/ComboboxWrapper";
@@ -162,13 +162,19 @@ export default function ManagePMSchedulePartsTab({ serviceName }: Props) {
         </table>
       </div>
 
-      {/* Dialog Form */}
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>{editingPart ? "Edit Part" : "Add Part"}</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <FormModal
+        open={open}
+        onOpenChange={setOpen}
+        title={editingPart ? "Edit part" : "Add part"}
+        description="Assign parts or fixed costs to this PM service."
+        formId="pm-service-part-form"
+        form={form}
+        submitLabel={editingPart ? "Save changes" : "Add part"}
+        scrollable
+        onSubmit={(data) => {
+          onSubmit(data);
+        }}
+      >
             <ComboboxFieldWrapper
               control={form.control}
               name="equipment"
@@ -251,12 +257,8 @@ export default function ManagePMSchedulePartsTab({ serviceName }: Props) {
               </>
             )}
 
-            <div className="flex justify-end">
-              <Button type="submit">{editingPart ? "Update" : "Add"}</Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
+
+      </FormModal>
     </div>
   );
 }

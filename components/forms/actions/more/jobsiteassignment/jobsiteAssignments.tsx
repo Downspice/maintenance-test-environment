@@ -1,4 +1,5 @@
 "use client";
+
 import {
   Select,
   SelectContent,
@@ -10,43 +11,41 @@ import {
 import JobSiteDataTable from "./jobsiteTable";
 import { jobSiteOptionsList } from "@/lib/shared/option-list";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FilePenIcon, Plus, Trash2Icon } from "lucide-react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import z from "zod";
-import InputWrapper from "@/components/forms/fields/InputWrapper";
-import TextareaWrapper from "@/components/forms/fields/TextareaWrapper";
-import { Save } from "lucide-react";
-import { Form } from "@/components/ui/form";
+import JobSiteDialog from "./jobsiteDialog";
+import { useConfirmDialog } from "@/lib/shared/confirm-dialog";
+import { toast } from "sonner";
 
-const schema = z.object({
-  name: z.string().min(1, "Name is required"),
-  notes: z.string().optional(),
-});
-type FormValues = z.infer<typeof schema>;
+type JobSiteFormData = { id?: string; name: string; notes?: string };
 
 export default function JobSiteAssignment() {
+  const confirmDialog = useConfirmDialog();
   const [open, setOpen] = useState(false);
-  const [editData, setEditData] = useState<FormValues | null>(null);
-  const form = useForm<FormValues>({
-    resolver: zodResolver(schema),
-    defaultValues: editData ?? { name: "", notes: "" },
-  });
+  const [editData, setEditData] = useState<JobSiteFormData | null>(null);
 
-  useEffect(() => {
-    if (editData) {
-      form.reset(editData);
-    }
-  }, [editData]);
+  const openCreate = () => {
+    setEditData(null);
+    setOpen(true);
+  };
+
+  const openEdit = () => {
+    setEditData({ name: "test", notes: "test notes" });
+    setOpen(true);
+  };
+
+  const handleSave = (data: JobSiteFormData) => {
+    console.log("Saved job site", data);
+    toast.success(editData ? "Job site updated" : "Job site created");
+    setEditData(null);
+  };
 
   return (
     <>
-      <div className="flex grid grid-cols-2 pb-2">
-        <Select className="w-[180px] col-span-1">
-          <SelectTrigger>
-            <SelectValue placeholder="Select a Job Site" />
+      <div className="grid grid-cols-2 pb-2">
+        <Select>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Select a job site" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
@@ -58,64 +57,40 @@ export default function JobSiteAssignment() {
             </SelectGroup>
           </SelectContent>
         </Select>
-        <div className="flex justify-end gap-x-4 col-span-1">
-          <Button
-            onClick={() => {
-              form.reset({ name: "", notes: "" });
-              setOpen(true);
-            }}
-          >
-            <Plus size={16} className="mr-2" /> Add New
+        <div className="col-span-1 flex justify-end gap-x-2">
+          <Button variant="primary" onClick={openCreate}>
+            <Plus className="mr-2 size-4" /> Add new
           </Button>
-          <Button 
-            onClick={() => {
-              setOpen(true);
-              setEditData({ name: "test", notes: "test notes" });
-            }}
-          >
-            <FilePenIcon size={16} className="mr-2" /> Edit
+          <Button variant="secondary" onClick={openEdit}>
+            <FilePenIcon className="mr-2 size-4" /> Edit
           </Button>
           <Button
-            variant={"destructive"}
-            onClick={() => {
-              if (confirm(`Are you sure you want to delete test?`)) {
-                alert(`Deleted test`);
-                // Here you would typically call your bulk delete API
-              }
+            variant="secondary"
+            className="text-destructive focus:text-destructive"
+            onClick={async () => {
+              const ok = await confirmDialog({
+                title: "Delete job site assignment?",
+                description: "This will remove the selected assignment record.",
+                confirmText: "Yes, delete",
+                item: { name: "test", description: "Job site assignment" },
+              });
+              if (ok) toast.success("Assignment deleted");
             }}
           >
-            <Trash2Icon size={16} className="mr-2" /> Delete
+            <Trash2Icon className="mr-2 size-4" /> Delete
           </Button>
         </div>
       </div>
       <JobSiteDataTable />
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-md">
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit((data) => {
-                console.log({ ...editData, ...data });
-                form.reset();
-                setOpen(false);
-              })}
-              className="space-y-4"
-            >
-              <InputWrapper control={form.control} name="name" label="Name" />
-              <TextareaWrapper
-                control={form.control}
-                name="notes"
-                label="Notes"
-              />
-              <div className="flex justify-end">
-                <Button type="submit">
-                  <Save size={16} className="mr-2" />
-                  {editData ? "Update" : "Create"}
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
+      <JobSiteDialog
+        open={open}
+        onOpenChange={(next) => {
+          setOpen(next);
+          if (!next) setEditData(null);
+        }}
+        initialData={editData}
+        onSave={handleSave}
+      />
     </>
   );
 }

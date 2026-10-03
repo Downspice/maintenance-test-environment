@@ -2,16 +2,17 @@
 
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import InputWrapper from "@/components/forms/fields/InputWrapper";
 import SingleCheckboxWrapper from "@/components/forms/fields/SingleCheckboxWrapper";
 import SelectWrapper from "@/components/forms/fields/SelectWrapper";
-import { Save } from "lucide-react";
 import { useEffect } from "react";
 import { z } from "zod";
+import { FormModal } from "@/components/ui/form-modal";
 
-const meterOptions = [{ name: "Hour", id: "hour" },{ name: "Miles", id: "Miles" }];
+const meterOptions = [
+  { name: "Hour", id: "hour" },
+  { name: "Miles", id: "Miles" },
+];
 
 export const ManagePMScheduleSchema = z.object({
   id: z.string().optional(),
@@ -50,18 +51,20 @@ export default function ManagePMScheduleDialog({
     },
   });
 
-  const { control, handleSubmit, reset } = form;
+  const { control, reset } = form;
 
-  // Watch meter toggles to enable/disable the select
   const trackByMeterPrimary = useWatch({ control, name: "trackByMeterPrimary" });
-  const trackByMeterSecondary = useWatch({ control, name: "trackByMeterSecondary" });
+  const trackByMeterSecondary = useWatch({
+    control,
+    name: "trackByMeterSecondary",
+  });
 
   useEffect(() => {
     if (initialData) {
       reset(initialData);
     } else {
       reset({
-        name: "", 
+        name: "",
         trackByDate: false,
         trackByMeterPrimary: false,
         trackByMeterSecondary: false,
@@ -69,55 +72,56 @@ export default function ManagePMScheduleDialog({
         meterSecondaryType: undefined,
       });
     }
-  }, [initialData, reset]);
+  }, [initialData, reset, open]);
+
+  const isEdit = Boolean(initialData?.id ?? initialData?.name);
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
-        <form onSubmit={handleSubmit(onSave)} className="space-y-4">
-          <InputWrapper control={control} name="name" label="Schedule Name" /> 
-
-          <SingleCheckboxWrapper
-            control={control}
-            name="trackByDate"
-            label="Track by date"
-          />
-
-          <SingleCheckboxWrapper
-            control={control}
-            name="trackByMeterPrimary"
-            label="Track by meter (primary)"
-          />
-          <SelectWrapper
-            control={control}
-            name="meterPrimaryType"
-            label="Primary meter type"
-            options={meterOptions}
-            disabled={!trackByMeterPrimary}
-          />
-
-          <SingleCheckboxWrapper
-            control={control}
-            name="trackByMeterSecondary"
-            label="Track by meter (secondary)"
-          />
-          <SelectWrapper
-            control={control}
-            name="meterSecondaryType"
-            label="Secondary meter type"
-            options={meterOptions}
-            disabled={!trackByMeterSecondary}
-          />
-          
-
-          <div className="flex justify-end pt-2">
-            <Button type="submit">
-              <Save size={16} className="mr-2" />
-              {initialData ? "Update" : "Create"}
-            </Button>
-          </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+    <FormModal
+      open={open}
+      onOpenChange={onOpenChange}
+      title={isEdit ? "Edit PM schedule template" : "Add PM schedule template"}
+      description="Configure how this template tracks due dates and meter readings."
+      formId="pm-schedule-template-dialog-form"
+      form={form}
+      submitLabel={isEdit ? "Save changes" : "Create template"}
+      scrollable
+      size="md"
+      onSubmit={(data) => {
+        onSave(data);
+        onOpenChange(false);
+      }}
+    >
+      <InputWrapper control={control} name="name" label="Schedule name" />
+      <SingleCheckboxWrapper
+        control={control}
+        name="trackByDate"
+        label="Track by date"
+      />
+      <SingleCheckboxWrapper
+        control={control}
+        name="trackByMeterPrimary"
+        label="Track by meter (primary)"
+      />
+      <SelectWrapper
+        control={control}
+        name="meterPrimaryType"
+        label="Primary meter type"
+        options={meterOptions}
+        disabled={!trackByMeterPrimary}
+      />
+      <SingleCheckboxWrapper
+        control={control}
+        name="trackByMeterSecondary"
+        label="Track by meter (secondary)"
+      />
+      <SelectWrapper
+        control={control}
+        name="meterSecondaryType"
+        label="Secondary meter type"
+        options={meterOptions}
+        disabled={!trackByMeterSecondary}
+      />
+    </FormModal>
   );
 }

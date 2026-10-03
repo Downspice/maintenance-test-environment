@@ -2,13 +2,11 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import InputWrapper from "@/components/forms/fields/InputWrapper";
 import TextareaWrapper from "@/components/forms/fields/TextareaWrapper";
-import { Save } from "lucide-react";
 import { useEffect } from "react";
 import { z } from "zod";
+import { FormModal } from "@/components/ui/form-modal";
 
 const schema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -41,25 +39,26 @@ export default function PartKitDialog({
   useEffect(() => {
     if (initialData) form.reset(initialData);
     else form.reset({ name: "", notes: "" });
-  }, [initialData, form]);
+  }, [initialData, form, open]);
+
+  const isEdit = Boolean(initialData?.id ?? initialData?.name);
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
-        <form
-          onSubmit={form.handleSubmit(data => onSave({ ...initialData, ...data }))}
-          className="space-y-4"
-        >
-          <InputWrapper control={form.control} name="name" label="Name" />
-          <TextareaWrapper control={form.control} name="notes" label="Notes" />
-          <div className="flex justify-end">
-            <Button type="submit">
-              <Save size={16} className="mr-2" />
-              {initialData ? "Update" : "Create"}
-            </Button>
-          </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+    <FormModal
+      open={open}
+      onOpenChange={onOpenChange}
+      title={isEdit ? "Edit part kit" : "Add part kit"}
+      description="Name the kit and add optional notes for your team."
+      formId="part-kit-dialog-form"
+      form={form}
+      submitLabel={isEdit ? "Save changes" : "Create kit"}
+      onSubmit={(data) => {
+        onSave({ ...initialData, ...data });
+        onOpenChange(false);
+      }}
+    >
+      <InputWrapper control={form.control} name="name" label="Name" />
+      <TextareaWrapper control={form.control} name="notes" label="Notes" />
+    </FormModal>
   );
 }

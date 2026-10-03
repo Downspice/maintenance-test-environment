@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { FormModal } from "@/components/ui/form-modal";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import InputWrapper from "@/components/forms/fields/InputWrapper";
 import { ComboboxFieldWrapper } from "@/components/forms/fields/ComboboxWrapper";
@@ -75,14 +75,12 @@ export default function ManagePMScheduleTable({
         Add Part
       </Button>
 
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-md">
-          <PartForm
-            part={editPart}
-            onSave={savePart}
-          />
-        </DialogContent>
-      </Dialog>
+      <PartForm
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        part={editPart}
+        onSave={savePart}
+      />
     </div>
   );
 }
@@ -99,10 +97,14 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>;
 
-export  function PartForm({
+export function PartForm({
+  open,
+  onOpenChange,
   part,
   onSave,
 }: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   part: PartType | null;
   onSave: (p: PartType) => void;
 }) {
@@ -140,43 +142,52 @@ export  function PartForm({
     });
   };
 
+  const isEdit = Boolean(part);
+
   return (
-    <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+    <FormModal
+      open={open}
+      onOpenChange={onOpenChange}
+      title={isEdit ? "Edit service part" : "Add service part"}
+      description="Select a part and quantity for this PM service."
+      formId="pm-service-catalog-part-form"
+      form={form}
+      submitLabel={isEdit ? "Save changes" : "Add part"}
+      onSubmit={(data) => {
+        handleSubmit(data);
+        onOpenChange(false);
+      }}
+    >
       <ComboboxFieldWrapper
         control={form.control}
         name="partNumber"
-        label="Part Number"
+        label="Part number"
         options={partOptions}
         required
-        searchPlaceholder="Search Part..."
+        searchPlaceholder="Search part…"
       />
-
       <InputWrapper
         control={form.control}
         name="name"
         label="Name"
         value={selectedPart?.name || ""}
         disabled
+        type="text"
       />
-
       <InputWrapper
         control={form.control}
         name="warehouse"
         label="Warehouse"
         value={selectedPart?.warehouse || ""}
         disabled
+        type="text"
       />
-
       <InputWrapper
         control={form.control}
         name="quantityUsed"
-        label="Quantity Used"
-        type="number" 
+        label="Quantity used"
+        type="number"
       />
-
-      <div className="flex justify-end">
-        <Button type="submit">Save</Button>
-      </div>
-    </form>
+    </FormModal>
   );
 }
