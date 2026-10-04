@@ -23,6 +23,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/shared/utils";
 import { Check, FilePenIcon, Plus, Trash2, X } from "lucide-react";
 import {
@@ -553,16 +554,16 @@ export function TabbedMenuEditor({ tabs, contents }: Props) {
 
   if (safeTabs.length === 0) {
     return (
-      <div className="flex items-center justify-center h-[calc(100vh-120px)]">
+      <div className="flex h-full min-h-[12rem] items-center justify-center">
         <p className="text-muted-foreground italic">No tabs available</p>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-1 h-[calc(100vh-120px)] w-full bg-muted/20">
+    <div className="flex h-full min-h-0 min-w-0 w-full bg-muted/20">
       {/* Tabs Section */}
-      <aside className="w-64 h-[calc(100vh-120px)] overflow-scroll border-r border-border bg-card p-4 shadow-sm">
+      <aside className="h-full min-h-0 w-56 shrink-0 overflow-y-auto border-r border-border bg-card p-4 shadow-sm lg:w-64">
         <h3 className="text-sm font-semibold text-muted-foreground mb-4">
           Menu
         </h3>
@@ -616,7 +617,7 @@ export function TabbedMenuEditor({ tabs, contents }: Props) {
       </aside>
 
       {/* Content Section */}
-      <main className="flex-1 p-8 space-y-6 overflow-y-auto">
+      <main className="min-w-0 flex-1 space-y-6 overflow-y-auto p-4 sm:p-6 lg:p-8">
         {ActiveTabComponent ? (
           <ActiveTabComponent />
         ) : (
@@ -676,6 +677,35 @@ export default function ChoiceList() {
 // TAB DATA (EXAMPLE)
 // ==============================
 
+/** Columns follow available main-panel width (drawer-safe), not viewport breakpoints. */
+const choiceListCardsGridClassName =
+  "grid grid-cols-[repeat(auto-fill,minmax(min(100%,12.5rem),1fr))] gap-4";
+
+function ChoiceListTabSkeleton() {
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <Skeleton className="h-8 w-52" />
+        <Skeleton className="h-9 w-36 rounded-[10px]" />
+      </div>
+      <div className={choiceListCardsGridClassName}>
+        {Array.from({ length: 6 }).map((_, index) => (
+          <div
+            key={index}
+            className="space-y-4 rounded-lg border border-border bg-card p-4 shadow-sm"
+          >
+            <Skeleton className="h-5 w-3/4 max-w-[12rem]" />
+            <div className="flex justify-between">
+              <Skeleton className="size-9 rounded-[10px]" />
+              <Skeleton className="size-9 rounded-[10px]" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ==============================
 // GENERIC TAB COMPONENT
 // ==============================
@@ -730,25 +760,23 @@ export function GenericTab({
     }
   };
 
-  if (isLoading) return <p>Loading {label}...</p>;
+  if (isLoading) return <ChoiceListTabSkeleton />;
 
   return (
-    <div>
-      <div className="flex justify-between">
-        <h2 className="text-xl font-semibold mb-4">{label}</h2>
+    <div className="min-w-0">
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h2 className="text-xl font-semibold">{label}</h2>
         {!isAdding && (
-          <div className="">
-            <Button onClick={startAdding}>
-              <Plus className="w-4 h-4 mr-2" /> Add {label}
-            </Button>
-          </div>
+          <Button className="shrink-0 self-start sm:self-auto" onClick={startAdding}>
+            <Plus className="w-4 h-4 mr-2" /> Add {label}
+          </Button>
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className={choiceListCardsGridClassName}>
         {/* Add mode card */}
         {isAdding && (
-          <Card className="border-2 border-dashed shadow-sm">
+          <Card className="min-w-0 border-2 border-dashed shadow-sm">
             <CardHeader className="pb-2">
               <Input
                 value={newValue}
@@ -775,7 +803,7 @@ export function GenericTab({
 
         {/* Existing cards */}
         {(data ?? []).map((item: any) => (
-          <Card key={item.id} className="shadow-sm border">
+          <Card key={item.id} className="min-w-0 border shadow-sm">
             <CardHeader className="pb-2">
               {editingId === item.id ? (
                 <Input

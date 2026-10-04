@@ -13,6 +13,7 @@ import {
   Warehouse,
 } from "lucide-react";
 import { Button } from "../ui/button";
+import { cn } from "@/lib/shared/utils";
 import {
   SectionedHeaderMenu,
   type HeaderMenuSection,
@@ -99,7 +100,13 @@ const SETUP_ITEMS: SetupItem[] = [
     saveLabel: "Save Part Kits",
     wide: true,
   },
-  { name: "Choice Lists", noFooter: true },
+  {
+    name: "Choice Lists",
+    title: "Choice Lists",
+    description: "Manage lookup values used in dropdowns and forms across the app.",
+    wide: true,
+    noFooter: true,
+  },
   {
     name: "Scheduled reports",
     title: "Scheduled Reports",
@@ -252,11 +259,23 @@ export default function HeaderSettingsButton() {
       ? WIDE_DRAWER_CLASS
       : STANDARD_DRAWER_CLASS;
 
-  const drawerBodyScrollClass =
-    "h-[calc(100vh-160px)] w-full min-w-0 overflow-auto pr-4";
+  const showDrawerFooter = Boolean(
+    activeItem?.formId && !activeItem?.noFooter,
+  );
 
-  const drawerBodyFormLayoutClass =
-    "flex h-[calc(100vh-160px)] min-h-0 w-full flex-col overflow-hidden pr-4";
+  const drawerBodyHeightClass = showDrawerFooter
+    ? "h-[calc(100vh-160px)]"
+    : "h-[calc(100vh-7.5rem)]";
+
+  const drawerBodyScrollClass = cn(
+    drawerBodyHeightClass,
+    "w-full min-w-0 overflow-auto pr-4",
+  );
+
+  const drawerBodyFormLayoutClass = cn(
+    "flex min-h-0 w-full flex-col overflow-hidden pr-4",
+    drawerBodyHeightClass,
+  );
 
   const useWideFormLayout = Boolean(
     activeItem?.wide &&
@@ -299,7 +318,7 @@ export default function HeaderSettingsButton() {
             : undefined)
         }
         closeable={true}
-        showFooter={!activeItem?.noFooter}
+        showFooter={showDrawerFooter}
         renderActions={renderActions}
         className={drawerClassName}
         bodyClassName="min-w-0 overflow-hidden"
@@ -313,7 +332,7 @@ export default function HeaderSettingsButton() {
             {renderFormContent() || "nothing else"}
           </div>
         ) : (
-          <ScrollArea className="h-[calc(100vh-160px)] pr-4">
+          <ScrollArea className={cn(drawerBodyHeightClass, "pr-4")}>
             {renderFormContent() || "nothing else"}
           </ScrollArea>
         )}
