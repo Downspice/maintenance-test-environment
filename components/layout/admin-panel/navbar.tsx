@@ -19,7 +19,7 @@ export function Navbar() {
         <div className="flex min-w-0 flex-1 items-center gap-2 px-1">
           <HeaderMeterButton />
           <Input
-            className="min-w-0 max-w-xl flex-1"
+            className="h-9 min-w-0 w-full flex-1"
             placeholder="Search equipment, work orders, inventory, and more…"
           />
         </div>

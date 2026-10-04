@@ -7,6 +7,7 @@ import { SheetProvider } from "@/lib/providers/sheet-providers";
 import { DialogProvider } from "@/lib/providers/dialog-provider";
 import { ConfirmDialogProvider } from "@/lib/shared/confirm-dialog";
 import QueryProvider from "@/lib/api/query-provider";
+import { ThemeProvider } from "@/lib/providers/theme-provider";
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -24,25 +25,34 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning className="light">
       <head>
         <link rel="preconnect" href="https://fonts.cdnfonts.com" crossOrigin="anonymous" />
         <link href="https://fonts.cdnfonts.com/css/google-sans" rel="stylesheet" />
       </head>
       <body suppressHydrationWarning
         className={`${geistMono.variable} font-sans antialiased joseph `}
-      ><QueryProvider>
-        <ConfirmDialogProvider>
-          <SheetProvider>
-            <DialogProvider>
-              <NuqsAdapter>
-                {children}
-                <Toaster richColors />
-              </NuqsAdapter>
-            </DialogProvider>
-          </SheetProvider>
-        </ConfirmDialogProvider>
-      </QueryProvider>
+      >
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          forcedTheme="light"
+          enableSystem={false}
+          disableTransitionOnChange
+        >
+          <QueryProvider>
+            <ConfirmDialogProvider>
+              <SheetProvider>
+                <DialogProvider>
+                  <NuqsAdapter>
+                    {children}
+                    <Toaster richColors />
+                  </NuqsAdapter>
+                </DialogProvider>
+              </SheetProvider>
+            </ConfirmDialogProvider>
+          </QueryProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
