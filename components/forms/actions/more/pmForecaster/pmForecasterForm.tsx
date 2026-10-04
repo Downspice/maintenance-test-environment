@@ -78,7 +78,15 @@ const maintenanceReportDisplay = [
   },
 ];
 
-export default function PmForecasterForm() {
+type PmForecasterFormProps = {
+  formId?: string;
+  hideSubmitButton?: boolean;
+};
+
+export default function PmForecasterForm({
+  formId = "pm-forecaster-form",
+  hideSubmitButton,
+}: PmForecasterFormProps = {}) {
   const [showDialog, setShowDialog] = useState(false);
 
   const form = useForm<PmForecasterFormValues>({
@@ -155,6 +163,7 @@ export default function PmForecasterForm() {
   return (
     <Form {...form}>
       <form
+        id={formId}
         onSubmit={form.handleSubmit(onSubmit, onError)}
         className="space-y-1"
       >
@@ -322,7 +331,11 @@ export default function PmForecasterForm() {
             </div>
           }
         />
-        <Button type="submit">Save</Button>
+        {!hideSubmitButton && (
+          <Button type="submit" variant="primary">
+            Run forecast
+          </Button>
+        )}
       </form>
     </Form>
   );

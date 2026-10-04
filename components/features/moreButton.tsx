@@ -125,6 +125,15 @@ const MORE_DESCRIPTIONS: Record<MoreActionId, string> = {
   "Import Meter Readings": "Import meter readings from a file.",
 };
 
+const MORE_DRAWER_FORM_ACTIONS: Partial<
+  Record<MoreActionId, { formId: string; submitLabel: string }>
+> = {
+  "PM Forecaster": {
+    formId: "pm-forecaster-form",
+    submitLabel: "Run forecast",
+  },
+};
+
 const WIDE_MORE_VIEWS = new Set<MoreActionId>([
   "Meter Replacements",
   "Update Meters",
@@ -165,7 +174,9 @@ export default function HeaderUploadButton() {
     "Job site Assignments": <JobSiteAssignment />,
     "Meter Updates": <MeterUpdatesMoreButton />,
     "Repair Request (Outstanding)": <RepairRequestView />,
-    "PM Forecaster": <PMForecasterView />,
+    "PM Forecaster": (
+      <PMForecasterView formId="pm-forecaster-form" hideSubmitButton />
+    ),
     "Generate Purchase Orders": <GeneratePOMoreButtonView />,
     "Generate Work Orders": <GenerateWorkOrderMoreButtonView />,
     "Physical Inventory Count": <PhysicalInventoryUpdateMoreButton />,
@@ -182,6 +193,9 @@ export default function HeaderUploadButton() {
   };
 
   const drawerTitle = selectedAction ?? "More";
+  const drawerFormAction = selectedAction
+    ? MORE_DRAWER_FORM_ACTIONS[selectedAction]
+    : undefined;
 
   return (
     <>
@@ -208,7 +222,18 @@ export default function HeaderUploadButton() {
         description={
           selectedAction ? MORE_DESCRIPTIONS[selectedAction] : undefined
         }
-        showFooter={false}
+        showFooter={Boolean(drawerFormAction)}
+        renderActions={
+          drawerFormAction ? (
+            <Button
+              form={drawerFormAction.formId}
+              type="submit"
+              variant="primary"
+            >
+              {drawerFormAction.submitLabel}
+            </Button>
+          ) : undefined
+        }
         className={cn(
           "w-full sm:max-w-2xl lg:max-w-3xl",
           selectedAction &&
@@ -217,7 +242,7 @@ export default function HeaderUploadButton() {
         )}
         bodyClassName="flex min-h-0 min-w-0 flex-col overflow-hidden p-0"
       >
-        <div className="flex h-[calc(100vh-160px)] min-h-0 w-full min-w-0 flex-col overflow-hidden px-6 py-4">
+        <div className="flex h-[calc(100vh-160px)] min-h-0 w-full min-w-0 flex-col overflow-y-auto px-6 py-4">
           {renderFormContent()}
         </div>
       </Drawer>

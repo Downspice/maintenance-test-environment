@@ -1,7 +1,15 @@
 import PmForecasterForm from "./pmForecasterForm";
 
-export default function PMForecasterView(){
-    return(
-        <PmForecasterForm/>
-    )
+type PMForecasterViewProps = {
+  formId?: string;
+  hideSubmitButton?: boolean;
+};
+
+export default function PMForecasterView({
+  formId = "pm-forecaster-form",
+  hideSubmitButton,
+}: PMForecasterViewProps = {}) {
+  return (
+    <PmForecasterForm formId={formId} hideSubmitButton={hideSubmitButton} />
+  );
 }

@@ -1,3 +1,5 @@
+"use client";
+
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,17 +10,10 @@ import InputWrapper from "@/components/forms/fields/InputWrapper";
 import RadioGroupWrapper from "@/components/forms/fields/RadioGroupWrapper";
 import { ComboboxFieldWrapper } from "@/components/forms/fields/ComboboxWrapper";
 import TextareaWrapper from "@/components/forms/fields/TextareaWrapper";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Drawer } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 
-// Example options (replace with your actual options)
 const equipmentOptions = [{ name: "Excavator", id: "excavator" }];
 
 const meterTypeOptions = [
@@ -26,7 +21,6 @@ const meterTypeOptions = [
   { name: "Secondary", id: "secondary" },
 ];
 
-// Zod schema
 export const meterReplacementSchema = z.object({
   id: z.string().optional(),
   equipment: z.string().min(1, "Equipment is required"),
@@ -39,9 +33,26 @@ export const meterReplacementSchema = z.object({
   description: z.string().optional(),
 });
 
-type MeterReplacementFormValues = z.infer<typeof meterReplacementSchema>;
+export type MeterReplacementFormValues = z.infer<typeof meterReplacementSchema>;
 
-export default function NewMeterReplacementForm() {
+const METER_REPLACEMENT_FORM_ID = "new-meter-replacement-form";
+
+const DRAWER_CLASSNAME =
+  "w-full sm:w-[45%] sm:min-w-[600px] sm:max-w-none lg:max-w-none";
+
+export type MeterReplacementFormProps = {
+  formId?: string;
+  hideSubmitButton?: boolean;
+  onSuccess?: () => void;
+  defaultValues?: Partial<MeterReplacementFormValues>;
+};
+
+export default function NewMeterReplacementForm({
+  formId = METER_REPLACEMENT_FORM_ID,
+  hideSubmitButton,
+  onSuccess,
+  defaultValues,
+}: MeterReplacementFormProps = {}) {
   const form = useForm<MeterReplacementFormValues>({
     resolver: zodResolver(meterReplacementSchema),
     defaultValues: {
@@ -51,34 +62,41 @@ export default function NewMeterReplacementForm() {
       currentReading: 0,
       replacement: 0,
       description: "",
+      ...defaultValues,
     },
   });
 
   function onSubmit(data: MeterReplacementFormValues) {
-    // Handle form submission
     console.log(data);
+    onSuccess?.();
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form
+        id={formId}
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="flex flex-col gap-1"
+      >
         <ComboboxFieldWrapper
           control={form.control}
           name="equipment"
           label="Equipment"
           options={equipmentOptions}
+          required
         />
         <RadioGroupWrapper
           control={form.control}
           name="meterType"
-          label="Meter Type"
+          label="Meter type"
+          orientation="horizontal"
           options={meterTypeOptions}
         />
         <DatePickerWrapper control={form.control} name="date" label="Date" />
         <InputWrapper
           control={form.control}
           name="currentReading"
-          label="Current Reading"
+          label="Current reading"
           type="number"
         />
         <InputWrapper
@@ -92,9 +110,65 @@ export default function NewMeterReplacementForm() {
           name="description"
           label="Description"
         />
-        <Button type="submit">Submit</Button>
+        {!hideSubmitButton && (
+          <Button type="submit" variant="primary" className="mt-4">
+            Save replacement
+          </Button>
+        )}
       </form>
     </Form>
+  );
+}
+
+type MeterReplacementDrawerProps = {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  trigger?: ReactNode;
+  title?: string;
+  description?: string;
+  defaultValues?: Partial<MeterReplacementFormValues>;
+};
+
+export function MeterReplacementDrawer({
+  open: openProp,
+  onOpenChange: onOpenChangeProp,
+  trigger,
+  title = "Record meter replacement",
+  description = "Log a meter swap including readings and date.",
+  defaultValues,
+}: MeterReplacementDrawerProps) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = openProp ?? internalOpen;
+  const onOpenChange = onOpenChangeProp ?? setInternalOpen;
+
+  return (
+    <Drawer
+      open={open}
+      onOpenChange={onOpenChange}
+      trigger={trigger}
+      title={title}
+      description={description}
+      closeable
+      className={DRAWER_CLASSNAME}
+      renderActions={
+        <Button
+          form={METER_REPLACEMENT_FORM_ID}
+          type="submit"
+          variant="primary"
+        >
+          Save replacement
+        </Button>
+      }
+    >
+      <ScrollArea className="h-[calc(100vh-160px)] pr-4">
+        <NewMeterReplacementForm
+          formId={METER_REPLACEMENT_FORM_ID}
+          hideSubmitButton
+          defaultValues={defaultValues}
+          onSuccess={() => onOpenChange(false)}
+        />
+      </ScrollArea>
+    </Drawer>
   );
 }
 
@@ -102,80 +176,19 @@ export function UpdateMeterReplacementForm({
   children,
   data,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   data: MeterReplacementFormValues;
 }) {
   const [open, setOpen] = useState(false);
 
-  const form = useForm<MeterReplacementFormValues>({
-    resolver: zodResolver(meterReplacementSchema),
-    defaultValues: {
-      equipment: "",
-      meterType: "primary",
-      date: "",
-      currentReading: 0,
-      replacement: 0,
-      description: "",
-    },
-  });
-
-  function onSubmit(data: MeterReplacementFormValues) {
-    // Handle form submission
-    console.log(data);
-  }
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>{children}</SheetTrigger>
-      <SheetContent className="w-1/4 ">
-        <SheetHeader>
-          <SheetTitle>
-            <div className="flex justify-between">
-              <div>Edit Meter Replacement</div>
-            </div>
-          </SheetTitle>
-        </SheetHeader>
-        <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-1">
-              <ComboboxFieldWrapper
-                control={form.control}
-                name="equipment"
-                label="Equipment"
-                options={equipmentOptions}
-              />
-              <RadioGroupWrapper
-                control={form.control}
-                name="meterType"
-                label="Meter Type"
-                options={meterTypeOptions}
-              />
-              <DatePickerWrapper
-                control={form.control}
-                name="date"
-                label="Date"
-              />
-              <InputWrapper
-                control={form.control}
-                name="currentReading"
-                label="Current Reading"
-                type="number"
-              />
-              <InputWrapper
-                control={form.control}
-                name="replacement"
-                label="Replacement"
-                type="number"
-              />
-              <TextareaWrapper
-                control={form.control}
-                name="description"
-                label="Description"
-              />
-              <Button type="submit">Submit</Button>
-            </form>
-          </Form>
-        </ScrollArea>
-      </SheetContent>
-    </Sheet>
+    <MeterReplacementDrawer
+      open={open}
+      onOpenChange={setOpen}
+      trigger={children}
+      title="Edit meter replacement"
+      description="Update meter replacement details."
+      defaultValues={data}
+    />
   );
 }
