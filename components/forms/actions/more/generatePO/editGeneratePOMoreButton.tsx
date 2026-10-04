@@ -5,7 +5,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Pen, Save, Trash2 } from "lucide-react";
+import { Save } from "lucide-react";
+import { TableRowActions } from "@/components/ui/table-row-actions";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 // Form wrappers
 import InputWrapper from "@/components/forms/fields/InputWrapper";
@@ -663,29 +664,15 @@ export default function EditPurchaseOrderFormMoreButton({
                                   <TableCell>{item.extendedCost}</TableCell>
                                   <TableCell>{item.notes}</TableCell>
                                   <TableCell>
-                                    <div className="flex gap-2">
-                                      <Button
-                                        type="button"
-                                        size="icon"
-                                        variant="ghost"
-                                        onClick={() => {
-                                          setEditItems(item);
-                                          handleEditItem(item, idx); // Pass index
-                                        }}
-                                      >
-                                        <Pen className="w-4 h-4 text-blue-500" />
-                                      </Button>
-                                      <Button
-                                        type="button"
-                                        size="icon"
-                                        variant="ghost"
-                                        onClick={() =>
-                                          handleDeleteItem(item.partNumber)
-                                        }
-                                      >
-                                        <Trash2 className="w-4 h-4 text-red-500" />
-                                      </Button>
-                                    </div>
+                                    <TableRowActions
+                                      onEdit={() => {
+                                        setEditItems(item);
+                                        handleEditItem(item, idx);
+                                      }}
+                                      onDelete={() =>
+                                        handleDeleteItem(item.partNumber)
+                                      }
+                                    />
                                   </TableCell>
                                 </TableRow>
                               ))}

@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { useEffect, useState, useMemo } from "react";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { GitPullRequestArrow, Pen, Plus, Trash2 } from "lucide-react";
+import { FilePenIcon, GitPullRequestArrow, Plus, Trash2 } from "lucide-react";
 
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -2054,13 +2054,13 @@ function EditActualWorkOrderFormContent({
                                                 setIsMaintenanceSheetOpen(true);
                                               }}
                                             >
-                                              <Pen className="h-4 w-4" />
+                                              <FilePenIcon className="size-4" />
                                             </Button>
                                             <Button
                                               type="button"
                                               variant="secondary"
                                               size="icon"
-                                              className="text-red-600"
+                                              className="text-destructive focus:text-destructive"
                                               onClick={() => {
                                                 if (task.id) {
                                                   if (
@@ -2295,13 +2295,13 @@ function EditActualWorkOrderFormContent({
                                                     );
                                                   }}
                                                 >
-                                                  <Pen className="h-4 w-4" />
+                                                  <FilePenIcon className="size-4" />
                                                 </Button>
                                                 <Button
                                                   type="button"
                                                   variant="secondary"
                                                   size="icon"
-                                                  className="text-red-600"
+                                                  className="text-destructive focus:text-destructive"
                                                   onClick={() => {
                                                     if ((laborItem as any).id) {
                                                       if (
@@ -2472,13 +2472,13 @@ function EditActualWorkOrderFormContent({
                                                     setIsAddPartSheetOpen(true);
                                                   }}
                                                 >
-                                                  <Pen className="h-4 w-4" />
+                                                  <FilePenIcon className="size-4" />
                                                 </Button>
                                                 <Button
                                                   type="button"
                                                   variant="secondary"
                                                   size="icon"
-                                                  className="text-red-600"
+                                                  className="text-destructive focus:text-destructive"
                                                   onClick={() =>
                                                     handleDeletePart(
                                                       (partItem as any).id,
@@ -2612,13 +2612,13 @@ function EditActualWorkOrderFormContent({
                                                     setIsAddNoteSheetOpen(true);
                                                   }}
                                                 >
-                                                  <Pen className="h-4 w-4" />
+                                                  <FilePenIcon className="size-4" />
                                                 </Button>
                                                 <Button
                                                   type="button"
                                                   variant="secondary"
                                                   size="icon"
-                                                  className="text-red-600"
+                                                  className="text-destructive focus:text-destructive"
                                                   onClick={() =>
                                                     handleDeleteNote(
                                                       (noteItem as any).id

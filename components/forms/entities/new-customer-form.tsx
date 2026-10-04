@@ -162,7 +162,7 @@ export default function NewCustomer({
                   value={""}
                 />
 
-                <div className="grid grid-cols-2 gap-1">
+                <div className="grid grid-cols-2 gap-x-4 gap-y-1">
                   <div className="col-span-1">
                     <InputWrapper
                       control={CustomerForm.control}
@@ -200,7 +200,6 @@ export default function NewCustomer({
                       value={""}
                     />
                   </div>
-                  <div className="col-span-1"></div>
                 </div>
                 <FormSubheader header="Contact" />
                 <div className="grid grid-cols-2 gap-1">
@@ -401,7 +400,7 @@ export default function NewCustomer({
                   </div>
                   <div className="col-span-1"></div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-x-4 gap-y-1">
                   <div className="col-span-1">
                     <InputWrapper
                       control={CustomerForm.control}
@@ -443,7 +442,6 @@ export default function NewCustomer({
                       disabled={watchIsSame}
                     />
                   </div>
-                  <div className="col-span-1"></div>
                 </div>
               </div>
             </TabsContent>

@@ -1,5 +1,6 @@
 "use client";
-import { Pencil, Trash2, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
+import { TableRowActions } from "@/components/ui/table-row-actions";
 import { useState } from "react";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
 import {
@@ -119,31 +120,21 @@ export default function PartsTab({
                   <TableCell className="p-2">{part.quantityUsed}</TableCell>
                   <TableCell className="p-2">${part.unit_cost}</TableCell>
                   <TableCell className="p-2">${part.totalCost}</TableCell>
-                  <TableCell className="p-2 text-right space-x-2">
-                    {isEditable && (
-                      <>
-                        <button
-                          className="text-muted-foreground hover:text-primary"
-                          onClick={() => {
-                            setEditingPart(part);
-                            setEditIndex(
-                              idx -
-                                maintenanceItems.flatMap((m) => m.parts || [])
-                                  .length
-                            );
-                            setDialogOpen(true);
-                          }}
-                        >
-                          <Pencil className="w-4 h-4" />
-                        </button>
-                        <button
-                          className="text-red-600 hover:text-red-800"
-                          onClick={() => handleDelete(part)}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </>
-                    )}
+                  <TableCell className="p-2 text-right">
+                    {isEditable ? (
+                      <TableRowActions
+                        onEdit={() => {
+                          setEditingPart(part);
+                          setEditIndex(
+                            idx -
+                              maintenanceItems.flatMap((m) => m.parts || [])
+                                .length
+                          );
+                          setDialogOpen(true);
+                        }}
+                        onDelete={() => handleDelete(part)}
+                      />
+                    ) : null}
                   </TableCell>
                 </TableRow>
               );

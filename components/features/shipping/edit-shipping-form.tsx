@@ -131,7 +131,7 @@ export default function EditShipToForm({
                       type="text"
                       value={""}
                     />
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-1">
                       <div className="col-span-1">
                         <InputWrapper
                           control={vendorForm.control}
@@ -168,7 +168,6 @@ export default function EditShipToForm({
                           value={""}
                         />
                       </div>
-                      <div className="col-span-1"></div>
                     </div>
                     <SelectWrapper
                       control={vendorForm.control}

@@ -6,7 +6,8 @@ import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Pen, Plus, Save, Trash2 } from "lucide-react";
+import { Plus, Save } from "lucide-react";
+import { TableRowActions } from "@/components/ui/table-row-actions";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import InputWrapper from "@/components/forms/fields/InputWrapper";
@@ -662,24 +663,10 @@ export default function EditInvoice({ children, invoiceId }: EditInvoiceProps) {
                                   <TableCell>{item.cost}</TableCell>
                                   <TableCell>{item.amount}</TableCell>
                                   <TableCell>
-                                    <div className="flex gap-2">
-                                      <Button
-                                        type="button"
-                                        size="icon"
-                                        variant="ghost"
-                                        onClick={() => handleEditItem(item, idx)}
-                                      >
-                                        <Pen className="w-4 h-4 text-blue-500" />
-                                      </Button>
-                                      <Button
-                                        type="button"
-                                        size="icon"
-                                        variant="ghost"
-                                        onClick={() => handleDeleteItem(idx)}
-                                      >
-                                        <Trash2 className="w-4 h-4 text-red-500" />
-                                      </Button>
-                                    </div>
+                                    <TableRowActions
+                                      onEdit={() => handleEditItem(item, idx)}
+                                      onDelete={() => handleDeleteItem(idx)}
+                                    />
                                   </TableCell>
                                 </TableRow>
                               ))}
@@ -790,34 +777,23 @@ export default function EditInvoice({ children, invoiceId }: EditInvoiceProps) {
                                   </TableCell>
                                   <TableCell>{payment.amount_received}</TableCell>
                                   <TableCell>
-                                    <div className="flex gap-2">
-                                      <Button
-                                        type="button"
-                                        variant="ghost"
-                                        size="icon"
-                                        onClick={() => {
-                                          setEditPaymentIndex(index);
-                                          setEditPayment(payment);
-                                          PaymentsForm.reset(payment);
-                                          setOpenPayments(true);
-                                        }}
-                                      >
-                                        <Pen className="h-4 w-4 text-blue-400" />
-                                      </Button>
-                                      <Button
-                                        type="button"
-                                        variant="ghost"
-                                        size="icon"
-                                        onClick={() => {
-                                          const filtered = paymentsList.filter(
+                                    <TableRowActions
+                                      editLabel="Edit payment"
+                                      deleteLabel="Delete payment"
+                                      onEdit={() => {
+                                        setEditPaymentIndex(index);
+                                        setEditPayment(payment);
+                                        PaymentsForm.reset(payment);
+                                        setOpenPayments(true);
+                                      }}
+                                      onDelete={() => {
+                                        setPaymentsList(
+                                          paymentsList.filter(
                                             (_, i) => i !== index
-                                          );
-                                          setPaymentsList(filtered);
-                                        }}
-                                      >
-                                        <Trash2 className="h-4 w-4 text-destructive" />
-                                      </Button>
-                                    </div>
+                                          )
+                                        );
+                                      }}
+                                    />
                                   </TableCell>
                                 </TableRow>
                               ))}

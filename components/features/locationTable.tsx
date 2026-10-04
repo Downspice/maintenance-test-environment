@@ -492,7 +492,7 @@ import { Label } from "@/components/ui/label";
 import {
   ChevronDown,
   ChevronRight,
-  Edit,
+  FilePenIcon,
   Trash2,
   Building,
   MapPin,
@@ -594,6 +594,17 @@ export default function HierarchicalTaxTable({
     return null;
   };
 
+  const getItemDisplayName = (
+    type: "company" | "location" | "category",
+    id: string
+  ) => {
+    const item = findItemById(type, id);
+    if (!item) return type;
+    if (type === "company") return (item as Company).company_name;
+    if (type === "location") return (item as Location).location_name;
+    return (item as Category).name;
+  };
+
   const handleSort = (field: SortField) => {
     if (sortField === field) {
       if (sortDirection === "asc") {
@@ -625,8 +636,8 @@ export default function HierarchicalTaxTable({
     if (!sortField || !sortDirection) return data;
 
     const sortedLocations = [...data.locations].sort((a, b) => {
-      let aid: string | number;
-      let bid: string | number;
+      let aValue: string | number;
+      let bValue: string | number;
 
       switch (sortField) {
         case "name":
@@ -665,34 +676,65 @@ export default function HierarchicalTaxTable({
     return { ...data, locations: sortedLocations };
   }, [data, sortField, sortDirection]);
 
-  const ActionButtons = ({ type, id }: { type: "company" | "location" | "category"; id: string }) => (
-    <div className="flex gap-2">
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={(e) => {
-          e.stopPropagation();
-          const item = findItemById(type, id);
-          setEditData({ type, id, ...item });
-          setEditDialogOpen(true);
-        }}
-        className="h-8 w-8 p-0 text-blue-600 hover:text-blue-800 hover:bg-blue-50"
-      >
-        <Edit size={14} />
-      </Button>
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={(e) => {
-          e.stopPropagation();
-          onDelete(type, id);
-        }}
-        className="h-8 w-8 p-0 text-red-600 hover:text-red-800 hover:bg-red-50"
-      >
-        <Trash2 size={14} />
-      </Button>
-    </div>
-  );
+  const ActionButtons = ({
+    type,
+    id,
+  }: {
+    type: "company" | "location" | "category";
+    id: string;
+  }) => {
+    const displayName = getItemDisplayName(type, id);
+
+    return (
+      <div className="flex justify-end gap-2">
+        <Button
+          type="button"
+          variant="secondary"
+          size="icon"
+          aria-label={`Edit ${displayName}`}
+          onClick={(e) => {
+            e.stopPropagation();
+            const item = findItemById(type, id);
+            if (!item) return;
+            setEditData({
+              type,
+              id,
+              name:
+                type === "company"
+                  ? (item as Company).company_name
+                  : type === "location"
+                    ? (item as Location).location_name
+                    : (item as Category).name,
+              tax_rate1:
+                type !== "category"
+                  ? (item as Company | Location).tax_rate1
+                  : undefined,
+              tax_rate2:
+                type !== "category"
+                  ? (item as Company | Location).tax_rate2
+                  : undefined,
+            });
+            setEditDialogOpen(true);
+          }}
+        >
+          <FilePenIcon className="size-4" />
+        </Button>
+        <Button
+          type="button"
+          variant="secondary"
+          size="icon"
+          aria-label={`Delete ${displayName}`}
+          className="text-destructive focus:text-destructive"
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete(type, id);
+          }}
+        >
+          <Trash2 className="size-4" />
+        </Button>
+      </div>
+    );
+  };
 
   const SortableHeader = ({ field, children, className = "" }: { field: SortField; children: React.ReactNode; className?: string }) => (
     <button
@@ -810,7 +852,7 @@ export default function HierarchicalTaxTable({
                   {(sortedData.tax_rate2 * 100).toFixed(1)}%
                 </span>
               </div>
-              <div className="col-span-3 flex justify-center">
+              <div className="col-span-3 flex justify-end pr-1">
                 <ActionButtons type="company" id={sortedData.id} />
               </div>
             </div>
@@ -876,7 +918,7 @@ export default function HierarchicalTaxTable({
                           {(location.tax_rate2 * 100).toFixed(1)}%
                         </span>
                       </div>
-                      <div className="col-span-3 flex justify-center">
+                      <div className="col-span-3 flex justify-end pr-1">
                         <ActionButtons type="location" id={location.id} />
                       </div>
                     </div>
@@ -908,7 +950,7 @@ export default function HierarchicalTaxTable({
                             <span className="text-xs text-slate-400">-</span>
                           </div>
                           <div
-                            className="col-span-3 flex justify-center"
+                            className="col-span-3 flex justify-end pr-1"
                             onClick={(e) => e.stopPropagation()}
                           >
                             <ActionButtons type="category" id={category.id} />
@@ -984,9 +1026,6 @@ export default function HierarchicalTaxTable({
             </div>
           )}
         </Modal>
-
-        {/* Add Buttons Section */}
-        <AddButtons />
       </CardContent>
     </Card>
   );

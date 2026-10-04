@@ -8,7 +8,6 @@ import {
   MinusSquare,
   PlusSquare,
   Plus,
-  Pencil,
   Trash2,
 } from "lucide-react";
 import {
@@ -135,8 +134,8 @@ const MaintenanceHistoryComponent = ({ equipmentId }: { equipmentId: string }) =
                 <TableCell className="text-right w-px whitespace-nowrap" style={{ width: "1%" }}>
                   <EditActualWorkOrderForm
                     children={
-                      <Button size="icon" variant="outline">
-                        <Pencil className="h-4 w-4" />
+                      <Button type="button" size="icon" variant="secondary">
+                        <FilePenIcon className="size-4" />
                       </Button>
                     }
                     data={wo}
@@ -146,8 +145,8 @@ const MaintenanceHistoryComponent = ({ equipmentId }: { equipmentId: string }) =
                   // }}
                   />
 
-                  <Button size="icon" variant="destructive">
-                    <Trash2 className="w-4 h-4 text-white" />
+                  <Button type="button" size="icon" variant="secondary" className="text-destructive focus:text-destructive">
+                    <Trash2 className="size-4" />
                   </Button>
                 </TableCell>
               </TableRow>
@@ -376,14 +375,14 @@ function FluidsTab() {
               <TableCell className="text-right space-x-2 w-px whitespace-nowrap" style={{ width: "1%" }}>
                 <EditFluidConsumption
                   children={
-                    <Button size="icon" variant="outline">
-                      <Pencil className="h-4 w-4" />
+                    <Button type="button" size="icon" variant="secondary">
+                      <FilePenIcon className="size-4" />
                     </Button>
                   }
                   data={item}
                 />
-                <Button size="icon" variant="destructive">
-                  <Trash2 className="w-4 h-4 text-white" />
+                <Button type="button" size="icon" variant="secondary" className="text-destructive focus:text-destructive">
+                  <Trash2 className="size-4" />
                 </Button>
               </TableCell>
             </TableRow>
@@ -549,8 +548,8 @@ function AssignmentsTab() {
                     }
                     data={item}
                   />
-                  <Button size="icon" variant="destructive">
-                    <Trash2 className="w-4 h-4 text-white" />
+                  <Button type="button" size="icon" variant="secondary" className="text-destructive focus:text-destructive">
+                    <Trash2 className="size-4" />
                   </Button>
                 </TableCell>
               </TableRow>
@@ -689,15 +688,15 @@ function AccidentsTab() {
                 <TableCell className="text-right space-x-2 w-px whitespace-nowrap" style={{ width: "1%" }}>
                   <EditAccidents
                     children={
-                      <Button size="icon" variant="outline">
-                        <Pencil className="w-4 h-4" />
+                      <Button type="button" size="icon" variant="secondary">
+                        <FilePenIcon className="size-4" />
                       </Button>
                     }
                     data={item}
                   />
 
-                  <Button size="icon" variant="destructive">
-                    <Trash2 className="w-4 h-4 text-white" />
+                  <Button type="button" size="icon" variant="secondary" className="text-destructive focus:text-destructive">
+                    <Trash2 className="size-4" />
                   </Button>
                 </TableCell>
               </TableRow>
@@ -907,15 +906,15 @@ function FuelTab() {
                 <TableCell className="text-right space-x-2 w-px whitespace-nowrap" style={{ width: "1%" }}>
                   <UpdateFuelTransactionForm
                     children={
-                      <Button size="icon" variant="outline">
-                        <Pencil className="w-4 h-4" />
+                      <Button type="button" size="icon" variant="secondary">
+                        <FilePenIcon className="size-4" />
                       </Button>
                     }
                     data={item}
                   />
 
-                  <Button size="icon" variant="destructive">
-                    <Trash2 className="w-4 h-4 text-white" />
+                  <Button type="button" size="icon" variant="secondary" className="text-destructive focus:text-destructive">
+                    <Trash2 className="size-4" />
                   </Button>
                 </TableCell>
               </TableRow>
@@ -1009,8 +1008,8 @@ function ExpensesTab() {
                 <TableCell className="text-right space-x-2 w-px whitespace-nowrap" style={{ width: "1%" }}>
                   <EditGeneralExpense
                     children={
-                      <Button size="icon" variant="outline">
-                        <Pencil className="h-4 w-4" />
+                      <Button type="button" size="icon" variant="secondary">
+                        <FilePenIcon className="size-4" />
                       </Button>
                     }
                     data={item}
@@ -1019,8 +1018,8 @@ function ExpensesTab() {
                     }}
                   />
 
-                  <Button size="icon" variant="destructive">
-                    <Trash2 className="w-4 h-4 text-white" />
+                  <Button type="button" size="icon" variant="secondary" className="text-destructive focus:text-destructive">
+                    <Trash2 className="size-4" />
                   </Button>
                 </TableCell>
               </TableRow>
@@ -1127,8 +1126,8 @@ function InspectionTab() {
                 <TableCell className="text-right space-x-2 w-px whitespace-nowrap" style={{ width: "1%" }}>
                   <EditInspectionForm
                     children={
-                      <Button size="icon" variant="outline">
-                        <Pencil className="h-4 w-4" />
+                      <Button type="button" size="icon" variant="secondary">
+                        <FilePenIcon className="size-4" />
                       </Button>
                     }
                     data={item}
@@ -1137,8 +1136,8 @@ function InspectionTab() {
                   //   console.log("Edited data:", fuel);
                   // }}
                   />
-                  <Button size="icon" variant="destructive">
-                    <Trash2 className="w-4 h-4 text-white" />
+                  <Button type="button" size="icon" variant="secondary" className="text-destructive focus:text-destructive">
+                    <Trash2 className="size-4" />
                   </Button>
                 </TableCell>
               </TableRow>

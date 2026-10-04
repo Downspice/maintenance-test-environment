@@ -6,7 +6,8 @@ import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Pen, Plus, Trash2 } from "lucide-react";
+import { Plus } from "lucide-react";
+import { TableRowActions } from "@/components/ui/table-row-actions";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -398,7 +399,7 @@ export default function EditEmployee({
                       label="Address 1"
                       type="text"
                     />
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-1">
                       <div className="col-span-1">
                         <InputWrapper
                           control={employeeForm.control}
@@ -656,23 +657,11 @@ export default function EditEmployee({
                                   : new Date(data?.expiry_date).toLocaleDateString()}
                               </TableCell>
                               <TableCell>{data?.notes || "-"}</TableCell>
-                              <TableCell className="flex gap-2">
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => handleEditRenewal(data.id)}
-                                >
-                                  <Pen className="h-4 w-4 text-blue-400" />
-                                </Button>
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => handleDeleteRenewal(data.id)}
-                                >
-                                  <Trash2 className="h-4 w-4 text-destructive" />
-                                </Button>
+                              <TableCell>
+                                <TableRowActions
+                                  onEdit={() => handleEditRenewal(data.id)}
+                                  onDelete={() => handleDeleteRenewal(data.id)}
+                                />
                               </TableCell>
                             </TableRow>
                           ))}

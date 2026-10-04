@@ -5,7 +5,6 @@
 import { Button } from "@/components/ui/button";
 import {
   FilePenIcon,
-  Pencil,
   Trash2,
 } from "lucide-react";
 import {
@@ -126,14 +125,14 @@ export function TasksTab({ equipmentId }: { equipmentId?: string | number }) {
 
                       <UpdateEquipmentPMServiceForm
                         children={
-                          <Button size="icon" variant="outline">
-                            <Pencil className="w-4 h-4" />
+                          <Button type="button" size="icon" variant="secondary">
+                            <FilePenIcon className="size-4" />
                           </Button>
                         }
                         data={item}
                       />
-                      <Button size="icon" variant="destructive">
-                        <Trash2 className="w-4 h-4 text-white" />
+                      <Button type="button" size="icon" variant="secondary" className="text-destructive focus:text-destructive">
+                        <Trash2 className="size-4" />
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -207,16 +206,16 @@ export function TasksTab({ equipmentId }: { equipmentId?: string | number }) {
                     <TableCell className="text-right space-x-2 w-px whitespace-nowrap" style={{ width: "1%" }}>
                       <EditActualUpdateRepairRequestForm
                         children={
-                          <Button size="icon" variant="outline">
-                            <Pencil className="w-4 h-4" />
+                          <Button type="button" size="icon" variant="secondary">
+                            <FilePenIcon className="size-4" />
                           </Button>
                         }
                         data={item}
                         equipmentId={equipmentId}
                       />
 
-                      <Button size="icon" variant="destructive">
-                        <Trash2 className="w-4 h-4 text-white" />
+                      <Button type="button" size="icon" variant="secondary" className="text-destructive focus:text-destructive">
+                        <Trash2 className="size-4" />
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -279,8 +278,8 @@ export function TasksTab({ equipmentId }: { equipmentId?: string | number }) {
                         equipmentId={equipmentId}
                       />
 
-                      <Button size="icon" variant="destructive">
-                        <Trash2 className="w-4 h-4 text-white" />
+                      <Button type="button" size="icon" variant="secondary" className="text-destructive focus:text-destructive">
+                        <Trash2 className="size-4" />
                       </Button>
                     </TableCell>
                   </TableRow>

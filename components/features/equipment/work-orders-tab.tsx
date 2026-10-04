@@ -7,7 +7,7 @@ import {
   MinusSquare,
   PlusSquare,
   Plus,
-  Pencil,
+  FilePenIcon,
   Trash2,
 } from "lucide-react";
 import {
@@ -234,15 +234,15 @@ export function WorkOrdersTab() {
                 <TableCell className="text-right">
                   <EditWorkOrderForm
                     children={
-                      <Button size="icon" variant="outline">
-                        <Pencil className="w-4 h-4" />
+                      <Button type="button" size="icon" variant="secondary">
+                        <FilePenIcon className="size-4" />
                       </Button>
                     }
                     data={wo}
                   />
 
-                  <Button size="icon" variant="destructive">
-                    <Trash2 className="w-4 h-4 text-white" />
+                  <Button type="button" size="icon" variant="secondary" className="text-destructive focus:text-destructive">
+                    <Trash2 className="size-4" />
                   </Button>
                 </TableCell>
               </TableRow>

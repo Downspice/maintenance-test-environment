@@ -5,7 +5,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Pen, Plus, Save, Trash2 } from "lucide-react";
+import { Plus, Save } from "lucide-react";
+import { TableRowActions } from "@/components/ui/table-row-actions";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 // Form wrappers
 import InputWrapper from "@/components/forms/fields/InputWrapper";
@@ -619,24 +620,10 @@ export default function EditPurchaseOrderForm({
                                   <TableCell>${item.amount.toFixed(2)}</TableCell>
                                   <TableCell>{item.notes}</TableCell>
                                   <TableCell>
-                                    <div className="flex gap-2">
-                                      <Button
-                                        type="button"
-                                        size="icon"
-                                        variant="ghost"
-                                        onClick={() => handleEditItem(item, idx)}
-                                      >
-                                        <Pen className="w-4 h-4 text-blue-500" />
-                                      </Button>
-                                      <Button
-                                        type="button"
-                                        size="icon"
-                                        variant="ghost"
-                                        onClick={() => handleDeleteItem(idx)}
-                                      >
-                                        <Trash2 className="w-4 h-4 text-red-500" />
-                                      </Button>
-                                    </div>
+                                    <TableRowActions
+                                      onEdit={() => handleEditItem(item, idx)}
+                                      onDelete={() => handleDeleteItem(idx)}
+                                    />
                                   </TableCell>
                                 </TableRow>
                               ))}

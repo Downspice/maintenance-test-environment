@@ -2,7 +2,7 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
+import { TableRowActions } from "@/components/ui/table-row-actions";
 import { GenericObject } from "@/types/types";
 
 export default function AlternateUpcCodesTable({
@@ -13,24 +13,24 @@ export default function AlternateUpcCodesTable({
 }: {
   manufacturers: GenericObject[];
   vendors: GenericObject[];
-  id: any[];
-  onChange: (rows: any[]) => void;
+  value?: Array<{ manufacturer_id: string; vendor_id: string; upc: string }>;
+  onChange: (rows: Array<{ manufacturer_id: string; vendor_id: string; upc: string }>) => void;
 }) {
-  console.log("value",value)
+  const rows = value ?? [];
+
   const handleAddRow = () => {
-    const newRows = [...value, { manufacturer_id: "", vendor_id: "", upc: "" }];
+    const newRows = [...rows, { manufacturer_id: "", vendor_id: "", upc: "" }];
     onChange(newRows);
   };
 
   const handleChange = (index: number, field: string, val: string) => {
-    const updated = [...value];
+    const updated = [...rows];
     updated[index][field] = val;
     onChange(updated);
   };
 
   const handleDelete = (index: number) => {
-    console.log('deleted index>>>>>>>',index)
-    const updated = value.filter((_, i) => i !== index);
+    const updated = rows.filter((_, i) => i !== index);
     onChange(updated);
   };
 
@@ -46,7 +46,7 @@ export default function AlternateUpcCodesTable({
         <span className="text-right">Action</span>
       </div>
 
-      {value.map((row, index) => (
+      {rows.map((row, index) => (
         <div key={index} className="grid grid-cols-4 gap-2 items-center">
           <Select
             value={row.manufacturer_id}
@@ -87,14 +87,7 @@ export default function AlternateUpcCodesTable({
           />
 
           <div className="text-right">
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              onClick={() => handleDelete(index)}
-            >
-              <Trash2 className="w-4 h-4" />
-            </Button>
+            <TableRowActions onDelete={() => handleDelete(index)} />
           </div>
         </div>
       ))}

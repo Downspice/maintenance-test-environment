@@ -3,11 +3,8 @@
 
 
 import { Button } from "@/components/ui/button";
-import {
-  Pencil,
-  Plus,
-  Trash2,
-} from "lucide-react";
+import { Plus } from "lucide-react";
+import { TableRowActions } from "@/components/ui/table-row-actions";
 
 
 import { useEffect, useState } from "react";
@@ -211,21 +208,11 @@ export function PartsManager({ equipmentId }: PartsProps) {
                     <TableCell>{part.equipment ?? "N/A"}</TableCell>
                     <TableCell>{part.quantity ?? "N/A"}</TableCell>
                     <TableCell>{part.cost ?? "N/A"}</TableCell>
-                    <TableCell className="text-right space-x-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => onEdit(part)}
-                      >
-                        <Pencil className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => onDelete(part.id)}
-                      >
-                        <Trash2 className="w-4 h-4 text-red-500" />
-                      </Button>
+                    <TableCell className="text-right">
+                      <TableRowActions
+                        onEdit={() => onEdit(part)}
+                        onDelete={() => onDelete(part.id)}
+                      />
                     </TableCell>
                   </TableRow>
                 ))

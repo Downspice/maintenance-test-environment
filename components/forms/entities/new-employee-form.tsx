@@ -216,21 +216,23 @@ export default function NewEmployeeForm({
                   type="text"
                   value={""}
                 />
-                <div className="flex flex-row">
-                  <InputWrapper
-                    control={employeeForm.control}
-                    name="last_name"
-                    label="Last Name"
-                    type="text"
-                    value={""}
-                  />
-                  <InputWrapper
-                    control={employeeForm.control}
-                    name="first_name"
-                    label="First Name"
-                    type="text"
-                    value={""}
-                  />
+                <div className="flex flex-col gap-1">
+                  <div className="grid grid-cols-1 gap-x-4 gap-y-1 sm:grid-cols-2">
+                    <InputWrapper
+                      control={employeeForm.control}
+                      name="last_name"
+                      label="Last Name"
+                      type="text"
+                      value={""}
+                    />
+                    <InputWrapper
+                      control={employeeForm.control}
+                      name="first_name"
+                      label="First Name"
+                      type="text"
+                      value={""}
+                    />
+                  </div>
                   <InputWrapper
                     control={employeeForm.control}
                     name="middle_name"
@@ -247,8 +249,8 @@ export default function NewEmployeeForm({
                   type="text"
                   value={""}
                 />
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="col-span-1">
+                <div className="flex flex-col gap-1">
+                  <div className="grid grid-cols-1 gap-x-4 gap-y-1 sm:grid-cols-2">
                     <InputWrapper
                       control={employeeForm.control}
                       name="city"
@@ -256,26 +258,21 @@ export default function NewEmployeeForm({
                       type="text"
                       value={""}
                     />
-                  </div>
-                  <div className="col-span-1">
                     <InputWrapper
                       control={employeeForm.control}
                       name="state"
-                      label="State /Province"
+                      label="State / Province"
                       type="text"
                       value={""}
                     />
                   </div>
-                  <div className="col-span-1">
-                    <InputWrapper
-                      control={employeeForm.control}
-                      name="postal_code"
-                      label="Postal Code"
-                      type="text"
-                      value={""}
-                    />
-                  </div>
-                  <div className="col-span-1"></div>
+                  <InputWrapper
+                    control={employeeForm.control}
+                    name="postal_code"
+                    label="Postal Code"
+                    type="text"
+                    value={""}
+                  />
                 </div>
 
                 <FormSubheader header={"Contact"} />

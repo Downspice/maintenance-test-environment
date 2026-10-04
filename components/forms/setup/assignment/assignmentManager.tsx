@@ -179,6 +179,7 @@ const laborForm = useForm<LaborAssociationFormValues>({
               control={laborForm.control}
               name="type_id"
               label="Type"
+              orientation="horizontal"
               options={[
                 { id: "preventive", name: "Preventive" },
                 { id: "repair", name: "Repair" },
@@ -217,11 +218,13 @@ const laborForm = useForm<LaborAssociationFormValues>({
               control={laborForm.control}
               name="method"
               label="Cost Method"
+              orientation="horizontal"
               options={[
                 { id: "assignLabourer", name: "Assign Labourer" },
                 { id: "fixedCost", name: "Fixed Cost" },
               ]}
-              onChange={(val) => setMethod(val as any)} disabled={isEditing}
+              onChange={(val) => setMethod(val as any)}
+              disabled={isEditing}
             />
 
             {method === "assignLabourer" && (
@@ -230,11 +233,13 @@ const laborForm = useForm<LaborAssociationFormValues>({
                   control={laborForm.control}
                   name="labourerType"
                   label="Labourer Type"
+                  orientation="horizontal"
                   options={[
                     { id: "employee", name: "Employee" },
                     { id: "vendor", name: "Vendor" },
                   ]}
-                  onChange={(val) => setLabourerType(val as any)} disabled={isEditing}
+                  onChange={(val) => setLabourerType(val as any)}
+                  disabled={isEditing}
                 />
 
                 {labourerType === "employee" && (
@@ -311,11 +316,13 @@ const laborForm = useForm<LaborAssociationFormValues>({
               control={partForm.control}
               name="type_id"
               label="Type"
+              orientation="horizontal"
               options={[
                 { id: "preventive", name: "Preventive" },
                 { id: "repair", name: "Repair" },
               ]}
-              onChange={setRadioType} disabled={isEditing}
+              onChange={setRadioType}
+              disabled={isEditing}
             />
 
             <ComboboxFieldWrapper
@@ -339,6 +346,7 @@ const laborForm = useForm<LaborAssociationFormValues>({
               control={partForm.control}
               name="method"
               label="Method"
+              orientation="horizontal"
               options={[
                 { id: "assignedPart", name: "Assigned Part" },
                 { id: "fixedCost", name: "Fixed Cost" },

@@ -1,5 +1,6 @@
 import { NotesInterface } from "@/lib/domains/work-order/workOrder-data";
-import { Pencil, Trash2, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
+import { TableRowActions } from "@/components/ui/table-row-actions";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import AddNotes from "@/components/forms/entities/work-order/add-notes";
@@ -99,23 +100,15 @@ export default function NotesTab({
                 </TableCell>
                 <TableCell className="p-2">{note.createdBy}</TableCell>
                 <TableCell className="p-2">{note.notes}</TableCell>
-                <TableCell className="p-2 text-right space-x-2">
-                  <button
-                    className="text-muted-foreground hover:text-primary"
-                    onClick={() => {
+                <TableCell className="p-2 text-right">
+                  <TableRowActions
+                    onEdit={() => {
                       setEditingIndex(index);
                       setEditingNote(note);
                       setOpenDialog(true);
                     }}
-                  >
-                    <Pencil className="w-4 h-4" />
-                  </button>
-                  <button
-                    className="text-red-600 hover:text-red-800"
-                    onClick={() => handleDelete(index)}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                    onDelete={() => handleDelete(index)}
+                  />
                 </TableCell>
               </TableRow>
             ))}

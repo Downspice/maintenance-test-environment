@@ -5,7 +5,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Pen, Plus, Save, Trash2 } from "lucide-react";
+import { Plus, Save } from "lucide-react";
+import { TableRowActions } from "@/components/ui/table-row-actions";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import InputWrapper from "@/components/forms/fields/InputWrapper";
 import DatePickerWrapper from "@/components/forms/fields/DatePickerWrapper";
@@ -600,24 +601,10 @@ export default function NewInvoiceForm({
                               className="w-px whitespace-nowrap"
                               style={{ width: "1%" }}
                             >
-                              <div className="flex gap-2">
-                                <Button
-                                  type="button"
-                                  size="icon"
-                                  variant="ghost"
-                                  onClick={() => handleEditItem(item, idx)}
-                                >
-                                  <Pen className="w-4 h-4 text-blue-500" />
-                                </Button>
-                                <Button
-                                  type="button"
-                                  size="icon"
-                                  variant="ghost"
-                                  onClick={() => handleDeleteItem(idx)}
-                                >
-                                  <Trash2 className="w-4 h-4 text-red-500" />
-                                </Button>
-                              </div>
+                              <TableRowActions
+                                onEdit={() => handleEditItem(item, idx)}
+                                onDelete={() => handleDeleteItem(idx)}
+                              />
                             </TableCell>
                           </TableRow>
                         ))}
@@ -747,34 +734,21 @@ export default function NewInvoiceForm({
                               className="w-px whitespace-nowrap"
                               style={{ width: "1%" }}
                             >
-                              <div className="flex gap-2">
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => {
-                                    setEditPaymentIndex(index);
-                                    setEditPayment(payment);
-                                    PaymentsForm.reset(payment);
-                                    setOpenPayments(true);
-                                  }}
-                                >
-                                  <Pen className="h-4 w-4 text-blue-400" />
-                                </Button>
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => {
-                                    const filtered = paymentsList.filter(
-                                      (_, i) => i !== index
-                                    );
-                                    setPaymentsList(filtered);
-                                  }}
-                                >
-                                  <Trash2 className="h-4 w-4 text-destructive" />
-                                </Button>
-                              </div>
+                              <TableRowActions
+                                editLabel="Edit payment"
+                                deleteLabel="Delete payment"
+                                onEdit={() => {
+                                  setEditPaymentIndex(index);
+                                  setEditPayment(payment);
+                                  PaymentsForm.reset(payment);
+                                  setOpenPayments(true);
+                                }}
+                                onDelete={() => {
+                                  setPaymentsList(
+                                    paymentsList.filter((_, i) => i !== index)
+                                  );
+                                }}
+                              />
                             </TableCell>
                           </TableRow>
                         ))}

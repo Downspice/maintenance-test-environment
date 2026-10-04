@@ -1,5 +1,6 @@
 "use client";
-import { Pencil, Trash2, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
+import { TableRowActions } from "@/components/ui/table-row-actions";
 import { useState } from "react";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
 import {
@@ -128,30 +129,20 @@ export default function LaborTab({
                   <TableCell className="p-2">{labor.hours}</TableCell>
                   <TableCell className="p-2">${labor.labor_rate}</TableCell>
                   <TableCell className="p-2">${labor.totalCost}</TableCell>
-                  <TableCell className="p-2 text-right space-x-2">
-                    {isEditable && (
-                      <>
-                        <button
-                          className="text-muted-foreground hover:text-primary"
-                          onClick={() => {
-                            setEditingLabor(labor);
-                            setEditingIndex(
-                              idx -
-                                maintenanceItems.filter((m) => m.labor).length
-                            );
-                            setDialogOpen(true);
-                          }}
-                        >
-                          <Pencil className="w-4 h-4" />
-                        </button>
-                        <button
-                          className="text-red-600 hover:text-red-800"
-                          onClick={() => handleDelete(labor)}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </>
-                    )}
+                  <TableCell className="p-2 text-right">
+                    {isEditable ? (
+                      <TableRowActions
+                        onEdit={() => {
+                          setEditingLabor(labor);
+                          setEditingIndex(
+                            idx -
+                              maintenanceItems.filter((m) => m.labor).length
+                          );
+                          setDialogOpen(true);
+                        }}
+                        onDelete={() => handleDelete(labor)}
+                      />
+                    ) : null}
                   </TableCell>
                 </TableRow>
               );

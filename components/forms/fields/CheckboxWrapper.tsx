@@ -20,10 +20,12 @@ interface CheckboxOption {
 interface CheckboxWrapperProps {
   control: Control<any>;
   name: string;
-  label: string;
+  label?: string;
   options: CheckboxOption[];
   disabled?: boolean;
   required?: boolean;
+  /** Vertical list (default) or horizontal row of options */
+  orientation?: "vertical" | "horizontal";
 }
 
 export default function CheckboxWrapper({
@@ -33,66 +35,74 @@ export default function CheckboxWrapper({
   options,
   disabled = false,
   required = false,
+  orientation = "vertical",
 }: CheckboxWrapperProps) {
+  const showGroupLabel = Boolean(label?.trim());
+
   return (
     <FormField
       control={control}
       name={name}
       render={({ field }) => {
         const isMissingRequired = required && isFieldEmpty(field.value);
+        const selected: string[] = Array.isArray(field.value)
+          ? field.value
+          : [];
 
         return (
-          <FormItem>
-            <div className="mb-4">
-              <FormLabel className={cn("text-base", isMissingRequired && "text-red-500")}>
+          <FormItem className="flex flex-col gap-1">
+            {showGroupLabel ? (
+              <FormLabel
+                className={cn(
+                  "text-label-sm font-medium text-text-sub-600",
+                  isMissingRequired && "text-red-500"
+                )}
+              >
                 {label}
               </FormLabel>
+            ) : null}
+            <div
+              className={cn(
+                orientation === "horizontal"
+                  ? "flex flex-wrap gap-x-6 gap-y-2"
+                  : "flex flex-col gap-2"
+              )}
+            >
+              {options.map((option) => {
+                const checked = selected.includes(option.id);
+                return (
+                  <FormItem
+                    key={option.id}
+                    className="flex flex-row items-start gap-3 space-y-0"
+                  >
+                    <FormControl>
+                      <Checkbox
+                        checked={checked}
+                        onCheckedChange={(isChecked) => {
+                          const next = isChecked
+                            ? [...selected, option.id]
+                            : selected.filter((id) => id !== option.id);
+                          field.onChange(next);
+                        }}
+                        disabled={disabled}
+                      />
+                    </FormControl>
+                    <div className="grid gap-0.5 leading-none">
+                      <FormLabel className="cursor-pointer font-normal text-text-strong-950">
+                        {option.name}
+                      </FormLabel>
+                      {option.description ? (
+                        <p className="text-paragraph-xs text-text-sub-600">
+                          {option.description}
+                        </p>
+                      ) : null}
+                    </div>
+                  </FormItem>
+                );
+              })}
             </div>
-          <div className="grid grid-cols-4">
-            {options.map((option) => (
-              <FormField
-                key={option.id}
-                control={control}
-                name={name}
-                render={({ field }) => {
-                  return (
-                    <FormItem
-                      key={option.id}
-                      className="col-span-1 flex flex-row items-start space-x-3 space-y-0 mb-2"
-                    >
-                      <FormControl>
-                        <Checkbox
-                          checked={field.value?.includes(option.id)}
-                          onCheckedChange={(checked) => {
-                            const currentValues = field.value || [];
-                            const newValues = checked
-                              ? [...currentValues, option.id]
-                              : currentValues.filter(
-                                  (id: string) => value !== option.id
-                                );
-                            field.onChange(newValues);
-                          }}
-                          disabled={disabled}
-                        />
-                      </FormControl>
-                      <div className="space-y-1 leading-none">
-                        <FormLabel className="font-normal">
-                          {option.label}
-                        </FormLabel>
-                        {/* {option.description && (
-                          <p className="text-sm text-muted-foreground">
-                            {option.description}
-                          </p>
-                        )} */}
-                      </div>
-                    </FormItem>
-                  );
-                }}
-              />
-            ))}
-          </div>
-          <FormMessage />
-        </FormItem>
+            <FormMessage />
+          </FormItem>
         );
       }}
     />
