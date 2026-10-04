@@ -282,6 +282,10 @@ export default function HeaderSettingsButton() {
       (activeItem?.formId || activeItem?.wideSplitLayout),
   );
 
+  const useFullscreenFormLayout = Boolean(
+    activeItem?.fullscreen && activeItem?.formId,
+  );
+
   const renderActions = activeItem?.formId ? (
     <Button form={activeItem.formId} type="submit" variant="primary">
       {activeItem.saveLabel ?? "Save"}
@@ -323,7 +327,7 @@ export default function HeaderSettingsButton() {
         className={drawerClassName}
         bodyClassName="min-w-0 overflow-hidden"
       >
-        {useWideFormLayout ? (
+        {useWideFormLayout || useFullscreenFormLayout ? (
           <div className={drawerBodyFormLayoutClass}>
             {renderFormContent()}
           </div>

@@ -21,6 +21,7 @@ import CheckboxWrapper from "@/components/forms/fields/CheckboxWrapper";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Fieldset from "@/components/customUI/fieldset";
 import { toast } from "sonner";
+import { cn } from "@/lib/shared/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Drawer } from "@/components/ui/drawer";
 import { ComboboxFieldWrapper } from "@/components/forms/fields/ComboboxWrapper";
@@ -422,10 +423,20 @@ export function ActualEquipmentForm({
       <form
         id={formId}
         onSubmit={form.handleSubmit(onSubmit, onError)}
-        className="space-y-6"
+        className={cn(
+          hideSubmitButton
+            ? "flex h-full min-h-0 flex-1 flex-col"
+            : "space-y-6"
+        )}
       >
-        <Tabs defaultValue="main" className="w-full">
-          <TabsList className="flex flex-wrap h-auto gap-1 mb-4">
+        <Tabs
+          defaultValue="main"
+          className={cn(
+            "w-full",
+            hideSubmitButton && "flex min-h-0 flex-1 flex-col"
+          )}
+        >
+          <TabsList className="mb-4 flex h-auto shrink-0 flex-wrap gap-1">
             <TabsTrigger value="main">Main</TabsTrigger>
             <TabsTrigger value="specifications">Specifications</TabsTrigger>
             <TabsTrigger value="warranty">Warranty</TabsTrigger>
@@ -584,11 +595,11 @@ export function ActualEquipmentForm({
               </TabsContent>
 
               {/* Specifications Tab */}
-              <TabsContent value="specifications" className="space-y-2">
+              <TabsContent value="specifications" className="space-y-1">
                 <Fieldset
                   legend="Physical Attributes"
                   content={
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-1">
                       <div className="col-span-1">
                         <ComboboxFieldWrapper
                           label="Color"
@@ -862,12 +873,22 @@ export function ActualEquipmentForm({
               </TabsContent>
 
               {/* Notes Tab */}
-              <TabsContent value="notes" className="space-y-2">
+              <TabsContent
+                value="notes"
+                className={cn(
+                  "mt-0 data-[state=inactive]:hidden",
+                  hideSubmitButton
+                    ? "flex min-h-0 flex-1 flex-col overflow-hidden"
+                    : "space-y-2"
+                )}
+              >
                 <TextareaWrapper
                   control={form.control}
                   name="notes"
-                  label="General Notes"
+                  label={hideSubmitButton ? undefined : "General Notes"}
                   placeholder="Enter any additional notes..."
+                  fillSpace={hideSubmitButton}
+                  direction={hideSubmitButton ? "vertical" : "horizontal"}
                   value=""
                 />
               </TabsContent>

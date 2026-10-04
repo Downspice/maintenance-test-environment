@@ -13,7 +13,9 @@ import { cn, isFieldEmpty } from "@/lib/shared/utils";
 
 interface CheckboxOption {
   id: string;
-  name: string;
+  name?: string;
+  /** @deprecated Use `name` — kept for legacy option lists */
+  label?: string;
   description?: string;
 }
 
@@ -89,7 +91,7 @@ export default function CheckboxWrapper({
                     </FormControl>
                     <div className="grid gap-0.5 leading-none">
                       <FormLabel className="cursor-pointer font-normal text-text-strong-950">
-                        {option.name}
+                        {option.name ?? option.label ?? option.id}
                       </FormLabel>
                       {option.description ? (
                         <p className="text-paragraph-xs text-text-sub-600">

@@ -305,10 +305,7 @@ export default function GenerateOptionTab() {
             label=""
             control={form.control}
             name="selectedTasks"
-            options={EmployeeCheckboxOptions.map((t) => ({
-              name: t.label,
-              id: t.id,
-            }))}
+            options={EmployeeCheckboxOptions}
           />
 
           <DialogFooter>

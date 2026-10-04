@@ -45,7 +45,10 @@ export default function TextareaWrapper({
           <FormItem
             className={cn(
               "w-full",
-              fillSpace && "flex min-h-0 flex-1 flex-col",
+              fillSpace &&
+                (direction === "horizontal" && label
+                  ? "flex min-h-0 flex-1 flex-row items-stretch gap-4"
+                  : "flex min-h-0 flex-1 flex-col"),
               !fillSpace &&
                 (direction === "horizontal" && label
                   ? "flex items-start gap-4"

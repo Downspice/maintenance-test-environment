@@ -75,41 +75,85 @@ const REPORT_MENU_SECTIONS: HeaderMenuSection<ReportMenuId>[] = [
   },
 ];
 
-const REPORT_CONTENT: Record<ReportMenuId, { title: string; content: ReactNode }> =
-  {
-    "history-cost": {
-      title: "History (Cost Summary)",
-      content: <HistoryReportGeneration />,
-    },
-    "fuel-history": {
-      title: "Fuel History",
-      content: <FuelReportGeneration />,
-    },
-    "equipment-usage": {
-      title: "Equipment Usage",
-      content: <EquipmentReportGeneration />,
-    },
-    "inventory-listing": {
-      title: "Inventory Listing",
-      content: <InventoryReportGeneration />,
-    },
-    "inventory-update": {
-      title: "Inventory Update",
-      content: <InventoryUsageReportGeneration />,
-    },
-    charts: {
-      title: "Charts",
-      content: <div className="py-8 text-center text-text-sub-600">Charts view</div>,
-    },
-    "view-all": {
-      title: "All Reports",
-      content: (
-        <div className="py-8 text-center text-text-sub-600">
-          All reports listed here…
-        </div>
-      ),
-    },
-  };
+type ReportConfig = {
+  title: string;
+  description?: string;
+  formId?: string;
+  content: ReactNode;
+};
+
+const REPORT_CONTENT: Record<ReportMenuId, ReportConfig> = {
+  "history-cost": {
+    title: "History (cost summary)",
+    description:
+      "Filter by equipment and date range, then set sort order for the export.",
+    formId: "history-report-form",
+    content: (
+      <HistoryReportGeneration
+        formId="history-report-form"
+        hideSubmitButton
+      />
+    ),
+  },
+  "fuel-history": {
+    title: "Fuel history",
+    description:
+      "Filter by equipment and date range, then set sort order for the export.",
+    formId: "fuel-report-form",
+    content: (
+      <FuelReportGeneration formId="fuel-report-form" hideSubmitButton />
+    ),
+  },
+  "equipment-usage": {
+    title: "Equipment usage",
+    description:
+      "Filter by equipment and date range, then set sort order for the export.",
+    formId: "equipment-usage-report-form",
+    content: (
+      <EquipmentReportGeneration
+        formId="equipment-usage-report-form"
+        hideSubmitButton
+      />
+    ),
+  },
+  "inventory-listing": {
+    title: "Inventory listing",
+    description: "Choose how rows are sorted in the listing export.",
+    formId: "inventory-listing-report-form",
+    content: (
+      <InventoryReportGeneration
+        formId="inventory-listing-report-form"
+        hideSubmitButton
+      />
+    ),
+  },
+  "inventory-update": {
+    title: "Inventory update",
+    description:
+      "Filter by scope and date range, then set sort order for the update report.",
+    formId: "inventory-update-report-form",
+    content: (
+      <InventoryUsageReportGeneration
+        formId="inventory-update-report-form"
+        hideSubmitButton
+      />
+    ),
+  },
+  charts: {
+    title: "Charts",
+    content: (
+      <div className="py-8 text-center text-text-sub-600">Charts view</div>
+    ),
+  },
+  "view-all": {
+    title: "All reports",
+    content: (
+      <div className="py-8 text-center text-text-sub-600">
+        All reports listed here…
+      </div>
+    ),
+  },
+};
 
 export default function HeaderMeterButton() {
   const [openDialog, setOpenDialog] = useState(false);
@@ -143,8 +187,19 @@ export default function HeaderMeterButton() {
           if (!next) setActiveReport(null);
         }}
         title={report?.title ?? "Report"}
-        size="lg"
+        description={report?.description}
+        size="xl"
+        className="sm:min-w-[720px]"
         closeable
+        showFooter={Boolean(report?.formId)}
+        bodyClassName="min-h-0 overflow-y-auto"
+        renderActions={
+          report?.formId ? (
+            <Button form={report.formId} type="submit" variant="primary">
+              Generate report
+            </Button>
+          ) : undefined
+        }
       >
         {report?.content}
       </Modal>

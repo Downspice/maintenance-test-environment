@@ -2,130 +2,53 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-import { equipmentActiveDropdown } from "@/app/(application)/equipment/page";
-import { ComboboxFieldWrapper } from "@/components/forms/fields/ComboboxWrapper";
-import DatePickerWrapper from "@/components/forms/fields/DatePickerWrapper";
-import RadioGroupWrapper from "@/components/forms/fields/RadioGroupWrapper";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { dateIntervalOptionsList } from "@/lib/shared/option-list";
-import { z } from "zod";
+import {
+  EquipmentDateRangeReportFields,
+  ReportSortingFields,
+  equipmentDateRangeReportSchema,
+  type EquipmentDateRangeReportValues,
+  type ReportDialogFormProps,
+} from "./report-dialog-shared";
 
-export const HistorySchema = z.object({
-  AddPartsId: z.string().min(1, "AddParts is required"),
-  dateInterval: z.string().min(1, "Select a date interval"),
-  start: z.date().optional(),
-  end: z.date().optional(),
-  sortingOne: z.string().optional(),
-  sortingOneDirection: z.string().optional(),
-  sortingTwo: z.string().optional(),
-  sortingTwoDirection: z.string().optional(),
-  sortingThree: z.string().optional(),
-  sortingThreeDirection: z.string().optional(),
-}).superRefine((data, ctx) => {
-  if (data.dateInterval === "custom") {
-    if (!data.start) {
-      ctx.addIssue({
-        path: ["start"],
-        code: z.ZodIssueCode.custom,
-        message: "Start date is required for custom interval",
-      });
-    }
-    if (!data.end) {
-      ctx.addIssue({
-        path: ["end"],
-        code: z.ZodIssueCode.custom,
-        message: "End date is required for custom interval",
-      });
-    }
-  }
-});
-
-type HistoryFormValues = z.infer<typeof HistorySchema>;
-
-export default function HistoryReportGeneration() {
-  const form = useForm<HistoryFormValues>({
-    resolver: zodResolver(HistorySchema),
+export default function HistoryReportGeneration({
+  formId = "history-report-form",
+  hideSubmitButton,
+}: ReportDialogFormProps = {}) {
+  const form = useForm<EquipmentDateRangeReportValues>({
+    resolver: zodResolver(equipmentDateRangeReportSchema),
     defaultValues: {
       dateInterval: "",
+      sortingOneDirection: "asc",
+      sortingTwoDirection: "asc",
+      sortingThreeDirection: "asc",
     },
   });
 
   const watchDateInterval = form.watch("dateInterval");
 
-  const onSubmit = (data: HistoryFormValues) => {
+  const onSubmit = (data: EquipmentDateRangeReportValues) => {
     console.log("✅ Form submitted", data);
-  };
-
-  const onError = (errors: any) => {
-    console.error("❌ Form errors", errors);
   };
 
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit, onError)}
-        className="space-y-6"
+        id={formId}
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="flex flex-col gap-1"
       >
-        <ComboboxFieldWrapper
+        <EquipmentDateRangeReportFields
           control={form.control}
-          name="AddPartsId"
-          label="Add Parts"
-          options={equipmentActiveDropdown}
-          required
+          watchDateInterval={watchDateInterval}
         />
-
-        <ComboboxFieldWrapper
-          control={form.control}
-          name="dateInterval"
-          label="Date Interval"
-          options={[
-            ...dateIntervalOptionsList,
-            { name: "Custom", id: "custom" },
-          ]}
-        />
-
-        {watchDateInterval === "custom" && (
-          <>
-            <DatePickerWrapper
-              control={form.control}
-              name="start"
-              label="Start Date"
-            />
-            <DatePickerWrapper
-              control={form.control}
-              name="end"
-              label="End Date"
-            />
-          </>
+        <ReportSortingFields control={form.control} />
+        {!hideSubmitButton && (
+          <Button type="submit" className="mt-4 w-full">
+            Generate report
+          </Button>
         )}
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {[1, 2, 3].map((index) => (
-            <div key={index}>
-              <ComboboxFieldWrapper
-                control={form.control}
-                name={`sorting${index}` as const}
-                label={`Sorting ${index}`}
-                options={[]}
-              />
-              <RadioGroupWrapper
-                control={form.control}
-                name={`sorting${index}Direction` as const}
-                label=""
-                options={[
-                  { name: "Ascending", id: "asc" },
-                  { name: "Descending", id: "desc" },
-                ]}
-              />
-            </div>
-          ))}
-        </div>
-
-        <Button type="submit" className="w-full">
-          Generate Report
-        </Button>
       </form>
     </Form>
   );
