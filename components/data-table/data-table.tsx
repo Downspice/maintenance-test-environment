@@ -821,7 +821,7 @@ export function DataTable<TData, TValue>({
       </div>
 
       {tableConfig.enablePagination && (
-        <div className="shrink-0 pt-2">
+        <div className="shrink-0">
           <DataTablePagination
             table={table}
             totalItems={data?.pagination?.total_items || 0}

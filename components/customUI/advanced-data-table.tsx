@@ -804,7 +804,7 @@ export function AdvancedDataTable<TData, TValue>({
       </div>
 
       {/* Pagination */}
-      <div className="shrink-0 pt-2">
+      <div className="shrink-0">
         <DataTablePagination
           table={table}
           totalItems={realServerPagination ? (paginationInfo?.totalRows ?? data.length) : table.getFilteredRowModel().rows.length}

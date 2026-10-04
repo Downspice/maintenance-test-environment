@@ -602,7 +602,7 @@ export function VendorPageDataTable({ realServer }: DataTableProps) {
       </div>
 
       {/* Pagination */}
-      <div className="flex w-full items-center justify-between gap-4 px-1 py-3">
+      <div className="flex w-full items-center justify-between gap-4 px-4 py-3 bg-bg-white-0 border-t border-stroke-soft-200">
         <div className="flex items-center gap-4">
           <p className="text-paragraph-xs text-text-sub-600 shrink-0">
             Showing{" "}
