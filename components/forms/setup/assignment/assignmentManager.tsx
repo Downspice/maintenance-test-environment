@@ -36,7 +36,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { FilePenIcon, Plus, Trash2 } from "lucide-react";
+import { FilePenIcon, PanelLeft, Plus, Trash2 } from "lucide-react";
 
 const pmTemplates = [
   "Drill Press",
@@ -632,7 +632,7 @@ const laborForm = useForm<LaborAssociationFormValues>({
           </div>
         </div>
 
-        <div className="flex min-h-0 min-w-0 flex-col gap-1">
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-1">
           {selectedEquipment ? (
             <>
               <div className="flex shrink-0 items-center justify-between gap-2">
@@ -723,9 +723,17 @@ const laborForm = useForm<LaborAssociationFormValues>({
               </Modal>
             </>
           ) : (
-            <p className="text-paragraph-sm text-text-sub-600">
-              Select equipment on the left to configure associations.
-            </p>
+            <div className="flex min-h-0 flex-1 flex-col items-center justify-center rounded-xl border border-stroke-soft-200 bg-bg-weak-50 px-6 py-16 text-center">
+              <div className="mb-4 flex size-14 items-center justify-center rounded-full bg-bg-white-0 ring-1 ring-stroke-soft-200">
+                <PanelLeft className="size-7 text-text-sub-600" aria-hidden />
+              </div>
+              <p className="text-label-sm font-medium text-text-strong-950">
+                No equipment selected
+              </p>
+              <p className="mt-1 max-w-sm text-paragraph-sm text-text-sub-600">
+                Select equipment on the left to configure associations.
+              </p>
+            </div>
           )}
         </div>
       </div>

@@ -24,7 +24,10 @@ interface RadioGroupWrapperProps {
   className?: string;
   disabled?: boolean;
   required?: boolean;
+  /** Layout of the radio options */
   orientation?: "horizontal" | "vertical";
+  /** Row layout for field label + control (matches InputWrapper / Combobox) */
+  direction?: "horizontal" | "vertical";
   label?: string;
   onChange?: (value: string) => void;
 }
@@ -38,6 +41,7 @@ export default function RadioGroupWrapper({
   disabled = false,
   required = false,
   orientation = "vertical",
+  direction = "horizontal",
   onChange,
 }: RadioGroupWrapperProps) {
   return (
@@ -47,26 +51,31 @@ export default function RadioGroupWrapper({
       render={({ field }) => {
         const isMissingRequired = required && isFieldEmpty(field.value);
 
+        const showFieldLabel = Boolean(label?.trim());
+        const fieldRowHorizontal = showFieldLabel && direction === "horizontal";
+
         return (
           <FormItem
             className={cn(
-              "w-full",
-              label
+              "w-full space-y-0",
+              fieldRowHorizontal
                 ? "flex items-center gap-4"
                 : "flex flex-col gap-1"
             )}
           >
-            {label ? (
+            {showFieldLabel ? (
               <FormLabel
                 className={cn(
-                  "w-[10rem] shrink-0 text-right",
+                  fieldRowHorizontal
+                    ? "w-[10rem] flex items-center justify-end text-right shrink-0"
+                    : "mb-1",
                   isMissingRequired && "text-red-500"
                 )}
               >
                 {label}
               </FormLabel>
             ) : null}
-            <div className="min-w-0 flex-1">
+            <div className="min-w-0 flex-1 flex flex-col">
               <RadioGroup
                 onValueChange={(val) => {
                   field.onChange(val);
@@ -84,7 +93,7 @@ export default function RadioGroupWrapper({
                 {options.map((option) => (
                   <FormItem
                     key={option.id}
-                    className="flex flex-row items-center gap-2 space-y-0"
+                    className="flex flex-row items-center gap-2 space-y-0 !mt-0"
                   >
                     <FormControl>
                       <RadioGroupItem value={option.id} disabled={disabled} />

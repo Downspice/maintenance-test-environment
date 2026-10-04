@@ -49,8 +49,8 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { WorkOrderUpdateLoader } from "@/components/ui/work-order-update-loader";
-import NewEmployeeForm from "./new-employee-form";
-import NewVendor from "./new-vendor-form";
+import EmployeeFormWrapper from "@/components/forms/fields/employee-form-wrapper";
+import VendorFormWrapper from "@/components/forms/fields/vendor-form-wrapper";
 import {
   AddMaintenanceInWorkOrderInterface,
   AddLaborUsedInterface,
@@ -362,28 +362,11 @@ export function ActualWorkOrderForm({
                           maxSelections={assigneeType === "Employee" ? 2 : 1}
                         />
                       </div>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => {
-                          if (assigneeType === "Employee") {
-                            openSheet({
-                              title: "Add New Employee",
-                              description: "Create a new employee record",
-                              content: <NewEmployeeForm />,
-                            });
-                          } else {
-                            openSheet({
-                              title: "Add New Vendor",
-                              description: "Create a new vendor record",
-                              content: <NewVendor />,
-                            });
-                          }
-                        }}
-                      >
-                        <Plus className="h-4 w-4" />
-                      </Button>
+                      {assigneeType === "Employee" ? (
+                        <EmployeeFormWrapper variant="icon" />
+                      ) : (
+                        <VendorFormWrapper variant="icon" />
+                      )}
                     </div>
                   </div>
                 </>
@@ -1565,7 +1548,6 @@ function EditActualWorkOrderFormContent({
     setPendingFormData(null);
   }
 
-  const { openSheet } = useSheet();
   /**
    * Triggers work order update with a 2000ms delay.
    * Shows a full-screen loader during the delay to allow
@@ -1686,28 +1668,11 @@ function EditActualWorkOrderFormContent({
                             maxSelections={assigneeType === "Employee" ? 2 : 1}
                           />
                         </div>
-                        <Button
-                          variant="secondary"
-                          size="icon"
-                          type="button"
-                          onClick={() => {
-                            if (assigneeType === "Employee") {
-                              openSheet({
-                                title: "Add New Employee",
-                                description: "Create a new employee record",
-                                content: <NewEmployeeForm />,
-                              });
-                            } else {
-                              openSheet({
-                                title: "Add New Vendor",
-                                description: "Create a new vendor record",
-                                content: <NewVendor />,
-                              });
-                            }
-                          }}
-                        >
-                          <Plus className="h-4 w-4" />
-                        </Button>
+                        {assigneeType === "Employee" ? (
+                          <EmployeeFormWrapper variant="icon" />
+                        ) : (
+                          <VendorFormWrapper variant="icon" />
+                        )}
                       </div>
                     </div>
                   </>
