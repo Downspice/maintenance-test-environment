@@ -855,6 +855,31 @@ html {
   }
 }
 
+/* Landing: module data-flow hero */
+.landing-flow-track {
+  stroke: var(--color-stroke-soft-200);
+}
+
+.landing-flow-pulse {
+  stroke: var(--color-primary-base);
+  stroke-opacity: 0.45;
+  stroke-dasharray: 6 14;
+  animation: landing-flow-dash 1.4s linear infinite;
+}
+
+@keyframes landing-flow-dash {
+  to {
+    stroke-dashoffset: -40;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-flow-pulse {
+    animation: none;
+    stroke-opacity: 0.25;
+  }
+}
+
 @keyframes ping {
 
   75%,

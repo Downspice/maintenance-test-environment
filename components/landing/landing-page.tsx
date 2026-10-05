@@ -26,7 +26,8 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { LogoWordmark } from "@/components/landing/logo-mark";
-import HeroIllustration from "@/components/landing/hero-illustration";
+import ModuleDataFlow from "@/components/landing/module-data-flow";
+import { LogoMark } from "@/components/landing/logo-mark";
 import HowItWorks from "@/components/landing/how-it-works";
 import { cn } from "@/lib/shared/utils";
 
@@ -223,45 +224,41 @@ export default function LandingPage() {
       </header>
 
       {/* Hero */}
-      <section className="relative overflow-hidden pb-8 pt-10 sm:pt-14">
-        <HeroIllustration />
+      <section className="relative overflow-hidden border-b border-stroke-soft-200/80">
+        <div
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_-10%,var(--color-primary-alpha-16),transparent)]"
+          aria-hidden
+        />
 
-        <div className="relative z-10 mx-auto max-w-3xl px-5 text-center sm:px-8">
-          <div className="mx-auto mb-8 flex justify-center">
-            <div className="rounded-full border border-stroke-soft-200 bg-bg-white-0 px-4 py-1.5 text-sm text-text-sub-600 shadow-regular-xs">
+        <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-5 py-14 sm:px-8 sm:py-16 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:py-20">
+          <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
+            <LogoMark size="lg" priority className="mb-8" />
+
+            <div className="mb-6 inline-flex items-center rounded-full border border-stroke-soft-200 bg-bg-white-0/90 px-4 py-1.5 text-sm text-text-sub-600 shadow-regular-xs">
               <span className="mr-2 inline-block size-2 rounded-full bg-primary-base" />
               One suite for the maintenance value chain
             </div>
-          </div>
 
-          <h1 className="text-balance text-4xl font-semibold tracking-tight text-foreground sm:text-5xl md:text-6xl md:leading-[1.08]">
-            Run the entire operation{" "}
-            <span className="text-primary-base">from one platform.</span>
-          </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-pretty text-lg leading-relaxed text-text-sub-600">
-            Maintenance OS brings work orders, equipment, inventory, vendors, and analytics together
-            on one shared core — so every team works from the same asset, part, and job record.
-          </p>
-
-          <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Button size="lg" variant="primary" className="min-w-[180px]" asChild>
-              <Link href="/dashboard">Open workspace</Link>
-            </Button>
-            <Button size="lg" variant="secondary" className="min-w-[180px]" asChild>
-              <a href="#contact">Request a walkthrough</a>
-            </Button>
-          </div>
-        </div>
-
-        {/* Live toast mock */}
-        <div className="relative z-10 mx-auto mt-12 flex max-w-6xl justify-center px-5 sm:mt-16">
-          <div className="rounded-2xl border border-stroke-soft-200 bg-bg-white-0/95 px-4 py-3 shadow-regular-md backdrop-blur sm:px-5">
-            <p className="text-xs font-semibold tracking-wide text-primary-base uppercase">
-              Work order update
+            <h1 className="max-w-xl text-balance text-4xl font-semibold tracking-tight text-foreground sm:text-5xl lg:text-[3.25rem] lg:leading-[1.08]">
+              Run the entire operation{" "}
+              <span className="text-primary-base">from one platform.</span>
+            </h1>
+            <p className="mt-6 max-w-lg text-pretty text-lg leading-relaxed text-text-sub-600">
+              Work orders, equipment, inventory, vendors, and analytics share one record — so
+              planners, crews, and leadership always see the same truth.
             </p>
-            <p className="mt-1 text-sm font-semibold text-text-strong-950">Assigned to North crew</p>
-            <p className="text-sm text-text-sub-600">WO-1842 · Conveyor belt inspection</p>
+
+            <div className="mt-10 flex w-full flex-col items-center gap-3 sm:flex-row lg:justify-start">
+              <Button size="lg" variant="primary" className="min-w-[180px]" asChild>
+                <Link href="/dashboard">Open workspace</Link>
+              </Button>
+              <Button size="lg" variant="secondary" className="min-w-[180px]" asChild>
+                <a href="#contact">Request a walkthrough</a>
+              </Button>
+            </div>
           </div>
+
+          <ModuleDataFlow className="mx-auto w-full max-w-md lg:max-w-none" />
         </div>
       </section>
 
