@@ -17,6 +17,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "MAINTENANCE CLONE ",
   description: "test-maintenance-erp.vercel.app",
+  icons: {
+    icon: [{ url: "/brand-logo.png", type: "image/png" }],
+    apple: [{ url: "/brand-logo.png", type: "image/png" }],
+  },
 };
 
 export default function RootLayout({
