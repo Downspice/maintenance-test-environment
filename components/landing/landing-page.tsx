@@ -18,7 +18,6 @@ import {
   Users,
   Store,
   BarChart,
-  Sparkles,
   CheckCircle2,
   Menu,
   X,
@@ -589,7 +588,7 @@ export default function LandingPage() {
               transition={{ duration: 0.5, ease: EASE_OUT }}
               className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3.5 py-1.5 backdrop-blur-md"
             >
-              <Sparkles className="size-3.5 text-white/70" />
+              <LogoMark size="xs" variant="white" className="opacity-80" />
               <span className="text-xs font-medium tracking-wide text-white/80 uppercase">
                 Autonomous Industrial Operations
               </span>
@@ -622,7 +621,7 @@ export default function LandingPage() {
             {/* Left description */}
             <div className="max-w-md">
               <div className="mb-3 flex items-center gap-2 text-sm text-white/50">
-                <Sparkles className="size-3.5" />
+                <LogoMark size="xs" variant="white" className="opacity-60" />
                 <span>Unified Maintenance Platform</span>
               </div>
               <p className="text-sm leading-relaxed text-white/70 sm:text-base">
@@ -686,7 +685,7 @@ export default function LandingPage() {
           <FadeUp>
             <div className="mb-8 flex items-center justify-between text-xs text-[#1a1a1a]/40">
               <div className="flex items-center gap-2">
-                <Sparkles className="size-3.5" />
+                <LogoMark size="xs" variant="black" className="opacity-50" />
                 <span>Inside the Platform</span>
               </div>
               <span>(©19–26)</span>
@@ -833,7 +832,7 @@ export default function LandingPage() {
         <div className="mx-auto max-w-[1400px]">
           <FadeUp>
             <div className="mb-4 flex items-center gap-2 text-sm text-white/40">
-              <Sparkles className="size-3.5" />
+              <LogoMark size="xs" variant="white" className="opacity-60" />
               <span>What we build</span>
             </div>
           </FadeUp>
@@ -876,7 +875,7 @@ export default function LandingPage() {
         <div className="relative mx-auto max-w-[1400px]">
           <FadeUp>
             <div className="mb-4 flex items-center justify-center gap-2 text-sm text-[#1a1a1a]/40">
-              <Sparkles className="size-3.5" />
+              <LogoMark size="xs" variant="black" className="opacity-50" />
               <span>From concept to launch</span>
             </div>
           </FadeUp>
@@ -909,20 +908,12 @@ export default function LandingPage() {
                       <h3 className="text-lg font-semibold tracking-tight text-[#1a1a1a]">
                         {step.title}
                       </h3>
-                      <div className="flex items-center gap-1">
-                        {[...Array(3)].map((_, j) => (
-                          <Sparkles
-                            key={j}
-                            className={cn(
-                              "text-[#1a1a1a]/20 transition-colors duration-200 group-hover:text-[#1a1a1a]/50 group-focus:text-[#1a1a1a]/50",
-                              j === 0
-                                ? "size-4"
-                                : j === 1
-                                ? "size-3"
-                                : "size-2.5"
-                            )}
-                          />
-                        ))}
+                      <div className="flex items-center">
+                        <LogoMark
+                          size="2xs"
+                          variant="black"
+                          className="opacity-25 transition-opacity duration-200 group-hover:opacity-70 group-focus:opacity-70"
+                        />
                       </div>
                     </div>
                     <div className="mb-6 flex size-16 items-center justify-center rounded-2xl bg-[#f5f5f3] transition-transform duration-200 group-hover:scale-105 group-focus:scale-105">
@@ -949,7 +940,7 @@ export default function LandingPage() {
             <div>
               <FadeUp>
                 <div className="mb-4 flex items-center gap-2 text-sm text-[#1a1a1a]/40">
-                  <Sparkles className="size-3.5" />
+                  <LogoMark size="xs" variant="black" className="opacity-50" />
                   <span>Our track record</span>
                 </div>
               </FadeUp>
@@ -1010,7 +1001,7 @@ export default function LandingPage() {
         <div className="mx-auto max-w-[1400px]">
           <FadeUp>
             <div className="mb-4 flex items-center justify-center gap-2 text-sm text-white/40">
-              <Sparkles className="size-3.5" />
+              <LogoMark size="xs" variant="white" className="opacity-60" />
               <span>No hidden fees</span>
             </div>
           </FadeUp>
@@ -1196,7 +1187,7 @@ export default function LandingPage() {
           <div className="mx-auto w-full max-w-[1400px]">
             <FadeUp>
               <div className="flex items-center gap-2 text-sm text-white/40">
-                <Sparkles className="size-3.5" />
+                <LogoMark size="xs" variant="white" className="opacity-60" />
                 <span>Your operational partners</span>
               </div>
             </FadeUp>

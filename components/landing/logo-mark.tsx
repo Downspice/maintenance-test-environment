@@ -3,18 +3,32 @@ import { cn } from "@/lib/shared/utils";
 
 type LogoMarkProps = {
   className?: string;
-  size?: "sm" | "md" | "lg";
+  size?: "2xs" | "xs" | "sm" | "md" | "lg";
+  variant?: "default" | "white" | "black";
   priority?: boolean;
 };
 
 const heights = {
+  "2xs": 12,
+  xs: 15,
   sm: 32,
   md: 40,
   lg: 56,
 };
 
-export function LogoMark({ className, size = "md", priority = false }: LogoMarkProps) {
+export function LogoMark({
+  className,
+  size = "md",
+  variant = "default",
+  priority = false,
+}: LogoMarkProps) {
   const height = heights[size];
+  const variantClass =
+    variant === "white"
+      ? "brightness-0 invert"
+      : variant === "black"
+      ? "brightness-0"
+      : "";
 
   return (
     <Image
@@ -23,7 +37,7 @@ export function LogoMark({ className, size = "md", priority = false }: LogoMarkP
       width={139}
       height={169}
       priority={priority}
-      className={cn("w-auto shrink-0 object-contain", className)}
+      className={cn("w-auto shrink-0 object-contain", variantClass, className)}
       style={{ height, width: "auto" }}
     />
   );
