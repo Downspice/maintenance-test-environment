@@ -19,9 +19,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 import React from "react";
-import {
-  InventoryTableInterface,
-} from "@/lib/domains/inventory/inventory-data";
+import { InventoryTableInterface } from "@/lib/domains/inventory/inventory-data";
 import EditInventory from "../views/edit-inventory";
 import {
   SheetContent,
@@ -37,7 +35,10 @@ import EnableTrackingForm from "../forms/enableTracking";
 import ChangeMarkUpForm from "../forms/changeMarkUp";
 import HistoryTable from "../views/history-inventory";
 import TransferInventoryForm from "../forms/transferInventory";
-import { useDeleteInventory, useGetInventoriesPaginated } from "@/services/setups/inventory";
+import {
+  useDeleteInventory,
+  useGetInventoriesPaginated,
+} from "@/services/setups/inventory";
 import { toast } from "sonner";
 import { useConfirmDialog } from "@/lib/shared/confirm-dialog";
 import { DeleteInventoryModal } from "./modals/delete-inventory-modal";
@@ -49,7 +50,9 @@ export default function InventoryDataTable({
   locationId?: string;
   filterType?: string;
 }) {
-  return <InventoryDataLoader locationId={locationId} filterType={filterType} />;
+  return (
+    <InventoryDataLoader locationId={locationId} filterType={filterType} />
+  );
 }
 
 export function InventoryDataLoader({
@@ -87,7 +90,9 @@ export function InventoryDataLoader({
   });
 
   const serverRows = paged?.data ?? [];
-  const currentPage = paged?.current_page ? Number(paged.current_page) : pageIndex + 1;
+  const currentPage = paged?.current_page
+    ? Number(paged.current_page)
+    : pageIndex + 1;
   const totalPages = paged?.last_page ? Number(paged.last_page) : 1;
   const totalRows = paged?.total ? Number(paged.total) : serverRows.length;
   const effectivePageSize = paged?.per_page ? Number(paged.per_page) : pageSize;
@@ -161,7 +166,9 @@ export function InventoryDataLoader({
   // Server-side pagination handler
   const handlePaginationChange = (action: "next" | "previous" | number) => {
     if (action === "next") {
-      setPageIndex((p) => Math.min(p + 1, Math.max(0, paginationInfo.totalPages - 1)));
+      setPageIndex((p) =>
+        Math.min(p + 1, Math.max(0, paginationInfo.totalPages - 1))
+      );
     } else if (action === "previous") {
       setPageIndex((p) => Math.max(p - 1, 0));
     } else if (typeof action === "number") {
@@ -192,11 +199,7 @@ export function InventoryDataLoader({
     {
       accessorKey: "part_number",
       header: ({ column }) => (
-        <SortableHeader
-          column={column}
-          title="Part#"
-          sortable={true}
-        />
+        <SortableHeader column={column} title="Part#" sortable={true} />
       ),
       cell: ({ row }) => (
         <div className="font-medium text-primary flex flex-col">
@@ -208,11 +211,7 @@ export function InventoryDataLoader({
     {
       accessorKey: "name",
       header: ({ column }) => (
-        <SortableHeader
-          column={column}
-          title="Name"
-          sortable={true}
-        />
+        <SortableHeader column={column} title="Name" sortable={true} />
       ),
       cell: ({ row }) => (
         <div className="flex flex-col">
@@ -226,33 +225,23 @@ export function InventoryDataLoader({
     {
       accessorKey: "category",
       header: ({ column }) => (
-        <SortableHeader
-          column={column}
-          title="Category"
-          sortable={true}
-        />
+        <SortableHeader column={column} title="Category" sortable={true} />
       ),
       cell: ({ row }) => <>{row.original.category.name}</>,
     },
     {
       accessorKey: "vendor",
       header: ({ column }) => (
-        <SortableHeader
-          column={column}
-          title="Vendor"
-          sortable={true}
-        />
+        <SortableHeader column={column} title="Vendor" sortable={true} />
       ),
-      cell: ({ row }) => <>{row.original?.inventory_trackings?.[0]?.vendor_name?? ""}</>,
+      cell: ({ row }) => (
+        <>{row.original?.inventory_trackings?.[0]?.vendor_name ?? ""}</>
+      ),
     },
     {
       accessorKey: "quantity",
       header: ({ column }) => (
-        <SortableHeader
-          column={column}
-          title="Quantity"
-          sortable={true}
-        />
+        <SortableHeader column={column} title="Quantity" sortable={true} />
       ),
       cell: ({ row }) => {
         return (
@@ -267,11 +256,7 @@ export function InventoryDataLoader({
     {
       accessorKey: "unit_cost",
       header: ({ column }) => (
-        <SortableHeader
-          column={column}
-          title="Unit Cost"
-          sortable={true}
-        />
+        <SortableHeader column={column} title="Unit Cost" sortable={true} />
       ),
       cell: ({ row }) => {
         return <> ${row.original.unit_cost}</>;
@@ -280,11 +265,7 @@ export function InventoryDataLoader({
     {
       accessorKey: "number",
       header: ({ column }) => (
-        <SortableHeader
-          column={column}
-          title="PO #"
-          sortable={true}
-        />
+        <SortableHeader column={column} title="PO #" sortable={true} />
       ),
       cell: ({ row }) => (
         <>
@@ -455,7 +436,16 @@ export function InventoryDataLoader({
         columns={columns}
         data={serverRows}
         emptyEntity="inventory"
-        defaultVisibleColumns={["part_number", "name", "category", "vendor", "quantity", "unit_cost", "number", "actions"]}
+        defaultVisibleColumns={[
+          "part_number",
+          "name",
+          "category",
+          "vendor",
+          "quantity",
+          "unit_cost",
+          "number",
+          "actions",
+        ]}
         onRowClick={handleRowClick}
         onCellClick={handleCellClick}
         onPrintSelected={handlePrintSelected}

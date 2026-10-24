@@ -10,9 +10,7 @@ import NewShipToForm from "./new-shipping-form";
 import ShippingSheetTable from "./shipping-table";
 import { vendorTypeOptions } from "@/lib/shared/option-list";
 import { useState } from "react";
-import {
-  useGetLocations,
-} from "@/services/setups/lookups";
+import { useGetLocations } from "@/services/setups/lookups";
 
 export default function ShippingView() {
   const [filters, setFilters] = useState({

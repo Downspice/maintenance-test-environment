@@ -1,5 +1,4 @@
-
-export const maintenanceItems:maintenanceItemsInterface[] = [
+export const maintenanceItems: maintenanceItemsInterface[] = [
   {
     quantity: 5,
     item_name: "Air Filter",
@@ -97,7 +96,7 @@ export const discount_typesOptions = [
   { id: "percent", name: "Percentage" },
   { id: "amount", name: "Amount" },
 ];
- 
+
 export interface PaymentReceivedInterface {
   dateReceived: string;
   invoice_number: string;
@@ -113,7 +112,7 @@ export interface PaymentReceivedInterface {
   otherPaymentMethod: string | null;
   amount: number | null;
 }
- 
+
 export const invoicePaymentMethodOptionsList = [
   { name: "Cheque", id: "Cheque" },
   { name: "Credit Card", id: "Credit Card" },

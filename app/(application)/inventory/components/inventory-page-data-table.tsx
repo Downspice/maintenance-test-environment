@@ -35,8 +35,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-
-import { InventoryData, InventoryDataInterface } from "@/lib/domains/inventory/mock-data";
+import {
+  InventoryData,
+  InventoryDataInterface,
+} from "@/lib/domains/inventory/mock-data";
 
 type SortField = keyof InventoryDataInterface | null;
 type SortDirection = "asc" | "desc";
@@ -265,7 +267,12 @@ export function InventoryPageDataTable({ realServer }: DataTableProps) {
                   <SortableHeader field="quantity">Quantity</SortableHeader>
                   <SortableHeader field="unit_cost">Unit Cost</SortableHeader>
                   <SortableHeader field="vendor_names">Vendors</SortableHeader>
-                  <TableHead className="w-px whitespace-nowrap" style={{ width: "1%" }}>Actions</TableHead>
+                  <TableHead
+                    className="w-px whitespace-nowrap"
+                    style={{ width: "1%" }}
+                  >
+                    Actions
+                  </TableHead>
                 </>
               )}
             </TableRow>
@@ -305,7 +312,10 @@ export function InventoryPageDataTable({ realServer }: DataTableProps) {
                     <TableCell> {car.quantity}</TableCell>
                     <TableCell> $ {car.unit_cost}</TableCell>
                     <TableCell> {car.vendor_names}</TableCell>
-                    <TableCell className="w-px whitespace-nowrap" style={{ width: "1%" }}>
+                    <TableCell
+                      className="w-px whitespace-nowrap"
+                      style={{ width: "1%" }}
+                    >
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="outline" size="sm">
@@ -377,7 +387,9 @@ export function InventoryPageDataTable({ realServer }: DataTableProps) {
               {Math.min(currentPage * rowsPerPage, totalPages * rowsPerPage)}
             </span>{" "}
             out of{" "}
-            <span className="font-medium text-text-strong-950">{totalPages * rowsPerPage}</span>
+            <span className="font-medium text-text-strong-950">
+              {totalPages * rowsPerPage}
+            </span>
           </p>
 
           {/* Center: Navigation buttons */}
@@ -444,7 +456,11 @@ export function InventoryPageDataTable({ realServer }: DataTableProps) {
             </SelectTrigger>
             <SelectContent side="top" align="end">
               {[5, 10, 20, 30, 50].map((n) => (
-                <SelectItem key={n} value={`${n}`} className="cursor-pointer text-label-xs">
+                <SelectItem
+                  key={n}
+                  value={`${n}`}
+                  className="cursor-pointer text-label-xs"
+                >
                   {n} / page
                 </SelectItem>
               ))}

@@ -14,7 +14,10 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Form } from "@/components/ui/form";
-import { assigneeOptions, expenseOptions } from "@/lib/schemas/equipment-schema";
+import {
+  assigneeOptions,
+  expenseOptions,
+} from "@/lib/schemas/equipment-schema";
 import { equipmentOptionsList } from "@/lib/shared/option-list";
 import SingleCheckboxWrapper from "../fields/SingleCheckboxWrapper";
 import {
@@ -61,7 +64,6 @@ export default function GeneralExpense({
     defaultValues: {},
   });
   const { data: costCenterOptions } = useGetCostCenters();
-  
 
   // Use form.watch to track checkbox state
   const specifyPart = form.watch("specifyPart");

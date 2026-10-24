@@ -33,14 +33,62 @@ export const typeOptions = [
 ];
 
 export const repairOptions = [
-  { id: "Oil Leak", name: "Oil Leak", priority: "High", type: "Mechanical", laborTime: 2 },
-  { id: "Hydraulic Leak", name: "Hydraulic Leak", priority: "High", type: "Mechanical", laborTime: 1.5 },
-  { id: "Loose Belt", name: "Loose Belt", priority: "Medium", type: "Mechanical", laborTime: 1 },
-  { id: "Broken Screen", name: "Broken Screen", priority: "Low", type: "Electrical", laborTime: 1 },
-  { id: "Engine Noise", name: "Engine Noise", priority: "Medium", type: "Mechanical", laborTime: 2 },
-  { id: "Track Replacement", name: "Track Replacement", priority: "Medium", type: "Mechanical", laborTime: 3 },
-  { id: "Brake Check", name: "Brake Check", priority: "Medium", type: "Safety", laborTime: 1 },
-  { id: "Oil Change", name: "Oil Change", priority: "Medium", type: "Maintenance", laborTime: 0.5 },
+  {
+    id: "Oil Leak",
+    name: "Oil Leak",
+    priority: "High",
+    type: "Mechanical",
+    laborTime: 2,
+  },
+  {
+    id: "Hydraulic Leak",
+    name: "Hydraulic Leak",
+    priority: "High",
+    type: "Mechanical",
+    laborTime: 1.5,
+  },
+  {
+    id: "Loose Belt",
+    name: "Loose Belt",
+    priority: "Medium",
+    type: "Mechanical",
+    laborTime: 1,
+  },
+  {
+    id: "Broken Screen",
+    name: "Broken Screen",
+    priority: "Low",
+    type: "Electrical",
+    laborTime: 1,
+  },
+  {
+    id: "Engine Noise",
+    name: "Engine Noise",
+    priority: "Medium",
+    type: "Mechanical",
+    laborTime: 2,
+  },
+  {
+    id: "Track Replacement",
+    name: "Track Replacement",
+    priority: "Medium",
+    type: "Mechanical",
+    laborTime: 3,
+  },
+  {
+    id: "Brake Check",
+    name: "Brake Check",
+    priority: "Medium",
+    type: "Safety",
+    laborTime: 1,
+  },
+  {
+    id: "Oil Change",
+    name: "Oil Change",
+    priority: "Medium",
+    type: "Maintenance",
+    laborTime: 0.5,
+  },
 ];
 
 const repairsNeededSchema = z.object({
@@ -57,7 +105,9 @@ export const repairRequestSchema = z.object({
   requestedBy: z.string().min(1, "Requested By is required"),
   dueDate: z.coerce.date({ required_error: "Due Date is required" }),
   repairBy: z.coerce.number().min(1, "Repair By is required"),
-  repairsNeeded: z.array(repairsNeededSchema).min(1, "At least one repair item is required"),
+  repairsNeeded: z
+    .array(repairsNeededSchema)
+    .min(1, "At least one repair item is required"),
   repairRequestId: z.string().optional(),
 });
 
@@ -83,7 +133,9 @@ export default function NewRepairRequestForm({
   initialData,
   onSuccess,
 }: NewRepairRequestFormProps) {
-  const [imagePreviews, setImagePreviews] = useState<Record<number, string>>({});
+  const [imagePreviews, setImagePreviews] = useState<Record<number, string>>(
+    {}
+  );
   const [modalImage, setModalImage] = useState<string | null>(null);
 
   const form = useForm<MoreButtonRequestInterface>({
@@ -176,8 +228,7 @@ export default function NewRepairRequestForm({
     const formattedData: MoreButtonRequestInterface = {
       ...values,
       repairRequestId:
-        values.repairRequestId ||
-        `RR-${Math.floor(100 + Math.random() * 900)}`,
+        values.repairRequestId || `RR-${Math.floor(100 + Math.random() * 900)}`,
       dueDate:
         values.dueDate instanceof Date
           ? (values.dueDate.toISOString().split("T")[0] as any)
@@ -247,7 +298,8 @@ export default function NewRepairRequestForm({
             <div>
               <h3 className="text-base font-semibold">Repairs Needed</h3>
               <p className="text-xs text-muted-foreground">
-                Specify all repair items, labor estimations, and notes for this request.
+                Specify all repair items, labor estimations, and notes for this
+                request.
               </p>
             </div>
             <Button
@@ -307,7 +359,8 @@ export default function NewRepairRequestForm({
                         Item #{index + 1}
                       </Badge>
                       <span className="text-sm font-semibold">
-                        {form.watch(`repairsNeeded.${index}.repair`) || "New Repair"}
+                        {form.watch(`repairsNeeded.${index}.repair`) ||
+                          "New Repair"}
                       </span>
                     </div>
                     {fields.length > 1 && (
@@ -385,11 +438,15 @@ export default function NewRepairRequestForm({
                             onClick={() => setModalImage(imagePreviews[index])}
                           />
                           <div className="flex-1 min-w-0">
-                            <p className="text-xs font-medium truncate">Photo attached</p>
+                            <p className="text-xs font-medium truncate">
+                              Photo attached
+                            </p>
                             <button
                               type="button"
                               className="text-xs text-primary underline"
-                              onClick={() => setModalImage(imagePreviews[index])}
+                              onClick={() =>
+                                setModalImage(imagePreviews[index])
+                              }
                             >
                               View image
                             </button>
@@ -405,7 +462,9 @@ export default function NewRepairRequestForm({
                                 delete next[index];
                                 return next;
                               });
-                              const currentRepairs = [...form.getValues("repairsNeeded")];
+                              const currentRepairs = [
+                                ...form.getValues("repairsNeeded"),
+                              ];
                               if (currentRepairs[index]) {
                                 currentRepairs[index].image = undefined;
                                 form.setValue("repairsNeeded", currentRepairs);
@@ -441,7 +500,9 @@ export default function NewRepairRequestForm({
         {!hideSubmitButton && (
           <div className="flex justify-end pt-4">
             <Button type="submit" variant="primary">
-              {initialData?.repairRequestId ? "Update Repair Request" : "Save Repair Request"}
+              {initialData?.repairRequestId
+                ? "Update Repair Request"
+                : "Save Repair Request"}
             </Button>
           </div>
         )}

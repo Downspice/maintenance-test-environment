@@ -1,13 +1,13 @@
-"use client"
+"use client";
 
-import { useState } from "react"
+import { useState } from "react";
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
+} from "@/components/ui/form";
 import {
   Command,
   CommandEmpty,
@@ -15,32 +15,36 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Button } from "@/components/ui/button"
-import { Check, ChevronsUpDown, X } from "lucide-react"
-import { cn, isFieldEmpty } from "@/lib/shared/utils"
-import { Badge } from "@/components/ui/badge"
-import type { Control } from "react-hook-form"
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { Check, ChevronsUpDown, X } from "lucide-react";
+import { cn, isFieldEmpty } from "@/lib/shared/utils";
+import { Badge } from "@/components/ui/badge";
+import type { Control } from "react-hook-form";
 
 interface SelectOption {
-  id: string
-  name: string
-  group?: string
+  id: string;
+  name: string;
+  group?: string;
 }
 
 interface MultiSelectWrapperProps {
-  control: Control<any>
-  name: string
-  name: string
-  options: SelectOption[]
-  className?: string
-  placeholder?: string
-  disabled?: boolean
-  required?: boolean
-  searchPlaceholder?: string
-  emptyMessage?: string
-  direction?: "horizontal" | "vertical" // NEW
+  control: Control<any>;
+  name: string;
+  name: string;
+  options: SelectOption[];
+  className?: string;
+  placeholder?: string;
+  disabled?: boolean;
+  required?: boolean;
+  searchPlaceholder?: string;
+  emptyMessage?: string;
+  direction?: "horizontal" | "vertical"; // NEW
 }
 
 export default function MultiSelectWrapper({
@@ -56,28 +60,28 @@ export default function MultiSelectWrapper({
   emptyMessage = "No results found.",
   direction = "horizontal", // default
 }: MultiSelectWrapperProps) {
-  const [open, setOpen] = useState(false)
-  const [searchValue, setSearchValue] = useState("")
+  const [open, setOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
 
   // Group options by their group property
-  const groupedOptions: Record<string, SelectOption[]> = {}
+  const groupedOptions: Record<string, SelectOption[]> = {};
   options.forEach((option) => {
-    const group = option.group || "Options"
-    if (!groupedOptions[group]) groupedOptions[group] = []
-    groupedOptions[group].push(option)
-  })
+    const group = option.group || "Options";
+    if (!groupedOptions[group]) groupedOptions[group] = [];
+    groupedOptions[group].push(option);
+  });
 
   // Filter options based on search
-  const filteredGroups: Record<string, SelectOption[]> = {}
+  const filteredGroups: Record<string, SelectOption[]> = {};
   if (searchValue) {
     Object.entries(groupedOptions).forEach(([group, groupOptions]) => {
       const filtered = groupOptions.filter((option) =>
         option.label.toLowerCase().includes(searchValue.toLowerCase())
-      )
-      if (filtered.length > 0) filteredGroups[group] = filtered
-    })
+      );
+      if (filtered.length > 0) filteredGroups[group] = filtered;
+    });
   } else {
-    Object.assign(filteredGroups, groupedOptions)
+    Object.assign(filteredGroups, groupedOptions);
   }
 
   return (
@@ -85,34 +89,34 @@ export default function MultiSelectWrapper({
       control={control}
       name={name}
       render={({ field }) => {
-        const selectedValues = field.value || []
+        const selectedValues = field.value || [];
         const selectedOptions = selectedValues
           .map((id: string) => options.find((o) => o.value === value))
-          .filter(Boolean) as SelectOption[]
+          .filter(Boolean) as SelectOption[];
 
-        const clearAll = () => field.onChange([])
+        const clearAll = () => field.onChange([]);
 
         const isMissingRequired = required && isFieldEmpty(field.value);
 
         return (
           <FormItem
             className={cn(
-            "w-full",
-            direction === "horizontal"
-              ? "flex items-center gap-4"
-              : "flex flex-col"
-          )}
-          >
-             <FormLabel
-            className={cn(
+              "w-full",
               direction === "horizontal"
-                ? "w-[10rem] flex items-center justify-end text-right shrink-0"
-                : "mb-1",
-              isMissingRequired && "text-red-500"
+                ? "flex items-center gap-4"
+                : "flex flex-col"
             )}
           >
-            {label}
-          </FormLabel>
+            <FormLabel
+              className={cn(
+                direction === "horizontal"
+                  ? "w-[10rem] flex items-center justify-end text-right shrink-0"
+                  : "mb-1",
+                isMissingRequired && "text-red-500"
+              )}
+            >
+              {label}
+            </FormLabel>
 
             <div className="flex-1 w-full">
               <Popover open={open} onOpenChange={setOpen}>
@@ -141,17 +145,19 @@ export default function MultiSelectWrapper({
                               <X
                                 className="ml-1 h-3 w-3 cursor-pointer"
                                 onClick={(e) => {
-                                  e.stopPropagation()
+                                  e.stopPropagation();
                                   const newValues = selectedValues.filter(
                                     (v: string) => v !== option.value
-                                  )
-                                  field.onChange(newValues)
+                                  );
+                                  field.onChange(newValues);
                                 }}
                               />
                             </Badge>
                           ))
                         ) : (
-                          <span>{placeholder || `Select ${label.toLowerCase()}`}</span>
+                          <span>
+                            {placeholder || `Select ${label.toLowerCase()}`}
+                          </span>
                         )}
                       </div>
                       <div className="flex items-center">
@@ -159,8 +165,8 @@ export default function MultiSelectWrapper({
                           <X
                             className="mr-2 h-4 w-4 cursor-pointer hover:text-destructive"
                             onClick={(e) => {
-                              e.stopPropagation()
-                              clearAll()
+                              e.stopPropagation();
+                              clearAll();
                             }}
                           />
                         )}
@@ -178,33 +184,39 @@ export default function MultiSelectWrapper({
                     />
                     <CommandList>
                       <CommandEmpty>{emptyMessage}</CommandEmpty>
-                      {Object.entries(filteredGroups).map(([group, groupOptions]) => (
-                        <CommandGroup key={group} heading={group}>
-                          {groupOptions.map((option) => (
-                            <CommandItem
-                              key={option.value}
-                              value={option.label}
-                              onSelect={() => {
-                                const currentValues = field.value || []
-                                const newValues = currentValues.includes(option.value)
-                                  ? currentValues.filter((v: string) => v !== option.value)
-                                  : [...currentValues, option.value]
-                                field.onChange(newValues)
-                              }}
-                            >
-                              <Check
-                                className={cn(
-                                  "mr-2 h-4 w-4",
-                                  selectedValues.includes(option.value)
-                                    ? "opacity-100"
-                                    : "opacity-0"
-                                )}
-                              />
-                              {option.label}
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      ))}
+                      {Object.entries(filteredGroups).map(
+                        ([group, groupOptions]) => (
+                          <CommandGroup key={group} heading={group}>
+                            {groupOptions.map((option) => (
+                              <CommandItem
+                                key={option.value}
+                                value={option.label}
+                                onSelect={() => {
+                                  const currentValues = field.value || [];
+                                  const newValues = currentValues.includes(
+                                    option.value
+                                  )
+                                    ? currentValues.filter(
+                                        (v: string) => v !== option.value
+                                      )
+                                    : [...currentValues, option.value];
+                                  field.onChange(newValues);
+                                }}
+                              >
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    selectedValues.includes(option.value)
+                                      ? "opacity-100"
+                                      : "opacity-0"
+                                  )}
+                                />
+                                {option.label}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        )
+                      )}
                     </CommandList>
                   </Command>
                 </PopoverContent>
@@ -212,8 +224,8 @@ export default function MultiSelectWrapper({
               <FormMessage />
             </div>
           </FormItem>
-        )
+        );
       }}
     />
-  )
+  );
 }

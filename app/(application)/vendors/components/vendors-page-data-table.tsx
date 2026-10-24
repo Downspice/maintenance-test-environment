@@ -3,12 +3,7 @@
 import type React from "react";
 
 import { useState, useEffect } from "react";
-import {
-  ChevronRight,
-  ChevronLeft,
-  ArrowDown,
-  ArrowUp,
-} from "lucide-react";
+import { ChevronRight, ChevronLeft, ArrowDown, ArrowUp } from "lucide-react";
 import {
   RiArrowLeftDoubleLine,
   RiArrowLeftSLine,
@@ -20,7 +15,6 @@ import { cn } from "@/lib/shared/utils";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 
-
 import {
   Table,
   TableBody,
@@ -30,8 +24,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-
-
 
 // Define the data structure
 interface Task {
@@ -64,10 +56,10 @@ interface CarData {
   tasksPending: number;
   carImage: string;
   phone: string;
-  contact:string;
-  type:string; 
+  contact: string;
+  type: string;
   workOrderAssignee: "Yes" | "No";
-   taskTypes: ("maintenance" | "incident" | "inspection" | "renewal" | "pm")[];
+  taskTypes: ("maintenance" | "incident" | "inspection" | "renewal" | "pm")[];
   tasks?: Task[]; // Added tasks array for sub-rows
   keywords: string[];
   phone: string;
@@ -88,8 +80,6 @@ type FilterOption =
   | "Renewals Due"
   | "Inspections Pending";
 
- 
-
 // Mock car data with tasks
 const mockCarData: CarData[] = [
   {
@@ -105,7 +95,7 @@ const mockCarData: CarData[] = [
     type: "due soon",
     taskTypes: ["maintenance", "incident", "pm"],
     keywords: ["sedan", "fuel-efficient", "reliable"],
-    phone: " ", 
+    phone: " ",
   },
   {
     id: 2,
@@ -287,7 +277,7 @@ interface DataTableProps {
 
 export function VendorPageDataTable({ realServer }: DataTableProps) {
   const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set());
-   const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const [data, setData] = useState<CarData[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [filterOption, setFilterOption] =
@@ -420,8 +410,6 @@ export function VendorPageDataTable({ realServer }: DataTableProps) {
     setCurrentPage(1);
   };
 
- 
- 
   // Handle inspection link click
   const handleInspectionClick = (inspectionDate: number) => {
     console.log("Navigating to inspection:", inspectionDate);
@@ -439,8 +427,6 @@ export function VendorPageDataTable({ realServer }: DataTableProps) {
     }
     setSelectedRows(newSelectedRows);
   };
-
-  
 
   // Select all rows on current page
   const toggleSelectAll = () => {
@@ -473,8 +459,7 @@ export function VendorPageDataTable({ realServer }: DataTableProps) {
     return {
       all: mockCarData.length,
       due: mockCarData.filter((car) => car.type === "overdue").length,
-      dueSoon: mockCarData.filter((car) => car.type === "due soon")
-        .length,
+      dueSoon: mockCarData.filter((car) => car.type === "due soon").length,
       repairs: mockCarData.filter((car) => car.taskTypes.includes("incident"))
         .length,
       pm: mockCarData.filter((car) => car.taskTypes.includes("pm")).length,
@@ -547,9 +532,11 @@ export function VendorPageDataTable({ realServer }: DataTableProps) {
                   <SortableHeader field="name">Name</SortableHeader>
                   <SortableHeader field="contact">Contact</SortableHeader>
                   <SortableHeader field="type">Type</SortableHeader>
-                  <SortableHeader field="workOrderAssignee">Work Order Assignee</SortableHeader>
+                  <SortableHeader field="workOrderAssignee">
+                    Work Order Assignee
+                  </SortableHeader>
                   <SortableHeader field="phone">Phone</SortableHeader>
-                  <SortableHeader field="keywords">Keywords</SortableHeader>  
+                  <SortableHeader field="keywords">Keywords</SortableHeader>
                 </>
               )}
             </TableRow>
@@ -566,7 +553,11 @@ export function VendorPageDataTable({ realServer }: DataTableProps) {
                 <>
                   <TableRow
                     key={car.id + car.date}
-                    className={selectedRows.has(car.id) ? "bg-muted/50  cursor-pointer " : ""}
+                    className={
+                      selectedRows.has(car.id)
+                        ? "bg-muted/50  cursor-pointer "
+                        : ""
+                    }
                     onClick={() => handleInspectionClick(car.id)}
                   >
                     <TableCell>
@@ -578,12 +569,9 @@ export function VendorPageDataTable({ realServer }: DataTableProps) {
                     </TableCell>
 
                     <TableCell>
-                      <div className="flex">
-                       {car.name}</div>
+                      <div className="flex">{car.name}</div>
                     </TableCell>
-                    <TableCell>
-                      {car.contact}
-                    </TableCell>
+                    <TableCell>{car.contact}</TableCell>
 
                     <TableCell>
                       <div className="flex flex-col gap-1">
@@ -607,14 +595,18 @@ export function VendorPageDataTable({ realServer }: DataTableProps) {
           <p className="text-paragraph-xs text-text-sub-600 shrink-0">
             Showing{" "}
             <span className="font-medium text-text-strong-950">
-              {filteredVehicles.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1}
+              {filteredVehicles.length === 0
+                ? 0
+                : (currentPage - 1) * itemsPerPage + 1}
             </span>{" "}
             to{" "}
             <span className="font-medium text-text-strong-950">
               {Math.min(currentPage * itemsPerPage, filteredVehicles.length)}
             </span>{" "}
             out of{" "}
-            <span className="font-medium text-text-strong-950">{filteredVehicles.length}</span>
+            <span className="font-medium text-text-strong-950">
+              {filteredVehicles.length}
+            </span>
           </p>
         </div>
         <div className="flex items-center gap-2">

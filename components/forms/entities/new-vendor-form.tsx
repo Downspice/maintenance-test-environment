@@ -108,8 +108,8 @@ export default function NewVendor({
 
     const validOthers = Array.isArray(data.others)
       ? data.others.filter(
-        (item) => item && (item.name?.trim() || item.value?.trim())
-      )
+          (item) => item && (item.name?.trim() || item.value?.trim())
+        )
       : [];
 
     const payload = {
@@ -133,8 +133,8 @@ export default function NewVendor({
             const firstErrorField = Object.values(errors)[0];
             const message =
               firstErrorField &&
-                typeof firstErrorField === "object" &&
-                "message" in firstErrorField
+              typeof firstErrorField === "object" &&
+              "message" in firstErrorField
                 ? String(firstErrorField.message)
                 : undefined;
 

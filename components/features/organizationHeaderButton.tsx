@@ -66,7 +66,9 @@ export default function OrganizationHeaderButton() {
   const [open, setOpen] = useState(false);
   const [selectedKey, setSelectedKey] = useState<CompanyMenuKey | null>(null);
 
-  const activeItem = COMPANY_MENU_ITEMS.find((item) => item.key === selectedKey);
+  const activeItem = COMPANY_MENU_ITEMS.find(
+    (item) => item.key === selectedKey
+  );
 
   const handleOpenChange = (nextOpen: boolean) => {
     setOpen(nextOpen);

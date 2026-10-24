@@ -280,24 +280,24 @@ export default function NewCustomer({
                     />
                     {watchdiscount_type ===
                       "1fcd0622-ebfa-477a-ba12-21cfcb070a62" && (
-                        <InputWrapper
-                          control={CustomerForm.control}
-                          name={"discount_percent"}
-                          label={"Discount"}
-                          value={""}
-                          type="text"
-                        />
-                      )}
+                      <InputWrapper
+                        control={CustomerForm.control}
+                        name={"discount_percent"}
+                        label={"Discount"}
+                        value={""}
+                        type="text"
+                      />
+                    )}
                     {watchdiscount_type ===
                       "af4850a7-a669-4898-9adc-83a7c27132b9" && (
-                        <InputWrapper
-                          control={CustomerForm.control}
-                          name={"discount_amount"}
-                          label={"Discount"}
-                          value={""}
-                          type="text"
-                        />
-                      )}
+                      <InputWrapper
+                        control={CustomerForm.control}
+                        name={"discount_amount"}
+                        label={"Discount"}
+                        value={""}
+                        type="text"
+                      />
+                    )}
                   </div>
                   <div className="col-span-1">
                     <InputWrapper

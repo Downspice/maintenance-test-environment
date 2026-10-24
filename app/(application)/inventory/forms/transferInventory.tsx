@@ -2,14 +2,12 @@
 
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  useForm,
-} from "react-hook-form"; 
+import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { GitPullRequestArrow } from "lucide-react";
 import { toast } from "sonner";
- 
+
 import SingleCheckboxWrapper from "@/components/forms/fields/SingleCheckboxWrapper";
 import InputWrapper from "@/components/forms/fields/InputWrapper";
 import TextareaWrapper from "@/components/forms/fields/TextareaWrapper";
@@ -32,8 +30,8 @@ export default function TransferInventoryForm({
 }: {
   data: TransferInventoryInterface;
 }) {
-    const { data: warehouseOptions } = useGetWarehouses();
-  
+  const { data: warehouseOptions } = useGetWarehouses();
+
   const TransferInventoryForm = useForm<
     z.infer<typeof TransferInventorySchema>
   >({

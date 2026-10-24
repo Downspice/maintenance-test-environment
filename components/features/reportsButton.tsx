@@ -89,10 +89,7 @@ const REPORT_CONTENT: Record<ReportMenuId, ReportConfig> = {
       "Filter by equipment and date range, then set sort order for the export.",
     formId: "history-report-form",
     content: (
-      <HistoryReportGeneration
-        formId="history-report-form"
-        hideSubmitButton
-      />
+      <HistoryReportGeneration formId="history-report-form" hideSubmitButton />
     ),
   },
   "fuel-history": {

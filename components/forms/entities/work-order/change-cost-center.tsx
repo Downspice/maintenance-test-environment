@@ -20,7 +20,7 @@ export type ChangeCostCenterInterface = z.infer<typeof ChangeCostCenterSchema>;
 
 export default function ChangeCostCenterForm({
   data,
-  onSuccess
+  onSuccess,
 }: {
   data: any;
   onSuccess?: () => void;
@@ -33,12 +33,13 @@ export default function ChangeCostCenterForm({
     name: option.name,
   }));
 
-  const { mutate: updateCostCenter, isPending } = useUpdateWorkOrderCostCenter();
+  const { mutate: updateCostCenter, isPending } =
+    useUpdateWorkOrderCostCenter();
 
   const form = useForm<ChangeCostCenterInterface>({
     resolver: zodResolver(ChangeCostCenterSchema),
     defaultValues: {
-      cost_center_id: data.cost_center_id
+      cost_center_id: data.cost_center_id,
     },
   });
 
@@ -59,9 +60,11 @@ export default function ChangeCostCenterForm({
         onSuccess?.();
       },
       onError: (error: any) => {
-        toast.error(error?.response?.data?.message || "Failed to update cost center");
+        toast.error(
+          error?.response?.data?.message || "Failed to update cost center"
+        );
         console.error(error);
-      }
+      },
     });
   }
 

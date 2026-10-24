@@ -103,9 +103,9 @@ export default function EditScheduledReportForm({
   }
 
   function onError(errors: unknown) {
-    const errorMessages = Object.entries(errors as Record<string, { message?: string }>).map(
-      ([field, error]) => `${field}: ${error.message ?? "Invalid value"}`
-    );
+    const errorMessages = Object.entries(
+      errors as Record<string, { message?: string }>
+    ).map(([field, error]) => `${field}: ${error.message ?? "Invalid value"}`);
 
     toast.error("Please fix the following errors:", {
       description: (

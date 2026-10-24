@@ -41,9 +41,15 @@ export const AddPartUsedSchema = z.object({
   description: z.string().optional().nullable(),
   vendor_id: z.string().optional().nullable(),
   cost_center_id: z.string().optional().nullable(),
-  quantity: z.coerce.number().positive({ message: "Quantity must be greater than 0" }),
-  unit_cost: z.coerce.number().nonnegative({ message: "Unit cost must be a valid number" }),
-  extended_cost: z.coerce.number().nonnegative({ message: "Extended cost must be a valid number" }),
+  quantity: z.coerce
+    .number()
+    .positive({ message: "Quantity must be greater than 0" }),
+  unit_cost: z.coerce
+    .number()
+    .nonnegative({ message: "Unit cost must be a valid number" }),
+  extended_cost: z.coerce
+    .number()
+    .nonnegative({ message: "Extended cost must be a valid number" }),
   is_warranty_replaced: z.boolean().optional(),
   po_id: z.string().optional().nullable(),
   is_part_under_warranty: z.boolean().optional(),
@@ -56,14 +62,22 @@ export const AddPartUsedSchema = z.object({
 export type AddPartUsedInterface = z.infer<typeof AddPartUsedSchema>;
 
 export const AddLaborUsedSchema = z.object({
-  performed_by: z.enum(["Employee", "Vendor"], { required_error: "Performed by is required" }),
+  performed_by: z.enum(["Employee", "Vendor"], {
+    required_error: "Performed by is required",
+  }),
   technician_id: z.string().min(1, { message: "Technician is required" }),
   work_performed: z.string().optional().nullable(),
   cost_center_id: z.string().optional().nullable(),
-  labor_rate: z.coerce.number().nonnegative({ message: "Labor rate must be a valid number" }),
+  labor_rate: z.coerce
+    .number()
+    .nonnegative({ message: "Labor rate must be a valid number" }),
   is_under_warranty: z.boolean().optional(),
-  hours: z.coerce.number().positive({ message: "Hours must be greater than 0" }),
-  total_cost: z.coerce.number().nonnegative({ message: "Total cost must be a valid number" }),
+  hours: z.coerce
+    .number()
+    .positive({ message: "Hours must be greater than 0" }),
+  total_cost: z.coerce
+    .number()
+    .nonnegative({ message: "Total cost must be a valid number" }),
   maintenance_id: z.string().optional().nullable(),
 });
 
@@ -89,9 +103,15 @@ export const AddMaintenanceInWorkOrderSchema = z.object({
   type_id: z.string().optional().nullable(),
   other_task_name: z.string().optional().nullable(),
   other_type_name: z.string().optional().nullable(),
-  parts_cost: z.coerce.number().nonnegative({ message: "Parts Cost must be a valid number" }),
-  labor_cost: z.coerce.number().nonnegative({ message: "Labor Cost must be a valid number" }),
-  total: z.coerce.number().nonnegative({ message: "Total must be a valid number" }),
+  parts_cost: z.coerce
+    .number()
+    .nonnegative({ message: "Parts Cost must be a valid number" }),
+  labor_cost: z.coerce
+    .number()
+    .nonnegative({ message: "Labor Cost must be a valid number" }),
+  total: z.coerce
+    .number()
+    .nonnegative({ message: "Total must be a valid number" }),
   notes: z.string().optional().nullable(),
   labor: z.array(AddLaborUsedSchema).optional(),
   parts: z.array(AddPartUsedSchema).optional(),
@@ -139,8 +159,26 @@ export const CreateWorkOrderSchema = z.object({
   po_id: z.string().optional().nullable(),
   invoice_number: z.string().optional().nullable(),
   status_id: z.string().optional().nullable(),
-  others: z.array(z.object({ id: z.string().optional(), name: z.string(), value: z.string() })).optional().nullable(),
-  assignees: z.array(z.object({ id: z.string().optional(), assignee_type: z.enum(["Employee", "Vendor"]), assignee_id: z.string() })).optional().nullable(),
+  others: z
+    .array(
+      z.object({
+        id: z.string().optional(),
+        name: z.string(),
+        value: z.string(),
+      })
+    )
+    .optional()
+    .nullable(),
+  assignees: z
+    .array(
+      z.object({
+        id: z.string().optional(),
+        assignee_type: z.enum(["Employee", "Vendor"]),
+        assignee_id: z.string(),
+      })
+    )
+    .optional()
+    .nullable(),
   assignee_ids: z.array(z.string()).optional().nullable(),
   hours: z.coerce.number().optional().nullable(),
   equipment_id: z.string().optional().nullable(),

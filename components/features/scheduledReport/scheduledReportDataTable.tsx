@@ -121,9 +121,9 @@ export default function ScheduledReportDataTable() {
       title: "Delete selected scheduled reports?",
       description: `This will delete ${selectedRows.length} item(s). This action cannot be undone.`,
       confirmText: "Delete",
-    })
+    });
     if (ok) {
-      toast.success(`Deleted ${selectedRows.length} rows`)
+      toast.success(`Deleted ${selectedRows.length} rows`);
     }
   };
 
@@ -393,7 +393,11 @@ export default function ScheduledReportDataTable() {
         emptyState={
           <div className="flex min-h-[12rem] flex-col items-center justify-center gap-3 px-6 py-10 text-center">
             <div className="flex size-14 items-center justify-center rounded-full bg-bg-weak-50 text-primary-base ring-1 ring-stroke-soft-200">
-              <CalendarClock className="size-7" strokeWidth={1.75} aria-hidden />
+              <CalendarClock
+                className="size-7"
+                strokeWidth={1.75}
+                aria-hidden
+              />
             </div>
             <div className="max-w-md space-y-1">
               <p className="text-label-md font-medium text-text-strong-950">

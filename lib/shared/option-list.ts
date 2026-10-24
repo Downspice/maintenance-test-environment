@@ -43,7 +43,7 @@ export const reportCategoryTypeOptionsList = [
     id: "Presses (Production Equipment)",
     name: "Presses (Production Equipment)",
   },
-  { id: "Pumps", name: "Pumps (Production Equipment)" }, 
+  { id: "Pumps", name: "Pumps (Production Equipment)" },
 ];
 
 export const iconsOptionList = [
@@ -80,7 +80,6 @@ export const conditionOptionsList = [
   { id: "8", name: " Good" },
   { id: "6", name: "Poor" },
 ];
-
 
 export const dateFilterOptionsList = [
   { id: "today", name: "Today" },
@@ -155,16 +154,17 @@ export const equipmentCheckboxOptions: CheckboxOption[] = [
 export const EmployeeCheckboxOptions: CheckboxOption[] = [
   {
     id: "attachments",
-    name: "MAintenance", 
+    name: "MAintenance",
   },
   {
     id: "expenses",
-    name: "Renewals", 
+    name: "Renewals",
   },
   {
     id: "images",
-    name: "Work Orders", 
-  },]
+    name: "Work Orders",
+  },
+];
 export const monthOptionList = [
   { id: "01", name: "January" },
   { id: "02", name: "February" },
@@ -184,4 +184,4 @@ export const pmScheduleOptionList = [
   { id: "drill Press", name: "Drill Press" },
   { id: "Ac Units", name: "Ac Units" },
   { id: "Generator", name: "Generator" },
-]
+];

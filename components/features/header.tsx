@@ -6,7 +6,7 @@
 //   BreadcrumbSeparator,
 //   BreadcrumbPage,
 // } from "../ui/breadcrumb";
- import { SidebarTrigger } from "../ui/sidebar";
+import { SidebarTrigger } from "../ui/sidebar";
 import { Input } from "../ui/input";
 import CreateAllButton from "./createAllButton";
 import HeaderSettingsButton from "./setupButton";

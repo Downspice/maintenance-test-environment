@@ -215,15 +215,24 @@ export default function ReceivePurchaseOrder({
                         <TableHeader>
                           <TableRow>
                             <TableHead>Description</TableHead>
-                            <TableHead className="w-[100px] text-center">Ordered</TableHead>
-                            <TableHead className="w-[140px] text-center">Received (Total)</TableHead>
-                            <TableHead className="w-[140px] text-right">Received</TableHead>
+                            <TableHead className="w-[100px] text-center">
+                              Ordered
+                            </TableHead>
+                            <TableHead className="w-[140px] text-center">
+                              Received (Total)
+                            </TableHead>
+                            <TableHead className="w-[140px] text-right">
+                              Received
+                            </TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
                           {watchItems.length === 0 ? (
                             <TableRow>
-                              <TableCell colSpan={4} className="text-center text-text-soft-400 py-4">
+                              <TableCell
+                                colSpan={4}
+                                className="text-center text-text-soft-400 py-4"
+                              >
                                 No items to receive
                               </TableCell>
                             </TableRow>
@@ -233,8 +242,12 @@ export default function ReceivePurchaseOrder({
                                 <TableCell className="font-medium text-text-strong-950">
                                   {item.description || item.partNumber}
                                 </TableCell>
-                                <TableCell className="text-center">{item.orderQuantity}</TableCell>
-                                <TableCell className="text-center">{item.receivedQuantity || 0}</TableCell>
+                                <TableCell className="text-center">
+                                  {item.orderQuantity}
+                                </TableCell>
+                                <TableCell className="text-center">
+                                  {item.receivedQuantity || 0}
+                                </TableCell>
                                 <TableCell className="text-right">
                                   <Input
                                     type="number"
@@ -245,7 +258,8 @@ export default function ReceivePurchaseOrder({
                                     onChange={(e) => {
                                       const val = Number(e.target.value);
                                       const updatedItems = [...watchItems];
-                                      updatedItems[index].newReceivedQuantity = val;
+                                      updatedItems[index].newReceivedQuantity =
+                                        val;
                                       form.setValue("items", updatedItems);
                                     }}
                                   />

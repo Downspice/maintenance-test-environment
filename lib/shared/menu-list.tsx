@@ -31,7 +31,6 @@ type Menu = {
   icon: LucideIcon;
   submenus?: Submenu[];
   button?: React.JSX.Element;
-
 };
 
 type Group = {
@@ -55,35 +54,35 @@ export function getMenuList(pathname: string): Group[] {
           label: "Equipment",
           icon: Cog,
           submenus: [],
-          button: <EquipmentFormWrapper variant="icon" />
+          button: <EquipmentFormWrapper variant="icon" />,
         },
         {
           href: "/work-orders",
           label: "Work Orders",
           icon: File,
           submenus: [],
-          button: <WorkOrderFormWrapper variant="icon" />
+          button: <WorkOrderFormWrapper variant="icon" />,
         },
         {
           href: "/inventory",
           label: "Inventory",
           icon: Boxes,
           submenus: [],
-          button: <InventoryFormWrapper variant="icon" />
+          button: <InventoryFormWrapper variant="icon" />,
         },
         {
           href: "/purchase-orders",
           label: "Purchase Orders",
           icon: ShoppingCart,
           submenus: [],
-          button: <PurchaseOrderFormWrapper variant="icon" />
+          button: <PurchaseOrderFormWrapper variant="icon" />,
         },
         {
           href: "/customer",
           label: "Customer",
           icon: Users,
           submenus: [],
-          button: <CustomerFormWrapper variant="icon" />
+          button: <CustomerFormWrapper variant="icon" />,
         },
         // {
         //   href: "/inspections",
@@ -96,21 +95,21 @@ export function getMenuList(pathname: string): Group[] {
           label: "Invoices",
           icon: ListTodo,
           submenus: [],
-          button: <InvoiceFormWrapper variant="icon" />
+          button: <InvoiceFormWrapper variant="icon" />,
         },
         {
           href: "/employees",
           label: "Employees",
           icon: Users,
           submenus: [],
-          button: <EmployeeFormWrapper variant="icon" />
+          button: <EmployeeFormWrapper variant="icon" />,
         },
         {
           href: "/vendors",
           label: "Vendors",
           icon: Building,
           submenus: [],
-          button: <VendorFormWrapper variant="icon" />
+          button: <VendorFormWrapper variant="icon" />,
         },
         {
           href: "/calendars",

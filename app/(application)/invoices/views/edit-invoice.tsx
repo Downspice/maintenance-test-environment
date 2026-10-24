@@ -37,9 +37,7 @@ import {
   useGetLocations,
   useGetPurchaseOrderTerms,
 } from "@/services/setups/lookups";
-import {
-  useGetCustomers,
-} from "@/services/setups/customer";
+import { useGetCustomers } from "@/services/setups/customer";
 import { useGetWarehouses } from "@/services/setups/inventory";
 import {
   useGetInvoice,
@@ -149,28 +147,41 @@ export default function EditInvoice({ children, invoiceId }: EditInvoiceProps) {
   const [editIndex, setEditIndex] = useState<number | null>(null);
 
   // Fetch invoice data only when drawer is open
-  const { data: invoiceData, isLoading: isLoadingInvoice } = useGetInvoice(invoiceId, {
-    enabled: open && !!invoiceId,
-  });
+  const { data: invoiceData, isLoading: isLoadingInvoice } = useGetInvoice(
+    invoiceId,
+    {
+      enabled: open && !!invoiceId,
+    }
+  );
   const { mutateAsync: updateInvoice } = useUpdateInvoice();
 
   // Fetch dropdown options only when drawer is open
-  const { data: locationOptionsList } = useGetLocations<Array<{ id: string; name: string }>>({
+  const { data: locationOptionsList } = useGetLocations<
+    Array<{ id: string; name: string }>
+  >({
     enabled: open,
   });
-  const { data: warehouseOptionsList } = useGetWarehouses<Array<{ id: string; name: string }>>({
+  const { data: warehouseOptionsList } = useGetWarehouses<
+    Array<{ id: string; name: string }>
+  >({
     enabled: open,
   });
-  const { data: itemTypesOptionsList } = useGetItemTypes<Array<{ id: string; name: string }>>({
+  const { data: itemTypesOptionsList } = useGetItemTypes<
+    Array<{ id: string; name: string }>
+  >({
     enabled: open,
   });
-  const { data: paymentMethodOptionsList } = useGetPaymentMethods<Array<{ id: string; name: string }>>({
+  const { data: paymentMethodOptionsList } = useGetPaymentMethods<
+    Array<{ id: string; name: string }>
+  >({
     enabled: open,
   });
   const { data: customersOptionsList } = useGetCustomers<Customer[]>({
     enabled: open,
   });
-  const { data: termsOptionsList } = useGetPurchaseOrderTerms<Array<{ id: string; name: string }>>({
+  const { data: termsOptionsList } = useGetPurchaseOrderTerms<
+    Array<{ id: string; name: string }>
+  >({
     enabled: open,
   });
 
@@ -180,7 +191,9 @@ export default function EditInvoice({ children, invoiceId }: EditInvoiceProps) {
 
   const [paymentsList, setPaymentsList] = useState<PaymentFormValues[]>([]);
   const [editPaymentIndex, setEditPaymentIndex] = useState<number | null>(null);
-  const [editPayment, setEditPayment] = useState<PaymentFormValues | null>(null);
+  const [editPayment, setEditPayment] = useState<PaymentFormValues | null>(
+    null
+  );
   const [openPayments, setOpenPayments] = useState(false);
 
   // Initialize form
@@ -271,12 +284,14 @@ export default function EditInvoice({ children, invoiceId }: EditInvoiceProps) {
       }
 
       if (invoiceData.invoice_payments) {
-        const transformedPayments = invoiceData.invoice_payments.map((payment: any) => ({
-          date_received: new Date(payment.date_received),
-          amount_received: parseFloat(payment.amount_received),
-          payment_method_id: payment.payment_method_id,
-          metadata: payment.metadata || {},
-        }));
+        const transformedPayments = invoiceData.invoice_payments.map(
+          (payment: any) => ({
+            date_received: new Date(payment.date_received),
+            amount_received: parseFloat(payment.amount_received),
+            payment_method_id: payment.payment_method_id,
+            metadata: payment.metadata || {},
+          })
+        );
         setPaymentsList(transformedPayments);
       }
     }
@@ -415,8 +430,10 @@ export default function EditInvoice({ children, invoiceId }: EditInvoiceProps) {
 
         const shippingDetails = [
           customer.customer_shipping?.address,
-          customer.customer_shipping?.phone && `Phone: ${customer.customer_shipping.phone}`,
-          customer.customer_shipping?.country && `Country: ${customer.customer_shipping.country}`,
+          customer.customer_shipping?.phone &&
+            `Phone: ${customer.customer_shipping.phone}`,
+          customer.customer_shipping?.country &&
+            `Country: ${customer.customer_shipping.country}`,
         ]
           .filter(Boolean)
           .join("\n");
@@ -435,7 +452,10 @@ export default function EditInvoice({ children, invoiceId }: EditInvoiceProps) {
           <SheetTitle>
             <div className="flex justify-between">
               <div>
-                Edit Invoice{invoiceData?.invoice_number ? `: ${invoiceData.invoice_number}` : ""}
+                Edit Invoice
+                {invoiceData?.invoice_number
+                  ? `: ${invoiceData.invoice_number}`
+                  : ""}
               </div>
             </div>
           </SheetTitle>
@@ -457,76 +477,76 @@ export default function EditInvoice({ children, invoiceId }: EditInvoiceProps) {
           </div>
         ) : (
           <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit, onError)}
-              className="space-y-6"
-            >
-              <div className="flex flex-col space-y-2">
-                <div className="flex flex-row gap-x-3">
-                  <InputWrapper
-                    control={form.control}
-                    name="invoice_number"
-                    label="Invoice #"
-                    value=""
-                    type="text"
-                  />
-                  <DatePickerWrapper
-                    control={form.control}
-                    name="invoice_date"
-                    label="Invoice Date"
-                  />
-                  <DatePickerWrapper
-                    control={form.control}
-                    name="due_date"
-                    label="Due Date"
-                  />
-                </div>
-                <div className="grid grid-cols-2 space-x-3">
-                  <div className="col-span-1 flex flex-col">
-                    <ComboboxFieldWrapper
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit, onError)}
+                className="space-y-6"
+              >
+                <div className="flex flex-col space-y-2">
+                  <div className="flex flex-row gap-x-3">
+                    <InputWrapper
                       control={form.control}
-                      name="customer_id"
-                      label="Customer"
-                      options={convertToOptionList(
-                        customersOptionsList ?? [],
-                        "id",
-                        "company_name"
-                      )}
+                      name="invoice_number"
+                      label="Invoice #"
+                      value=""
+                      type="text"
+                    />
+                    <DatePickerWrapper
+                      control={form.control}
+                      name="invoice_date"
+                      label="Invoice Date"
+                    />
+                    <DatePickerWrapper
+                      control={form.control}
+                      name="due_date"
+                      label="Due Date"
                     />
                   </div>
-                </div>
-                <div className="grid grid-cols-8 gap-4 items-start">
-                  <div className="col-span-5 flex flex-col gap-3">
-                    <div className="grid grid-cols-2 gap-2">
-                      <Fieldset
-                        legend="Billing"
-                        className="h-full"
-                        content={
-                          <TextareaWrapper
-                            control={form.control}
-                            name="customer_billing"
-                            label=""
-                            placeholder="Billing address"
-                            value=""
-                          />
-                        }
-                      />
-                      <Fieldset
-                        legend="Shipping"
-                        className="h-full"
-                        content={
-                          <TextareaWrapper
-                            control={form.control}
-                            name="customer_shipping"
-                            label=""
-                            placeholder="Shipping address"
-                            value=""
-                          />
-                        }
+                  <div className="grid grid-cols-2 space-x-3">
+                    <div className="col-span-1 flex flex-col">
+                      <ComboboxFieldWrapper
+                        control={form.control}
+                        name="customer_id"
+                        label="Customer"
+                        options={convertToOptionList(
+                          customersOptionsList ?? [],
+                          "id",
+                          "company_name"
+                        )}
                       />
                     </div>
-                    <Tabs defaultValue="Items" className="w-full">
+                  </div>
+                  <div className="grid grid-cols-8 gap-4 items-start">
+                    <div className="col-span-5 flex flex-col gap-3">
+                      <div className="grid grid-cols-2 gap-2">
+                        <Fieldset
+                          legend="Billing"
+                          className="h-full"
+                          content={
+                            <TextareaWrapper
+                              control={form.control}
+                              name="customer_billing"
+                              label=""
+                              placeholder="Billing address"
+                              value=""
+                            />
+                          }
+                        />
+                        <Fieldset
+                          legend="Shipping"
+                          className="h-full"
+                          content={
+                            <TextareaWrapper
+                              control={form.control}
+                              name="customer_shipping"
+                              label=""
+                              placeholder="Shipping address"
+                              value=""
+                            />
+                          }
+                        />
+                      </div>
+                      <Tabs defaultValue="Items" className="w-full">
                         <TabsList>
                           <TabsTrigger value="Items">Items</TabsTrigger>
                           <TabsTrigger value="Payments">Payments</TabsTrigger>
@@ -586,7 +606,9 @@ export default function EditInvoice({ children, invoiceId }: EditInvoiceProps) {
                                 type="submit"
                                 variant="primary"
                               >
-                                {editIndex !== null ? "Update Item" : "Save Item"}
+                                {editIndex !== null
+                                  ? "Update Item"
+                                  : "Save Item"}
                               </Button>
                             }
                           >
@@ -728,7 +750,9 @@ export default function EditInvoice({ children, invoiceId }: EditInvoiceProps) {
                             <Form {...PaymentsForm}>
                               <form
                                 id="edit-invoice-payment-form"
-                                onSubmit={PaymentsForm.handleSubmit(onSubmitPayment)}
+                                onSubmit={PaymentsForm.handleSubmit(
+                                  onSubmitPayment
+                                )}
                                 className="flex flex-col gap-1 py-1"
                               >
                                 <DatePickerWrapper
@@ -775,7 +799,9 @@ export default function EditInvoice({ children, invoiceId }: EditInvoiceProps) {
                                   <TableCell>
                                     {payment.date_received.toLocaleDateString()}
                                   </TableCell>
-                                  <TableCell>{payment.amount_received}</TableCell>
+                                  <TableCell>
+                                    {payment.amount_received}
+                                  </TableCell>
                                   <TableCell>
                                     <TableRowActions
                                       editLabel="Edit payment"
@@ -815,119 +841,119 @@ export default function EditInvoice({ children, invoiceId }: EditInvoiceProps) {
                           />
                         </TabsContent>
                       </Tabs>
-                  </div>
-                  <div className="col-span-3">
-                    <Fieldset
-                      legend="Miscellaneous"
-                      content={
-                        <>
-                          <ComboboxFieldWrapper
-                            control={form.control}
-                            name="term_id"
-                            label="Terms"
-                            options={termsOptionsList ?? []}
-                          />
-                          <InputWrapper
-                            control={form.control}
-                            name="po_number"
-                            label="PO #"
-                            value=""
-                            type="text"
-                          />
-                          <ComboboxFieldWrapper
-                            control={form.control}
-                            name="location_id"
-                            label="Location"
-                            options={locationOptionsList ?? []}
-                          />
-                        </>
-                      }
-                    />
-                    <Fieldset
-                      legend="Totals"
-                      content={
-                        <>
-                          <InputWrapper
-                            control={form.control}
-                            name="discount_type"
-                            label="Discount Type"
-                            value=""
-                            type="text"
-                          />
-                          <InputWrapper
-                            control={form.control}
-                            name="discount_amount"
-                            label="Discount Amount"
-                            value=""
-                            type="number"
-                          />
-                          <InputWrapper
-                            control={form.control}
-                            name="tax_one"
-                            label="Tax 1"
-                            type="number"
-                            value=""
-                          />
-                          <InputWrapper
-                            control={form.control}
-                            name="tax_two"
-                            label="Tax 2"
-                            type="number"
-                            value=""
-                          />
-                          <InputWrapper
-                            control={form.control}
-                            name="shipping"
-                            label="Shipping"
-                            type="number"
-                            value=""
-                          />
-                          <InputWrapper
-                            control={form.control}
-                            name="total"
-                            label="Total"
-                            type="number"
-                            value=""
-                          />
-                          <InputWrapper
-                            control={form.control}
-                            name="payments"
-                            label="Payments"
-                            type="number"
-                            value=""
-                          />
-                          <InputWrapper
-                            control={form.control}
-                            name="balance_due"
-                            label="Balance Due"
-                            type="number"
-                            value=""
-                          />
-                        </>
-                      }
-                    />
+                    </div>
+                    <div className="col-span-3">
+                      <Fieldset
+                        legend="Miscellaneous"
+                        content={
+                          <>
+                            <ComboboxFieldWrapper
+                              control={form.control}
+                              name="term_id"
+                              label="Terms"
+                              options={termsOptionsList ?? []}
+                            />
+                            <InputWrapper
+                              control={form.control}
+                              name="po_number"
+                              label="PO #"
+                              value=""
+                              type="text"
+                            />
+                            <ComboboxFieldWrapper
+                              control={form.control}
+                              name="location_id"
+                              label="Location"
+                              options={locationOptionsList ?? []}
+                            />
+                          </>
+                        }
+                      />
+                      <Fieldset
+                        legend="Totals"
+                        content={
+                          <>
+                            <InputWrapper
+                              control={form.control}
+                              name="discount_type"
+                              label="Discount Type"
+                              value=""
+                              type="text"
+                            />
+                            <InputWrapper
+                              control={form.control}
+                              name="discount_amount"
+                              label="Discount Amount"
+                              value=""
+                              type="number"
+                            />
+                            <InputWrapper
+                              control={form.control}
+                              name="tax_one"
+                              label="Tax 1"
+                              type="number"
+                              value=""
+                            />
+                            <InputWrapper
+                              control={form.control}
+                              name="tax_two"
+                              label="Tax 2"
+                              type="number"
+                              value=""
+                            />
+                            <InputWrapper
+                              control={form.control}
+                              name="shipping"
+                              label="Shipping"
+                              type="number"
+                              value=""
+                            />
+                            <InputWrapper
+                              control={form.control}
+                              name="total"
+                              label="Total"
+                              type="number"
+                              value=""
+                            />
+                            <InputWrapper
+                              control={form.control}
+                              name="payments"
+                              label="Payments"
+                              type="number"
+                              value=""
+                            />
+                            <InputWrapper
+                              control={form.control}
+                              name="balance_due"
+                              label="Balance Due"
+                              type="number"
+                              value=""
+                            />
+                          </>
+                        }
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="flex justify-end">
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="min-w-32 my-4 w-full"
-                >
-                  {isSubmitting ? (
-                    "Updating..."
-                  ) : (
-                    <>
-                      <Save className="mr-2 h-4 w-4" />
-                      Update Invoice
-                    </>
-                  )}
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </ScrollArea>
+                <div className="flex justify-end">
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="min-w-32 my-4 w-full"
+                  >
+                    {isSubmitting ? (
+                      "Updating..."
+                    ) : (
+                      <>
+                        <Save className="mr-2 h-4 w-4" />
+                        Update Invoice
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </ScrollArea>
         )}
       </SheetContent>
     </Sheet>

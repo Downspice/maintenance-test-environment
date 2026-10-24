@@ -1,14 +1,20 @@
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 
-
 // Generic type for exportable data - should have string keys and values that can be converted to string
-export type ExportableData = Record<string, string | number | boolean | null | undefined>;
+export type ExportableData = Record<
+  string,
+  string | number | boolean | null | undefined
+>;
 
 /**
  * Convert array of objects to CSV string
  */
-function convertToCSV<T extends ExportableData>(data: T[], headers: string[], columnMapping?: Record<string, string>): string {
+function convertToCSV<T extends ExportableData>(
+  data: T[],
+  headers: string[],
+  columnMapping?: Record<string, string>
+): string {
   if (data.length === 0) {
     throw new Error("No data to export");
   }
@@ -18,7 +24,7 @@ function convertToCSV<T extends ExportableData>(data: T[], headers: string[], co
 
   if (columnMapping) {
     // Use column mapping for header names
-    const headerRow = headers.map(header => {
+    const headerRow = headers.map((header) => {
       const mappedHeader = columnMapping[header] || header;
       // Escape quotes and wrap in quotes if contains comma
       return mappedHeader.includes(",") || mappedHeader.includes('"')
@@ -33,16 +39,18 @@ function convertToCSV<T extends ExportableData>(data: T[], headers: string[], co
 
   // Add data rows
   for (const item of data) {
-    const row = headers.map(header => {
+    const row = headers.map((header) => {
       // Get the value for this header
       const value = item[header as keyof T];
 
       // Convert all values to string and properly escape for CSV
-      const cellValue = value === null || value === undefined ? "" : String(value);
+      const cellValue =
+        value === null || value === undefined ? "" : String(value);
       // Escape quotes and wrap in quotes if contains comma
-      const escapedValue = cellValue.includes(",") || cellValue.includes('"')
-        ? `"${cellValue.replace(/"/g, '""')}"`
-        : cellValue;
+      const escapedValue =
+        cellValue.includes(",") || cellValue.includes('"')
+          ? `"${cellValue.replace(/"/g, '""')}"`
+          : cellValue;
 
       return escapedValue;
     });
@@ -85,8 +93,11 @@ export function exportToCSV<T extends ExportableData>(
 
   try {
     // Filter data to only include specified headers
-    const filteredData = data.map(item => {
-      const filteredItem: Record<string, string | number | boolean | null | undefined> = {};
+    const filteredData = data.map((item) => {
+      const filteredItem: Record<
+        string,
+        string | number | boolean | null | undefined
+      > = {};
       for (const header of headers) {
         if (header in item) {
           filteredItem[header] = item[header];
@@ -122,15 +133,21 @@ export function exportToExcel<T extends ExportableData>(
 
   try {
     // If no column mapping is provided, create one from the data keys
-    const mapping = columnMapping ||
-      Object.keys(data[0] || {}).reduce((acc, key) => {
-        acc[key] = key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' ');
-        return acc;
-      }, {} as Record<string, string>);
+    const mapping =
+      columnMapping ||
+      Object.keys(data[0] || {}).reduce(
+        (acc, key) => {
+          acc[key] =
+            key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, " ");
+          return acc;
+        },
+        {} as Record<string, string>
+      );
 
     // Map data to worksheet format, only including mapped columns
-    const worksheetData = data.map(item => {
-      const row: Record<string, string | number | boolean | null | undefined> = {};
+    const worksheetData = data.map((item) => {
+      const row: Record<string, string | number | boolean | null | undefined> =
+        {};
       // If headers are provided, only include those columns
       const columnsToExport = headers || Object.keys(mapping);
       for (const key of columnsToExport) {
@@ -156,12 +173,12 @@ export function exportToExcel<T extends ExportableData>(
     // Generate Excel file
     const excelBuffer = XLSX.write(workbook, {
       bookType: "xlsx",
-      type: "array"
+      type: "array",
     });
 
     // Create blob and download
     const blob = new Blob([excelBuffer], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
 
     downloadFile(blob, `${filename}.xlsx`);
@@ -189,7 +206,7 @@ export async function exportData<T extends ExportableData>(
 ): Promise<boolean> {
   // Use a consistent toast ID to ensure only one toast is shown at a time
   const TOAST_ID = "export-data-toast";
-  
+
   try {
     // Start loading
     if (onLoadingStart) onLoadingStart();
@@ -197,7 +214,7 @@ export async function exportData<T extends ExportableData>(
     // Show toast for long operations using consistent ID
     toast.loading("Preparing export...", {
       description: "Fetching data for export...",
-      id: TOAST_ID
+      id: TOAST_ID,
     });
 
     // Get the data
@@ -206,13 +223,13 @@ export async function exportData<T extends ExportableData>(
     // Update the same toast for processing
     toast.loading("Processing data...", {
       description: "Generating export file...",
-      id: TOAST_ID
+      id: TOAST_ID,
     });
 
     if (exportData.length === 0) {
       toast.error("Export failed", {
         description: "No data available to export.",
-        id: TOAST_ID
+        id: TOAST_ID,
       });
       return false;
     }
@@ -227,11 +244,16 @@ export async function exportData<T extends ExportableData>(
     // Export based on type
     let success = false;
     if (type === "csv") {
-      success = exportToCSV(exportData, filename, options?.headers, options?.columnMapping);
+      success = exportToCSV(
+        exportData,
+        filename,
+        options?.headers,
+        options?.columnMapping
+      );
       if (success) {
         toast.success("Export successful", {
           description: `Exported ${exportData.length} ${entityName} to CSV.`,
-          id: TOAST_ID
+          id: TOAST_ID,
         });
       }
     } else {
@@ -245,7 +267,7 @@ export async function exportData<T extends ExportableData>(
       if (success) {
         toast.success("Export successful", {
           description: `Exported ${exportData.length} ${entityName} to Excel.`,
-          id: TOAST_ID
+          id: TOAST_ID,
         });
       }
     }
@@ -253,10 +275,10 @@ export async function exportData<T extends ExportableData>(
     return success;
   } catch (error) {
     console.error("Error exporting data:", error);
-    
+
     toast.error("Export failed", {
       description: "There was a problem exporting the data. Please try again.",
-      id: TOAST_ID
+      id: TOAST_ID,
     });
     return false;
   } finally {

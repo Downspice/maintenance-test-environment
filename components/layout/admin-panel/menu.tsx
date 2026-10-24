@@ -59,11 +59,15 @@ export function Menu({ isOpen }: MenuProps) {
                     (active === undefined &&
                       (href === "/dashboard"
                         ? pathname === "/dashboard" || pathname === "/"
-                        : pathname === href || pathname.startsWith(href + "/"))) ||
+                        : pathname === href ||
+                          pathname.startsWith(href + "/"))) ||
                     active;
 
                   return !submenus || submenus.length === 0 ? (
-                    <div className="w-full relative flex items-center mb-1" key={index}>
+                    <div
+                      className="w-full relative flex items-center mb-1"
+                      key={index}
+                    >
                       <TooltipProvider disableHoverableContent>
                         <Tooltip delayDuration={100}>
                           <TooltipTrigger asChild>
@@ -71,7 +75,9 @@ export function Menu({ isOpen }: MenuProps) {
                               variant="ghost"
                               className={cn(
                                 "w-full h-10 transition-colors duration-150",
-                                isOpen === false ? "justify-center px-0" : "justify-start px-3",
+                                isOpen === false
+                                  ? "justify-center px-0"
+                                  : "justify-start px-3",
                                 isActive
                                   ? "bg-gray-100 text-text-strong-950 font-semibold dark:bg-zinc-800 dark:text-zinc-50"
                                   : "text-text-sub-600 hover:bg-gray-50 hover:text-text-strong-950 dark:hover:bg-zinc-800/50"
@@ -82,7 +88,9 @@ export function Menu({ isOpen }: MenuProps) {
                                 href={href}
                                 className={cn(
                                   "flex items-center w-full",
-                                  isOpen === false ? "justify-center" : "justify-start",
+                                  isOpen === false
+                                    ? "justify-center"
+                                    : "justify-start",
                                   isOpen && button ? "pr-8" : ""
                                 )}
                               >

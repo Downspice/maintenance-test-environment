@@ -46,8 +46,8 @@
 // import CheckboxWrapper from "@/components/forms/fields/CheckboxWrapper";
 // import { useGetInventoryCategories } from "@/services/setups/inventory";
 // import {
-  useGetVendors,
-} from "@/services/setups/vendor";
+//   useGetVendors,
+// } from "@/services/setups/vendor";
 // import { useGetEquipmentColors, useGetEquipmentMakes, useGetEquipmentModels, useGetEquipmentOwnerships, useGetEquipmentStatuses, useGetEquipmentTypes } from "@/services/setups/equipments";
 
 // interface triggerVariant {
@@ -62,10 +62,7 @@
 //   const { data: equipmentTypeOptions } = useGetEquipmentTypes();
 //   const { data: colorOptions } = useGetEquipmentColors();
 //   const { data: statusOptions } = useGetEquipmentStatuses();
-    
 
-
-  
 //   const [open, setOpen] = useState(false);
 //   const [isSubmitting, setIsSubmitting] = useState(false);
 //   const [openSections, setOpenSections] = useState({

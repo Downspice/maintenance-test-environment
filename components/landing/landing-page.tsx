@@ -72,13 +72,7 @@ function FadeUp({
    ANIMATED METRIC COUNTER
    Smooth RAF-driven count up on scroll into view with ease-out cubic
    ─────────────────────────────────────────────────────────────────────────── */
-function AnimatedCounter({
-  value,
-  suffix,
-}: {
-  value: string;
-  suffix: string;
-}) {
+function AnimatedCounter({ value, suffix }: { value: string; suffix: string }) {
   const ref = useRef<HTMLParagraphElement>(null);
   const inView = useInView(ref, { once: true, margin: "-40px" });
   const [displayValue, setDisplayValue] = useState("0");
@@ -236,8 +230,7 @@ const METRICS = [
   {
     value: "14",
     suffix: "%",
-    label:
-      "Average downtime reduction month-over-month after full deployment.",
+    label: "Average downtime reduction month-over-month after full deployment.",
   },
   {
     value: "100",
@@ -272,11 +265,7 @@ const PROCESS_STEPS = [
    NAVBAR COMPONENT
    Interactive focus states, button press scale, and smooth sticky transition
    ─────────────────────────────────────────────────────────────────────────── */
-function Navbar({
-  onRequestDemo,
-}: {
-  onRequestDemo: () => void;
-}) {
+function Navbar({ onRequestDemo }: { onRequestDemo: () => void }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -502,9 +491,7 @@ function ServiceAccordion() {
                     {svc.features.map((feat, fIdx) => (
                       <motion.div
                         key={feat}
-                        initial={
-                          reduceMotion ? false : { opacity: 0, x: -6 }
-                        }
+                        initial={reduceMotion ? false : { opacity: 0, x: -6 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{
                           duration: 0.25,
@@ -693,9 +680,7 @@ export default function LandingPage() {
                 Reliability,
               </span>{" "}
               fueled by data. We craft operations‑first solutions that help{" "}
-              <span className="font-serif italic font-normal">
-                Facilities
-              </span>{" "}
+              <span className="font-serif italic font-normal">Facilities</span>{" "}
               run and thrive in the modern age
             </h2>
           </FadeUp>
@@ -788,16 +773,12 @@ export default function LandingPage() {
           <FadeUp delay={0.1}>
             <p className="mx-auto mt-12 max-w-2xl text-center text-base leading-relaxed text-[#1a1a1a]/70 sm:text-lg">
               We&apos;re not just building software — we&apos;re{" "}
-              <strong className="text-[#1a1a1a]">
-                operational partners
-              </strong>
-              , problem-solvers, and{" "}
+              <strong className="text-[#1a1a1a]">operational partners</strong>,
+              problem-solvers, and{" "}
               <strong className="text-[#1a1a1a]">system builders</strong>.
               Blending deep maintenance expertise with modern technology, we
               craft experiences that connect, optimize, and stand out in a{" "}
-              <strong className="text-[#1a1a1a]">
-                complex industrial
-              </strong>{" "}
+              <strong className="text-[#1a1a1a]">complex industrial</strong>{" "}
               world.
             </p>
           </FadeUp>
@@ -877,9 +858,7 @@ export default function LandingPage() {
           <FadeUp delay={0.1}>
             <h2 className="mb-20 text-center text-[clamp(2rem,5vw,4rem)] font-bold leading-[1.1] tracking-tight">
               Your operations{" "}
-              <span className="font-serif italic font-normal">
-                transform
-              </span>
+              <span className="font-serif italic font-normal">transform</span>
               <br />
               into{" "}
               <span className="font-serif italic font-normal">
@@ -941,9 +920,7 @@ export default function LandingPage() {
               <FadeUp delay={0.1}>
                 <h2 className="text-[clamp(2.5rem,5vw,4.5rem)] font-bold leading-[1] tracking-tight">
                   Metrics that{" "}
-                  <span className="font-serif italic font-normal">
-                    Prove
-                  </span>
+                  <span className="font-serif italic font-normal">Prove</span>
                   <br />
                   value
                 </h2>
@@ -1013,8 +990,8 @@ export default function LandingPage() {
           <FadeUp delay={0.15}>
             <p className="mx-auto max-w-xl text-center text-sm leading-relaxed text-white/60 sm:text-base">
               Every facility footprint, equipment volume, and integration
-              requirement is unique. We provide tailored scopes and SLA guarantees
-              following an initial operational walkthrough.
+              requirement is unique. We provide tailored scopes and SLA
+              guarantees following an initial operational walkthrough.
             </p>
           </FadeUp>
           <FadeUp delay={0.2}>
@@ -1032,7 +1009,8 @@ export default function LandingPage() {
                 Schedule a discovery walkthrough
               </h3>
               <p className="mb-8 text-sm text-white/50 max-w-md mx-auto">
-                Connect directly with our engineering lead to map your facility layout and receive a tailored deployment proposal.
+                Connect directly with our engineering lead to map your facility
+                layout and receive a tailored deployment proposal.
               </p>
               <button
                 type="button"
@@ -1086,8 +1064,8 @@ export default function LandingPage() {
             <FadeUp delay={0.2}>
               <p className="max-w-xl text-base leading-relaxed text-white/60">
                 We&apos;re a dedicated team that values purposeful design,
-                operational excellence, and work that truly makes an impact
-                on your bottom line.
+                operational excellence, and work that truly makes an impact on
+                your bottom line.
               </p>
             </FadeUp>
             <FadeUp delay={0.25}>

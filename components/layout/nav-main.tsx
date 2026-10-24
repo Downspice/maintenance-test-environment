@@ -2,10 +2,6 @@
 
 import { Plus, type LucideIcon } from "lucide-react";
 
-
-
-
-
 import {
   SidebarGroup,
   // SidebarGroupLabel,
@@ -18,7 +14,12 @@ import {
   // SidebarMenuSubItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 
 export function NavMain({
   items,
@@ -48,7 +49,7 @@ export function NavMain({
           //   className="group/collapsible"
           // >
           <SidebarMenuItem key={item.title}>
-            <SidebarMenuButton isActive={item.isActive} tooltip={item.title} >
+            <SidebarMenuButton isActive={item.isActive} tooltip={item.title}>
               {item.icon && <item.icon />}
               <span>{item.title}</span>
               {/* <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" /> */}

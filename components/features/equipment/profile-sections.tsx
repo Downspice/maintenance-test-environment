@@ -7,13 +7,7 @@ import {
 } from "@/components/ui/collapsible";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  ChevronDown,
-  Pencil,
-  Trash2,
-  X,
-} from "lucide-react";
-
+import { ChevronDown, Pencil, Trash2, X } from "lucide-react";
 
 import { useEffect, useState } from "react";
 import React from "react";
@@ -37,28 +31,7 @@ import {
 } from "@/components/ui/table";
 import Image from "next/image";
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-import {
-  useUpdateEquipmentNotes,
-} from "@/services/setups/equipments";
+import { useUpdateEquipmentNotes } from "@/services/setups/equipments";
 
 export function ImageGrid() {
   const [images, setImages] = useState<ImageItem[]>([
@@ -360,8 +333,9 @@ const CollapsibleSection = ({
           <CollapsibleTrigger asChild>
             <Button variant="ghost" size="icon">
               <ChevronDown
-                className={`transition-transform duration-300 ${open ? "rotate-180" : ""
-                  }`}
+                className={`transition-transform duration-300 ${
+                  open ? "rotate-180" : ""
+                }`}
               />
             </Button>
           </CollapsibleTrigger>
@@ -387,10 +361,12 @@ export const EquipmentDetailsSection = ({ data }: { data: any }) => {
             <span className="font-medium">Unit #:</span> {data?.unit_number}
           </p>
           <p>
-            <span className="font-medium">Make:</span> {data?.make_name ?? data?.make}
+            <span className="font-medium">Make:</span>{" "}
+            {data?.make_name ?? data?.make}
           </p>
           <p>
-            <span className="font-medium">Model:</span> {data?.model_name ?? data?.model}
+            <span className="font-medium">Model:</span>{" "}
+            {data?.model_name ?? data?.model}
           </p>
           <p>
             <span className="font-medium">Year:</span> {data?.year}
@@ -399,19 +375,23 @@ export const EquipmentDetailsSection = ({ data }: { data: any }) => {
             <span className="font-medium">Serial:</span> {data?.serial_number}
           </p>
           <p>
-            <span className="font-medium">Type:</span> {data?.type_name ?? data?.equipmentType}
+            <span className="font-medium">Type:</span>{" "}
+            {data?.type_name ?? data?.equipmentType}
           </p>
           <p>
-            <span className="font-medium">Color:</span> {data?.color_name ?? data?.color}
+            <span className="font-medium">Color:</span>{" "}
+            {data?.color_name ?? data?.color}
           </p>
           <p>
             <span className="font-medium">License:</span> {data?.license}
           </p>
           <p>
-            <span className="font-medium">Status:</span> {data?.status_name ?? data?.status}
+            <span className="font-medium">Status:</span>{" "}
+            {data?.status_name ?? data?.status}
           </p>
           <p>
-            <span className="font-medium">Ownership:</span> {data?.ownership_name ?? data?.ownership}
+            <span className="font-medium">Ownership:</span>{" "}
+            {data?.ownership_name ?? data?.ownership}
           </p>
         </div>
       </CollapsibleSection>
@@ -432,16 +412,24 @@ export const EquipmentDetailsSection = ({ data }: { data: any }) => {
       <CollapsibleSection title="Purchase">
         <div className="grid grid-cols-2 gap-x-6 gap-y-2">
           <p>
-            <span className="font-medium">Purchase Date:</span> {data?.purchase_date ?? data?.purchaseDate}
+            <span className="font-medium">Purchase Date:</span>{" "}
+            {data?.purchase_date ?? data?.purchaseDate}
           </p>
           <p>
-            <span className="font-medium">Purchase Price:</span> {data?.purchase_price != null ? `$${Number(data.purchase_price ?? data.purchasePrice).toLocaleString()}` : "—"}
+            <span className="font-medium">Purchase Price:</span>{" "}
+            {data?.purchase_price != null
+              ? `$${Number(data.purchase_price ?? data.purchasePrice).toLocaleString()}`
+              : "—"}
           </p>
           <p>
-            <span className="font-medium">Vendor:</span> {data?.vendor_name ?? data?.vendorId}
+            <span className="font-medium">Vendor:</span>{" "}
+            {data?.vendor_name ?? data?.vendorId}
           </p>
           <p>
-            <span className="font-medium">Salvage Price:</span> {data?.salvage_price != null ? `$${Number(data.salvage_price ?? data.salvagePrice).toLocaleString()}` : "—"}
+            <span className="font-medium">Salvage Price:</span>{" "}
+            {data?.salvage_price != null
+              ? `$${Number(data.salvage_price ?? data.salvagePrice).toLocaleString()}`
+              : "—"}
           </p>
         </div>
       </CollapsibleSection>
@@ -474,7 +462,13 @@ export const EquipmentDetailsSection = ({ data }: { data: any }) => {
 };
 
 // Notes Section Component
-export function NotesSection({ equipmentId, equipmentNotes }: { equipmentId?: string | number, equipmentNotes?: string }) {
+export function NotesSection({
+  equipmentId,
+  equipmentNotes,
+}: {
+  equipmentId?: string | number;
+  equipmentNotes?: string;
+}) {
   const { mutate: updateNotes, isPending } = useUpdateEquipmentNotes();
   const [noteText, setNoteText] = useState("");
 

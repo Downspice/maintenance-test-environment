@@ -69,32 +69,37 @@ interface ModalContentProps
 const ModalContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   ModalContentProps
->(({ size = "md", showCloseButton = true, className, children, ...props }, ref) => (
-  <ModalPortal>
-    <ModalOverlay />
-    <DialogPrimitive.Content
-      ref={ref}
-      className={cn(modalVariants({ size }), className)}
-      {...props}
-    >
-      {children}
-      {showCloseButton && (
-        <DialogPrimitive.Close
-          className={cn(
-            "absolute right-4 top-4 z-10 flex size-8 items-center justify-center rounded-[8px]",
-            "text-text-soft-400 transition-all duration-150 outline-none",
-            "hover:bg-bg-weak-50 hover:text-text-sub-600",
-            "focus-visible:ring-2 focus-visible:ring-stroke-strong-950",
-            "disabled:pointer-events-none"
-          )}
-        >
-          <RiCloseLine className="size-4" />
-          <span className="sr-only">Close</span>
-        </DialogPrimitive.Close>
-      )}
-    </DialogPrimitive.Content>
-  </ModalPortal>
-));
+>(
+  (
+    { size = "md", showCloseButton = true, className, children, ...props },
+    ref
+  ) => (
+    <ModalPortal>
+      <ModalOverlay />
+      <DialogPrimitive.Content
+        ref={ref}
+        className={cn(modalVariants({ size }), className)}
+        {...props}
+      >
+        {children}
+        {showCloseButton && (
+          <DialogPrimitive.Close
+            className={cn(
+              "absolute right-4 top-4 z-10 flex size-8 items-center justify-center rounded-[8px]",
+              "text-text-soft-400 transition-all duration-150 outline-none",
+              "hover:bg-bg-weak-50 hover:text-text-sub-600",
+              "focus-visible:ring-2 focus-visible:ring-stroke-strong-950",
+              "disabled:pointer-events-none"
+            )}
+          >
+            <RiCloseLine className="size-4" />
+            <span className="sr-only">Close</span>
+          </DialogPrimitive.Close>
+        )}
+      </DialogPrimitive.Content>
+    </ModalPortal>
+  )
+);
 ModalContent.displayName = "ModalContent";
 
 const ModalHeader = ({
@@ -142,7 +147,10 @@ const ModalTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Title
     ref={ref}
-    className={cn("text-label-lg font-semibold text-text-strong-950", className)}
+    className={cn(
+      "text-label-lg font-semibold text-text-strong-950",
+      className
+    )}
     {...props}
   />
 ));

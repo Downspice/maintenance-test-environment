@@ -78,7 +78,8 @@ const SETUP_ITEMS: SetupItem[] = [
   {
     name: "PM Schedule Templates",
     title: "PM Schedule Templates",
-    description: "Create maintenance schedule templates and configure services.",
+    description:
+      "Create maintenance schedule templates and configure services.",
     formId: "pm-schedule-templates-form",
     saveLabel: "Save Templates",
     wide: true,
@@ -103,20 +104,37 @@ const SETUP_ITEMS: SetupItem[] = [
   {
     name: "Choice Lists",
     title: "Choice Lists",
-    description: "Manage lookup values used in dropdowns and forms across the app.",
+    description:
+      "Manage lookup values used in dropdowns and forms across the app.",
     wide: true,
     noFooter: true,
   },
   {
     name: "Scheduled reports",
     title: "Scheduled Reports",
-    description: "Create and manage automated report exports and delivery schedules.",
+    description:
+      "Create and manage automated report exports and delivery schedules.",
     noFooter: true,
     wide: true,
   },
-  { name: "Equipment", formId: "setup-equipment-form", saveLabel: "Save Equipment", fullscreen: true },
-  { name: "Employees", formId: "setup-employee-form", saveLabel: "Save Employee", fullscreen: true },
-  { name: "Vendors", formId: "setup-vendor-form", saveLabel: "Save Vendor", fullscreen: false },
+  {
+    name: "Equipment",
+    formId: "setup-equipment-form",
+    saveLabel: "Save Equipment",
+    fullscreen: true,
+  },
+  {
+    name: "Employees",
+    formId: "setup-employee-form",
+    saveLabel: "Save Employee",
+    fullscreen: true,
+  },
+  {
+    name: "Vendors",
+    formId: "setup-vendor-form",
+    saveLabel: "Save Vendor",
+    fullscreen: false,
+  },
   { name: "Parts Inventory", noFooter: true },
 ];
 
@@ -169,7 +187,9 @@ const SETUP_MENU_SECTIONS: HeaderMenuSection<SetupMenuId>[] = [
 
 export default function HeaderSettingsButton() {
   const [open, setOpen] = useState(false);
-  const [selectedProjectType, setSelectedProjectType] = useState<string | null>(null);
+  const [selectedProjectType, setSelectedProjectType] = useState<string | null>(
+    null
+  );
 
   const handleActionSelect = (name: SetupMenuId) => {
     setSelectedProjectType(name);
@@ -259,9 +279,7 @@ export default function HeaderSettingsButton() {
       ? WIDE_DRAWER_CLASS
       : STANDARD_DRAWER_CLASS;
 
-  const showDrawerFooter = Boolean(
-    activeItem?.formId && !activeItem?.noFooter,
-  );
+  const showDrawerFooter = Boolean(activeItem?.formId && !activeItem?.noFooter);
 
   const drawerBodyHeightClass = showDrawerFooter
     ? "h-[calc(100vh-160px)]"
@@ -269,21 +287,20 @@ export default function HeaderSettingsButton() {
 
   const drawerBodyScrollClass = cn(
     drawerBodyHeightClass,
-    "w-full min-w-0 overflow-auto pr-4",
+    "w-full min-w-0 overflow-auto pr-4"
   );
 
   const drawerBodyFormLayoutClass = cn(
     "flex min-h-0 w-full flex-col overflow-hidden pr-4",
-    drawerBodyHeightClass,
+    drawerBodyHeightClass
   );
 
   const useWideFormLayout = Boolean(
-    activeItem?.wide &&
-      (activeItem?.formId || activeItem?.wideSplitLayout),
+    activeItem?.wide && (activeItem?.formId || activeItem?.wideSplitLayout)
   );
 
   const useFullscreenFormLayout = Boolean(
-    activeItem?.fullscreen && activeItem?.formId,
+    activeItem?.fullscreen && activeItem?.formId
   );
 
   const renderActions = activeItem?.formId ? (
@@ -328,9 +345,7 @@ export default function HeaderSettingsButton() {
         bodyClassName="min-w-0 overflow-hidden"
       >
         {useWideFormLayout || useFullscreenFormLayout ? (
-          <div className={drawerBodyFormLayoutClass}>
-            {renderFormContent()}
-          </div>
+          <div className={drawerBodyFormLayoutClass}>{renderFormContent()}</div>
         ) : activeItem?.wide ? (
           <div className={drawerBodyScrollClass}>
             {renderFormContent() || "nothing else"}

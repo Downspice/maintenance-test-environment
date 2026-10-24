@@ -60,7 +60,7 @@ const PaginationLink = ({
         size,
       }),
       isActive && "ring-stroke-soft-200 text-text-strong-950 font-medium",
-      className,
+      className
     )}
     {...props}
   />
@@ -107,7 +107,7 @@ const PaginationEllipsis = ({
     aria-hidden
     className={cn(
       "flex size-8 items-center justify-center rounded-[8px] text-text-soft-400",
-      className,
+      className
     )}
     {...props}
   >

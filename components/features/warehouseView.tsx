@@ -152,7 +152,8 @@ const WarehouseSetup: React.FC = () => {
   const { data: warehouseOptions } =
     useGetWarehouses<Array<{ id: string; name: string }>>();
 
-  const [warehouses, setWarehouses] = useState<WarehouseRecord[]>(SEED_WAREHOUSES);
+  const [warehouses, setWarehouses] =
+    useState<WarehouseRecord[]>(SEED_WAREHOUSES);
   const [activeTab, setActiveTab] = useState<string>("warehouses");
   const [currentView, setCurrentView] = useState<"list" | "selection">("list");
   const [selectedWarehouse, setSelectedWarehouse] =
@@ -348,7 +349,11 @@ const WarehouseSetup: React.FC = () => {
     <Card className="h-full">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
         <CardTitle>Warehouses</CardTitle>
-        <Button type="button" variant="primary" onClick={() => setCreateOpen(true)}>
+        <Button
+          type="button"
+          variant="primary"
+          onClick={() => setCreateOpen(true)}
+        >
           <Plus className="mr-2 size-4" />
           New warehouse
         </Button>
@@ -402,7 +407,11 @@ const WarehouseSetup: React.FC = () => {
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle>Select Contacts</CardTitle>
-              <Button variant="ghost" size="icon" onClick={handleCancelSelection}>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleCancelSelection}
+              >
                 <ArrowLeft className="h-4 w-4" />
               </Button>
             </div>
@@ -410,7 +419,9 @@ const WarehouseSetup: React.FC = () => {
           <CardContent>
             <Tabs
               value={activeSelectionTab}
-              onValueChange={(value) => setActiveSelectionTab(value as typeof activeSelectionTab)}
+              onValueChange={(value) =>
+                setActiveSelectionTab(value as typeof activeSelectionTab)
+              }
             >
               <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="employees">Employees</TabsTrigger>

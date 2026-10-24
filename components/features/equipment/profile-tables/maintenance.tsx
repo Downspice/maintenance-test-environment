@@ -1,5 +1,3 @@
 export default function MaintenanceTabContent() {
-    return(
-        
-    )
+  return null;
 }

@@ -26,7 +26,7 @@ export default function ChangeMarkUpForm({
 }: {
   data: ChangeMarkUpInterface;
 }) {
-  const{data:markupTypeOptions}=useGetMarkupTypes();
+  const { data: markupTypeOptions } = useGetMarkupTypes();
   const ChangeMarkUpForm = useForm<z.infer<typeof ChangeMarkUpSchema>>({
     resolver: zodResolver(ChangeMarkUpSchema),
     defaultValues: { ...data },

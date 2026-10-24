@@ -1,24 +1,30 @@
-"use client"
+"use client";
 
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Textarea } from "@/components/ui/textarea"
-import type { Control } from "react-hook-form"
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Textarea } from "@/components/ui/textarea";
+import type { Control } from "react-hook-form";
 
-import { cn, isFieldEmpty } from "@/lib/shared/utils"
+import { cn, isFieldEmpty } from "@/lib/shared/utils";
 
 interface TextareaWrapperProps {
-  control: Control<any>
-  name: string
-  label?: string
-  className?: string
-  value?: any
-  placeholder?: string
-  rows?: number
-  disabled?: boolean
-  required?: boolean
-  direction?: "horizontal" | "vertical"
+  control: Control<any>;
+  name: string;
+  label?: string;
+  className?: string;
+  value?: any;
+  placeholder?: string;
+  rows?: number;
+  disabled?: boolean;
+  required?: boolean;
+  direction?: "horizontal" | "vertical";
   /** When true (typically with no label), textarea grows to fill the parent flex column */
-  fillSpace?: boolean
+  fillSpace?: boolean;
 }
 
 export default function TextareaWrapper({

@@ -1,12 +1,7 @@
 "use client";
 
-
-
 import { Button } from "@/components/ui/button";
-import {
-  FilePenIcon,
-  Trash2,
-} from "lucide-react";
+import { FilePenIcon, Trash2 } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -18,7 +13,6 @@ import { Drawer } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useState } from "react";
 import React from "react";
-
 
 import {
   Table,
@@ -36,19 +30,6 @@ import ActualRepairRequestForm, {
   EditActualUpdateRepairRequestForm,
 } from "@/components/forms/entities/repairRequest";
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 import EquipmentPMServiceForm, {
   UpdateEquipmentPMServiceForm,
 } from "@/components/forms/entities/equipment/equipmentPMServiceform";
@@ -64,9 +45,13 @@ export function TasksTab({ equipmentId }: { equipmentId?: string | number }) {
   const [openRenewal, setOpenRenewal] = useState(false);
 
   // Fetch data from API
-  const { data: pmData = [], isLoading: isPMLoading } = useGetEquipmentPMs(equipmentId || "");
-  const { data: repairData = [], isLoading: isRepairLoading } = useGetEquipmentRepairs(equipmentId || "");
-  const { data: renewalData = [], isLoading: isRenewalLoading } = useGetEquipmentRenewalsByEquipmentId(equipmentId || "");
+  const { data: pmData = [], isLoading: isPMLoading } = useGetEquipmentPMs(
+    equipmentId || ""
+  );
+  const { data: repairData = [], isLoading: isRepairLoading } =
+    useGetEquipmentRepairs(equipmentId || "");
+  const { data: renewalData = [], isLoading: isRenewalLoading } =
+    useGetEquipmentRenewalsByEquipmentId(equipmentId || "");
 
   return (
     <Tabs defaultValue="preventive" className="w-full">
@@ -105,7 +90,12 @@ export function TasksTab({ equipmentId }: { equipmentId?: string | number }) {
                 <TableHead>PM Service</TableHead>
                 <TableHead>Frequency</TableHead>
                 <TableHead>Last Service Date</TableHead>
-                <TableHead className="text-right w-px whitespace-nowrap" style={{ width: "1%" }}>Actions</TableHead>
+                <TableHead
+                  className="text-right w-px whitespace-nowrap"
+                  style={{ width: "1%" }}
+                >
+                  Actions
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -121,8 +111,10 @@ export function TasksTab({ equipmentId }: { equipmentId?: string | number }) {
                     <TableCell>{item.service}</TableCell>
                     <TableCell>{item.frequency}</TableCell>
                     <TableCell>{item.lastDate}</TableCell>
-                    <TableCell className="text-right space-x-2 w-px whitespace-nowrap" style={{ width: "1%" }}>
-
+                    <TableCell
+                      className="text-right space-x-2 w-px whitespace-nowrap"
+                      style={{ width: "1%" }}
+                    >
                       <UpdateEquipmentPMServiceForm
                         children={
                           <Button type="button" size="icon" variant="secondary">
@@ -131,7 +123,12 @@ export function TasksTab({ equipmentId }: { equipmentId?: string | number }) {
                         }
                         data={item}
                       />
-                      <Button type="button" size="icon" variant="secondary" className="text-destructive focus:text-destructive">
+                      <Button
+                        type="button"
+                        size="icon"
+                        variant="secondary"
+                        className="text-destructive focus:text-destructive"
+                      >
                         <Trash2 className="size-4" />
                       </Button>
                     </TableCell>
@@ -156,7 +153,11 @@ export function TasksTab({ equipmentId }: { equipmentId?: string | number }) {
             description="Fill out the form below to create a repair request."
             closeable={true}
             renderActions={
-              <Button form="task-repair-request-form" type="submit" variant="primary">
+              <Button
+                form="task-repair-request-form"
+                type="submit"
+                variant="primary"
+              >
                 Save Repair Request
               </Button>
             }
@@ -184,7 +185,12 @@ export function TasksTab({ equipmentId }: { equipmentId?: string | number }) {
                 <TableHead>Due At</TableHead>
                 <TableHead>Requested By</TableHead>
                 <TableHead>WO#</TableHead>
-                <TableHead className="text-right w-px whitespace-nowrap" style={{ width: "1%" }}>Actions</TableHead>
+                <TableHead
+                  className="text-right w-px whitespace-nowrap"
+                  style={{ width: "1%" }}
+                >
+                  Actions
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -203,7 +209,10 @@ export function TasksTab({ equipmentId }: { equipmentId?: string | number }) {
                     <TableCell>{item.employee_name}</TableCell>
                     <TableCell>{item.wo}</TableCell>
 
-                    <TableCell className="text-right space-x-2 w-px whitespace-nowrap" style={{ width: "1%" }}>
+                    <TableCell
+                      className="text-right space-x-2 w-px whitespace-nowrap"
+                      style={{ width: "1%" }}
+                    >
                       <EditActualUpdateRepairRequestForm
                         children={
                           <Button type="button" size="icon" variant="secondary">
@@ -214,7 +223,12 @@ export function TasksTab({ equipmentId }: { equipmentId?: string | number }) {
                         equipmentId={equipmentId}
                       />
 
-                      <Button type="button" size="icon" variant="secondary" className="text-destructive focus:text-destructive">
+                      <Button
+                        type="button"
+                        size="icon"
+                        variant="secondary"
+                        className="text-destructive focus:text-destructive"
+                      >
                         <Trash2 className="size-4" />
                       </Button>
                     </TableCell>
@@ -239,7 +253,10 @@ export function TasksTab({ equipmentId }: { equipmentId?: string | number }) {
               <SheetHeader>
                 <SheetTitle>Add Renewal</SheetTitle>
               </SheetHeader>
-              <NewEquipmentRenewalForm equipmentId={equipmentId} onSuccess={() => setOpenRenewal(false)} />
+              <NewEquipmentRenewalForm
+                equipmentId={equipmentId}
+                onSuccess={() => setOpenRenewal(false)}
+              />
             </SheetContent>
           </Sheet>
         </div>
@@ -252,7 +269,12 @@ export function TasksTab({ equipmentId }: { equipmentId?: string | number }) {
               <TableRow>
                 <TableHead>Renewal</TableHead>
                 <TableHead>Due On</TableHead>
-                <TableHead className="text-right w-px whitespace-nowrap" style={{ width: "1%" }}>Actions</TableHead>
+                <TableHead
+                  className="text-right w-px whitespace-nowrap"
+                  style={{ width: "1%" }}
+                >
+                  Actions
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -267,7 +289,10 @@ export function TasksTab({ equipmentId }: { equipmentId?: string | number }) {
                   <TableRow key={item.id}>
                     <TableCell>{item.renewal_name}</TableCell>
                     <TableCell>{item.due_on}</TableCell>
-                    <TableCell className="text-right space-x-2 w-px whitespace-nowrap" style={{ width: "1%" }}>
+                    <TableCell
+                      className="text-right space-x-2 w-px whitespace-nowrap"
+                      style={{ width: "1%" }}
+                    >
                       <UpdateEquipmentRenewalForm
                         children={
                           <Button variant={"secondary"} size={"icon"}>
@@ -278,7 +303,12 @@ export function TasksTab({ equipmentId }: { equipmentId?: string | number }) {
                         equipmentId={equipmentId}
                       />
 
-                      <Button type="button" size="icon" variant="secondary" className="text-destructive focus:text-destructive">
+                      <Button
+                        type="button"
+                        size="icon"
+                        variant="secondary"
+                        className="text-destructive focus:text-destructive"
+                      >
                         <Trash2 className="size-4" />
                       </Button>
                     </TableCell>

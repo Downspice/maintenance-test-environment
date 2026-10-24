@@ -26,7 +26,13 @@ export default function CustomerDataTable({
   return <CustomerTableLoader locationId={locationId} typeId={typeId} />;
 }
 
-export function CustomerTableLoader({ locationId, typeId }: { locationId?: string; typeId?: string }) {
+export function CustomerTableLoader({
+  locationId,
+  typeId,
+}: {
+  locationId?: string;
+  typeId?: string;
+}) {
   const patchIsActive = usePatchCustomerIsActive();
   const confirmDialog = useConfirmDialog();
   const [pageIndex, setPageIndex] = useState(0); // 0-based for UI
@@ -54,7 +60,9 @@ export function CustomerTableLoader({ locationId, typeId }: { locationId?: strin
   });
 
   const serverRows = paged?.data ?? [];
-  const currentPage = paged?.current_page ? Number(paged.current_page) : pageIndex + 1;
+  const currentPage = paged?.current_page
+    ? Number(paged.current_page)
+    : pageIndex + 1;
   const totalPages = paged?.last_page ? Number(paged.last_page) : 1;
   const totalRows = paged?.total ? Number(paged.total) : serverRows.length;
   const effectivePageSize = paged?.per_page ? Number(paged.per_page) : pageSize;
@@ -67,7 +75,9 @@ export function CustomerTableLoader({ locationId, typeId }: { locationId?: strin
   };
 
   // Get unique values for filter options
-  const getAllCustomers = (customers: CustomerTableDataInterface[]): CustomerTableDataInterface[] => {
+  const getAllCustomers = (
+    customers: CustomerTableDataInterface[]
+  ): CustomerTableDataInterface[] => {
     const result: CustomerTableDataInterface[] = [];
     const traverse = (custs: CustomerTableDataInterface[]) => {
       custs.forEach((cust) => {
@@ -79,12 +89,20 @@ export function CustomerTableLoader({ locationId, typeId }: { locationId?: strin
   };
 
   const flatCustomers = getAllCustomers(serverRows);
-  const name = [...new Set(flatCustomers.map((cust) => cust.company_name ?? ""))];
+  const name = [
+    ...new Set(flatCustomers.map((cust) => cust.company_name ?? "")),
+  ];
   const type = [...new Set(flatCustomers.map((cust) => cust.type?.name ?? ""))];
-  const address1 = [...new Set(flatCustomers.map((cust) => cust.address ?? ""))];
+  const address1 = [
+    ...new Set(flatCustomers.map((cust) => cust.address ?? "")),
+  ];
   const city = [...new Set(flatCustomers.map((cust) => cust.city ?? ""))];
-  const state_prov = [...new Set(flatCustomers.map((cust) => cust.state ?? ""))];
-  const postal_code = [...new Set(flatCustomers.map((cust) => cust.postal_code ?? ""))];
+  const state_prov = [
+    ...new Set(flatCustomers.map((cust) => cust.state ?? "")),
+  ];
+  const postal_code = [
+    ...new Set(flatCustomers.map((cust) => cust.postal_code ?? "")),
+  ];
   const email = [...new Set(flatCustomers.map((cust) => cust.email ?? ""))];
 
   const handleRowClick = (row: any) => {
@@ -121,9 +139,9 @@ export function CustomerTableLoader({ locationId, typeId }: { locationId?: strin
       description: `This will deactivate ${selectedRows.length} customer(s).`,
       confirmText: "Deactivate",
       variant: "destructive",
-    })
+    });
     if (ok) {
-      toast.success(`Deactivated ${selectedRows.length} rows`)
+      toast.success(`Deactivated ${selectedRows.length} rows`);
       // TODO: bulk deactivate API when available
     }
   };
@@ -162,7 +180,9 @@ export function CustomerTableLoader({ locationId, typeId }: { locationId?: strin
   // Server-side pagination handler
   const handlePaginationChange = (action: "next" | "previous" | number) => {
     if (action === "next") {
-      setPageIndex((p) => Math.min(p + 1, Math.max(0, paginationInfo.totalPages - 1)));
+      setPageIndex((p) =>
+        Math.min(p + 1, Math.max(0, paginationInfo.totalPages - 1))
+      );
     } else if (action === "previous") {
       setPageIndex((p) => Math.max(p - 1, 0));
     } else if (typeof action === "number") {
@@ -197,7 +217,7 @@ export function CustomerTableLoader({ locationId, typeId }: { locationId?: strin
           column={column}
           title="Name"
           sortable={true}
-        // filterOptions={name}
+          // filterOptions={name}
         />
       ),
       cell: ({ row }) => (
@@ -213,7 +233,7 @@ export function CustomerTableLoader({ locationId, typeId }: { locationId?: strin
           column={column}
           title="Type"
           sortable={true}
-        // filterOptions={type}
+          // filterOptions={type}
         />
       ),
     },
@@ -224,7 +244,7 @@ export function CustomerTableLoader({ locationId, typeId }: { locationId?: strin
           column={column}
           title="Address #1"
           sortable={true}
-        // filterOptions={address1}
+          // filterOptions={address1}
         />
       ),
       filterFn: (row, id, value) => {
@@ -238,7 +258,7 @@ export function CustomerTableLoader({ locationId, typeId }: { locationId?: strin
           column={column}
           title="City"
           sortable={true}
-        // filterOptions={city}
+          // filterOptions={city}
         />
       ),
       cell: ({ row }) => <>{row.original.city}</>,
@@ -253,7 +273,7 @@ export function CustomerTableLoader({ locationId, typeId }: { locationId?: strin
           column={column}
           title="State/Prov"
           sortable={true}
-        // filterOptions={state_prov}
+          // filterOptions={state_prov}
         />
       ),
       filterFn: (row, id, value) => {
@@ -267,7 +287,7 @@ export function CustomerTableLoader({ locationId, typeId }: { locationId?: strin
           column={column}
           title="Postal Code"
           sortable={true}
-        // filterOptions={postal_code}
+          // filterOptions={postal_code}
         />
       ),
     },
@@ -278,7 +298,7 @@ export function CustomerTableLoader({ locationId, typeId }: { locationId?: strin
           column={column}
           title="Email"
           sortable={true}
-        // filterOptions={email}
+          // filterOptions={email}
         />
       ),
       filterFn: (row, id, value) => {
@@ -291,8 +311,8 @@ export function CustomerTableLoader({ locationId, typeId }: { locationId?: strin
       size: 60,
       cell: ({ row }) => {
         const handleDeleteRow = (row: any) => {
-          ; (async () => {
-            const isActive = row.original?.is_active === true
+          (async () => {
+            const isActive = row.original?.is_active === true;
             const ok = await confirmDialog({
               title: isActive ? "Deactivate customer?" : "Restore customer?",
               description: isActive
@@ -301,19 +321,22 @@ export function CustomerTableLoader({ locationId, typeId }: { locationId?: strin
               confirmText: isActive ? "Deactivate" : "Restore",
               variant: isActive ? "destructive" : "default",
               tone: isActive ? "danger" : "success",
-            })
+            });
             if (ok) {
               if (!row.original?.id) {
-                toast.error("Unable to determine customer ID")
-                return
+                toast.error("Unable to determine customer ID");
+                return;
               }
-              await patchIsActive.mutateAsync({ id: row.original.id, is_active: !isActive })
-              toast.success(`Status updated`)
+              await patchIsActive.mutateAsync({
+                id: row.original.id,
+                is_active: !isActive,
+              });
+              toast.success(`Status updated`);
             }
-          })()
+          })();
         };
 
-        const isActive = row.original?.is_active === true
+        const isActive = row.original?.is_active === true;
         return (
           <div className="flex flex-row gap-2 justify-end">
             {isActive ? (
@@ -389,7 +412,9 @@ export function CustomerTableLoader({ locationId, typeId }: { locationId?: strin
         onServerSearch={handleServerSearch}
         serverSorting={sorting}
         onServerSortingChange={handleServerSortingChange}
-        getRowClassName={(row) => (row.original?.is_active === false ? "bg-red-50" : "")}
+        getRowClassName={(row) =>
+          row.original?.is_active === false ? "bg-red-50" : ""
+        }
         isLoading={isLoading}
       />
     </div>

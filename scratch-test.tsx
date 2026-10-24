@@ -4,7 +4,7 @@ import { z } from "zod";
 
 interface BaseFieldProps<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > {
   control: Control<TFieldValues>;
   name: TName;
@@ -18,14 +18,14 @@ interface GenericObject {
 
 interface ComboboxFieldProps<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > extends BaseFieldProps<TFieldValues, TName> {
   options: GenericObject[];
 }
 
 function ComboboxFieldWrapper<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >(props: ComboboxFieldProps<TFieldValues, TName>) {
   return null;
 }

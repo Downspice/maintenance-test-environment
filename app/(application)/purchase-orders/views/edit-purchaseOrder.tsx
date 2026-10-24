@@ -13,7 +13,6 @@ import InputWrapper from "@/components/forms/fields/InputWrapper";
 import DatePickerWrapper from "@/components/forms/fields/DatePickerWrapper";
 // Schema and types
 
-
 import Fieldset from "@/components/customUI/fieldset";
 import { toast } from "sonner";
 import { ComboboxFieldWrapper } from "@/components/forms/fields/ComboboxWrapper";
@@ -53,9 +52,7 @@ import {
   useGetCustomerDiscounts,
   useGetCustomers,
 } from "@/services/setups/customer";
-import {
-  useGetVendors,
-} from "@/services/setups/vendor";
+import { useGetVendors } from "@/services/setups/vendor";
 import {
   useGetPurchaseOrder,
   useGetPurchaseOrderShipVias,
@@ -84,13 +81,28 @@ export default function EditPurchaseOrderForm({
     error: locationOptionsListError,
   } = useGetLocations<Array<{ id: string; name: string }>>();
   const { data: shipViaOptions } = useGetPurchaseOrderShipVias();
-  const { data: vendorOptions } = useGetVendors<Array<{ id: string; name: string }>>();
-  const vendorOptionsList = convertToOptionList(vendorOptions ?? [], "id", "name");
+  const { data: vendorOptions } =
+    useGetVendors<Array<{ id: string; name: string }>>();
+  const vendorOptionsList = convertToOptionList(
+    vendorOptions ?? [],
+    "id",
+    "name"
+  );
   const { data: customersOptions } = useGetCustomers();
-  const { data: invoices } = useGetInvoices<Array<{ id: string; invoice_number: string }>>();
-  const invoiceOptionsList = convertToOptionList(invoices ?? [], "id", "invoice_number");
-  const { data: workOrders } = useGetWorkOrders<Array<{ id: string; wo_number: string }>>();
-  const workOrderOptionsList = convertToOptionList(workOrders ?? [], "id", "wo_number");
+  const { data: invoices } =
+    useGetInvoices<Array<{ id: string; invoice_number: string }>>();
+  const invoiceOptionsList = convertToOptionList(
+    invoices ?? [],
+    "id",
+    "invoice_number"
+  );
+  const { data: workOrders } =
+    useGetWorkOrders<Array<{ id: string; wo_number: string }>>();
+  const workOrderOptionsList = convertToOptionList(
+    workOrders ?? [],
+    "id",
+    "wo_number"
+  );
   const {
     data: termsOptionsList,
     isLoading: termsOptionsListLoading,
@@ -99,9 +111,10 @@ export default function EditPurchaseOrderForm({
   const {
     data: discount_typesOptions,
     isLoading: discount_typesOptionsLoading,
-    error: discount_typesOptionsError
-  } = useGetCustomerDiscounts<Array<{ id: string, name: string }>>();
-  const { data: warehouseOptionsList } = useGetWarehouses<Array<{ id: string; name: string }>>();
+    error: discount_typesOptionsError,
+  } = useGetCustomerDiscounts<Array<{ id: string; name: string }>>();
+  const { data: warehouseOptionsList } =
+    useGetWarehouses<Array<{ id: string; name: string }>>();
 
   const [internalOpen, setInternalOpen] = useState(false);
   const open = externalOpen !== undefined ? externalOpen : internalOpen;
@@ -111,9 +124,12 @@ export default function EditPurchaseOrderForm({
   const [editIndex, setEditIndex] = useState<number | null>(null);
 
   const [items, setItems] = useState<PurchaseOrderItemType[]>([]);
-  const [editItems, setEditItems] = useState<PurchaseOrderItemType | null>(null);
+  const [editItems, setEditItems] = useState<PurchaseOrderItemType | null>(
+    null
+  );
   const [openItems, setOpenItems] = useState(false);
-  const { data: itemTypesOptionsList } = useGetItemTypes<Array<{ id: string; name: string }>>();
+  const { data: itemTypesOptionsList } =
+    useGetItemTypes<Array<{ id: string; name: string }>>();
 
   const [status, setStatus] = useState<PurchaseOrderStatusType>("Requisition");
 
@@ -125,10 +141,10 @@ export default function EditPurchaseOrderForm({
 
   // Status name to ID mapping
   const statusNameToIdMap: Record<PurchaseOrderStatusType, string> = {
-    "Requisition": "e15ec91b-4332-4dcc-94f8-b0a9da2238c0",
-    "Ordered": "", // Add your status ID
-    "Partial": "", // Add your status ID
-    "Closed": "", // Add your status ID
+    Requisition: "e15ec91b-4332-4dcc-94f8-b0a9da2238c0",
+    Ordered: "", // Add your status ID
+    Partial: "", // Add your status ID
+    Closed: "", // Add your status ID
   };
 
   const PurchaseOrderStatuses: PurchaseOrderStatusType[] = [
@@ -148,7 +164,9 @@ export default function EditPurchaseOrderForm({
         due_date: new Date(pageData.due_date),
         buyer_id: pageData.buyer_id,
         status_id: pageData.status_id,
-        closed_date: pageData.closed_date ? new Date(pageData.closed_date) : null,
+        closed_date: pageData.closed_date
+          ? new Date(pageData.closed_date)
+          : null,
         vendor: pageData.vendor,
         shipping: pageData.shipping,
         term_id: pageData.term_id,
@@ -263,7 +281,7 @@ export default function EditPurchaseOrderForm({
     resolver: zodResolver(PurchaseOrderSchema),
     defaultValues: {},
   });
-  const { mutateAsync: updatePurchaseOrder } = useUpdatePurchaseOrder()
+  const { mutateAsync: updatePurchaseOrder } = useUpdatePurchaseOrder();
   function onSubmit(data: PurchaseOrderType) {
     // Add items to submission data
     const submissionData = {
@@ -272,7 +290,7 @@ export default function EditPurchaseOrderForm({
     };
 
     console.log("Form submitted with VALUES:", submissionData);
-    const res = updatePurchaseOrder(data)
+    const res = updatePurchaseOrder(data);
     if (res) {
       toast.success(res.message, {
         duration: 10000,
@@ -283,7 +301,7 @@ export default function EditPurchaseOrderForm({
   }
 
   function onError(errors: any) {
-    console.log(errors)
+    console.log(errors);
     const errorMessages = Object.entries(errors).map(
       ([field, error]: [string, any]) => {
         return `${field}: ${error.message}`;
@@ -362,16 +380,17 @@ export default function EditPurchaseOrderForm({
                       <button
                         key={stat}
                         type="button"
-                        className={`p-3 h-fit rounded-md border text-sm font-medium ${status === stat
-                          ? stat === "Requisition"
-                            ? "bg-green-600 text-white"
-                            : stat === "Ordered"
-                              ? "bg-yellow-500 text-white"
-                              : stat === "Partial"
-                                ? "bg-orange-500 text-white"
-                                : "bg-red-600 text-white"
-                          : "bg-white text-gray-700 border-gray-300"
-                          }`}
+                        className={`p-3 h-fit rounded-md border text-sm font-medium ${
+                          status === stat
+                            ? stat === "Requisition"
+                              ? "bg-green-600 text-white"
+                              : stat === "Ordered"
+                                ? "bg-yellow-500 text-white"
+                                : stat === "Partial"
+                                  ? "bg-orange-500 text-white"
+                                  : "bg-red-600 text-white"
+                            : "bg-white text-gray-700 border-gray-300"
+                        }`}
                         onClick={() => {
                           // Update both status name and status_id
                           const statusId = statusNameToIdMap[stat];
@@ -401,7 +420,11 @@ export default function EditPurchaseOrderForm({
                     control={form.control}
                     name="buyer_id"
                     label="Buyer"
-                    options={convertToOptionList(customersOptions ?? [], "id", "company_name")}
+                    options={convertToOptionList(
+                      customersOptions ?? [],
+                      "id",
+                      "company_name"
+                    )}
                   />
                   <DatePickerWrapper
                     control={form.control}
@@ -458,196 +481,196 @@ export default function EditPurchaseOrderForm({
                       />
                     </div>
                     <Tabs defaultValue="Items" className="w-full">
-                        <TabsList>
-                          <TabsTrigger value="Items">Items</TabsTrigger>
-                          <TabsTrigger value="Attachments">
-                            Attachments
-                          </TabsTrigger>
-                          <TabsTrigger value="Notes">Notes</TabsTrigger>
-                        </TabsList>
-                        <TabsContent value="Items">
-                          <div className="flex justify-end mb-2">
-                            <Button
-                              variant="primary"
-                              type="button"
-                              onClick={() => {
-                                setEditIndex(null);
-                                setEditItems(null);
-                                Itemsform.reset({
-                                  item_type_id: "",
-                                  item: "",
-                                  warehouse_id: "",
-                                  quantity: 1,
-                                  cost: 0,
-                                  amount: 0,
-                                  extended_cost: 0,
-                                  notes: "",
-                                  tax_one: 0,
-                                  tax_two: 0,
-                                  discount: 0,
-                                });
-                                setOpenItems(true);
-                              }}
-                            >
-                              <Plus className="mr-2 h-4 w-4" /> Add Item
-                            </Button>
-                          </div>
-
-                          <Modal
-                            open={openItems}
-                            onOpenChange={(val) => {
-                              setOpenItems(val);
-                              if (!val) {
-                                setEditIndex(null);
-                                setEditItems(null);
-                              }
+                      <TabsList>
+                        <TabsTrigger value="Items">Items</TabsTrigger>
+                        <TabsTrigger value="Attachments">
+                          Attachments
+                        </TabsTrigger>
+                        <TabsTrigger value="Notes">Notes</TabsTrigger>
+                      </TabsList>
+                      <TabsContent value="Items">
+                        <div className="flex justify-end mb-2">
+                          <Button
+                            variant="primary"
+                            type="button"
+                            onClick={() => {
+                              setEditIndex(null);
+                              setEditItems(null);
+                              Itemsform.reset({
+                                item_type_id: "",
+                                item: "",
+                                warehouse_id: "",
+                                quantity: 1,
+                                cost: 0,
+                                amount: 0,
+                                extended_cost: 0,
+                                notes: "",
+                                tax_one: 0,
+                                tax_two: 0,
+                                discount: 0,
+                              });
+                              setOpenItems(true);
                             }}
-                            title={
-                              editIndex !== null
-                                ? "Edit Purchase Order Item"
-                                : "Add Purchase Order Item"
-                            }
-                            description={
-                              editIndex !== null
-                                ? "Update the details for this purchase order line item."
-                                : "Fill out the details below to add an item to this purchase order."
-                            }
-                            size="lg"
-                            closeable={true}
-                            renderActions={
-                              <Button
-                                form="edit-po-item-form"
-                                type="submit"
-                                variant="primary"
-                              >
-                                {editIndex !== null ? "Update Item" : "Save Item"}
-                              </Button>
-                            }
                           >
-                            <Form {...Itemsform}>
-                              <form
-                                id="edit-po-item-form"
-                                onSubmit={Itemsform.handleSubmit(onSubmitItems)}
-                                className="flex flex-col gap-1 py-1"
-                              >
-                                <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-                                  <ComboboxFieldWrapper
-                                    control={Itemsform.control}
-                                    name="item_type_id"
-                                    label="Item Type"
-                                    options={itemTypesOptionsList ?? []}
-                                    required
-                                  />
-                                  <InputWrapper
-                                    control={Itemsform.control}
-                                    name="item"
-                                    label="Part #"
-                                    type="text"
-                                    required
-                                  />
-                                  <ComboboxFieldWrapper
-                                    control={Itemsform.control}
-                                    name="warehouse_id"
-                                    label="Warehouse"
-                                    options={warehouseOptionsList ?? []}
-                                    required
-                                  />
-                                  <InputWrapper
-                                    control={Itemsform.control}
-                                    name="quantity"
-                                    label="Order Quantity"
-                                    type="number"
-                                    required
-                                  />
-                                  <InputWrapper
-                                    control={Itemsform.control}
-                                    name="cost"
-                                    label="Unit Cost"
-                                    type="number"
-                                    required
-                                  />
-                                  <InputWrapper
-                                    control={Itemsform.control}
-                                    name="extended_cost"
-                                    label="Extended Cost"
-                                    type="number"
-                                    disabled
-                                  />
-                                </div>
-                                <TextareaWrapper
-                                  control={Itemsform.control}
-                                  name="notes"
-                                  label="Notes"
-                                />
-                                <div className="grid grid-cols-3 gap-2">
-                                  <SingleCheckboxWrapper
-                                    control={Itemsform.control}
-                                    name="tax_one"
-                                    label="Apply Primary Tax Rate"
-                                  />
-                                  <SingleCheckboxWrapper
-                                    control={Itemsform.control}
-                                    name="tax_two"
-                                    label="Apply Secondary Tax Rate"
-                                  />
-                                  <SingleCheckboxWrapper
-                                    control={Itemsform.control}
-                                    name="discount"
-                                    label="Apply Discount"
-                                  />
-                                </div>
-                              </form>
-                            </Form>
-                          </Modal>
+                            <Plus className="mr-2 h-4 w-4" /> Add Item
+                          </Button>
+                        </div>
 
-                          <Table>
-                            <TableHeader>
-                              <TableRow>
-                                <TableHead>Quantity</TableHead>
-                                <TableHead>Description</TableHead>
-                                <TableHead>Unit Cost</TableHead>
-                                <TableHead>Amount</TableHead>
-                                <TableHead>Notes</TableHead>
-                                <TableHead>Actions</TableHead>
+                        <Modal
+                          open={openItems}
+                          onOpenChange={(val) => {
+                            setOpenItems(val);
+                            if (!val) {
+                              setEditIndex(null);
+                              setEditItems(null);
+                            }
+                          }}
+                          title={
+                            editIndex !== null
+                              ? "Edit Purchase Order Item"
+                              : "Add Purchase Order Item"
+                          }
+                          description={
+                            editIndex !== null
+                              ? "Update the details for this purchase order line item."
+                              : "Fill out the details below to add an item to this purchase order."
+                          }
+                          size="lg"
+                          closeable={true}
+                          renderActions={
+                            <Button
+                              form="edit-po-item-form"
+                              type="submit"
+                              variant="primary"
+                            >
+                              {editIndex !== null ? "Update Item" : "Save Item"}
+                            </Button>
+                          }
+                        >
+                          <Form {...Itemsform}>
+                            <form
+                              id="edit-po-item-form"
+                              onSubmit={Itemsform.handleSubmit(onSubmitItems)}
+                              className="flex flex-col gap-1 py-1"
+                            >
+                              <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                                <ComboboxFieldWrapper
+                                  control={Itemsform.control}
+                                  name="item_type_id"
+                                  label="Item Type"
+                                  options={itemTypesOptionsList ?? []}
+                                  required
+                                />
+                                <InputWrapper
+                                  control={Itemsform.control}
+                                  name="item"
+                                  label="Part #"
+                                  type="text"
+                                  required
+                                />
+                                <ComboboxFieldWrapper
+                                  control={Itemsform.control}
+                                  name="warehouse_id"
+                                  label="Warehouse"
+                                  options={warehouseOptionsList ?? []}
+                                  required
+                                />
+                                <InputWrapper
+                                  control={Itemsform.control}
+                                  name="quantity"
+                                  label="Order Quantity"
+                                  type="number"
+                                  required
+                                />
+                                <InputWrapper
+                                  control={Itemsform.control}
+                                  name="cost"
+                                  label="Unit Cost"
+                                  type="number"
+                                  required
+                                />
+                                <InputWrapper
+                                  control={Itemsform.control}
+                                  name="extended_cost"
+                                  label="Extended Cost"
+                                  type="number"
+                                  disabled
+                                />
+                              </div>
+                              <TextareaWrapper
+                                control={Itemsform.control}
+                                name="notes"
+                                label="Notes"
+                              />
+                              <div className="grid grid-cols-3 gap-2">
+                                <SingleCheckboxWrapper
+                                  control={Itemsform.control}
+                                  name="tax_one"
+                                  label="Apply Primary Tax Rate"
+                                />
+                                <SingleCheckboxWrapper
+                                  control={Itemsform.control}
+                                  name="tax_two"
+                                  label="Apply Secondary Tax Rate"
+                                />
+                                <SingleCheckboxWrapper
+                                  control={Itemsform.control}
+                                  name="discount"
+                                  label="Apply Discount"
+                                />
+                              </div>
+                            </form>
+                          </Form>
+                        </Modal>
+
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>Quantity</TableHead>
+                              <TableHead>Description</TableHead>
+                              <TableHead>Unit Cost</TableHead>
+                              <TableHead>Amount</TableHead>
+                              <TableHead>Notes</TableHead>
+                              <TableHead>Actions</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {items.map((item, idx) => (
+                              <TableRow key={idx}>
+                                <TableCell>{item.quantity}</TableCell>
+                                <TableCell>{item.item}</TableCell>
+                                <TableCell>${item.cost.toFixed(2)}</TableCell>
+                                <TableCell>${item.amount.toFixed(2)}</TableCell>
+                                <TableCell>{item.notes}</TableCell>
+                                <TableCell>
+                                  <TableRowActions
+                                    onEdit={() => handleEditItem(item, idx)}
+                                    onDelete={() => handleDeleteItem(idx)}
+                                  />
+                                </TableCell>
                               </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                              {items.map((item, idx) => (
-                                <TableRow key={idx}>
-                                  <TableCell>{item.quantity}</TableCell>
-                                  <TableCell>{item.item}</TableCell>
-                                  <TableCell>${item.cost.toFixed(2)}</TableCell>
-                                  <TableCell>${item.amount.toFixed(2)}</TableCell>
-                                  <TableCell>{item.notes}</TableCell>
-                                  <TableCell>
-                                    <TableRowActions
-                                      onEdit={() => handleEditItem(item, idx)}
-                                      onDelete={() => handleDeleteItem(idx)}
-                                    />
-                                  </TableCell>
-                                </TableRow>
-                              ))}
-                            </TableBody>
-                          </Table>
-                        </TabsContent>
-                        <TabsContent value="Attachments">
-                          <FileUploadWrapper
-                            multiple={true}
-                            control={form.control}
-                            name={"attachments"}
-                            label={"Attachments"}
-                          />
-                        </TabsContent>
-                        <TabsContent value="Notes">
-                          <TextareaWrapper
-                            label="Notes"
-                            name="notes"
-                            control={form.control}
-                            value={""}
-                          />
-                        </TabsContent>
-                      </Tabs>
-                    </div>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </TabsContent>
+                      <TabsContent value="Attachments">
+                        <FileUploadWrapper
+                          multiple={true}
+                          control={form.control}
+                          name={"attachments"}
+                          label={"Attachments"}
+                        />
+                      </TabsContent>
+                      <TabsContent value="Notes">
+                        <TextareaWrapper
+                          label="Notes"
+                          name="notes"
+                          control={form.control}
+                          value={""}
+                        />
+                      </TabsContent>
+                    </Tabs>
+                  </div>
                   <div className="col-span-3 space-y-2">
                     <Fieldset
                       legend="Miscellaneous"

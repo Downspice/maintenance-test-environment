@@ -471,12 +471,11 @@
 //           {/* Add Buttons Section */}
 //           <AddButtons />
 //         </div>
-        
+
 //       </CardContent>
 //     </Card>
 //   );
 // }
-
 
 import React, { useState, useMemo } from "react";
 import {
@@ -582,7 +581,10 @@ export default function HierarchicalTaxTable({
     setSelectedItem({ type, id });
   };
 
-  const findItemById = (type: "company" | "location" | "category", id: string) => {
+  const findItemById = (
+    type: "company" | "location" | "category",
+    id: string
+  ) => {
     if (type === "company") return data;
     if (type === "location") return data.locations.find((loc) => loc.id === id);
     if (type === "category") {
@@ -622,13 +624,19 @@ export default function HierarchicalTaxTable({
   };
 
   const getSortIcon = (field: SortField) => {
-    if (sortField !== field) return <ArrowUpDown size={14} className="text-slate-400" />;
-    if (sortDirection === "asc") return <ArrowUp size={14} className="text-blue-600" />;
-    if (sortDirection === "desc") return <ArrowDown size={14} className="text-blue-600" />;
+    if (sortField !== field)
+      return <ArrowUpDown size={14} className="text-slate-400" />;
+    if (sortDirection === "asc")
+      return <ArrowUp size={14} className="text-blue-600" />;
+    if (sortDirection === "desc")
+      return <ArrowDown size={14} className="text-blue-600" />;
     return <ArrowUpDown size={14} className="text-slate-400" />;
   };
 
-  const isSelected = (type: "company" | "location" | "category", id: string) => {
+  const isSelected = (
+    type: "company" | "location" | "category",
+    id: string
+  ) => {
     return selectedItem?.type === type && selectedItem?.id === id;
   };
 
@@ -736,7 +744,15 @@ export default function HierarchicalTaxTable({
     );
   };
 
-  const SortableHeader = ({ field, children, className = "" }: { field: SortField; children: React.ReactNode; className?: string }) => (
+  const SortableHeader = ({
+    field,
+    children,
+    className = "",
+  }: {
+    field: SortField;
+    children: React.ReactNode;
+    className?: string;
+  }) => (
     <button
       onClick={() => handleSort(field)}
       className={`flex items-center justify-center gap-2 hover:bg-slate-200 transition-colors rounded px-2 py-1 ${className}`}
@@ -757,7 +773,11 @@ export default function HierarchicalTaxTable({
         )}
         {selectedItem.type === "location" && (
           <>
-            <Button onClick={() => onAddLocation?.(data.id)} variant="outline" size="sm">
+            <Button
+              onClick={() => onAddLocation?.(data.id)}
+              variant="outline"
+              size="sm"
+            >
               <Plus size={16} /> Add New Location
             </Button>
             <Button onClick={() => onAddCategory?.(selectedItem.id)} size="sm">
@@ -788,7 +808,7 @@ export default function HierarchicalTaxTable({
     <Card className="w-full shadow-lg">
       <CardContent className="p-0">
         {/* Your table content remains unchanged, including Collapsible logic */}
-<div className="bg-white rounded-lg overflow-hidden">
+        <div className="bg-white rounded-lg overflow-hidden">
           {/* Table Headers */}
           <div className="bg-slate-100 border-b border-slate-200 px-4 py-3 grid grid-cols-12 gap-4 font-semibold text-slate-700">
             <div className="col-span-5 flex items-center gap-2">
@@ -995,7 +1015,9 @@ export default function HierarchicalTaxTable({
                 <Input
                   value={editData.name || ""}
                   onChange={(e) =>
-                    setEditData((prev) => prev && { ...prev, name: e.target.value })
+                    setEditData(
+                      (prev) => prev && { ...prev, name: e.target.value }
+                    )
                   }
                 />
               </div>
@@ -1007,7 +1029,13 @@ export default function HierarchicalTaxTable({
                       type="number"
                       value={editData.tax_rate1 ?? ""}
                       onChange={(e) =>
-                        setEditData((prev) => prev && { ...prev, tax_rate1: parseFloat(e.target.value) })
+                        setEditData(
+                          (prev) =>
+                            prev && {
+                              ...prev,
+                              tax_rate1: parseFloat(e.target.value),
+                            }
+                        )
                       }
                     />
                   </div>
@@ -1017,7 +1045,13 @@ export default function HierarchicalTaxTable({
                       type="number"
                       value={editData.tax_rate2 ?? ""}
                       onChange={(e) =>
-                        setEditData((prev) => prev && { ...prev, tax_rate2: parseFloat(e.target.value) })
+                        setEditData(
+                          (prev) =>
+                            prev && {
+                              ...prev,
+                              tax_rate2: parseFloat(e.target.value),
+                            }
+                        )
                       }
                     />
                   </div>

@@ -4,8 +4,14 @@ import { Cross2Icon } from "@radix-ui/react-icons";
 import type { Table } from "@tanstack/react-table";
 import { useEffect, useState, useRef } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
-import { Settings, Undo2, EyeOff, CheckSquare, MoveHorizontal } from "lucide-react";
-import { useRouter } from '@bprogress/next/app';
+import {
+  Settings,
+  Undo2,
+  EyeOff,
+  CheckSquare,
+  MoveHorizontal,
+} from "lucide-react";
+import { useRouter } from "@bprogress/next/app";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,26 +29,35 @@ import type { TableConfig } from "./utils/table-config";
 import { formatDate } from "./utils/date-format";
 
 // Helper functions for component sizing
-const getInputSizeClass = (size: 'sm' | 'default' | 'lg') => {
+const getInputSizeClass = (size: "sm" | "default" | "lg") => {
   switch (size) {
-    case 'sm': return 'h-8';
-    case 'lg': return 'h-11';
-    default: return '';
+    case "sm":
+      return "h-8";
+    case "lg":
+      return "h-11";
+    default:
+      return "";
   }
 };
 
-const getButtonSizeClass = (size: 'sm' | 'default' | 'lg', isIcon = false) => {
+const getButtonSizeClass = (size: "sm" | "default" | "lg", isIcon = false) => {
   if (isIcon) {
     switch (size) {
-      case 'sm': return 'h-8 w-8';
-      case 'lg': return 'h-11 w-11';
-      default: return '';
+      case "sm":
+        return "h-8 w-8";
+      case "lg":
+        return "h-11 w-11";
+      default:
+        return "";
     }
   }
   switch (size) {
-    case 'sm': return 'h-8 px-3';
-    case 'lg': return 'h-11 px-5';
-    default: return '';
+    case "sm":
+      return "h-8 px-3";
+    case "lg":
+      return "h-11 px-5";
+    default:
+      return "";
   }
 };
 
@@ -53,9 +68,9 @@ interface DataTableToolbarProps<TData> {
     id:
       | { from_date: string; to_date: string }
       | ((prev: { from_date: string; to_date: string }) => {
-        from_date: string;
-        to_date: string;
-      })
+          from_date: string;
+          to_date: string;
+        })
   ) => void;
   totalSelectedItems?: number;
   deleteSelection?: () => void;

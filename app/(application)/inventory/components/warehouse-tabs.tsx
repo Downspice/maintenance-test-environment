@@ -78,7 +78,12 @@ export default function WarehouseTabs({
             if (!next) setSelected(undefined);
           }}
           trigger={
-            <Button type="button" variant="secondary" size="sm" className="gap-2">
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              className="gap-2"
+            >
               <Plus className="size-4" />
               Add warehouse
             </Button>
@@ -101,10 +106,7 @@ export default function WarehouseTabs({
                 All available warehouses are already linked to this item.
               </p>
             ) : (
-              <Select
-                value={selected}
-                onValueChange={setSelected}
-              >
+              <Select value={selected} onValueChange={setSelected}>
                 <SelectTrigger id="warehouse-picker" className="w-full">
                   <SelectValue placeholder="Select warehouse" />
                 </SelectTrigger>
@@ -143,7 +145,11 @@ export default function WarehouseTabs({
           </TabsList>
 
           {warehouses.map((w, index) => (
-            <TabsContent key={w} value={w} className="mt-2 rounded-lg border p-4">
+            <TabsContent
+              key={w}
+              value={w}
+              className="mt-2 rounded-lg border p-4"
+            >
               <InputWrapper
                 control={control}
                 name={`inventory_trackings.${index}.warehouse`}

@@ -24,7 +24,7 @@ import { useCallback, useEffect, useState, useMemo } from "react";
 interface DataTableViewOptionsProps<TData> {
   table: Table<TData>;
   columnMapping?: Record<string, string>;
-  size?: 'sm' | 'default' | 'lg';
+  size?: "sm" | "default" | "lg";
 }
 
 // Local storage key for column order
@@ -33,7 +33,7 @@ const COLUMN_ORDER_STORAGE_KEY = "data-table-column-order";
 export function DataTableViewOptions<TData>({
   table,
   columnMapping,
-  size = 'default',
+  size = "default",
 }: DataTableViewOptionsProps<TData>) {
   // Get columns that can be hidden
   const columns = React.useMemo(
@@ -42,9 +42,9 @@ export function DataTableViewOptions<TData>({
         .getAllColumns()
         .filter(
           (column) =>
-            typeof column.accessorFn !== "undefined" && column.getCanHide(),
+            typeof column.accessorFn !== "undefined" && column.getCanHide()
         ),
-    [table],
+    [table]
   );
 
   // State for drag and drop
@@ -53,7 +53,6 @@ export function DataTableViewOptions<TData>({
   // Order columns based on the current table column order
   const columnOrder = table.getState().columnOrder;
   const orderedColumns = useMemo(() => {
-
     if (!columnOrder.length) {
       return columns;
     }
@@ -88,21 +87,30 @@ export function DataTableViewOptions<TData>({
   // Save column order to localStorage when it changes
   const saveColumnOrder = useCallback((columnOrder: string[]) => {
     try {
-      localStorage.setItem(COLUMN_ORDER_STORAGE_KEY, JSON.stringify(columnOrder));
+      localStorage.setItem(
+        COLUMN_ORDER_STORAGE_KEY,
+        JSON.stringify(columnOrder)
+      );
     } catch (error) {
       console.error("Error saving column order:", error);
     }
   }, []);
 
   // Handle drag start
-  const handleDragStart = useCallback((e: React.DragEvent, columnId: string) => {
-    setDraggedColumnId(columnId);
-    e.dataTransfer.effectAllowed = "move";
-    // This helps with dragging visuals
-    if (e.dataTransfer.setDragImage && e.currentTarget instanceof HTMLElement) {
-      e.dataTransfer.setDragImage(e.currentTarget, 20, 20);
-    }
-  }, []);
+  const handleDragStart = useCallback(
+    (e: React.DragEvent, columnId: string) => {
+      setDraggedColumnId(columnId);
+      e.dataTransfer.effectAllowed = "move";
+      // This helps with dragging visuals
+      if (
+        e.dataTransfer.setDragImage &&
+        e.currentTarget instanceof HTMLElement
+      ) {
+        e.dataTransfer.setDragImage(e.currentTarget, 20, 20);
+      }
+    },
+    []
+  );
 
   // Handle drag over
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -111,35 +119,39 @@ export function DataTableViewOptions<TData>({
   }, []);
 
   // Handle drop
-  const handleDrop = useCallback((e: React.DragEvent, targetColumnId: string) => {
-    e.preventDefault();
+  const handleDrop = useCallback(
+    (e: React.DragEvent, targetColumnId: string) => {
+      e.preventDefault();
 
-    if (!draggedColumnId || draggedColumnId === targetColumnId) return;
+      if (!draggedColumnId || draggedColumnId === targetColumnId) return;
 
-    // Get current column order
-    const currentOrder = table.getState().columnOrder.length > 0
-      ? [...table.getState().columnOrder]
-      : table.getAllLeafColumns().map(d => d.id);
+      // Get current column order
+      const currentOrder =
+        table.getState().columnOrder.length > 0
+          ? [...table.getState().columnOrder]
+          : table.getAllLeafColumns().map((d) => d.id);
 
-    // Find indices
-    const draggedIndex = currentOrder.indexOf(draggedColumnId);
-    const targetIndex = currentOrder.indexOf(targetColumnId);
+      // Find indices
+      const draggedIndex = currentOrder.indexOf(draggedColumnId);
+      const targetIndex = currentOrder.indexOf(targetColumnId);
 
-    if (draggedIndex === -1 || targetIndex === -1) return;
+      if (draggedIndex === -1 || targetIndex === -1) return;
 
-    // Create new order by moving the dragged column
-    const newOrder = [...currentOrder];
-    newOrder.splice(draggedIndex, 1);
-    newOrder.splice(targetIndex, 0, draggedColumnId);
+      // Create new order by moving the dragged column
+      const newOrder = [...currentOrder];
+      newOrder.splice(draggedIndex, 1);
+      newOrder.splice(targetIndex, 0, draggedColumnId);
 
-    // Update table column order
-    table.setColumnOrder(newOrder);
+      // Update table column order
+      table.setColumnOrder(newOrder);
 
-    // Save to localStorage
-    saveColumnOrder(newOrder);
+      // Save to localStorage
+      saveColumnOrder(newOrder);
 
-    setDraggedColumnId(null);
-  }, [draggedColumnId, table, saveColumnOrder]);
+      setDraggedColumnId(null);
+    },
+    [draggedColumnId, table, saveColumnOrder]
+  );
 
   // Reset column order
   const resetColumnOrder = useCallback(() => {
@@ -150,23 +162,28 @@ export function DataTableViewOptions<TData>({
   }, [table]);
 
   // Get column display label
-  const getColumnLabel = useCallback((column: Column<TData, unknown>) => {
-    // First check if we have a mapping for this column
-    if (columnMapping && column.id in columnMapping) {
-      return columnMapping[column.id];
-    }
-    // Then check for meta label
-    return (column.columnDef.meta as { label?: string })?.label ??
-      // Finally fall back to formatted column ID
-      column.id.replace(/_/g, ' ');
-  }, [columnMapping]);
+  const getColumnLabel = useCallback(
+    (column: Column<TData, unknown>) => {
+      // First check if we have a mapping for this column
+      if (columnMapping && column.id in columnMapping) {
+        return columnMapping[column.id];
+      }
+      // Then check for meta label
+      return (
+        (column.columnDef.meta as { label?: string })?.label ??
+        // Finally fall back to formatted column ID
+        column.id.replace(/_/g, " ")
+      );
+    },
+    [columnMapping]
+  );
 
   return (
     <Popover>
       <PopoverTrigger asChild>
         <Button
           aria-label="Toggle columns"
-          variant="outline" 
+          variant="outline"
           size={size}
           className="ml-auto hidden lg:flex"
         >
@@ -183,7 +200,9 @@ export function DataTableViewOptions<TData>({
               {orderedColumns.map((column) => (
                 <CommandItem
                   key={column.id}
-                  onSelect={() => column.toggleVisibility(!column.getIsVisible())}
+                  onSelect={() =>
+                    column.toggleVisibility(!column.getIsVisible())
+                  }
                   draggable
                   onDragStart={(e) => handleDragStart(e, column.id)}
                   onDragOver={handleDragOver}
@@ -200,7 +219,7 @@ export function DataTableViewOptions<TData>({
                   <Check
                     className={cn(
                       "ml-auto h-4 w-4",
-                      column.getIsVisible() ? "opacity-100" : "opacity-0",
+                      column.getIsVisible() ? "opacity-100" : "opacity-0"
                     )}
                   />
                 </CommandItem>

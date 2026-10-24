@@ -35,7 +35,8 @@ export default function LocationView() {
     openSheet({
       title: "Add New Location",
       description: "Fill out the form below to create a Location.",
-      className: "w-full sm:w-[45%] sm:min-w-[600px] sm:max-w-none lg:max-w-none",
+      className:
+        "w-full sm:w-[45%] sm:min-w-[600px] sm:max-w-none lg:max-w-none",
       content: (
         <ScrollArea className="h-[calc(100vh-160px)] pr-4">
           <NewLocation formId="new-location-form" hideSubmitButton />
@@ -53,7 +54,8 @@ export default function LocationView() {
     openSheet({
       title: "Add New Category",
       description: "Fill out the form below to create a Category.",
-      className: "w-full sm:w-[45%] sm:min-w-[600px] sm:max-w-none lg:max-w-none",
+      className:
+        "w-full sm:w-[45%] sm:min-w-[600px] sm:max-w-none lg:max-w-none",
       content: (
         <ScrollArea className="h-[calc(100vh-160px)] pr-4">
           <NewCategory formId="new-category-form" hideSubmitButton />

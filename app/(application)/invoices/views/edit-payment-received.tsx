@@ -65,7 +65,9 @@ export default function EditPaymentReceived({
     resolver: zodResolver(paymentSchema),
     defaultValues: {
       ...data,
-      date_received: data.date_received ? new Date(data.date_received) : undefined,
+      date_received: data.date_received
+        ? new Date(data.date_received)
+        : undefined,
     },
   });
 
@@ -101,7 +103,9 @@ export default function EditPaymentReceived({
       setOpen(false);
     } catch (error) {
       console.error("Error updating payment record:", error);
-      toast.error("Failed to update payment record. Please check the form and try again.");
+      toast.error(
+        "Failed to update payment record. Please check the form and try again."
+      );
     }
   }
 

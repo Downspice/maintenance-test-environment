@@ -18,7 +18,8 @@ export type ConfirmOptions = {
   description?: string;
   confirmText?: string;
   cancelText?: string;
-  variant?: "default" | "destructive" | "secondary" | "outline" | "ghost" | "link";
+  variant?:
+    "default" | "destructive" | "secondary" | "outline" | "ghost" | "link";
   tone?: "danger" | "warning" | "info" | "success";
   item?: DeleteConfirmationItem;
   warningTitle?: ReactNode;
@@ -33,14 +34,16 @@ type ConfirmDialogContextValue = {
   confirm: (opts?: ConfirmOptions) => Promise<boolean>;
 };
 
-const ConfirmDialogContext = createContext<ConfirmDialogContextValue | undefined>(
-  undefined
-);
+const ConfirmDialogContext = createContext<
+  ConfirmDialogContextValue | undefined
+>(undefined);
 
 const defaultWarningText = (
   <>
     This action{" "}
-    <strong className="font-semibold text-text-strong-950">cannot be undone</strong>
+    <strong className="font-semibold text-text-strong-950">
+      cannot be undone
+    </strong>
     .
   </>
 );
@@ -72,12 +75,10 @@ export function ConfirmDialogProvider({ children }: { children: ReactNode }) {
       options.tone === undefined &&
       options.requireSwitch !== false);
 
-  const requireSwitch =
-    options.requireSwitch ?? isDestructive;
+  const requireSwitch = options.requireSwitch ?? isDestructive;
 
   const confirmText =
-    options.confirmText ??
-    (isDestructive ? "Yes, Delete" : "Confirm");
+    options.confirmText ?? (isDestructive ? "Yes, Delete" : "Confirm");
 
   return (
     <ConfirmDialogContext.Provider value={{ confirm }}>
@@ -99,9 +100,7 @@ export function ConfirmDialogProvider({ children }: { children: ReactNode }) {
         warningTitle={options.warningTitle ?? "Warning:"}
         warningText={options.warningText ?? defaultWarningText}
         item={options.item}
-        switchLabel={
-          options.switchLabel ?? "Confirm permanent deletion"
-        }
+        switchLabel={options.switchLabel ?? "Confirm permanent deletion"}
         switchDescription={
           options.switchDescription ??
           "Toggle the switch to authorize and enable this action."
@@ -120,7 +119,9 @@ export function ConfirmDialogProvider({ children }: { children: ReactNode }) {
 export function useConfirmDialog() {
   const context = useContext(ConfirmDialogContext);
   if (!context) {
-    throw new Error("useConfirmDialog must be used within ConfirmDialogProvider");
+    throw new Error(
+      "useConfirmDialog must be used within ConfirmDialogProvider"
+    );
   }
   return context.confirm;
 }

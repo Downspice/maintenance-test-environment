@@ -22,14 +22,11 @@ export const workOrderSchema = z.object({
 
 // Equipment options
 const equipmentOptions = [{ id: "1311827", name: "AC-001-07 Class 8" }];
- 
-export default function NewInspection() {
 
+export default function NewInspection() {
   const workOrderForm = useForm<z.infer<typeof workOrderSchema>>({
     resolver: zodResolver(workOrderSchema),
-    defaultValues: {
-       
-    },
+    defaultValues: {},
   });
 
   async function handleSubmit(data: z.infer<typeof workOrderSchema>) {
@@ -39,13 +36,13 @@ export default function NewInspection() {
     toast.success("Work Order submitted successfully!");
   }
 
- const handleRowClick = (workOrderId: string, event: React.MouseEvent) => {
-     // Don't navigate if clicking on checkbox or other interactive elements
-     if ((event.target as HTMLElement).closest('input[type="checkbox"]')) {
-       return
-     }
-     router.push(`/work-order/${workOrderId}`)
-   }
+  const handleRowClick = (workOrderId: string, event: React.MouseEvent) => {
+    // Don't navigate if clicking on checkbox or other interactive elements
+    if ((event.target as HTMLElement).closest('input[type="checkbox"]')) {
+      return;
+    }
+    router.push(`/work-order/${workOrderId}`);
+  };
 
   return (
     <div>

@@ -5,13 +5,13 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import AddNotes from "@/components/forms/entities/work-order/add-notes";
 import {
-   Table,
-   TableBody,
-   TableCell,
-   TableHead,
-   TableHeader,
-   TableRow,
- } from "@/components/ui/table";
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { useConfirmDialog } from "@/lib/shared/confirm-dialog";
 import { toast } from "sonner";
@@ -49,14 +49,14 @@ export default function NotesTab({
         title: "Delete note?",
         description: "Are you sure you want to delete this note?",
         confirmText: "Delete",
-      })
+      });
       if (ok) {
         const updatedNotes = [...notes];
         updatedNotes.splice(index, 1);
         onUpdateNotes(updatedNotes);
-        toast.success("Note deleted")
+        toast.success("Note deleted");
       }
-    })()
+    })();
   };
 
   return (
@@ -65,7 +65,9 @@ export default function NotesTab({
         <h3 className="text-lg font-semibold">Notes</h3>
         <Dialog open={openDialog} onOpenChange={setOpenDialog}>
           <DialogTrigger asChild>
-            <Button variant="secondary" onClick={() => {
+            <Button
+              variant="secondary"
+              onClick={() => {
                 setEditingIndex(null);
                 setEditingNote(null);
               }}

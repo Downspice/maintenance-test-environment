@@ -17,7 +17,7 @@ import {
   substituteOptions,
 } from "@/lib/schemas/equipment-schema";
 import Fieldset from "@/components/customUI/fieldset";
- 
+
 import { toast } from "sonner";
 import { ComboboxFieldWrapper } from "@/components/forms/fields/ComboboxWrapper";
 import TextareaWrapper from "@/components/forms/fields/TextareaWrapper";
@@ -38,62 +38,69 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-
-import {
-  discount_typesOptions,
-} from "@/lib/domains/invoice/invoices-page-data";
+import { discount_typesOptions } from "@/lib/domains/invoice/invoices-page-data";
 import FileUploadWrapper from "@/components/forms/fields/FileUploadWrapper";
 import SingleCheckboxWrapper from "@/components/forms/fields/SingleCheckboxWrapper";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  useGetLocations,
-} from "@/services/setups/lookups";
-import {
-  useGetVendors,
-} from "@/services/setups/vendor";
+import { useGetLocations } from "@/services/setups/lookups";
+import { useGetVendors } from "@/services/setups/vendor";
 import { useGetPurchaseOrderShipVias } from "@/services/setups/purchaseOrder";
 import { useGetItemTypes, useGetInvoices } from "@/services/setups/invoice";
 import { convertToOptionList } from "@/lib/shared/utils";
 
 // Purchase Order Item Schema
 export const PurchaseOrderItemSchema = z.object({
-  item_type_id: z.string({
-    required_error: "Item type is required",
-    invalid_type_error: "Item type must be a valid selection"
-  }).min(1, "Please select an item type"),
-  
-  item: z.string({
-    required_error: "Item/Part number is required",
-    invalid_type_error: "Item must be a text value"
-  }).min(1, "Item/Part number cannot be empty"),
-  
-  warehouse_id: z.string({
-    required_error: "Warehouse is required",
-    invalid_type_error: "Warehouse must be a valid selection"
-  }).min(1, "Please select a warehouse"),
-  
-  quantity: z.coerce.number({
-    required_error: "Order quantity is required",
-    invalid_type_error: "Quantity must be a number"
-  }).min(1, "Quantity must be at least 1"),
-  
-  cost: z.coerce.number({
-    required_error: "Unit cost is required",
-    invalid_type_error: "Cost must be a number"
-  }).min(0, "Unit cost cannot be negative"),
-  
-  amount: z.coerce.number({
-    required_error: "Amount is required",
-    invalid_type_error: "Amount must be a number"
-  }).min(0, "Amount cannot be negative"),
-  
-  extended_cost: z.coerce.number({
-    required_error: "Extended cost is required",
-    invalid_type_error: "Extended cost must be a number"
-  }).min(0, "Extended cost cannot be negative"),
-  
+  item_type_id: z
+    .string({
+      required_error: "Item type is required",
+      invalid_type_error: "Item type must be a valid selection",
+    })
+    .min(1, "Please select an item type"),
+
+  item: z
+    .string({
+      required_error: "Item/Part number is required",
+      invalid_type_error: "Item must be a text value",
+    })
+    .min(1, "Item/Part number cannot be empty"),
+
+  warehouse_id: z
+    .string({
+      required_error: "Warehouse is required",
+      invalid_type_error: "Warehouse must be a valid selection",
+    })
+    .min(1, "Please select a warehouse"),
+
+  quantity: z.coerce
+    .number({
+      required_error: "Order quantity is required",
+      invalid_type_error: "Quantity must be a number",
+    })
+    .min(1, "Quantity must be at least 1"),
+
+  cost: z.coerce
+    .number({
+      required_error: "Unit cost is required",
+      invalid_type_error: "Cost must be a number",
+    })
+    .min(0, "Unit cost cannot be negative"),
+
+  amount: z.coerce
+    .number({
+      required_error: "Amount is required",
+      invalid_type_error: "Amount must be a number",
+    })
+    .min(0, "Amount cannot be negative"),
+
+  extended_cost: z.coerce
+    .number({
+      required_error: "Extended cost is required",
+      invalid_type_error: "Extended cost must be a number",
+    })
+    .min(0, "Extended cost cannot be negative"),
+
   notes: z.string().optional().default(""),
-  
+
   tax_one: z.coerce.number().min(0).max(1).optional().default(0),
   tax_two: z.coerce.number().min(0).max(1).optional().default(0),
   discount: z.coerce.number().min(0).max(1).optional().default(0),
@@ -102,7 +109,7 @@ export const PurchaseOrderItemSchema = z.object({
 // Custom Field Schema for dynamic fields
 export const CustomFieldSchema = z.object({
   name: z.string().min(1, "Field name is required"),
-  id: z.string().min(1, "Field value is required")
+  id: z.string().min(1, "Field value is required"),
 });
 
 // Attachment Schema
@@ -111,115 +118,151 @@ export const AttachmentSchema = z.object({
     required_error: "File is required",
   }),
   name: z.string().min(1, "File name is required"),
-  description: z.string().optional().default("")
+  description: z.string().optional().default(""),
 });
 
 // Main Purchase Order Schema
 export const PurchaseOrderSchema = z.object({
-  id:z.string().optional(),
-  po_number: z.string({
-    required_error: "Purchase order number is required",
-    invalid_type_error: "PO number must be text"
-  }).min(1, "PO number cannot be empty"),
-  
+  id: z.string().optional(),
+  po_number: z
+    .string({
+      required_error: "Purchase order number is required",
+      invalid_type_error: "PO number must be text",
+    })
+    .min(1, "PO number cannot be empty"),
+
   issued_date: z.date({
     required_error: "Issue date is required",
-    invalid_type_error: "Please select a valid issue date"
+    invalid_type_error: "Please select a valid issue date",
   }),
-  
+
   due_date: z.date({
     required_error: "Due date is required",
-    invalid_type_error: "Please select a valid due date"
+    invalid_type_error: "Please select a valid due date",
   }),
-  
-  buyer_id: z.string({
-    required_error: "Buyer is required",
-    invalid_type_error: "Buyer must be selected"
-  }).min(1, "Please select a buyer"),
-  
-  status_id: z.string({
-    required_error: "Status is required",
-    invalid_type_error: "Status must be selected"
-  }).min(1, "Please select a status"),
-  
+
+  buyer_id: z
+    .string({
+      required_error: "Buyer is required",
+      invalid_type_error: "Buyer must be selected",
+    })
+    .min(1, "Please select a buyer"),
+
+  status_id: z
+    .string({
+      required_error: "Status is required",
+      invalid_type_error: "Status must be selected",
+    })
+    .min(1, "Please select a status"),
+
   closed_date: z.date().optional().nullable(),
-  
-  vendor: z.string({
-    required_error: "Vendor is required",
-    invalid_type_error: "Vendor must be text"
-  }).min(1, "Vendor name cannot be empty"),
-  
-  shipping: z.string({
-    required_error: "Shipping address is required",
-    invalid_type_error: "Shipping address must be text"
-  }).min(1, "Shipping address cannot be empty"),
-  
-  term_id: z.string({
-    required_error: "Payment terms are required",
-    invalid_type_error: "Terms must be selected"
-  }).min(1, "Please select payment terms"),
-  
-  ship_via_id: z.string({
-    required_error: "Ship via is required",
-    invalid_type_error: "Ship via must be selected"
-  }).min(1, "Please select shipping method"),
-  
+
+  vendor: z
+    .string({
+      required_error: "Vendor is required",
+      invalid_type_error: "Vendor must be text",
+    })
+    .min(1, "Vendor name cannot be empty"),
+
+  shipping: z
+    .string({
+      required_error: "Shipping address is required",
+      invalid_type_error: "Shipping address must be text",
+    })
+    .min(1, "Shipping address cannot be empty"),
+
+  term_id: z
+    .string({
+      required_error: "Payment terms are required",
+      invalid_type_error: "Terms must be selected",
+    })
+    .min(1, "Please select payment terms"),
+
+  ship_via_id: z
+    .string({
+      required_error: "Ship via is required",
+      invalid_type_error: "Ship via must be selected",
+    })
+    .min(1, "Please select shipping method"),
+
   invoice_number: z.string().optional().default(""),
-  
+
   order_number: z.string().optional().default(""),
-  
+
   wo_number: z.string().optional().default(""),
-  
-  location_id: z.string({
-    required_error: "Location is required",
-    invalid_type_error: "Location must be selected"
-  }).min(1, "Please select a location"),
-  
-  subtotal: z.coerce.number({
-    required_error: "Subtotal is required",
-    invalid_type_error: "Subtotal must be a number"
-  }).min(0, "Subtotal cannot be negative"),
-  
+
+  location_id: z
+    .string({
+      required_error: "Location is required",
+      invalid_type_error: "Location must be selected",
+    })
+    .min(1, "Please select a location"),
+
+  subtotal: z.coerce
+    .number({
+      required_error: "Subtotal is required",
+      invalid_type_error: "Subtotal must be a number",
+    })
+    .min(0, "Subtotal cannot be negative"),
+
   is_discount: z.coerce.number().min(0).max(1).default(0),
-  
-  discount_type: z.string( {
-    required_error: "Please select a discount type",
-    invalid_type_error: "Discount type must be either 'Fixed' or 'Percent'"
-  }).optional(),
-  
-  discount: z.coerce.number().min(0, "Discount cannot be negative").optional().default(0),
-  
-  discount_amount: z.coerce.number().min(0, "Discount amount cannot be negative").optional().default(0),
-  
+
+  discount_type: z
+    .string({
+      required_error: "Please select a discount type",
+      invalid_type_error: "Discount type must be either 'Fixed' or 'Percent'",
+    })
+    .optional(),
+
+  discount: z.coerce
+    .number()
+    .min(0, "Discount cannot be negative")
+    .optional()
+    .default(0),
+
+  discount_amount: z.coerce
+    .number()
+    .min(0, "Discount amount cannot be negative")
+    .optional()
+    .default(0),
+
   tax_one: z.coerce.number().min(0, "Tax 1 cannot be negative").default(0),
-  
-  tax_one_amount: z.coerce.number().min(0, "Tax 1 amount cannot be negative").default(0),
-  
+
+  tax_one_amount: z.coerce
+    .number()
+    .min(0, "Tax 1 amount cannot be negative")
+    .default(0),
+
   tax_two: z.coerce.number().min(0, "Tax 2 cannot be negative").default(0),
-  
-  tax_two_amount: z.coerce.number().min(0, "Tax 2 amount cannot be negative").default(0),
-  
+
+  tax_two_amount: z.coerce
+    .number()
+    .min(0, "Tax 2 amount cannot be negative")
+    .default(0),
+
   credit: z.coerce.number().min(0, "Credit cannot be negative").default(0),
-  
+
   freight: z.coerce.number().min(0, "Freight cannot be negative").default(0),
-  
-  total_cost: z.coerce.number({
-    required_error: "Total cost is required",
-    invalid_type_error: "Total cost must be a number"
-  }).min(0, "Total cost cannot be negative"),
-  
+
+  total_cost: z.coerce
+    .number({
+      required_error: "Total cost is required",
+      invalid_type_error: "Total cost must be a number",
+    })
+    .min(0, "Total cost cannot be negative"),
+
   notes: z.string().optional().default(""),
-  
+
   others: z.array(CustomFieldSchema).optional().default([]),
-  
-  items: z.array(PurchaseOrderItemSchema)
+
+  items: z
+    .array(PurchaseOrderItemSchema)
     .min(1, "At least one item is required")
-    .refine(
-      (items) => items.length > 0,
-      { message: "Please add at least one item to the purchase order" }
-    ),
-  
-  attachments: z.array(AttachmentSchema).optional().default([])
+    .refine((items) => items.length > 0, {
+      message: "Please add at least one item to the purchase order",
+    }),
+
+  attachments: z.array(AttachmentSchema).optional().default([]),
 });
 
 // TypeScript types
@@ -229,27 +272,32 @@ export type CustomFieldType = z.infer<typeof CustomFieldSchema>;
 export type AttachmentType = z.infer<typeof AttachmentSchema>;
 
 // Status type for UI
-export type PurchaseOrderStatusType = "Requisition" | "Ordered" | "Partial" | "Closed";
-
+export type PurchaseOrderStatusType =
+  "Requisition" | "Ordered" | "Partial" | "Closed";
 
 export type ItemFormValues = z.infer<typeof PurchaseOrderItemSchema>;
 
 export default function EditPurchaseOrderFormMoreButton({
-  
   data,
   open: externalOpen,
   onOpenChange,
-}: { 
+}: {
   data: Partial<PurchaseOrderInterface>;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }) {
-    const { data: shipViaOptions } = useGetPurchaseOrderShipVias();
-      const { data: vendorOptions } = useGetVendors();
-    const { data: itemTypesOptionsList } = useGetItemTypes<Array<{ id: string; name: string }>>();
-    const { data: invoices } = useGetInvoices<Array<{ id: string; invoice_number: string }>>();
-    const invoiceOptionsList = convertToOptionList(invoices ?? [], "id", "invoice_number");
-  
+  const { data: shipViaOptions } = useGetPurchaseOrderShipVias();
+  const { data: vendorOptions } = useGetVendors();
+  const { data: itemTypesOptionsList } =
+    useGetItemTypes<Array<{ id: string; name: string }>>();
+  const { data: invoices } =
+    useGetInvoices<Array<{ id: string; invoice_number: string }>>();
+  const invoiceOptionsList = convertToOptionList(
+    invoices ?? [],
+    "id",
+    "invoice_number"
+  );
+
   const [internalOpen, setInternalOpen] = useState(false);
   const open = externalOpen !== undefined ? externalOpen : internalOpen;
   const setOpen = onOpenChange ?? setInternalOpen;
@@ -262,23 +310,23 @@ export default function EditPurchaseOrderFormMoreButton({
   const [openItems, setOpenItems] = useState(false);
 
   const [status, setStatus] = useState<PurchaseOrderStatusType>("Requisition");
-    const { 
-    data: locationOptionsList, 
-    isLoading:locationOptionsListLoading, 
-    error: locationOptionsListError
-  } = useGetLocations<Array<{ id: string, name: string }>>();
-  
+  const {
+    data: locationOptionsList,
+    isLoading: locationOptionsListLoading,
+    error: locationOptionsListError,
+  } = useGetLocations<Array<{ id: string; name: string }>>();
+
   const PurchaseOrderStatuses: PurchaseOrderStatusType[] = [
     "Requisition",
     "Ordered",
     "Partial",
     "Closed",
   ];
-  
+
   const handleDeleteItem = (itemName: string) => {
     const filtered = items.filter((item) => item.partNumber !== itemName);
     setItems(filtered);
-    form.setValue('items', filtered); // Sync with form
+    form.setValue("items", filtered); // Sync with form
   };
 
   const handleEditItem = (item: ItemFormValues, index: number) => {
@@ -295,7 +343,7 @@ export default function EditPurchaseOrderFormMoreButton({
 
   function onSubmitItems(data: ItemFormValues) {
     let updatedItems: ItemFormValues[];
-    
+
     if (editIndex !== null) {
       const updated = [...items];
       updated[editIndex] = data;
@@ -307,7 +355,7 @@ export default function EditPurchaseOrderFormMoreButton({
     }
 
     // Immediately update form's items field
-    form.setValue('items', updatedItems);
+    form.setValue("items", updatedItems);
 
     Itemsform.reset({
       itemType: " ",
@@ -328,15 +376,15 @@ export default function EditPurchaseOrderFormMoreButton({
 
   const form = useForm<z.infer<typeof PurchaseOrderSchema>>({
     resolver: zodResolver(PurchaseOrderSchema),
-    defaultValues: { 
+    defaultValues: {
       ...data,
-      items: data.items ?? [] // Ensure items is initialized
+      items: data.items ?? [], // Ensure items is initialized
     },
   });
 
   // Sync items state with form whenever items change
   useEffect(() => {
-    form.setValue('items', items);
+    form.setValue("items", items);
   }, [items, form]);
 
   function onSubmit(data: PurchaseOrderInterface) {
@@ -388,467 +436,456 @@ export default function EditPurchaseOrderFormMoreButton({
   }, [watchStatus, form]);
 
   return (
-     
-        <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit, onError)}
-              className="space-y-6"
-            >
-              <div className="flex flex-col space-y-2">
-                <div className="flex flex-row gap-x-3">
-                  <InputWrapper
-                    control={form.control}
-                    name={"purchaseOrderNumber"}
-                    label={"Purchase Order #"}
-                    value={""}
-                    type="text"
-                  />
-                  {/* put status  that is requisition,ordered,received partial, closed */}
-                  <div className="flex gap-2">
-                    {PurchaseOrderStatuses.map((stat) => (
-                      <button
-                        key={stat}
-                        type="button"
-                        className={`p-3 h-fit rounded-md border text-sm font-medium ${
-                          status === stat
-                            ? stat === "Requisition"
-                              ? "bg-green-600 text-white"
-                              : stat === "Ordered"
-                              ? "bg-yellow-500 text-white"
-                              : stat === "Partial"
+    <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit, onError)}
+          className="space-y-6"
+        >
+          <div className="flex flex-col space-y-2">
+            <div className="flex flex-row gap-x-3">
+              <InputWrapper
+                control={form.control}
+                name={"purchaseOrderNumber"}
+                label={"Purchase Order #"}
+                value={""}
+                type="text"
+              />
+              {/* put status  that is requisition,ordered,received partial, closed */}
+              <div className="flex gap-2">
+                {PurchaseOrderStatuses.map((stat) => (
+                  <button
+                    key={stat}
+                    type="button"
+                    className={`p-3 h-fit rounded-md border text-sm font-medium ${
+                      status === stat
+                        ? stat === "Requisition"
+                          ? "bg-green-600 text-white"
+                          : stat === "Ordered"
+                            ? "bg-yellow-500 text-white"
+                            : stat === "Partial"
                               ? "bg-orange-500 text-white"
                               : "bg-red-600 text-white"
-                            : "bg-white text-gray-700 border-gray-300"
-                        }`}
-                        onClick={() => {
-                          form.setValue("status", stat);
-                          setStatus(stat);
-                        }}
-                      >
-                        {stat}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div className="flex flex-row gap-x-2">
-                  <DatePickerWrapper
-                    control={form.control}
-                    name="date"
-                    label="Issue Date"
-                  />
-                  <DatePickerWrapper
-                    control={form.control}
-                    name="dueDate"
-                    label="Due By"
-                  />
-                  <ComboboxFieldWrapper
-                    control={form.control}
-                    name="customer"
-                    label="Buyer"
-                    options={assigneeOptions}
-                  />
-                  <DatePickerWrapper
-                    control={form.control}
-                    name="closedDate"
-                    label="Close"
-                    disabled={watchStatus !== "Closed"}
-                  />
-                </div>
-                <div className="grid grid-cols-8 gap-4">
-                  <div className="col-span-6 grid grid-cols-2 gap-2">
-                    <div className="col-span-1 h-fit">
-                      <Fieldset
-                        legend="Vendor"
-                        content={
-                          <>
-                            <ComboboxFieldWrapper
-                              control={form.control}
-                              name="vendor"
-                              options={vendorOptions}
-                              label=""
-                            />
+                        : "bg-white text-gray-700 border-gray-300"
+                    }`}
+                    onClick={() => {
+                      form.setValue("status", stat);
+                      setStatus(stat);
+                    }}
+                  >
+                    {stat}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="flex flex-row gap-x-2">
+              <DatePickerWrapper
+                control={form.control}
+                name="date"
+                label="Issue Date"
+              />
+              <DatePickerWrapper
+                control={form.control}
+                name="dueDate"
+                label="Due By"
+              />
+              <ComboboxFieldWrapper
+                control={form.control}
+                name="customer"
+                label="Buyer"
+                options={assigneeOptions}
+              />
+              <DatePickerWrapper
+                control={form.control}
+                name="closedDate"
+                label="Close"
+                disabled={watchStatus !== "Closed"}
+              />
+            </div>
+            <div className="grid grid-cols-8 gap-4">
+              <div className="col-span-6 grid grid-cols-2 gap-2">
+                <div className="col-span-1 h-fit">
+                  <Fieldset
+                    legend="Vendor"
+                    content={
+                      <>
+                        <ComboboxFieldWrapper
+                          control={form.control}
+                          name="vendor"
+                          options={vendorOptions}
+                          label=""
+                        />
 
-                            <TextareaWrapper
-                              control={form.control}
-                              name="billing"
-                              label=""
-                              placeholder=" "
-                              value={""}
-                            />
-                          </>
-                        }
-                      />
-                    </div>
-                    <div className="col-span-1 h-fit">
-                      <Fieldset
-                        legend="Ship To"
-                        content={
-                          <>
-                            <ComboboxFieldWrapper
-                              control={form.control}
-                              name="shipVia"
-                              options={shipViaOptions}
-                              label=""
-                            />
-                            <TextareaWrapper
-                              control={form.control}
-                              name="shipping"
-                              label=""
-                              placeholder=" "
-                              value={""}
-                            />
-                          </>
-                        }
-                      />
-                    </div>
-                    <div className="col-span-2 flex items-start">
-                      <Tabs defaultValue="Items" className="w-full">
-                        <TabsList>
-                          <TabsTrigger value="Items">Items</TabsTrigger>
-                          <TabsTrigger value="Attachments">
-                            Attachments
-                          </TabsTrigger>
-                          <TabsTrigger value="Notes">Notes</TabsTrigger>
-                        </TabsList>
-                        <TabsContent value="Items">
-                          <div className="flex justify-end">
-                            <Dialog
-                              open={openItems}
-                              onOpenChange={setOpenItems}
+                        <TextareaWrapper
+                          control={form.control}
+                          name="billing"
+                          label=""
+                          placeholder=" "
+                          value={""}
+                        />
+                      </>
+                    }
+                  />
+                </div>
+                <div className="col-span-1 h-fit">
+                  <Fieldset
+                    legend="Ship To"
+                    content={
+                      <>
+                        <ComboboxFieldWrapper
+                          control={form.control}
+                          name="shipVia"
+                          options={shipViaOptions}
+                          label=""
+                        />
+                        <TextareaWrapper
+                          control={form.control}
+                          name="shipping"
+                          label=""
+                          placeholder=" "
+                          value={""}
+                        />
+                      </>
+                    }
+                  />
+                </div>
+                <div className="col-span-2 flex items-start">
+                  <Tabs defaultValue="Items" className="w-full">
+                    <TabsList>
+                      <TabsTrigger value="Items">Items</TabsTrigger>
+                      <TabsTrigger value="Attachments">Attachments</TabsTrigger>
+                      <TabsTrigger value="Notes">Notes</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="Items">
+                      <div className="flex justify-end">
+                        <Dialog open={openItems} onOpenChange={setOpenItems}>
+                          <DialogTrigger
+                            asChild
+                            onClick={() => {
+                              setEditIndex(null);
+                              setEditItems(null);
+                              Itemsform.reset({
+                                itemType: " ",
+                                partNumber: " ",
+                                warehouse: " ",
+                                warranty: " ",
+                                orderQuantity: 0,
+                                receivedQuantity: 0,
+                                unit_cost: 0,
+                                extendedCost: 0,
+                                notes: " ",
+                              }); // ensure blank form for create
+                              setOpenItems(true);
+                            }}
+                          >
+                            <Button variant="outline">Add Item</Button>
+                          </DialogTrigger>
+                          <DialogContent>
+                            <DialogHeader>
+                              <DialogTitle>
+                                {editIndex !== null
+                                  ? "Edit PurchaseOrder Item"
+                                  : "Add PurchaseOrder Item"}
+                              </DialogTitle>
+                            </DialogHeader>
+                            <form
+                              onSubmit={Itemsform.handleSubmit(onSubmitItems)}
+                              className="grid gap-4 mt-4"
                             >
-                              <DialogTrigger
-                                asChild
-                                onClick={() => {
-                                  setEditIndex(null);
-                                  setEditItems(null);
-                                  Itemsform.reset({
-                                    itemType: " ",
-                                    partNumber: " ",
-                                    warehouse: " ",
-                                    warranty: " ",
-                                    orderQuantity: 0,
-                                    receivedQuantity: 0,
-                                    unit_cost: 0,
-                                    extendedCost: 0,
-                                    notes: " ",
-                                  }); // ensure blank form for create
-                                  setOpenItems(true);
-                                }}
+                              <div className="grid grid-cols-2 gap-2">
+                                <ComboboxFieldWrapper
+                                  control={Itemsform.control}
+                                  name="itemType"
+                                  label="Item Type"
+                                  options={itemTypesOptionsList}
+                                />
+                                <ComboboxFieldWrapper
+                                  className="col-span-1"
+                                  control={Itemsform.control}
+                                  name="partNumber"
+                                  label="Part #"
+                                  options={substituteOptions}
+                                />
+                                <InputWrapper
+                                  control={Itemsform.control}
+                                  name="warehouse"
+                                  label="Warehouse"
+                                  type="text"
+                                  value=""
+                                  disabled
+                                  required={false}
+                                />
+                                <InputWrapper
+                                  control={Itemsform.control}
+                                  name="warranty"
+                                  label="Warranty"
+                                  type="text"
+                                  value=""
+                                  disabled
+                                  required={false}
+                                />
+                                <InputWrapper
+                                  control={Itemsform.control}
+                                  name="orderQuantity"
+                                  label="Order Quantity"
+                                  type="number"
+                                  value="0"
+                                />
+                                <InputWrapper
+                                  control={Itemsform.control}
+                                  name="unit_cost"
+                                  label="Unit Cost"
+                                  type="number"
+                                  value="0"
+                                />
+                                <InputWrapper
+                                  control={Itemsform.control}
+                                  name="extendedCost"
+                                  label="Extended Cost"
+                                  type="number"
+                                  value="0"
+                                />
+                              </div>
+                              <TextareaWrapper
+                                control={Itemsform.control}
+                                name="notes"
+                                label="Notes"
+                                value=""
+                              />
+                              <div className="grid grid-cols-2 gap-2">
+                                <SingleCheckboxWrapper
+                                  control={form.control}
+                                  name="primaryTaxRate"
+                                  label="Apply Primary Tax Rate"
+                                />
+                                <SingleCheckboxWrapper
+                                  control={form.control}
+                                  name="secondaryTaxRate"
+                                  label="Apply Secondary Tax Rate"
+                                />
+                                <SingleCheckboxWrapper
+                                  control={form.control}
+                                  name="discount"
+                                  label="Apply Discount"
+                                />
+                              </div>
+                              <Button
+                                type="button"
+                                onClick={Itemsform.handleSubmit(onSubmitItems)}
                               >
-                                <Button variant="outline">Add Item</Button>
-                              </DialogTrigger>
-                              <DialogContent>
-                                <DialogHeader>
-                                  <DialogTitle>
-                                    {editIndex !== null
-                                      ? "Edit PurchaseOrder Item"
-                                      : "Add PurchaseOrder Item"}
-                                  </DialogTitle>
-                                </DialogHeader>
-                                <form
-                                  onSubmit={Itemsform.handleSubmit(
-                                    onSubmitItems
-                                  )}
-                                  className="grid gap-4 mt-4"
-                                >
-                                  <div className="grid grid-cols-2 gap-2">
-                                    <ComboboxFieldWrapper
-                                      control={Itemsform.control}
-                                      name="itemType"
-                                      label="Item Type"
-                                      options={itemTypesOptionsList}
-                                    />
-                                    <ComboboxFieldWrapper
-                                      className="col-span-1"
-                                      control={Itemsform.control}
-                                      name="partNumber"
-                                      label="Part #"
-                                      options={substituteOptions}
-                                    />
-                                    <InputWrapper
-                                      control={Itemsform.control}
-                                      name="warehouse"
-                                      label="Warehouse"
-                                      type="text"
-                                      value=""
-                                      disabled
-                                      required={false}
-                                    />
-                                    <InputWrapper
-                                      control={Itemsform.control}
-                                      name="warranty"
-                                      label="Warranty"
-                                      type="text"
-                                      value=""
-                                      disabled
-                                      required={false}
-                                    />
-                                    <InputWrapper
-                                      control={Itemsform.control}
-                                      name="orderQuantity"
-                                      label="Order Quantity"
-                                      type="number"
-                                      value="0"
-                                    />
-                                    <InputWrapper
-                                      control={Itemsform.control}
-                                      name="unit_cost"
-                                      label="Unit Cost"
-                                      type="number"
-                                      value="0"
-                                    />
-                                    <InputWrapper
-                                      control={Itemsform.control}
-                                      name="extendedCost"
-                                      label="Extended Cost"
-                                      type="number"
-                                      value="0"
-                                    />
-                                  </div>
-                                  <TextareaWrapper
-                                    control={Itemsform.control}
-                                    name="notes"
-                                    label="Notes"
-                                    value=""
-                                  />
-                                  <div className="grid grid-cols-2 gap-2">
-                                    <SingleCheckboxWrapper
-                                      control={form.control}
-                                      name="primaryTaxRate"
-                                      label="Apply Primary Tax Rate"
-                                    />
-                                    <SingleCheckboxWrapper
-                                      control={form.control}
-                                      name="secondaryTaxRate"
-                                      label="Apply Secondary Tax Rate"
-                                    />
-                                    <SingleCheckboxWrapper
-                                      control={form.control}
-                                      name="discount"
-                                      label="Apply Discount"
-                                    />
-                                  </div>
-                                  <Button
-                                    type="button"
-                                    onClick={Itemsform.handleSubmit(
-                                      onSubmitItems
-                                    )}
-                                  >
-                                    Save Item
-                                  </Button>
-                                </form>
-                              </DialogContent>
-                            </Dialog>
-                          </div>
+                                Save Item
+                              </Button>
+                            </form>
+                          </DialogContent>
+                        </Dialog>
+                      </div>
 
-                          <Table>
-                            <TableHeader>
-                              <TableRow>
-                                <TableHead>Ordered</TableHead>
-                                <TableHead>Received</TableHead>
-                                <TableHead>Description</TableHead>
-                                <TableHead>Unit Cost</TableHead>
-                                <TableHead>Amount</TableHead>
-                                <TableHead>Notes</TableHead>
-                                <TableHead>Actions</TableHead>
-                              </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                              {items.map((item, idx) => (
-                                <TableRow key={idx}>
-                                  <TableCell>{item.orderQuantity}</TableCell>
-                                  <TableCell>{item.receivedQuantity}</TableCell>
-                                  <TableCell>{item.description}</TableCell>
-                                  <TableCell>{item.unit_cost}</TableCell>
-                                  <TableCell>{item.extendedCost}</TableCell>
-                                  <TableCell>{item.notes}</TableCell>
-                                  <TableCell>
-                                    <TableRowActions
-                                      onEdit={() => {
-                                        setEditItems(item);
-                                        handleEditItem(item, idx);
-                                      }}
-                                      onDelete={() =>
-                                        handleDeleteItem(item.partNumber)
-                                      }
-                                    />
-                                  </TableCell>
-                                </TableRow>
-                              ))}
-                            </TableBody>
-                          </Table>
-                        </TabsContent>
-                        <TabsContent value="Attachments">
-                          <FileUploadWrapper
-                            multiple={true}
-                            control={form.control}
-                            name={"Attachments"}
-                            label={"Attachments"}
-                          />
-                        </TabsContent>
-                        <TabsContent value="Notes">
-                          <TextareaWrapper
-                            label=" "
-                            name="Notes"
-                            control={form.control}
-                            value={""}
-                          />
-                        </TabsContent>
-                      </Tabs>
-                    </div>
-                  </div>
-                  <div className="col-span-2 ">
-                    {" "}
-                    <Fieldset
-                      legend="Miscellaneous"
-                      content={
-                        <>
-                          <ComboboxFieldWrapper
-                            control={form.control}
-                            name="terms"
-                            label="Terms"
-                            options={invoiceOptionsList}
-                          />
-                          <ComboboxFieldWrapper
-                            control={form.control}
-                            name="shipVia"
-                            label="Ship Via"
-                            options={shipViaOptions}
-                          />
-                          <InputWrapper
-                            control={form.control}
-                            name={"invoice_number"}
-                            label={"Invoice#"}
-                            value={""}
-                            type="text"
-                          />
-                          <InputWrapper
-                            control={form.control}
-                            name={"orderNumber"}
-                            label={"Order #"}
-                            value={""}
-                            type="text"
-                          />
-                          <InputWrapper
-                            control={form.control}
-                            name={"woNumber"}
-                            label={"WO #"}
-                            value={""}
-                            type="text"
-                          />
-                          <ComboboxFieldWrapper
-                            control={form.control}
-                            name="location_id"
-                            label="Location Filter"
-                            options={locationOptionsList}
-                          />
-                          {/* <CustomFieldsWrapper
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Ordered</TableHead>
+                            <TableHead>Received</TableHead>
+                            <TableHead>Description</TableHead>
+                            <TableHead>Unit Cost</TableHead>
+                            <TableHead>Amount</TableHead>
+                            <TableHead>Notes</TableHead>
+                            <TableHead>Actions</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {items.map((item, idx) => (
+                            <TableRow key={idx}>
+                              <TableCell>{item.orderQuantity}</TableCell>
+                              <TableCell>{item.receivedQuantity}</TableCell>
+                              <TableCell>{item.description}</TableCell>
+                              <TableCell>{item.unit_cost}</TableCell>
+                              <TableCell>{item.extendedCost}</TableCell>
+                              <TableCell>{item.notes}</TableCell>
+                              <TableCell>
+                                <TableRowActions
+                                  onEdit={() => {
+                                    setEditItems(item);
+                                    handleEditItem(item, idx);
+                                  }}
+                                  onDelete={() =>
+                                    handleDeleteItem(item.partNumber)
+                                  }
+                                />
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </TabsContent>
+                    <TabsContent value="Attachments">
+                      <FileUploadWrapper
+                        multiple={true}
+                        control={form.control}
+                        name={"Attachments"}
+                        label={"Attachments"}
+                      />
+                    </TabsContent>
+                    <TabsContent value="Notes">
+                      <TextareaWrapper
+                        label=" "
+                        name="Notes"
+                        control={form.control}
+                        value={""}
+                      />
+                    </TabsContent>
+                  </Tabs>
+                </div>
+              </div>
+              <div className="col-span-2 ">
+                {" "}
+                <Fieldset
+                  legend="Miscellaneous"
+                  content={
+                    <>
+                      <ComboboxFieldWrapper
+                        control={form.control}
+                        name="terms"
+                        label="Terms"
+                        options={invoiceOptionsList}
+                      />
+                      <ComboboxFieldWrapper
+                        control={form.control}
+                        name="shipVia"
+                        label="Ship Via"
+                        options={shipViaOptions}
+                      />
+                      <InputWrapper
+                        control={form.control}
+                        name={"invoice_number"}
+                        label={"Invoice#"}
+                        value={""}
+                        type="text"
+                      />
+                      <InputWrapper
+                        control={form.control}
+                        name={"orderNumber"}
+                        label={"Order #"}
+                        value={""}
+                        type="text"
+                      />
+                      <InputWrapper
+                        control={form.control}
+                        name={"woNumber"}
+                        label={"WO #"}
+                        value={""}
+                        type="text"
+                      />
+                      <ComboboxFieldWrapper
+                        control={form.control}
+                        name="location_id"
+                        label="Location Filter"
+                        options={locationOptionsList}
+                      />
+                      {/* <CustomFieldsWrapper
                       control={form.control}
                       name={"custom"}
                       label={"Custom"}
                     /> */}
-                        </>
-                      }
-                    />
-                    <Fieldset
-                      legend="Totals"
-                      content={
-                        <>
-                          <InputWrapper
-                            control={form.control}
-                            name={"subTotal"}
-                            label={"Sub total"}
-                            value={""}
-                            type="text"
-                          />
-
-                          <ComboboxFieldWrapper
-                            control={form.control}
-                            name="discount_type"
-                            label="Discount Type"
-                            options={discount_typesOptions}
-                          />
-
-                          {watchdiscount_type === "percent" && (
-                            <InputWrapper
-                              control={form.control}
-                              name={"discount_percent"}
-                              label={"Discount"}
-                              value={""}
-                              type="text"
-                            />
-                          )}
-                          {watchdiscount_type === "amount" && (
-                            <InputWrapper
-                              control={form.control}
-                              name={"discount_amount"}
-                              label={"Discount"}
-                              value={""}
-                              type="text"
-                            />
-                          )}
-
-                          <InputWrapper
-                            control={form.control}
-                            name="tax1"
-                            label="Tax 1"
-                            type="text"
-                            value={""}
-                          />
-                          <InputWrapper
-                            control={form.control}
-                            name="tax2"
-                            label="Tax 2"
-                            type="text"
-                            value={""}
-                          />
-                          <InputWrapper
-                            control={form.control}
-                            name="Credit"
-                            label="credit"
-                            type="text"
-                            value={""}
-                          />
-                          <InputWrapper
-                            control={form.control}
-                            name="freight"
-                            label="Freight"
-                            type="text"
-                            value={""}
-                          />
-                          <InputWrapper
-                            control={form.control}
-                            name="Total Cost"
-                            label="totalCost"
-                            type="text"
-                            value={""}
-                          />
-                        </>
-                      }
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="flex justify-end">
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="min-w-32 my-4 w-full"
-                >
-                  {isSubmitting ? (
-                    "Creating..."
-                  ) : (
-                    <>
-                      <Save className="mr-2 h-4 w-4" />
-                      Save Purchase Order
                     </>
-                  )}
-                </Button>
+                  }
+                />
+                <Fieldset
+                  legend="Totals"
+                  content={
+                    <>
+                      <InputWrapper
+                        control={form.control}
+                        name={"subTotal"}
+                        label={"Sub total"}
+                        value={""}
+                        type="text"
+                      />
+
+                      <ComboboxFieldWrapper
+                        control={form.control}
+                        name="discount_type"
+                        label="Discount Type"
+                        options={discount_typesOptions}
+                      />
+
+                      {watchdiscount_type === "percent" && (
+                        <InputWrapper
+                          control={form.control}
+                          name={"discount_percent"}
+                          label={"Discount"}
+                          value={""}
+                          type="text"
+                        />
+                      )}
+                      {watchdiscount_type === "amount" && (
+                        <InputWrapper
+                          control={form.control}
+                          name={"discount_amount"}
+                          label={"Discount"}
+                          value={""}
+                          type="text"
+                        />
+                      )}
+
+                      <InputWrapper
+                        control={form.control}
+                        name="tax1"
+                        label="Tax 1"
+                        type="text"
+                        value={""}
+                      />
+                      <InputWrapper
+                        control={form.control}
+                        name="tax2"
+                        label="Tax 2"
+                        type="text"
+                        value={""}
+                      />
+                      <InputWrapper
+                        control={form.control}
+                        name="Credit"
+                        label="credit"
+                        type="text"
+                        value={""}
+                      />
+                      <InputWrapper
+                        control={form.control}
+                        name="freight"
+                        label="Freight"
+                        type="text"
+                        value={""}
+                      />
+                      <InputWrapper
+                        control={form.control}
+                        name="Total Cost"
+                        label="totalCost"
+                        type="text"
+                        value={""}
+                      />
+                    </>
+                  }
+                />
               </div>
-            </form>
-          </Form>
-        </ScrollArea>
-       
+            </div>
+          </div>
+          <div className="flex justify-end">
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="min-w-32 my-4 w-full"
+            >
+              {isSubmitting ? (
+                "Creating..."
+              ) : (
+                <>
+                  <Save className="mr-2 h-4 w-4" />
+                  Save Purchase Order
+                </>
+              )}
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </ScrollArea>
   );
 }

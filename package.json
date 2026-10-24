@@ -7,6 +7,7 @@
     "dev": "next dev --turbopack",
     "lint": "eslint .",
     "fix:imports": "eslint . --fix -c eslint.imports.config.mjs",
+    "format": "prettier --write .",
     "fix:format": "prettier --write .",
     "format:check": "prettier --check .",
     "start": "next start"

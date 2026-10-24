@@ -3,26 +3,24 @@
 import { Input } from "@/components/ui/input";
 import { EditableDataTable } from "@/components/customUI/editableTable";
 import { ColumnDef } from "@tanstack/react-table";
- import {
+import {
   Select,
   SelectContent,
   SelectTrigger,
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
- 
-import {
-  useGetLocations,
-} from "@/services/setups/lookups";
+
+import { useGetLocations } from "@/services/setups/lookups";
 
 export default function PhysicalInventoryUpdateMoreButton() {
-    const { 
-    data: locationOptionsList, 
-    isLoading:locationOptionsListLoading, 
-    error: locationOptionsListError
-  } = useGetLocations<Array<{ id: string, name: string }>>();
-  
-      const handleSelectChange = (
+  const {
+    data: locationOptionsList,
+    isLoading: locationOptionsListLoading,
+    error: locationOptionsListError,
+  } = useGetLocations<Array<{ id: string; name: string }>>();
+
+  const handleSelectChange = (
     key: "equipment" | "location" | "custom",
     id: string
   ) => {
@@ -40,27 +38,28 @@ export default function PhysicalInventoryUpdateMoreButton() {
   };
   return (
     <>
-    <div className="flex flex-row space-x-0.5">
-          <Select onValueChange={(val) => handleSelectChange("location", val)}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="All Warehouses" />
-            </SelectTrigger>
-            <SelectContent>
-              {locationOptionsList?.map((item) => (
-                <SelectItem value={item.id} key={item.id}>
-                  {item.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-    </div>
-    <EditableDataTable
-      data={data}
-      columns={columns}
-      onDataChange={(newData) => {
-        console.log("Updated Data:", newData);
-      }}
-    /></>
+      <div className="flex flex-row space-x-0.5">
+        <Select onValueChange={(val) => handleSelectChange("location", val)}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="All Warehouses" />
+          </SelectTrigger>
+          <SelectContent>
+            {locationOptionsList?.map((item) => (
+              <SelectItem value={item.id} key={item.id}>
+                {item.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <EditableDataTable
+        data={data}
+        columns={columns}
+        onDataChange={(newData) => {
+          console.log("Updated Data:", newData);
+        }}
+      />
+    </>
   );
 }
 

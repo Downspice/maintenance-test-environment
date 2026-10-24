@@ -114,7 +114,9 @@ export function ActualRecordPaymentForm({
       onSuccess?.();
     } catch (error) {
       console.error("Error creating payment record:", error);
-      toast.error("Failed to record payment. Please check the form and try again.");
+      toast.error(
+        "Failed to record payment. Please check the form and try again."
+      );
     }
   }
 

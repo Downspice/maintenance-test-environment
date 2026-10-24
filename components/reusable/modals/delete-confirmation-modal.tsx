@@ -50,7 +50,16 @@ export function DeleteConfirmationModal({
   warningTitle = "Warning:",
   warningText = (
     <>
-      This action <strong className="font-semibold text-text-strong-950">cannot be undone</strong>. Deleting a workspace will remove all its associated data. Any test, configuration, monitoring insights, and more will be <strong className="font-semibold text-text-strong-950">permanently lost</strong>.
+      This action{" "}
+      <strong className="font-semibold text-text-strong-950">
+        cannot be undone
+      </strong>
+      . Deleting a workspace will remove all its associated data. Any test,
+      configuration, monitoring insights, and more will be{" "}
+      <strong className="font-semibold text-text-strong-950">
+        permanently lost
+      </strong>
+      .
     </>
   ),
   item = {

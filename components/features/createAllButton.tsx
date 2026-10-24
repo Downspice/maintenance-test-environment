@@ -55,7 +55,11 @@ const CREATE_MENU_SECTIONS: HeaderMenuSection<CreateActionId>[] = [
     items: [
       { id: "Equipment", label: "Equipment", icon: Truck },
       { id: "Repair Request", label: "Repair request", icon: Wrench },
-      { id: "Daily Inspection", label: "Daily inspection", icon: ClipboardCheck },
+      {
+        id: "Daily Inspection",
+        label: "Daily inspection",
+        icon: ClipboardCheck,
+      },
       { id: "Work Order", label: "Work order", icon: Briefcase },
       { id: "Expense", label: "Expense", icon: ArrowLeftRight },
       { id: "Assignment", label: "Equipment assignment", icon: Users },
@@ -180,12 +184,7 @@ export default function CreateAllButton() {
           />
         );
       case "Vendor":
-        return (
-          <NewVendor
-            formId="new-vendor-form"
-            hideSubmitButton
-          />
-        );
+        return <NewVendor formId="new-vendor-form" hideSubmitButton />;
       case "Receive | Adjust Inventory":
         return (
           <AdjustInventoryForm
@@ -264,7 +263,11 @@ export default function CreateAllButton() {
         );
       case "Expense":
         return (
-          <Button form="new-general-expense-form" type="submit" variant="primary">
+          <Button
+            form="new-general-expense-form"
+            type="submit"
+            variant="primary"
+          >
             Save Expense
           </Button>
         );
@@ -288,7 +291,11 @@ export default function CreateAllButton() {
         );
       case "Purchase Order":
         return (
-          <Button form="new-purchase-order-form" type="submit" variant="primary">
+          <Button
+            form="new-purchase-order-form"
+            type="submit"
+            variant="primary"
+          >
             Save Purchase Order
           </Button>
         );
@@ -312,7 +319,11 @@ export default function CreateAllButton() {
         );
       case "Receive Purchase Order":
         return (
-          <Button form="receive-purchase-order-form" type="submit" variant="primary">
+          <Button
+            form="receive-purchase-order-form"
+            type="submit"
+            variant="primary"
+          >
             Receive Purchase Order
           </Button>
         );

@@ -402,402 +402,398 @@ export default function NewPurchaseOrderForm({
           </div>
         </div>
         <div className="grid min-h-0 flex-1 grid-cols-8 items-stretch gap-4">
-            <div className="col-span-5 flex min-h-0 flex-col gap-3">
-              <div className="grid grid-cols-2 gap-2">
-                <Fieldset
-                  legend="Vendor"
-                  className="h-full"
-                  content={
-                    <>
-                      <ComboboxFieldWrapper
-                        control={form.control}
-                        name="vendor"
-                        label="Vendor Name"
-                        options={vendorOptionsList ?? []}
-                      />
-                      <TextareaWrapper
-                        control={form.control}
-                        name="shipping"
-                        label="Shipping Address"
-                        placeholder="Enter shipping address"
-                        value=""
-                      />
-                    </>
-                  }
-                />
-                <Fieldset
-                  legend="Ship To"
-                  className="h-full"
-                  content={
-                    <>
-                      <ComboboxFieldWrapper
-                        control={form.control}
-                        name="ship_via_id"
-                        options={shipViaOptions ?? []}
-                        label="Ship Via"
-                      />
-                      <ComboboxFieldWrapper
-                        control={form.control}
-                        name="location_id"
-                        label="Location"
-                        options={locationOptionsList ?? []}
-                      />
-                    </>
-                  }
-                />
-              </div>
-              <Tabs
-                value={poDetailTab}
-                onValueChange={setPoDetailTab}
-                className="flex min-h-0 w-full flex-1 flex-col"
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <TabsList>
-                    <TabsTrigger value="Items">Items</TabsTrigger>
-                    <TabsTrigger value="Attachments">Attachments</TabsTrigger>
-                    <TabsTrigger value="Notes">Notes</TabsTrigger>
-                  </TabsList>
-                  {poDetailTab === "Items" ? (
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="primary"
-                      onClick={openAddItemModal}
-                    >
-                      <Plus className="mr-2 size-4" />
-                      Add Item
-                    </Button>
-                  ) : null}
-                </div>
-                  <TabsContent
-                    value="Items"
-                    className="mt-4 min-h-0 flex-1 overflow-y-auto data-[state=inactive]:hidden"
-                  >
-                    <Modal
-                      open={openItems}
-                      onOpenChange={(val) => {
-                        setOpenItems(val);
-                        if (!val) {
-                          setEditIndex(null);
-                          setEditItems(null);
-                        }
-                      }}
-                      title={
-                        editIndex !== null
-                          ? "Edit Purchase Order Item"
-                          : "Add Purchase Order Item"
-                      }
-                      description={
-                        editIndex !== null
-                          ? "Update the details for this purchase order line item."
-                          : "Fill out the details below to add an item to this purchase order."
-                      }
-                      size="lg"
-                      closeable={true}
-                      renderActions={
-                        <Button
-                          form="po-item-form"
-                          type="submit"
-                          variant="primary"
-                        >
-                          {editIndex !== null ? "Update Item" : "Save Item"}
-                        </Button>
-                      }
-                    >
-                      <Form {...Itemsform}>
-                        <form
-                          id="po-item-form"
-                          onSubmit={Itemsform.handleSubmit(onSubmitItems)}
-                          className="flex flex-col gap-1 py-1"
-                        >
-                          <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-                            <ComboboxFieldWrapper
-                              control={Itemsform.control}
-                              name="item_type_id"
-                              label="Item Type"
-                              options={itemTypesOptionsList ?? []}
-                              required
-                            />
-                            <InputWrapper
-                              control={Itemsform.control}
-                              name="item"
-                              label="Part # / Item"
-                              type="text"
-                              required
-                            />
-                            <ComboboxFieldWrapper
-                              control={Itemsform.control}
-                              name="warehouse_id"
-                              label="Warehouse"
-                              options={warehouseOptionsList ?? []}
-                              required
-                            />
-                            <InputWrapper
-                              control={Itemsform.control}
-                              name="quantity"
-                              label="Order Quantity"
-                              type="number"
-                              required
-                            />
-                            <InputWrapper
-                              control={Itemsform.control}
-                              name="cost"
-                              label="Unit Cost"
-                              type="number"
-                              required
-                            />
-                            <InputWrapper
-                              control={Itemsform.control}
-                              name="amount"
-                              label="Amount"
-                              type="number"
-                              disabled
-                            />
-                            <InputWrapper
-                              control={Itemsform.control}
-                              name="extended_cost"
-                              label="Extended Cost"
-                              type="number"
-                              disabled
-                            />
-                          </div>
-                          <TextareaWrapper
-                            control={Itemsform.control}
-                            name="notes"
-                            label="Notes"
-                          />
-                          <div className="grid grid-cols-3 gap-2">
-                            <SingleCheckboxWrapper
-                              control={Itemsform.control}
-                              name="tax_one"
-                              label="Apply Tax 1"
-                            />
-                            <SingleCheckboxWrapper
-                              control={Itemsform.control}
-                              name="tax_two"
-                              label="Apply Tax 2"
-                            />
-                            <SingleCheckboxWrapper
-                              control={Itemsform.control}
-                              name="discount"
-                              label="Apply Discount"
-                            />
-                          </div>
-                        </form>
-                      </Form>
-                    </Modal>
-
-                    <div className="overflow-hidden rounded-md ring-1 ring-inset ring-stroke-soft-200">
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Item</TableHead>
-                            <TableHead>Quantity</TableHead>
-                            <TableHead>Unit cost</TableHead>
-                            <TableHead>Amount</TableHead>
-                            <TableHead>Notes</TableHead>
-                            <TableHead className="w-[5.5rem] text-right">
-                              Actions
-                            </TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {items.map((item, idx) => (
-                            <TableRow key={idx}>
-                              <TableCell>{item.item}</TableCell>
-                              <TableCell>{item.quantity}</TableCell>
-                              <TableCell>${item.cost.toFixed(2)}</TableCell>
-                              <TableCell>${item.amount.toFixed(2)}</TableCell>
-                              <TableCell>{item.notes}</TableCell>
-                              <TableCell className="align-middle">
-                                <div className="flex justify-end gap-2">
-                                  <Button
-                                    type="button"
-                                    variant="secondary"
-                                    size="icon"
-                                    aria-label={`Edit line item ${item.item}`}
-                                    onClick={() => handleEditItem(item, idx)}
-                                  >
-                                    <FilePenIcon className="size-4" />
-                                  </Button>
-                                  <Button
-                                    type="button"
-                                    variant="secondary"
-                                    size="icon"
-                                    aria-label={`Delete line item ${item.item}`}
-                                    className="text-destructive focus:text-destructive"
-                                    onClick={() => handleDeleteItem(idx)}
-                                  >
-                                    <Trash2 className="size-4" />
-                                  </Button>
-                                </div>
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </div>
-                  </TabsContent>
-                  <TabsContent
-                    value="Attachments"
-                    className="mt-4 min-h-0 flex-1 overflow-y-auto data-[state=inactive]:hidden"
-                  >
-                    <FileUploadWrapper
-                      multiple={true}
-                      control={form.control}
-                      name="attachments"
-                      label="Attachments"
-                    />
-                  </TabsContent>
-                  <TabsContent
-                    value="Notes"
-                    className="mt-4 flex min-h-0 flex-1 flex-col overflow-hidden data-[state=inactive]:hidden"
-                  >
-                    <TextareaWrapper
-                      name="notes"
-                      control={form.control}
-                      fillSpace
-                      direction="vertical"
-                      placeholder="Enter notes for this purchase order…"
-                    />
-                  </TabsContent>
-                </Tabs>
-              </div>
-            <div className="col-span-3 min-h-0 space-y-2 overflow-y-auto">
+          <div className="col-span-5 flex min-h-0 flex-col gap-3">
+            <div className="grid grid-cols-2 gap-2">
               <Fieldset
-                legend="Miscellaneous"
+                legend="Vendor"
+                className="h-full"
                 content={
                   <>
                     <ComboboxFieldWrapper
                       control={form.control}
-                      name="term_id"
-                      label="Terms"
-                      options={termsOptionsList ?? []}
+                      name="vendor"
+                      label="Vendor Name"
+                      options={vendorOptionsList ?? []}
                     />
-                    <ComboboxFieldWrapper
+                    <TextareaWrapper
                       control={form.control}
-                      name="invoice_number"
-                      label="Invoice #"
-                      options={invoiceOptionsList ?? []}
-                    />
-                    <InputWrapper
-                      control={form.control}
-                      name="order_number"
-                      label="Order #"
+                      name="shipping"
+                      label="Shipping Address"
+                      placeholder="Enter shipping address"
                       value=""
-                      type="text"
-                    />
-                    <ComboboxFieldWrapper
-                      control={form.control}
-                      name="wo_number"
-                      label="WO #"
-                      options={workOrderOptionsList ?? []}
                     />
                   </>
                 }
               />
               <Fieldset
-                legend="Totals"
+                legend="Ship To"
+                className="h-full"
                 content={
                   <>
-                    <InputWrapper
+                    <ComboboxFieldWrapper
                       control={form.control}
-                      name="subtotal"
-                      label="Subtotal"
-                      value=""
-                      type="number"
-                      disabled
+                      name="ship_via_id"
+                      options={shipViaOptions ?? []}
+                      label="Ship Via"
                     />
-
-                    <SingleCheckboxWrapper
+                    <ComboboxFieldWrapper
                       control={form.control}
-                      name="is_discount"
-                      label="Apply Discount"
-                    />
-
-                    <SelectWrapper
-                      control={form.control}
-                      name="discount_type"
-                      label="Discount Type"
-                      options={[
-                        { id: "Fixed", name: "Fixed Amount" },
-                        { id: "Percent", name: "Percentage" },
-                      ]}
-                    />
-
-                    {watchDiscountType === "Percent" && (
-                      <InputWrapper
-                        control={form.control}
-                        name="discount"
-                        label="Discount %"
-                        value=""
-                        type="number"
-                      />
-                    )}
-                    {watchDiscountType === "Fixed" && (
-                      <InputWrapper
-                        control={form.control}
-                        name="discount_amount"
-                        label="Discount Amount"
-                        value=""
-                        type="number"
-                      />
-                    )}
-                    <InputWrapper
-                      control={form.control}
-                      name="tax_one"
-                      label="Tax 1 %"
-                      type="number"
-                      value=""
-                    />
-                    <InputWrapper
-                      control={form.control}
-                      name="tax_one_amount"
-                      label="Tax 1 Amount"
-                      type="number"
-                      value=""
-                    />
-                    <InputWrapper
-                      control={form.control}
-                      name="tax_two"
-                      label="Tax 2 %"
-                      type="number"
-                      value=""
-                    />
-                    <InputWrapper
-                      control={form.control}
-                      name="tax_two_amount"
-                      label="Tax 2 Amount"
-                      type="number"
-                      value=""
-                    />
-                    <InputWrapper
-                      control={form.control}
-                      name="credit"
-                      label="Credit"
-                      type="number"
-                      value=""
-                    />
-                    <InputWrapper
-                      control={form.control}
-                      name="freight"
-                      label="Freight"
-                      type="number"
-                      value=""
-                    />
-                    <InputWrapper
-                      control={form.control}
-                      name="total_cost"
-                      label="Total Cost"
-                      type="number"
-                      value=""
-                      disabled
+                      name="location_id"
+                      label="Location"
+                      options={locationOptionsList ?? []}
                     />
                   </>
                 }
               />
             </div>
+            <Tabs
+              value={poDetailTab}
+              onValueChange={setPoDetailTab}
+              className="flex min-h-0 w-full flex-1 flex-col"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <TabsList>
+                  <TabsTrigger value="Items">Items</TabsTrigger>
+                  <TabsTrigger value="Attachments">Attachments</TabsTrigger>
+                  <TabsTrigger value="Notes">Notes</TabsTrigger>
+                </TabsList>
+                {poDetailTab === "Items" ? (
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="primary"
+                    onClick={openAddItemModal}
+                  >
+                    <Plus className="mr-2 size-4" />
+                    Add Item
+                  </Button>
+                ) : null}
+              </div>
+              <TabsContent
+                value="Items"
+                className="mt-4 min-h-0 flex-1 overflow-y-auto data-[state=inactive]:hidden"
+              >
+                <Modal
+                  open={openItems}
+                  onOpenChange={(val) => {
+                    setOpenItems(val);
+                    if (!val) {
+                      setEditIndex(null);
+                      setEditItems(null);
+                    }
+                  }}
+                  title={
+                    editIndex !== null
+                      ? "Edit Purchase Order Item"
+                      : "Add Purchase Order Item"
+                  }
+                  description={
+                    editIndex !== null
+                      ? "Update the details for this purchase order line item."
+                      : "Fill out the details below to add an item to this purchase order."
+                  }
+                  size="lg"
+                  closeable={true}
+                  renderActions={
+                    <Button form="po-item-form" type="submit" variant="primary">
+                      {editIndex !== null ? "Update Item" : "Save Item"}
+                    </Button>
+                  }
+                >
+                  <Form {...Itemsform}>
+                    <form
+                      id="po-item-form"
+                      onSubmit={Itemsform.handleSubmit(onSubmitItems)}
+                      className="flex flex-col gap-1 py-1"
+                    >
+                      <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                        <ComboboxFieldWrapper
+                          control={Itemsform.control}
+                          name="item_type_id"
+                          label="Item Type"
+                          options={itemTypesOptionsList ?? []}
+                          required
+                        />
+                        <InputWrapper
+                          control={Itemsform.control}
+                          name="item"
+                          label="Part # / Item"
+                          type="text"
+                          required
+                        />
+                        <ComboboxFieldWrapper
+                          control={Itemsform.control}
+                          name="warehouse_id"
+                          label="Warehouse"
+                          options={warehouseOptionsList ?? []}
+                          required
+                        />
+                        <InputWrapper
+                          control={Itemsform.control}
+                          name="quantity"
+                          label="Order Quantity"
+                          type="number"
+                          required
+                        />
+                        <InputWrapper
+                          control={Itemsform.control}
+                          name="cost"
+                          label="Unit Cost"
+                          type="number"
+                          required
+                        />
+                        <InputWrapper
+                          control={Itemsform.control}
+                          name="amount"
+                          label="Amount"
+                          type="number"
+                          disabled
+                        />
+                        <InputWrapper
+                          control={Itemsform.control}
+                          name="extended_cost"
+                          label="Extended Cost"
+                          type="number"
+                          disabled
+                        />
+                      </div>
+                      <TextareaWrapper
+                        control={Itemsform.control}
+                        name="notes"
+                        label="Notes"
+                      />
+                      <div className="grid grid-cols-3 gap-2">
+                        <SingleCheckboxWrapper
+                          control={Itemsform.control}
+                          name="tax_one"
+                          label="Apply Tax 1"
+                        />
+                        <SingleCheckboxWrapper
+                          control={Itemsform.control}
+                          name="tax_two"
+                          label="Apply Tax 2"
+                        />
+                        <SingleCheckboxWrapper
+                          control={Itemsform.control}
+                          name="discount"
+                          label="Apply Discount"
+                        />
+                      </div>
+                    </form>
+                  </Form>
+                </Modal>
+
+                <div className="overflow-hidden rounded-md ring-1 ring-inset ring-stroke-soft-200">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Item</TableHead>
+                        <TableHead>Quantity</TableHead>
+                        <TableHead>Unit cost</TableHead>
+                        <TableHead>Amount</TableHead>
+                        <TableHead>Notes</TableHead>
+                        <TableHead className="w-[5.5rem] text-right">
+                          Actions
+                        </TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {items.map((item, idx) => (
+                        <TableRow key={idx}>
+                          <TableCell>{item.item}</TableCell>
+                          <TableCell>{item.quantity}</TableCell>
+                          <TableCell>${item.cost.toFixed(2)}</TableCell>
+                          <TableCell>${item.amount.toFixed(2)}</TableCell>
+                          <TableCell>{item.notes}</TableCell>
+                          <TableCell className="align-middle">
+                            <div className="flex justify-end gap-2">
+                              <Button
+                                type="button"
+                                variant="secondary"
+                                size="icon"
+                                aria-label={`Edit line item ${item.item}`}
+                                onClick={() => handleEditItem(item, idx)}
+                              >
+                                <FilePenIcon className="size-4" />
+                              </Button>
+                              <Button
+                                type="button"
+                                variant="secondary"
+                                size="icon"
+                                aria-label={`Delete line item ${item.item}`}
+                                className="text-destructive focus:text-destructive"
+                                onClick={() => handleDeleteItem(idx)}
+                              >
+                                <Trash2 className="size-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </TabsContent>
+              <TabsContent
+                value="Attachments"
+                className="mt-4 min-h-0 flex-1 overflow-y-auto data-[state=inactive]:hidden"
+              >
+                <FileUploadWrapper
+                  multiple={true}
+                  control={form.control}
+                  name="attachments"
+                  label="Attachments"
+                />
+              </TabsContent>
+              <TabsContent
+                value="Notes"
+                className="mt-4 flex min-h-0 flex-1 flex-col overflow-hidden data-[state=inactive]:hidden"
+              >
+                <TextareaWrapper
+                  name="notes"
+                  control={form.control}
+                  fillSpace
+                  direction="vertical"
+                  placeholder="Enter notes for this purchase order…"
+                />
+              </TabsContent>
+            </Tabs>
           </div>
+          <div className="col-span-3 min-h-0 space-y-2 overflow-y-auto">
+            <Fieldset
+              legend="Miscellaneous"
+              content={
+                <>
+                  <ComboboxFieldWrapper
+                    control={form.control}
+                    name="term_id"
+                    label="Terms"
+                    options={termsOptionsList ?? []}
+                  />
+                  <ComboboxFieldWrapper
+                    control={form.control}
+                    name="invoice_number"
+                    label="Invoice #"
+                    options={invoiceOptionsList ?? []}
+                  />
+                  <InputWrapper
+                    control={form.control}
+                    name="order_number"
+                    label="Order #"
+                    value=""
+                    type="text"
+                  />
+                  <ComboboxFieldWrapper
+                    control={form.control}
+                    name="wo_number"
+                    label="WO #"
+                    options={workOrderOptionsList ?? []}
+                  />
+                </>
+              }
+            />
+            <Fieldset
+              legend="Totals"
+              content={
+                <>
+                  <InputWrapper
+                    control={form.control}
+                    name="subtotal"
+                    label="Subtotal"
+                    value=""
+                    type="number"
+                    disabled
+                  />
+
+                  <SingleCheckboxWrapper
+                    control={form.control}
+                    name="is_discount"
+                    label="Apply Discount"
+                  />
+
+                  <SelectWrapper
+                    control={form.control}
+                    name="discount_type"
+                    label="Discount Type"
+                    options={[
+                      { id: "Fixed", name: "Fixed Amount" },
+                      { id: "Percent", name: "Percentage" },
+                    ]}
+                  />
+
+                  {watchDiscountType === "Percent" && (
+                    <InputWrapper
+                      control={form.control}
+                      name="discount"
+                      label="Discount %"
+                      value=""
+                      type="number"
+                    />
+                  )}
+                  {watchDiscountType === "Fixed" && (
+                    <InputWrapper
+                      control={form.control}
+                      name="discount_amount"
+                      label="Discount Amount"
+                      value=""
+                      type="number"
+                    />
+                  )}
+                  <InputWrapper
+                    control={form.control}
+                    name="tax_one"
+                    label="Tax 1 %"
+                    type="number"
+                    value=""
+                  />
+                  <InputWrapper
+                    control={form.control}
+                    name="tax_one_amount"
+                    label="Tax 1 Amount"
+                    type="number"
+                    value=""
+                  />
+                  <InputWrapper
+                    control={form.control}
+                    name="tax_two"
+                    label="Tax 2 %"
+                    type="number"
+                    value=""
+                  />
+                  <InputWrapper
+                    control={form.control}
+                    name="tax_two_amount"
+                    label="Tax 2 Amount"
+                    type="number"
+                    value=""
+                  />
+                  <InputWrapper
+                    control={form.control}
+                    name="credit"
+                    label="Credit"
+                    type="number"
+                    value=""
+                  />
+                  <InputWrapper
+                    control={form.control}
+                    name="freight"
+                    label="Freight"
+                    type="number"
+                    value=""
+                  />
+                  <InputWrapper
+                    control={form.control}
+                    name="total_cost"
+                    label="Total Cost"
+                    type="number"
+                    value=""
+                    disabled
+                  />
+                </>
+              }
+            />
+          </div>
+        </div>
         {!hideSubmitButton && (
           <div className="flex justify-end">
             <Button

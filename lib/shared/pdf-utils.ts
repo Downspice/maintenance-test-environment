@@ -1,12 +1,12 @@
-import type { WorkOrder } from "./work-orders-data"
+import type { WorkOrder } from "./work-orders-data";
 
 export function generateWorkOrdersPDF(workOrders: WorkOrder[]) {
   // Create a new window for printing
-  const printWindow = window.open("", "_blank")
+  const printWindow = window.open("", "_blank");
 
   if (!printWindow) {
-    alert("Please allow popups to generate PDF")
-    return
+    alert("Please allow popups to generate PDF");
+    return;
   }
 
   const html = `
@@ -128,7 +128,8 @@ export function generateWorkOrdersPDF(workOrders: WorkOrder[]) {
                 <td class="assignees">
                   ${wo.assignees
                     .map(
-                      (assignee) => `<div class="assignee-${assignee.type}">${assignee.name} (${assignee.type})</div>`,
+                      (assignee) =>
+                        `<div class="assignee-${assignee.type}">${assignee.name} (${assignee.type})</div>`
                     )
                     .join("")}
                 </td>
@@ -143,7 +144,7 @@ export function generateWorkOrdersPDF(workOrders: WorkOrder[]) {
                 <td class="priority-${wo.priority}">${wo.priority.toUpperCase()}</td>
                 <td>${wo.dueDate ? new Date(wo.dueDate).toLocaleDateString() : "N/A"}</td>
               </tr>
-            `,
+            `
               )
               .join("")}
           </tbody>
@@ -164,8 +165,8 @@ export function generateWorkOrdersPDF(workOrders: WorkOrder[]) {
         </script>
       </body>
     </html>
-  `
+  `;
 
-  printWindow.document.write(html)
-  printWindow.document.close()
+  printWindow.document.write(html);
+  printWindow.document.close();
 }

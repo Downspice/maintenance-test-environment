@@ -1,5 +1,11 @@
-'use client'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+"use client";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { TableRowActions } from "@/components/ui/table-row-actions";
@@ -14,7 +20,9 @@ export default function AlternateUpcCodesTable({
   manufacturers: GenericObject[];
   vendors: GenericObject[];
   value?: Array<{ manufacturer_id: string; vendor_id: string; upc: string }>;
-  onChange: (rows: Array<{ manufacturer_id: string; vendor_id: string; upc: string }>) => void;
+  onChange: (
+    rows: Array<{ manufacturer_id: string; vendor_id: string; upc: string }>
+  ) => void;
 }) {
   const rows = value ?? [];
 
@@ -36,7 +44,7 @@ export default function AlternateUpcCodesTable({
 
   return (
     <div className="space-y-2">
-        <Button type="button" onClick={handleAddRow} className="mt-2">
+      <Button type="button" onClick={handleAddRow} className="mt-2">
         + Add UPC Code
       </Button>
       <div className="grid grid-cols-4 gap-2 font-semibold text-sm">
@@ -57,7 +65,7 @@ export default function AlternateUpcCodesTable({
             </SelectTrigger>
             <SelectContent>
               {manufacturers.map((item) => (
-                <SelectItem key={item.id} value={item.id??""}>
+                <SelectItem key={item.id} value={item.id ?? ""}>
                   {item.name}
                 </SelectItem>
               ))}
@@ -73,7 +81,7 @@ export default function AlternateUpcCodesTable({
             </SelectTrigger>
             <SelectContent>
               {vendors.map((item) => (
-                <SelectItem key={item.id} value={item.id??""}>
+                <SelectItem key={item.id} value={item.id ?? ""}>
                   {item.name}
                 </SelectItem>
               ))}
@@ -94,5 +102,3 @@ export default function AlternateUpcCodesTable({
     </div>
   );
 }
-
- 

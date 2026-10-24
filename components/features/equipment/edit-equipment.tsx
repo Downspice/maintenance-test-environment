@@ -43,10 +43,15 @@ import {
   expenseOptions,
   periodOptionList,
 } from "@/lib/schemas/equipment-schema";
+import { useGetVendorOptions } from "@/services/setups/vendor";
 import {
-  useGetVendorOptions,
-} from "@/services/setups/vendor";
-import { useGetEquipmentColors, useGetEquipmentMakes, useGetEquipmentModels, useGetEquipmentOwnerships, useGetEquipmentStatuses, useGetEquipmentTypes } from "@/services/setups/equipments";
+  useGetEquipmentColors,
+  useGetEquipmentMakes,
+  useGetEquipmentModels,
+  useGetEquipmentOwnerships,
+  useGetEquipmentStatuses,
+  useGetEquipmentTypes,
+} from "@/services/setups/equipments";
 
 export const equipmentSchema = z.object({
   // Identification
@@ -182,52 +187,51 @@ export default function EditEquipment({
   const { data: equipmentTypeOptions } = useGetEquipmentTypes();
   const { data: colorOptions } = useGetEquipmentColors();
   const { data: statusOptions } = useGetEquipmentStatuses();
-  
 
   const form = useForm<EquipmentFormValues>({
     resolver: zodResolver(equipmentSchema),
     defaultValues: data,
   });
-    function onSubmit(data: EquipmentFormValues) {
-      console.log("Form submitted with VALUES:", data);
-  
-      toast.success("Equipment updated successfully!");
-  
-      setOpen(false);
-      onSuccess?.();
-      form.reset();
-    }
-    const watchHasMeter = form.watch("hasMeter");
-  
-    const watchStatus = form.watch("status");
-    const watchPrimary = form.watch("primaryMeterUnit");
-    const watchSecondary = form.watch("secondaryMeterUnit");
-  
-    function onError(errors: any) {
-      // Get all error messages
-      const errorMessages = Object.entries(errors).map(
-        ([field, error]: [string, any]) => {
-          const fieldLabels: Record<string, string> = {
-            unit: "Project Name",
-          };
-  
-          return `${fieldLabels[field] || field}: ${error.message}`;
-        }
-      );
-  
-      toast.error("Please fix the following errors:", {
-        description: (
-          <div className="mt-2">
-            <ul className="list-disc list-inside space-y-1 text-sm">
-              {errorMessages.map((message, index) => (
-                <li key={index}>{message}</li>
-              ))}
-            </ul>
-          </div>
-        ),
-        duration: 8000,
-      });
-    }
+  function onSubmit(data: EquipmentFormValues) {
+    console.log("Form submitted with VALUES:", data);
+
+    toast.success("Equipment updated successfully!");
+
+    setOpen(false);
+    onSuccess?.();
+    form.reset();
+  }
+  const watchHasMeter = form.watch("hasMeter");
+
+  const watchStatus = form.watch("status");
+  const watchPrimary = form.watch("primaryMeterUnit");
+  const watchSecondary = form.watch("secondaryMeterUnit");
+
+  function onError(errors: any) {
+    // Get all error messages
+    const errorMessages = Object.entries(errors).map(
+      ([field, error]: [string, any]) => {
+        const fieldLabels: Record<string, string> = {
+          unit: "Project Name",
+        };
+
+        return `${fieldLabels[field] || field}: ${error.message}`;
+      }
+    );
+
+    toast.error("Please fix the following errors:", {
+      description: (
+        <div className="mt-2">
+          <ul className="list-disc list-inside space-y-1 text-sm">
+            {errorMessages.map((message, index) => (
+              <li key={index}>{message}</li>
+            ))}
+          </ul>
+        </div>
+      ),
+      duration: 8000,
+    });
+  }
   return (
     <Drawer
       open={open}
@@ -251,296 +255,293 @@ export default function EditEquipment({
               onSubmit={form.handleSubmit(onSubmit, onError)}
               className="space-y-6"
             >
-                  <Tabs defaultValue="main" className="w-full">
-                    <TabsList className="flex flex-wrap h-auto gap-1 mb-4">
-                      <TabsTrigger value="main">Main</TabsTrigger>
-                      <TabsTrigger value="specifications">
-                        Specifications
-                      </TabsTrigger>
-                      <TabsTrigger value="warranty">Warranty/Misc</TabsTrigger>
-                      <TabsTrigger value="purchase">Purchase</TabsTrigger>
-                      <TabsTrigger value="images">Images</TabsTrigger>
-                      <TabsTrigger value="attachments">Attachments</TabsTrigger>
-                      <TabsTrigger value="notifications">
-                        Notifications
-                      </TabsTrigger>
-                      <TabsTrigger value="expenses">Expenses</TabsTrigger>
-                      <TabsTrigger value="notes">Notes</TabsTrigger>
-                      <TabsTrigger value="settings">Settings</TabsTrigger>
-                    </TabsList>
-                      <TabsContent value="attachments">
-                        <FileUploadWrapper
-                          multiple={true}
-                          control={form.control}
-                          name={"Attachments"}
-                          label={"Attachments"}
-                        />
-                      </TabsContent>
+              <Tabs defaultValue="main" className="w-full">
+                <TabsList className="flex flex-wrap h-auto gap-1 mb-4">
+                  <TabsTrigger value="main">Main</TabsTrigger>
+                  <TabsTrigger value="specifications">
+                    Specifications
+                  </TabsTrigger>
+                  <TabsTrigger value="warranty">Warranty/Misc</TabsTrigger>
+                  <TabsTrigger value="purchase">Purchase</TabsTrigger>
+                  <TabsTrigger value="images">Images</TabsTrigger>
+                  <TabsTrigger value="attachments">Attachments</TabsTrigger>
+                  <TabsTrigger value="notifications">Notifications</TabsTrigger>
+                  <TabsTrigger value="expenses">Expenses</TabsTrigger>
+                  <TabsTrigger value="notes">Notes</TabsTrigger>
+                  <TabsTrigger value="settings">Settings</TabsTrigger>
+                </TabsList>
+                <TabsContent value="attachments">
+                  <FileUploadWrapper
+                    multiple={true}
+                    control={form.control}
+                    name={"Attachments"}
+                    label={"Attachments"}
+                  />
+                </TabsContent>
 
-                      <TabsContent value="expenses">
-                        <div className="flex ">
-                          <div className="text-lg font-semibold text-gray-700">
-                            Automatic Expense Logging
-                          </div>
+                <TabsContent value="expenses">
+                  <div className="flex ">
+                    <div className="text-lg font-semibold text-gray-700">
+                      Automatic Expense Logging
+                    </div>
+                  </div>
+                  <EditableDataTable
+                    data={data.expenses || []}
+                    columns={columns}
+                    defaultRow={{ id: Date.now() }}
+                    onDataChange={(newData) => {
+                      console.log("Updated Data:", newData);
+                    }}
+                  />
+                </TabsContent>
+                <TabsContent value="notifications">
+                  <div className="flex ">
+                    <div className="text-lg font-semibold text-gray-700">
+                      Email Notifications
+                    </div>
+                  </div>
+                  <EditableDataTable
+                    data={data.notifications || []}
+                    columns={emailColumns}
+                    defaultRow={{ id: Date.now() }}
+                    onDataChange={(newData) => {
+                      console.log("Updated Data:", newData);
+                    }}
+                  />
+                </TabsContent>
+                <TabsContent value="images">
+                  <FileUploadWrapper
+                    multiple={true}
+                    control={form.control}
+                    name={"Attachments"}
+                    label={"Attachments"}
+                  />
+                </TabsContent>
+                <TabsContent value="settings" className="space-y-2">
+                  <Fieldset
+                    legend="Track the following details of this equipment"
+                    content={
+                      <CheckboxWrapper
+                        control={form.control}
+                        name={"tracker"}
+                        label={""}
+                        options={equipmentCheckboxOptions}
+                      />
+                    }
+                  />
+                  <Fieldset
+                    legend="Budget"
+                    content={
+                      <div className="grid grid-cols-2 space-x-2">
+                        <div className="col-span-1 space-y-2">
+                          <InputWrapper
+                            control={form.control}
+                            name={"budget"}
+                            label={"Budget"}
+                            value={""}
+                            type="number"
+                          />
                         </div>
-                        <EditableDataTable
-                          data={data.expenses || []}
-                          columns={columns}
-                          defaultRow={{ id: Date.now() }}
-                          onDataChange={(newData) => {
-                            console.log("Updated Data:", newData);
-                          }}
-                        />
-                      </TabsContent>
-                      <TabsContent value="notifications">
-                        <div className="flex ">
-                          <div className="text-lg font-semibold text-gray-700">
-                            Email Notifications
-                          </div>
+                      </div>
+                    }
+                  />
+                  <Fieldset
+                    legend="Virtual Mileage/Km/Hours Configurations for meter"
+                    content={
+                      <div className="grid grid-cols-2 space-x-2">
+                        <div className="col-span-1 space-y-2">
+                          <SingleCheckboxWrapper
+                            control={form.control}
+                            name="enableMeter1"
+                            label="Enable virtual Mi/Km/Hr calcs for Meter1"
+                          />
+                          <InputWrapper
+                            control={form.control}
+                            name="average1"
+                            label="Average daily Mi/Km/Hrs"
+                            type="number"
+                            value={""}
+                          />
+                          <DatePickerWrapper
+                            control={form.control}
+                            name="lastMaintenanceCheck1"
+                            label="Last Maintenance check"
+                          />
                         </div>
-                        <EditableDataTable
-                          data={data.notifications || []}
-                          columns={emailColumns}
-                          defaultRow={{ id: Date.now() }}
-                          onDataChange={(newData) => {
-                            console.log("Updated Data:", newData);
-                          }}
-                        />
-                      </TabsContent>
-                      <TabsContent value="images">
-                        <FileUploadWrapper
-                          multiple={true}
-                          control={form.control}
-                          name={"Attachments"}
-                          label={"Attachments"}
-                        />
-                      </TabsContent>
-                      <TabsContent value="settings" className="space-y-2">
-                        <Fieldset
-                          legend="Track the following details of this equipment"
-                          content={
-                            <CheckboxWrapper
+                        <div className="col-span-1 space-y-2">
+                          <SingleCheckboxWrapper
+                            control={form.control}
+                            name="enableMeter2"
+                            label="Enable virtual Mi/Km/Hr calcs for Meter 2"
+                          />
+                          <InputWrapper
+                            control={form.control}
+                            name="average2"
+                            label="Average daily Mi/Km/Hrs"
+                            type="number"
+                            value={""}
+                          />
+                        </div>
+                      </div>
+                    }
+                  />
+                </TabsContent>
+                <TabsContent value="notes" className="space-y-2">
+                  <TextareaWrapper
+                    control={form.control}
+                    name="generalNotes"
+                    placeholder={""}
+                    value={""}
+                  />
+                </TabsContent>
+                <TabsContent value="main">
+                  <div className="grid grid-cols-2 space-x-2">
+                    <div className="col-span-1 space-y-2">
+                      <Fieldset
+                        legend="Identification"
+                        content={
+                          <>
+                            <div className="flex flex-col space-y-0.5">
+                              <InputWrapper
+                                control={form.control}
+                                name="name"
+                                label="Unit #"
+                                type="text"
+                                required
+                                value={""}
+                              />
+                              <ComboboxFieldWrapper
+                                control={form.control}
+                                name="make"
+                                label="Make"
+                                options={makeOptionsList}
+                              />
+                              <ComboboxFieldWrapper
+                                control={form.control}
+                                name="model"
+                                label="Model"
+                                options={carModelOptionsList}
+                              />
+                              <InputWrapper
+                                control={form.control}
+                                name="serial_number"
+                                label="Serial #"
+                                type="text"
+                                value={""}
+                              />
+                              <InputWrapper
+                                control={form.control}
+                                name="year"
+                                label="Year"
+                                type="number"
+                                value={""}
+                              />
+                              <ComboboxFieldWrapper
+                                control={form.control}
+                                name="equipmentType"
+                                label="Types"
+                                options={equipmentTypeOptions}
+                              />
+                            </div>
+                          </>
+                        }
+                      />
+
+                      <Fieldset
+                        legend="Assignment"
+                        content={
+                          <CardContent className="space-y-4">
+                            <SelectWrapper
                               control={form.control}
-                              name={"tracker"}
-                              label={""}
-                              options={equipmentCheckboxOptions}
-                            />
-                          }
-                        />
-                        <Fieldset
-                          legend="Budget"
-                          content={
-                            <div className="grid grid-cols-2 space-x-2">
-                              <div className="col-span-1 space-y-2">
-                                <InputWrapper
-                                  control={form.control}
-                                  name={"budget"}
-                                  label={"Budget"}
-                                  value={""}
-                                  type="number"
-                                />
-                              </div>
-                            </div>
-                          }
-                        />
-                        <Fieldset
-                          legend="Virtual Mileage/Km/Hours Configurations for meter"
-                          content={
-                            <div className="grid grid-cols-2 space-x-2">
-                              <div className="col-span-1 space-y-2">
-                                <SingleCheckboxWrapper
-                                  control={form.control}
-                                  name="enableMeter1"
-                                  label="Enable virtual Mi/Km/Hr calcs for Meter1"
-                                />
-                                <InputWrapper
-                                  control={form.control}
-                                  name="average1"
-                                  label="Average daily Mi/Km/Hrs"
-                                  type="number"
-                                  value={""}
-                                />
-                                <DatePickerWrapper
-                                  control={form.control}
-                                  name="lastMaintenanceCheck1"
-                                  label="Last Maintenance check"
-                                />
-                              </div>
-                              <div className="col-span-1 space-y-2">
-                                <SingleCheckboxWrapper
-                                  control={form.control}
-                                  name="enableMeter2"
-                                  label="Enable virtual Mi/Km/Hr calcs for Meter 2"
-                                />
-                                <InputWrapper
-                                  control={form.control}
-                                  name="average2"
-                                  label="Average daily Mi/Km/Hrs"
-                                  type="number"
-                                  value={""}
-                                />
-                              </div>
-                            </div>
-                          }
-                        />
-                      </TabsContent>
-                      <TabsContent value="notes" className="space-y-2">
-                        <TextareaWrapper
-                          control={form.control}
-                          name="generalNotes"
-                          placeholder={""}
-                          value={""}
-                        />
-                      </TabsContent>
-                      <TabsContent value="main">
-                        <div className="grid grid-cols-2 space-x-2">
-                          <div className="col-span-1 space-y-2">
-                            <Fieldset
-                              legend="Identification"
-                              content={
-                                <>
-                                  <div className="flex flex-col space-y-0.5">
-                                    <InputWrapper
-                                      control={form.control}
-                                      name="name"
-                                      label="Unit #"
-                                      type="text"
-                                      required
-                                      value={""}
-                                    />
-                                    <ComboboxFieldWrapper
-                                      control={form.control}
-                                      name="make"
-                                      label="Make"
-                                      options={makeOptionsList}
-                                    />
-                                    <ComboboxFieldWrapper
-                                      control={form.control}
-                                      name="model"
-                                      label="Model"
-                                      options={carModelOptionsList}
-                                    />
-                                    <InputWrapper
-                                      control={form.control}
-                                      name="serial_number"
-                                      label="Serial #"
-                                      type="text"
-                                      value={""}
-                                    />
-                                    <InputWrapper
-                                      control={form.control}
-                                      name="year"
-                                      label="Year"
-                                      type="number"
-                                      value={""}
-                                    />
-                                    <ComboboxFieldWrapper
-                                      control={form.control}
-                                      name="equipmentType"
-                                      label="Types"
-                                      options={equipmentTypeOptions}
-                                    />
-                                  </div>
-                                </>
-                              }
+                              name="status"
+                              label="Status"
+                              options={statusOptions}
+                              required
                             />
 
-                            <Fieldset
-                              legend="Assignment"
-                              content={
-                                <CardContent className="space-y-4">
-                                  <SelectWrapper
+                            {watchStatus === "Sold" && (
+                              <div className="space-y-4 p-4 border rounded-md bg-muted/30">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  <DatePickerWrapper
                                     control={form.control}
-                                    name="status"
-                                    label="Status"
-                                    options={statusOptions}
-                                    required
+                                    name="soldDate"
+                                    label="Date Sold"
                                   />
-
-                                  {watchStatus === "Sold" && (
-                                    <div className="space-y-4 p-4 border rounded-md bg-muted/30">
-                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <DatePickerWrapper
-                                          control={form.control}
-                                          name="soldDate"
-                                          label="Date Sold"
-                                        />
-                                        <InputWrapper
-                                          control={form.control}
-                                          name="soldTo"
-                                          label="Buyer"
-                                          type="text"
-                                          value={""}
-                                        />
-                                      </div>
-                                      <div className="space-y-2">
-                                        <label className="text-sm font-medium">
-                                          Price Sold
-                                        </label>
-                                        <div className="flex items-center gap-2">
-                                          <span className="text-sm">$</span>
-                                          <InputWrapper
-                                            control={form.control}
-                                            name="soldPrice"
-                                            label=""
-                                            type="number"
-                                            value={""}
-                                            className="flex-1"
-                                          />
-                                        </div>
-                                      </div>
-                                    </div>
-                                  )}
-
-                                  <MultiSelectWrapper
-                                    control={form.control}
-                                    name="assigneeIds"
-                                    label="Assignees"
-                                    options={assigneeOptions}
-                                  />
-
-                                  <SelectWrapper
-                                    control={form.control}
-                                    name="categoryId"
-                                    label="Location / Category"
-                                    options={categoryOptions}
-                                  />
-
                                   <InputWrapper
                                     control={form.control}
-                                    name="parentId"
-                                    label="Parent Equipment"
+                                    name="soldTo"
+                                    label="Buyer"
                                     type="text"
-                                    placeholder="Enter Equipment Parent"
                                     value={""}
                                   />
-                                </CardContent>
-                              }
-                            />
-                          </div>
-                          <div className="col-span-1 space-y-2                                                                                                                                                                                                                                                                                                                                                                            ">
-                            <Fieldset
-                              legend="Meter Configurations"
-                              content={
-                                <>
-                                  <div className="flex justify-between items-center ">
-                                    <ComboboxFieldWrapper
-                                      label="Select PM Schedule"
+                                </div>
+                                <div className="space-y-2">
+                                  <label className="text-sm font-medium">
+                                    Price Sold
+                                  </label>
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-sm">$</span>
+                                    <InputWrapper
                                       control={form.control}
-                                      options={pmScheduleOptionList}
-                                      name="pmSchedule"
+                                      name="soldPrice"
+                                      label=""
+                                      type="number"
+                                      value={""}
+                                      className="flex-1"
                                     />
                                   </div>
-                                  <div className="text-sm">
-                                    Selecting an existing PM schedule template
-                                    can save data entry time. Or you may add
-                                    individualPM services after equipment is
-                                    saved.
-                                  </div>
-                                </>
-                              }
+                                </div>
+                              </div>
+                            )}
+
+                            <MultiSelectWrapper
+                              control={form.control}
+                              name="assigneeIds"
+                              label="Assignees"
+                              options={assigneeOptions}
                             />
-                            {/* <Fieldset
+
+                            <SelectWrapper
+                              control={form.control}
+                              name="categoryId"
+                              label="Location / Category"
+                              options={categoryOptions}
+                            />
+
+                            <InputWrapper
+                              control={form.control}
+                              name="parentId"
+                              label="Parent Equipment"
+                              type="text"
+                              placeholder="Enter Equipment Parent"
+                              value={""}
+                            />
+                          </CardContent>
+                        }
+                      />
+                    </div>
+                    <div className="col-span-1 space-y-2                                                                                                                                                                                                                                                                                                                                                                            ">
+                      <Fieldset
+                        legend="Meter Configurations"
+                        content={
+                          <>
+                            <div className="flex justify-between items-center ">
+                              <ComboboxFieldWrapper
+                                label="Select PM Schedule"
+                                control={form.control}
+                                options={pmScheduleOptionList}
+                                name="pmSchedule"
+                              />
+                            </div>
+                            <div className="text-sm">
+                              Selecting an existing PM schedule template can
+                              save data entry time. Or you may add individualPM
+                              services after equipment is saved.
+                            </div>
+                          </>
+                        }
+                      />
+                      {/* <Fieldset
                               legend="Meter Configurations"
                               content={
                                 <>
@@ -586,379 +587,379 @@ export default function EditEquipment({
                                 </>
                               }
                             /> */}
-                            <Fieldset
-                              legend="Custom Fields"
-                              content={
-                                <>
-                                  <InputWrapper
-                                    control={form.control}
-                                    name="btu"
-                                    label="BTU"
-                                    type="text"
-                                    value={""}
-                                    className="flex-1"
-                                  />
-                                  <InputWrapper
-                                    control={form.control}
-                                    name="inputVolts"
-                                    label="Input Volts"
-                                    type="text"
-                                    value={""}
-                                    className="flex-1"
-                                  />
-                                  <DatePickerWrapper
-                                    control={form.control}
-                                    name="installDate"
-                                    label="Install Date"
-                                  />
-                                  <CustomFieldsWrapper
-                                    control={form.control}
-                                     name="others"
-                                    label={"Custom"}
-                                  />
-                                </>
-                              }
+                      <Fieldset
+                        legend="Custom Fields"
+                        content={
+                          <>
+                            <InputWrapper
+                              control={form.control}
+                              name="btu"
+                              label="BTU"
+                              type="text"
+                              value={""}
+                              className="flex-1"
                             />
-                          </div>
-                        </div>
-                      </TabsContent>
-                      <TabsContent value="specifications" className="space-y-2">
-                        <Fieldset
-                          legend="Physical Attributes"
-                          content={
-                            <div className="grid grid-cols-2">
-                              <div className="col-span-1">
-                                <ComboboxFieldWrapper
-                                  label="Color"
-                                  control={form.control}
-                                  options={colorOptions}
-                                  name="color"
-                                />
-                              </div>
-                              <div className="col-span-1"></div>
-                              <div className="col-span-1">
-                                <InputWrapper
-                                  label="Length"
-                                  control={form.control}
-                                  name="length"
-                                  type="text"
-                                  value={""}
-                                />
-                              </div>
-                              <div className="col-span-1"></div>
-                              <div className="col-span-1">
-                                <InputWrapper
-                                  label="Width"
-                                  control={form.control}
-                                  name="width"
-                                  type="text"
-                                  value={""}
-                                />
-                              </div>
-                              <div className="col-span-1"></div>
-                              <div className="col-span-1">
-                                <InputWrapper
-                                  label="Height"
-                                  control={form.control}
-                                  name="height"
-                                  type="text"
-                                  value={""}
-                                />
-                              </div>
-                              <div className="col-span-1"></div>
-
-                              <div className="col-span-1">
-                                <InputWrapper
-                                  label="Gross Weight"
-                                  control={form.control}
-                                  name="grossWeight"
-                                  type="number"
-                                  value={"0"}
-                                />
-                              </div>
-                              <div className="col-span-1"></div>
-                            </div>
-                          }
-                        />
-
-                        <Fieldset
-                          legend="Custom Fields"
-                          content={
-                            <>
-                              <CustomFieldsWrapper
-                                label="customField"
-                                control={form.control}
-                                name={"customSpecifications"}
-                              />
-                            </>
-                          }
-                        />
-                      </TabsContent>
-                      <TabsContent
-                        value="warranty"
-                        className="space-x-2 space-y-2 grid grid-cols-2 "
-                      >
-                        <div className=" col-span-1 gap-4">
-                          <Fieldset
-                            className="col-span-1"
-                            legend="Primary Warranty"
-                            content={
-                              <div className="space-y-2">
-                                <InputWrapper
-                                  control={form.control}
-                                  name="warrantyDescription"
-                                  label="Primary Warranty"
-                                  type="text"
-                                  value={""}
-                                />
-                                <DatePickerWrapper
-                                  control={form.control}
-                                  name="warrantyExpirationDate"
-                                  label="Expiration Date"
-                                />
-                                <InputWrapper
-                                  control={form.control}
-                                  name="primaryWarrantyMeter"
-                                  label="Meter"
-                                  type="number"
-                                  value={""}
-                                />
-                              </div>
-                            }
+                            <InputWrapper
+                              control={form.control}
+                              name="inputVolts"
+                              label="Input Volts"
+                              type="text"
+                              value={""}
+                              className="flex-1"
+                            />
+                            <DatePickerWrapper
+                              control={form.control}
+                              name="installDate"
+                              label="Install Date"
+                            />
+                            <CustomFieldsWrapper
+                              control={form.control}
+                              name="others"
+                              label={"Custom"}
+                            />
+                          </>
+                        }
+                      />
+                    </div>
+                  </div>
+                </TabsContent>
+                <TabsContent value="specifications" className="space-y-2">
+                  <Fieldset
+                    legend="Physical Attributes"
+                    content={
+                      <div className="grid grid-cols-2">
+                        <div className="col-span-1">
+                          <ComboboxFieldWrapper
+                            label="Color"
+                            control={form.control}
+                            options={colorOptions}
+                            name="color"
                           />
                         </div>
-                        <div className="col-span-1 gap-4">
-                          <Fieldset
-                            className="col-span-1"
-                            legend="Secondary Warranty"
-                            content={
-                              <div className="space-y-2">
-                                <InputWrapper
-                                  control={form.control}
-                                  name="secondaryWarrantyDescription"
-                                  label="Secondary Warranty"
-                                  type="text"
-                                  value={""}
-                                />
-                                <DatePickerWrapper
-                                  control={form.control}
-                                  name="secondaryWarrantyExpirationDate"
-                                  label="Expiration Date"
-                                />
-                                <InputWrapper
-                                  control={form.control}
-                                  name="secondaryWarrantyMeter"
-                                  label="Meter"
-                                  type="number"
-                                  value={""}
-                                />
-                              </div>
-                            }
+                        <div className="col-span-1"></div>
+                        <div className="col-span-1">
+                          <InputWrapper
+                            label="Length"
+                            control={form.control}
+                            name="length"
+                            type="text"
+                            value={""}
                           />
                         </div>
-
-                        <div className="col-span-2 gap-4">
-                          <Fieldset
-                            className="col-span-2"
-                            legend="Custom Fields"
-                            content={
-                              <div className="space-y-2">
-                                <CustomFieldsWrapper
-                                  control={form.control}
-                                  name="CustomSecondary"
-                                  label="Custom Fields "
-                                />
-                              </div>
-                            }
+                        <div className="col-span-1"></div>
+                        <div className="col-span-1">
+                          <InputWrapper
+                            label="Width"
+                            control={form.control}
+                            name="width"
+                            type="text"
+                            value={""}
                           />
                         </div>
-                      </TabsContent>
+                        <div className="col-span-1"></div>
+                        <div className="col-span-1">
+                          <InputWrapper
+                            label="Height"
+                            control={form.control}
+                            name="height"
+                            type="text"
+                            value={""}
+                          />
+                        </div>
+                        <div className="col-span-1"></div>
 
-                      <TabsContent
-                        value="purchase"
-                        className="space-x-2 space-y-2 grid grid-cols-2 "
-                      >
-                        <Fieldset
-                          className="col-span-1"
-                          legend="Purchase Details"
-                          content={
-                            <>
-                              <ComboboxFieldWrapper
-                                label="Dealer"
-                                control={form.control}
-                                options={vendorOptions}
-                                name="vendor"
-                              />
-                              <DatePickerWrapper
-                                control={form.control}
-                                name="purchaseDate"
-                                label="Purchase Date"
-                              />
-                              <InputWrapper
-                                control={form.control}
-                                name="meter"
-                                label={"Meter"}
-                                type="number"
-                                value={""}
-                                className=""
-                              />
-                              <InputWrapper
-                                control={form.control}
-                                name="price"
-                                label={"Price"}
-                                type="number"
-                                value={""}
-                                className=""
-                              />
-                              <CustomFieldsWrapper
-                                name="purchaseOrderCustom"
-                                label="Custom Field"
-                                control={form.control}
-                              />
+                        <div className="col-span-1">
+                          <InputWrapper
+                            label="Gross Weight"
+                            control={form.control}
+                            name="grossWeight"
+                            type="number"
+                            value={"0"}
+                          />
+                        </div>
+                        <div className="col-span-1"></div>
+                      </div>
+                    }
+                  />
 
-                              <InputWrapper
-                                control={form.control}
-                                name="note"
-                                label={"Notes"}
-                                type="text"
-                                value={""}
-                                className=""
-                              />
-                            </>
-                          }
+                  <Fieldset
+                    legend="Custom Fields"
+                    content={
+                      <>
+                        <CustomFieldsWrapper
+                          label="customField"
+                          control={form.control}
+                          name={"customSpecifications"}
                         />
-                        <Fieldset
-                          className="col-span-1"
-                          legend="Depreciation"
-                          content={
-                            <>
-                              <InputWrapper
-                                control={form.control}
-                                name="depreciationLifeMonths"
-                                label="Term (Months)"
+                      </>
+                    }
+                  />
+                </TabsContent>
+                <TabsContent
+                  value="warranty"
+                  className="space-x-2 space-y-2 grid grid-cols-2 "
+                >
+                  <div className=" col-span-1 gap-4">
+                    <Fieldset
+                      className="col-span-1"
+                      legend="Primary Warranty"
+                      content={
+                        <div className="space-y-2">
+                          <InputWrapper
+                            control={form.control}
+                            name="warrantyDescription"
+                            label="Primary Warranty"
+                            type="text"
+                            value={""}
+                          />
+                          <DatePickerWrapper
+                            control={form.control}
+                            name="warrantyExpirationDate"
+                            label="Expiration Date"
+                          />
+                          <InputWrapper
+                            control={form.control}
+                            name="primaryWarrantyMeter"
+                            label="Meter"
+                            type="number"
+                            value={""}
+                          />
+                        </div>
+                      }
+                    />
+                  </div>
+                  <div className="col-span-1 gap-4">
+                    <Fieldset
+                      className="col-span-1"
+                      legend="Secondary Warranty"
+                      content={
+                        <div className="space-y-2">
+                          <InputWrapper
+                            control={form.control}
+                            name="secondaryWarrantyDescription"
+                            label="Secondary Warranty"
+                            type="text"
+                            value={""}
+                          />
+                          <DatePickerWrapper
+                            control={form.control}
+                            name="secondaryWarrantyExpirationDate"
+                            label="Expiration Date"
+                          />
+                          <InputWrapper
+                            control={form.control}
+                            name="secondaryWarrantyMeter"
+                            label="Meter"
+                            type="number"
+                            value={""}
+                          />
+                        </div>
+                      }
+                    />
+                  </div>
+
+                  <div className="col-span-2 gap-4">
+                    <Fieldset
+                      className="col-span-2"
+                      legend="Custom Fields"
+                      content={
+                        <div className="space-y-2">
+                          <CustomFieldsWrapper
+                            control={form.control}
+                            name="CustomSecondary"
+                            label="Custom Fields "
+                          />
+                        </div>
+                      }
+                    />
+                  </div>
+                </TabsContent>
+
+                <TabsContent
+                  value="purchase"
+                  className="space-x-2 space-y-2 grid grid-cols-2 "
+                >
+                  <Fieldset
+                    className="col-span-1"
+                    legend="Purchase Details"
+                    content={
+                      <>
+                        <ComboboxFieldWrapper
+                          label="Dealer"
+                          control={form.control}
+                          options={vendorOptions}
+                          name="vendor"
+                        />
+                        <DatePickerWrapper
+                          control={form.control}
+                          name="purchaseDate"
+                          label="Purchase Date"
+                        />
+                        <InputWrapper
+                          control={form.control}
+                          name="meter"
+                          label={"Meter"}
+                          type="number"
+                          value={""}
+                          className=""
+                        />
+                        <InputWrapper
+                          control={form.control}
+                          name="price"
+                          label={"Price"}
+                          type="number"
+                          value={""}
+                          className=""
+                        />
+                        <CustomFieldsWrapper
+                          name="purchaseOrderCustom"
+                          label="Custom Field"
+                          control={form.control}
+                        />
+
+                        <InputWrapper
+                          control={form.control}
+                          name="note"
+                          label={"Notes"}
+                          type="text"
+                          value={""}
+                          className=""
+                        />
+                      </>
+                    }
+                  />
+                  <Fieldset
+                    className="col-span-1"
+                    legend="Depreciation"
+                    content={
+                      <>
+                        <InputWrapper
+                          control={form.control}
+                          name="depreciationLifeMonths"
+                          label="Term (Months)"
+                          type="number"
+                          value={""}
+                          className="flex-1"
+                        />
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm">$</span>
+                          <InputWrapper
+                            control={form.control}
+                            name="startingPrice"
+                            label="Starting Value"
+                            type="number"
+                            value={""}
+                            className="flex-1"
+                          />
+                        </div>
+                        <div className="flex items-center gap-2 pb-2">
+                          <span className="text-sm">$</span>
+                          <InputWrapper
+                            control={form.control}
+                            name="salvagePrice"
+                            label="Salvage Value"
+                            type="number"
+                            value={""}
+                            className="flex-1"
+                          />
+                        </div>
+                        <div className="border-t flex flex-col">
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium">
+                              Depreciation (Monthly)
+                            </label>
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm">$</span>
+                              <Input
                                 type="number"
                                 value={""}
                                 className="flex-1"
                               />
-                              <div className="flex items-center gap-2">
-                                <span className="text-sm">$</span>
-                                <InputWrapper
-                                  control={form.control}
-                                  name="startingPrice"
-                                  label="Starting Value"
-                                  type="number"
-                                  value={""}
-                                  className="flex-1"
-                                />
-                              </div>
-                              <div className="flex items-center gap-2 pb-2">
-                                <span className="text-sm">$</span>
-                                <InputWrapper
-                                  control={form.control}
-                                  name="salvagePrice"
-                                  label="Salvage Value"
-                                  type="number"
-                                  value={""}
-                                  className="flex-1"
-                                />
-                              </div>
-                              <div className="border-t flex flex-col">
-                                <div className="space-y-2">
-                                  <label className="text-sm font-medium">
-                                    Depreciation (Monthly)
-                                  </label>
-                                  <div className="flex items-center gap-2">
-                                    <span className="text-sm">$</span>
-                                    <Input
-                                      type="number"
-                                      value={""}
-                                      className="flex-1"
-                                    />
-                                  </div>
-                                </div>
-                                <div className="space-y-2">
-                                  <label className="text-sm font-medium">
-                                    Current Value
-                                  </label>
-                                  <div className="flex items-center gap-2">
-                                    <span className="text-sm">$</span>
-                                    <Input
-                                      type="number"
-                                      value={""}
-                                      className="flex-1"
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                            </>
-                          }
-                        />
-
-                        <div className="col-span-2 space-x-2">
-                          <Fieldset
-                            legend="Ownership/Status"
-                            content={
-                              <div className="grid grid-cols-2 space-x-2">
-                                <div className="col-span-1">
-                                  <ComboboxFieldWrapper
-                                    control={form.control}
-                                    name="ownership"
-                                    label="Ownership"
-                                    options={ownershipOptions}
-                                  />
-                                  {form.watch("ownership") === "Customer" && (
-                                    <ComboboxFieldWrapper
-                                      control={form.control}
-                                      name="customerName"
-                                      label="Customer"
-                                      options={assigneeOptions}
-                                    />
-                                  )}
-                                  <DatePickerWrapper
-                                    control={form.control}
-                                    name="inService"
-                                    label="In service"
-                                  />
-                                  <DatePickerWrapper
-                                    control={form.control}
-                                    name="outService"
-                                    label="Out of Service"
-                                  />
-                                </div>
-                                <div className="col-span-1">
-                                  <DatePickerWrapper
-                                    control={form.control}
-                                    name="transferred"
-                                    label="Transferred Date"
-                                  />
-                                  <DatePickerWrapper
-                                    control={form.control}
-                                    name="soldDate"
-                                    label="Date sold"
-                                  />
-                                  <InputWrapper
-                                    control={form.control}
-                                    name="soldTo"
-                                    label="Sold To"
-                                    type="text"
-                                    value={""}
-                                    className="flex-1"
-                                  />
-                                  <InputWrapper
-                                    control={form.control}
-                                    name="notes"
-                                    label="Notes"
-                                    type="text"
-                                    value={""}
-                                    className="flex-1"
-                                  />
-                                </div>
-                              </div>
-                            }
-                          />
+                            </div>
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium">
+                              Current Value
+                            </label>
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm">$</span>
+                              <Input
+                                type="number"
+                                value={""}
+                                className="flex-1"
+                              />
+                            </div>
+                          </div>
                         </div>
-                      </TabsContent>
-                  </Tabs>
+                      </>
+                    }
+                  />
+
+                  <div className="col-span-2 space-x-2">
+                    <Fieldset
+                      legend="Ownership/Status"
+                      content={
+                        <div className="grid grid-cols-2 space-x-2">
+                          <div className="col-span-1">
+                            <ComboboxFieldWrapper
+                              control={form.control}
+                              name="ownership"
+                              label="Ownership"
+                              options={ownershipOptions}
+                            />
+                            {form.watch("ownership") === "Customer" && (
+                              <ComboboxFieldWrapper
+                                control={form.control}
+                                name="customerName"
+                                label="Customer"
+                                options={assigneeOptions}
+                              />
+                            )}
+                            <DatePickerWrapper
+                              control={form.control}
+                              name="inService"
+                              label="In service"
+                            />
+                            <DatePickerWrapper
+                              control={form.control}
+                              name="outService"
+                              label="Out of Service"
+                            />
+                          </div>
+                          <div className="col-span-1">
+                            <DatePickerWrapper
+                              control={form.control}
+                              name="transferred"
+                              label="Transferred Date"
+                            />
+                            <DatePickerWrapper
+                              control={form.control}
+                              name="soldDate"
+                              label="Date sold"
+                            />
+                            <InputWrapper
+                              control={form.control}
+                              name="soldTo"
+                              label="Sold To"
+                              type="text"
+                              value={""}
+                              className="flex-1"
+                            />
+                            <InputWrapper
+                              control={form.control}
+                              name="notes"
+                              label="Notes"
+                              type="text"
+                              value={""}
+                              className="flex-1"
+                            />
+                          </div>
+                        </div>
+                      }
+                    />
+                  </div>
+                </TabsContent>
+              </Tabs>
             </form>
           </Form>
         </div>

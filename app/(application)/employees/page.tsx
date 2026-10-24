@@ -89,7 +89,8 @@ export default function EmployeesPage() {
     openSheet({
       title: "Create Employee",
       description: "Fill out the form below to create a new Employee.",
-      className: "w-full sm:w-2/3 sm:min-w-[1200px] sm:max-w-none lg:max-w-none",
+      className:
+        "w-full sm:w-2/3 sm:min-w-[1200px] sm:max-w-none lg:max-w-none",
       content: (
         <NewEmployeeForm
           formId="new-employee-form"

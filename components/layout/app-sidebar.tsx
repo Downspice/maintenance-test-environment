@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   AudioWaveform,
   BookOpen,
@@ -12,17 +12,22 @@ import {
   Cog,
   Settings2,
   SquareTerminal,
-  File, Building, Users, ShoppingCart, Boxes, CalendarRange
-} from "lucide-react"
+  File,
+  Building,
+  Users,
+  ShoppingCart,
+  Boxes,
+  CalendarRange,
+} from "lucide-react";
 
-import { NavMain } from "@/components/layout/nav-main"
-import { TeamSwitcher } from "@/components/layout/team-switcher"
+import { NavMain } from "@/components/layout/nav-main";
+import { TeamSwitcher } from "@/components/layout/team-switcher";
 import {
   Sidebar,
   SidebarContent,
   SidebarHeader,
   SidebarRail,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 
 // This is sample data.
 const data = {
@@ -147,7 +152,8 @@ const data = {
       title: "Equipment",
       url: "#",
       icon: Cog,
-    }, {
+    },
+    {
       title: "Work Orders",
       url: "#",
       icon: File,
@@ -182,11 +188,8 @@ const data = {
       url: "#",
       icon: Building,
     },
-
-
-
   ],
-}
+};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -203,5 +206,5 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarFooter> */}
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }

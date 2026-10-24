@@ -20,7 +20,7 @@ export default function ViewVendor({
   data: VendorInterface;
 }) {
   const [open, setOpen] = useState(false);
-   return (
+  return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>{children}</SheetTrigger>
       <SheetContent className="w-3/4 ">

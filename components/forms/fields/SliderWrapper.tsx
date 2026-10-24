@@ -1,20 +1,26 @@
-"use client"
+"use client";
 
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Slider } from "@/components/ui/slider"
-import type { Control } from "react-hook-form"
-import { cn, isFieldEmpty } from "@/lib/shared/utils"
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Slider } from "@/components/ui/slider";
+import type { Control } from "react-hook-form";
+import { cn, isFieldEmpty } from "@/lib/shared/utils";
 
 interface SliderWrapperProps {
-  control: Control<any>
-  name: string
-  label?: string
-  min?: number
-  max?: number
-  step?: number
-  disabled?: boolean
-  required?: boolean
-  showValue?: boolean
+  control: Control<any>;
+  name: string;
+  label?: string;
+  min?: number;
+  max?: number;
+  step?: number;
+  disabled?: boolean;
+  required?: boolean;
+  showValue?: boolean;
 }
 
 export default function SliderWrapper({
@@ -41,22 +47,26 @@ export default function SliderWrapper({
               <FormLabel className={cn(isMissingRequired && "text-red-500")}>
                 {label}
               </FormLabel>
-              {showValue && <span className="text-sm text-muted-foreground">{field.value}</span>}
+              {showValue && (
+                <span className="text-sm text-muted-foreground">
+                  {field.value}
+                </span>
+              )}
             </div>
-          <FormControl>
-            <Slider
-              min={min}
-              max={max}
-              step={step}
-              defaultValue={[field.value]}
-              onValueChange={(vals) => field.onChange(vals[0])}
-              disabled={disabled}
-            />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
+            <FormControl>
+              <Slider
+                min={min}
+                max={max}
+                step={step}
+                defaultValue={[field.value]}
+                onValueChange={(vals) => field.onChange(vals[0])}
+                disabled={disabled}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
         );
       }}
     />
-  )
+  );
 }

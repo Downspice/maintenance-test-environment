@@ -3,12 +3,7 @@
 import type React from "react";
 
 import { useState, useEffect } from "react";
-import {
-  ArrowDown,
-  ArrowUp,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+import { ArrowDown, ArrowUp, ChevronLeft, ChevronRight } from "lucide-react";
 import {
   RiArrowLeftDoubleLine,
   RiArrowLeftSLine,
@@ -498,14 +493,18 @@ export function EmployeesDataTable({ realServer }: EmployeesDueDataTableProps) {
           <p className="text-paragraph-xs text-text-sub-600 shrink-0">
             Showing{" "}
             <span className="font-medium text-text-strong-950">
-              {mockEmployeesDueData.length === 0 ? 0 : (currentPage - 1) * rowsPerPage + 1}
+              {mockEmployeesDueData.length === 0
+                ? 0
+                : (currentPage - 1) * rowsPerPage + 1}
             </span>{" "}
             to{" "}
             <span className="font-medium text-text-strong-950">
               {Math.min(currentPage * rowsPerPage, mockEmployeesDueData.length)}
             </span>{" "}
             out of{" "}
-            <span className="font-medium text-text-strong-950">{mockEmployeesDueData.length}</span>
+            <span className="font-medium text-text-strong-950">
+              {mockEmployeesDueData.length}
+            </span>
           </p>
         </div>
         <div className="flex items-center gap-2">

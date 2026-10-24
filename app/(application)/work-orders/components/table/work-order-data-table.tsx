@@ -25,7 +25,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-
 import {
   Dialog,
   DialogContent,
@@ -35,7 +34,6 @@ import {
 import { useState } from "react";
 import React from "react";
 
-
 import { useConfirmDialog } from "@/lib/shared/confirm-dialog";
 import { toast } from "sonner";
 import EditWorkOrderForm from "../../views/edit-work-order";
@@ -43,7 +41,10 @@ import ChangePriorityForm from "@/components/forms/entities/work-order/change-pr
 import ChangeAssigneesForm from "@/components/forms/entities/work-order/change-assignee";
 import ChangeCostCenterForm from "@/components/forms/entities/work-order/change-cost-center";
 import ChangeStatusForm from "@/components/forms/entities/work-order/change-status";
-import { useDeleteWorkOrder, useGetWorkOrdersPaginated } from "@/services/setups/workOrder";
+import {
+  useDeleteWorkOrder,
+  useGetWorkOrdersPaginated,
+} from "@/services/setups/workOrder";
 import { DeleteWorkOrderModal } from "./modals/delete-work-order-modal";
 
 const getStatusColor = (status: string) => {
@@ -132,7 +133,9 @@ export function WorkOrderDataLoader({
   });
 
   const serverRows = paged?.data ?? [];
-  const currentPage = paged?.current_page ? Number(paged.current_page) : pageIndex + 1;
+  const currentPage = paged?.current_page
+    ? Number(paged.current_page)
+    : pageIndex + 1;
   const totalPages = paged?.last_page ? Number(paged.last_page) : 1;
   const totalRows = paged?.total ? Number(paged.total) : serverRows.length;
   const effectivePageSize = paged?.per_page ? Number(paged.per_page) : pageSize;
@@ -177,9 +180,9 @@ export function WorkOrderDataLoader({
       title: "Delete selected work orders?",
       description: `This will delete ${selectedRows.length} WO(s). This action cannot be undone.`,
       confirmText: "Delete",
-    })
+    });
     if (ok) {
-      toast.success(`Deleted ${selectedRows.length} rows`)
+      toast.success(`Deleted ${selectedRows.length} rows`);
     }
   };
 
@@ -217,7 +220,9 @@ export function WorkOrderDataLoader({
   // Server-side pagination handler
   const handlePaginationChange = (action: "next" | "previous" | number) => {
     if (action === "next") {
-      setPageIndex((p) => Math.min(p + 1, Math.max(0, paginationInfo.totalPages - 1)));
+      setPageIndex((p) =>
+        Math.min(p + 1, Math.max(0, paginationInfo.totalPages - 1))
+      );
     } else if (action === "previous") {
       setPageIndex((p) => Math.max(p - 1, 0));
     } else if (typeof action === "number") {
@@ -248,11 +253,7 @@ export function WorkOrderDataLoader({
     {
       accessorKey: "wo_number",
       header: ({ column }) => (
-        <SortableHeader
-          column={column}
-          title="WO#"
-          sortable={true}
-        />
+        <SortableHeader column={column} title="WO#" sortable={true} />
       ),
       cell: ({ row }) => (
         <div className="font-medium text-primary flex flex-col">
@@ -264,11 +265,7 @@ export function WorkOrderDataLoader({
     {
       accessorKey: "equipment",
       header: ({ column }) => (
-        <SortableHeader
-          column={column}
-          title="Unit#"
-          sortable={true}
-        />
+        <SortableHeader column={column} title="Unit#" sortable={true} />
       ),
       cell: ({ row }) => (
         <div className="flex flex-col">
@@ -281,15 +278,13 @@ export function WorkOrderDataLoader({
     {
       accessorKey: "status",
       header: ({ column }) => (
-        <SortableHeader
-          column={column}
-          title="Status"
-          sortable={true}
-        />
+        <SortableHeader column={column} title="Status" sortable={true} />
       ),
       cell: ({ row }) => (
         <>
-          <Badge className={`text-xs ${getStatusColor(row.original.status_name)}`}>
+          <Badge
+            className={`text-xs ${getStatusColor(row.original.status_name)}`}
+          >
             {row.original.status_name?.toUpperCase()}
           </Badge>
         </>
@@ -298,11 +293,7 @@ export function WorkOrderDataLoader({
     {
       accessorKey: "due_date",
       header: ({ column }) => (
-        <SortableHeader
-          column={column}
-          title="Due Date"
-          sortable={true}
-        />
+        <SortableHeader column={column} title="Due Date" sortable={true} />
       ),
       cell: ({ row }) => {
         const dueDate = row.original.due_date;
@@ -310,8 +301,12 @@ export function WorkOrderDataLoader({
 
         return (
           <>
-            <div className={`flex items-center gap-1 text-sm ${isPastDue ? 'text-destructive font-bold' : ''}`}>
-              <Calendar className={`h-3 w-3 ${isPastDue ? 'text-destructive' : ''}`} />
+            <div
+              className={`flex items-center gap-1 text-sm ${isPastDue ? "text-destructive font-bold" : ""}`}
+            >
+              <Calendar
+                className={`h-3 w-3 ${isPastDue ? "text-destructive" : ""}`}
+              />
               {dueDate}
             </div>
           </>
@@ -321,11 +316,7 @@ export function WorkOrderDataLoader({
     {
       accessorKey: "assignees",
       header: ({ column }) => (
-        <SortableHeader
-          column={column}
-          title="Assigned to"
-          sortable={true}
-        />
+        <SortableHeader column={column} title="Assigned to" sortable={true} />
       ),
       cell: ({ row }) => {
         const assignees = row.original.assigned_to || [];
@@ -355,11 +346,7 @@ export function WorkOrderDataLoader({
     {
       accessorKey: "total",
       header: ({ column }) => (
-        <SortableHeader
-          column={column}
-          title="Total"
-          sortable={true}
-        />
+        <SortableHeader column={column} title="Total" sortable={true} />
       ),
       cell: ({ row }) => (
         <>
@@ -386,11 +373,11 @@ export function WorkOrderDataLoader({
               description: `Are you sure you want to change the status to ${status}?`,
               confirmText: "Change",
               variant: "default",
-            })
+            });
             if (ok) {
-              toast.success(`Status changed`)
+              toast.success(`Status changed`);
             }
-          })()
+          })();
         };
 
         const [assigneeDialogOpen, setAssigneeDialogOpen] = useState(false);
@@ -477,7 +464,8 @@ export function WorkOrderDataLoader({
               <DialogContent className="sm:max-w-[500px]">
                 <DialogHeader>
                   <DialogTitle>
-                    Change Status for Work Order {row.original.wo_number || row.original.workOrderNumber}
+                    Change Status for Work Order{" "}
+                    {row.original.wo_number || row.original.workOrderNumber}
                   </DialogTitle>
                 </DialogHeader>
                 <ChangeStatusForm
@@ -488,11 +476,15 @@ export function WorkOrderDataLoader({
             </Dialog>
 
             {/* Change Cost Center Dialog */}
-            <Dialog open={costCenterDialogOpen} onOpenChange={setCostCenterDialogOpen}>
+            <Dialog
+              open={costCenterDialogOpen}
+              onOpenChange={setCostCenterDialogOpen}
+            >
               <DialogContent className="sm:max-w-[500px]">
                 <DialogHeader>
                   <DialogTitle>
-                    Change Cost Center for Work Order {row.original.wo_number || row.original.workOrderNumber}
+                    Change Cost Center for Work Order{" "}
+                    {row.original.wo_number || row.original.workOrderNumber}
                   </DialogTitle>
                 </DialogHeader>
                 <ChangeCostCenterForm
@@ -503,11 +495,15 @@ export function WorkOrderDataLoader({
             </Dialog>
 
             {/* Change Assignee Dialog */}
-            <Dialog open={assigneeDialogOpen} onOpenChange={setAssigneeDialogOpen}>
+            <Dialog
+              open={assigneeDialogOpen}
+              onOpenChange={setAssigneeDialogOpen}
+            >
               <DialogContent className="sm:max-w-[500px]">
                 <DialogHeader>
                   <DialogTitle>
-                    Change Assignee for Work Order {row.original.wo_number || row.original.workOrderNumber}
+                    Change Assignee for Work Order{" "}
+                    {row.original.wo_number || row.original.workOrderNumber}
                   </DialogTitle>
                 </DialogHeader>
                 <ChangeAssigneesForm
@@ -518,11 +514,15 @@ export function WorkOrderDataLoader({
             </Dialog>
 
             {/* Change Priority Dialog */}
-            <Dialog open={priorityDialogOpen} onOpenChange={setPriorityDialogOpen}>
+            <Dialog
+              open={priorityDialogOpen}
+              onOpenChange={setPriorityDialogOpen}
+            >
               <DialogContent className="sm:max-w-[500px]">
                 <DialogHeader>
                   <DialogTitle>
-                    Change Priority for Work Order {row.original.wo_number || row.original.workOrderNumber}
+                    Change Priority for Work Order{" "}
+                    {row.original.wo_number || row.original.workOrderNumber}
                   </DialogTitle>
                 </DialogHeader>
                 <ChangePriorityForm

@@ -25,8 +25,7 @@ export default function NewJobSite({ variant }: triggerVariant) {
 
   const form = useForm<EquipmentFormValues>({
     resolver: zodResolver(equipmentSchema),
-    defaultValues: {
-    },
+    defaultValues: {},
   });
 
   function onSubmit(data: EquipmentFormValues) {
@@ -72,7 +71,6 @@ export default function NewJobSite({ variant }: triggerVariant) {
         className="space-y-6"
       >
         <div className="flex flex-col">
-           
           <InputWrapper
             control={form.control}
             name={"jobName"}
@@ -81,11 +79,11 @@ export default function NewJobSite({ variant }: triggerVariant) {
             type="number"
             warning="(meter)"
           />
-           <TextareaWrapper
+          <TextareaWrapper
             control={form.control}
             name={"notes"}
             label={"Notes"}
-            value={""} 
+            value={""}
           />
         </div>
         <div className="flex justify-end">
@@ -108,4 +106,3 @@ export default function NewJobSite({ variant }: triggerVariant) {
     </Form>
   );
 }
- 

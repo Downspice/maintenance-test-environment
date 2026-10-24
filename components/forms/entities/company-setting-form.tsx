@@ -59,7 +59,10 @@ export default function CompanySettings({
   return (
     <div>
       <Form {...vendorForm}>
-        <form id={formId} onSubmit={vendorForm.handleSubmit((data) => handleSubmit(data))}>
+        <form
+          id={formId}
+          onSubmit={vendorForm.handleSubmit((data) => handleSubmit(data))}
+        >
           <Tabs defaultValue="Company Info" className="w-full">
             <TabsList>
               <TabsTrigger value="Company Info">Company Info</TabsTrigger>
@@ -238,8 +241,7 @@ export default function CompanySettings({
                           { id: "Hide", name: "Hide 'All OK' option" },
                           {
                             id: "warn",
-                            name:
-                              "Warn user of incomplete steps before saving",
+                            name: "Warn user of incomplete steps before saving",
                           },
                         ]}
                       />

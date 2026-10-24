@@ -14,9 +14,7 @@ import EquipmentFormWrapper from "@/components/forms/fields/equipment-form-wrapp
 import NewEquipmentDataTable from "./components/table/equipment-data-table";
 import UpdateMeters from "@/components/forms/entities/equipment/update-meters-form";
 
-import {
-  useGetLocations,
-} from "@/services/setups/lookups";
+import { useGetLocations } from "@/services/setups/lookups";
 
 export const equipmentActiveDropdown = [
   { id: "my", name: "My" },

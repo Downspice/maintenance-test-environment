@@ -9,9 +9,7 @@ import { Button } from "@/components/ui/button";
 import { GitPullRequestArrow } from "lucide-react";
 import { toast } from "sonner";
 import InputWrapper from "../fields/InputWrapper";
-import {
-  iconsOptionList,
-} from "@/lib/shared/option-list";
+import { iconsOptionList } from "@/lib/shared/option-list";
 import { ComboboxFieldWrapper } from "../fields/ComboboxWrapper";
 
 // Define the form schema with Zod
@@ -23,7 +21,13 @@ export const vendorSchema = z.object({
   notes: z.string().optional(),
 });
 
-export default function NewLocation({ formId = "new-location-form", hideSubmitButton }: { formId?: string; hideSubmitButton?: boolean }) {
+export default function NewLocation({
+  formId = "new-location-form",
+  hideSubmitButton,
+}: {
+  formId?: string;
+  hideSubmitButton?: boolean;
+}) {
   const [customFields, setCustomFields] = useState<
     { name: string; id: string }[]
   >([]);
@@ -47,7 +51,10 @@ export default function NewLocation({ formId = "new-location-form", hideSubmitBu
   return (
     <div>
       <Form {...vendorForm}>
-        <form id={formId} onSubmit={vendorForm.handleSubmit((data) => handleSubmit(data))}>
+        <form
+          id={formId}
+          onSubmit={vendorForm.handleSubmit((data) => handleSubmit(data))}
+        >
           <div className="grid grid-cols-2 gap-x-2">
             <div className="col-span-2 flex flex-col">
               <InputWrapper

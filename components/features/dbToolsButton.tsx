@@ -1,6 +1,12 @@
 "use client";
 
-import { Database, Download, HardDriveDownload, Trash2, Wrench } from "lucide-react";
+import {
+  Database,
+  Download,
+  HardDriveDownload,
+  Trash2,
+  Wrench,
+} from "lucide-react";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
 import {

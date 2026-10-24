@@ -92,7 +92,9 @@ export default function Page() {
           >
             <DropdownMenu open={open} onOpenChange={setOpen}>
               <DropdownMenuTrigger asChild>
-                <span className="font-bold cursor-pointer text-primary">{selected}</span>
+                <span className="font-bold cursor-pointer text-primary">
+                  {selected}
+                </span>
               </DropdownMenuTrigger>
               <DropdownMenuContent side="bottom" align="start">
                 {options.map((option) => (

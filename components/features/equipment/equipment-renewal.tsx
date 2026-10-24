@@ -18,7 +18,10 @@ import { useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ComboboxFieldWrapper } from "@/components/forms/fields/ComboboxWrapper";
 import DatePickerWrapper from "@/components/forms/fields/DatePickerWrapper";
-import { useGetEquipmentRenewals, useUpdateEquipmentRenewals } from "@/services/setups/equipments";
+import {
+  useGetEquipmentRenewals,
+  useUpdateEquipmentRenewals,
+} from "@/services/setups/equipments";
 
 // Define the form schema with Zod
 export const updateEquipmentSchema = z.object({

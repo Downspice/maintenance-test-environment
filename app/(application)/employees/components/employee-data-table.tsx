@@ -13,7 +13,11 @@ import {
   RenewalInterface,
 } from "@/lib/domains/employee/employee-data";
 import EditEmployee from "../views/editEmployeeSheet";
-import { useGetEmployeesPaginated, usePatchEmployeeIsActive, useGetEmployeeStatuses } from "@/services/setups/employee";
+import {
+  useGetEmployeesPaginated,
+  usePatchEmployeeIsActive,
+  useGetEmployeeStatuses,
+} from "@/services/setups/employee";
 import { toast } from "sonner";
 import { useConfirmDialog } from "@/lib/shared/confirm-dialog";
 import { DeactivateEmployeeModal } from "./modals/deactivate-employee-modal";
@@ -28,11 +32,19 @@ export default function EmployeeDataTable({
   return <EmployeeTableLoader locationId={locationId} typeId={typeId} />;
 }
 
-export function EmployeeTableLoader({ locationId, typeId }: { locationId?: string; typeId?: string }) {
+export function EmployeeTableLoader({
+  locationId,
+  typeId,
+}: {
+  locationId?: string;
+  typeId?: string;
+}) {
   const patchIsActive = usePatchEmployeeIsActive();
   const { data: employeeStatuses } = useGetEmployeeStatuses<any[]>();
   const confirmDialog = useConfirmDialog();
-  const [employeeToDeactivate, setEmployeeToDeactivate] = useState<any | null>(null);
+  const [employeeToDeactivate, setEmployeeToDeactivate] = useState<any | null>(
+    null
+  );
   const [pageIndex, setPageIndex] = useState(0); // 0-based for UI
   const [pageSize, setPageSize] = useState(10);
   const [search, setSearch] = useState("");
@@ -58,7 +70,9 @@ export function EmployeeTableLoader({ locationId, typeId }: { locationId?: strin
   });
 
   const serverRows = paged?.data ?? [];
-  const currentPage = paged?.current_page ? Number(paged.current_page) : pageIndex + 1;
+  const currentPage = paged?.current_page
+    ? Number(paged.current_page)
+    : pageIndex + 1;
   const totalPages = paged?.last_page ? Number(paged.last_page) : 1;
   const totalRows = paged?.total ? Number(paged.total) : serverRows.length;
   const effectivePageSize = paged?.per_page ? Number(paged.per_page) : pageSize;
@@ -71,9 +85,7 @@ export function EmployeeTableLoader({ locationId, typeId }: { locationId?: strin
   };
 
   // Get unique values for filter options (including sub-rows)
-  const getAllEmployees = (
-    employees: any[]
-  ): any[] => {
+  const getAllEmployees = (employees: any[]): any[] => {
     const result: any[] = [];
     const traverse = (emps: any[]) => {
       emps.forEach((emp) => {
@@ -137,9 +149,9 @@ export function EmployeeTableLoader({ locationId, typeId }: { locationId?: strin
       description: `This will deactivate ${selectedRows.length} employee(s).`,
       confirmText: "Deactivate",
       variant: "destructive",
-    })
+    });
     if (ok) {
-      toast.success(`Deactivated ${selectedRows.length} rows`)
+      toast.success(`Deactivated ${selectedRows.length} rows`);
       // TODO: bulk deactivate API when available
     }
   };
@@ -179,7 +191,9 @@ export function EmployeeTableLoader({ locationId, typeId }: { locationId?: strin
   // Server-side pagination handler
   const handlePaginationChange = (action: "next" | "previous" | number) => {
     if (action === "next") {
-      setPageIndex((p) => Math.min(p + 1, Math.max(0, paginationInfo.totalPages - 1)));
+      setPageIndex((p) =>
+        Math.min(p + 1, Math.max(0, paginationInfo.totalPages - 1))
+      );
     } else if (action === "previous") {
       setPageIndex((p) => Math.max(p - 1, 0));
     } else if (typeof action === "number") {
@@ -248,7 +262,7 @@ export function EmployeeTableLoader({ locationId, typeId }: { locationId?: strin
           column={column}
           title="Employee#"
           sortable={true}
-        // filterOptions={employeeId}
+          // filterOptions={employeeId}
         />
       ),
       cell: ({ row }) => (
@@ -265,7 +279,7 @@ export function EmployeeTableLoader({ locationId, typeId }: { locationId?: strin
           column={column}
           title="Name"
           sortable={true}
-        // filterOptions={name}
+          // filterOptions={name}
         />
       ),
       cell: ({ row }) => (
@@ -285,7 +299,7 @@ export function EmployeeTableLoader({ locationId, typeId }: { locationId?: strin
           column={column}
           title="Type"
           sortable={true}
-        // filterOptions={type}
+          // filterOptions={type}
         />
       ),
       filterFn: (row, id, value) => {
@@ -299,7 +313,7 @@ export function EmployeeTableLoader({ locationId, typeId }: { locationId?: strin
           column={column}
           title="Driver's License#"
           sortable={true}
-        // filterOptions={drivers_license_number}
+          // filterOptions={drivers_license_number}
         />
       ),
       filterFn: (row, id, value) => {
@@ -313,7 +327,7 @@ export function EmployeeTableLoader({ locationId, typeId }: { locationId?: strin
           column={column}
           title="Contact"
           sortable={true}
-        // filterOptions={contact}
+          // filterOptions={contact}
         />
       ),
       filterFn: (row, id, value) => {
@@ -327,7 +341,9 @@ export function EmployeeTableLoader({ locationId, typeId }: { locationId?: strin
       cell: ({ row }) => {
         const handleRestoreRow = async (row: any) => {
           const currentStatusId: string | undefined = row.original?.status?.id;
-          const otherStatusId: string | undefined = Array.isArray(employeeStatuses)
+          const otherStatusId: string | undefined = Array.isArray(
+            employeeStatuses
+          )
             ? employeeStatuses.find((s: any) => s?.id !== currentStatusId)?.id
             : undefined;
 
@@ -343,7 +359,10 @@ export function EmployeeTableLoader({ locationId, typeId }: { locationId?: strin
               toast.error("Unable to determine target status");
               return;
             }
-            await patchIsActive.mutateAsync({ id: row.original.id, status_id: otherStatusId });
+            await patchIsActive.mutateAsync({
+              id: row.original.id,
+              status_id: otherStatusId,
+            });
             toast.success(`Status updated`);
           }
         };
@@ -428,7 +447,9 @@ export function EmployeeTableLoader({ locationId, typeId }: { locationId?: strin
         onServerSearch={handleServerSearch}
         serverSorting={sorting}
         onServerSortingChange={handleServerSortingChange}
-        getRowClassName={(row) => (row.original?.status?.is_active === false ? "bg-red-50" : "")}
+        getRowClassName={(row) =>
+          row.original?.status?.is_active === false ? "bg-red-50" : ""
+        }
         isLoading={isLoading}
       />
 

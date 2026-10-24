@@ -23,21 +23,28 @@ export function DeleteEquipmentModal({
       warningTitle="Warning:"
       warningText={
         <>
-          This action <strong className="font-semibold text-text-strong-950">cannot be undone</strong>. Deleting this equipment will remove all its associated data including work orders, inspections, meter readings, and linked records.
+          This action{" "}
+          <strong className="font-semibold text-text-strong-950">
+            cannot be undone
+          </strong>
+          . Deleting this equipment will remove all its associated data
+          including work orders, inspections, meter readings, and linked
+          records.
         </>
       }
       item={
         equipment
           ? {
               name: equipment.unit_number || equipment.name || "Equipment",
-              description: [
-                equipment.year,
-                equipment.model,
-                equipment.type?.name || equipment.type,
-                equipment.serial_number && `SN: ${equipment.serial_number}`,
-              ]
-                .filter(Boolean)
-                .join(" • ") || "Equipment record",
+              description:
+                [
+                  equipment.year,
+                  equipment.model,
+                  equipment.type?.name || equipment.type,
+                  equipment.serial_number && `SN: ${equipment.serial_number}`,
+                ]
+                  .filter(Boolean)
+                  .join(" • ") || "Equipment record",
             }
           : undefined
       }
@@ -48,7 +55,9 @@ export function DeleteEquipmentModal({
       onDelete={async () => {
         if (!equipment?.id) return;
         try {
-          toast.success(`Deleted ${equipment.unit_number || equipment.name || "Equipment"}`);
+          toast.success(
+            `Deleted ${equipment.unit_number || equipment.name || "Equipment"}`
+          );
         } catch {
           toast.error("Unable to delete equipment");
         }

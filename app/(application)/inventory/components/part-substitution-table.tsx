@@ -57,7 +57,11 @@ export default function PartSubstitutionTable({
     ]);
   };
 
-  const handleChange = (index: number, field: keyof PartSubstitutionRow, val: string) => {
+  const handleChange = (
+    index: number,
+    field: keyof PartSubstitutionRow,
+    val: string
+  ) => {
     const updated = rows.map((row, i) => {
       if (i !== index) return row;
       return { ...row, [field]: val };
@@ -168,7 +172,9 @@ export default function PartSubstitutionTable({
                   <TableCell
                     className={cn(
                       "align-middle text-paragraph-sm max-w-[14rem] truncate",
-                      row.description ? "text-text-sub-600" : "text-text-soft-400"
+                      row.description
+                        ? "text-text-sub-600"
+                        : "text-text-soft-400"
                     )}
                     title={row.description || undefined}
                   >

@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  Plus,
-  type LucideIcon,
-} from "lucide-react";
+import { Plus, type LucideIcon } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -19,9 +16,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import {
-  Collapsible,
-} from "@/components/ui/collapsible"
+import { Collapsible } from "@/components/ui/collapsible";
 export function NavProjects({
   projects,
 }: {
@@ -45,34 +40,34 @@ export function NavProjects({
             defaultOpen={item.isActive}
             className="group/collapsible"
           >
-          <SidebarMenuItem key={item.name}>
-            <SidebarMenuButton asChild isActive={item.isActive}>
-              <a href={item.url}>
-                <item.icon />
-                <span>{item.name}</span>
-              </a>
-            </SidebarMenuButton>
-            {item.name !== "Home" && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <SidebarMenuAction showOnHover>
-                    <Plus />
-                    <span className="sr-only">More</span>
-                  </SidebarMenuAction>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  className="w-48 rounded-lg"
-                  side={isMobile ? "bottom" : "right"}
-                  align={isMobile ? "end" : "start"}
-                >
-                  <DropdownMenuItem>
-                    <Plus className="text-muted-foreground" />
-                    <span>Add New {item.name}</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-             )} 
-          </SidebarMenuItem>
+            <SidebarMenuItem key={item.name}>
+              <SidebarMenuButton asChild isActive={item.isActive}>
+                <a href={item.url}>
+                  <item.icon />
+                  <span>{item.name}</span>
+                </a>
+              </SidebarMenuButton>
+              {item.name !== "Home" && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <SidebarMenuAction showOnHover>
+                      <Plus />
+                      <span className="sr-only">More</span>
+                    </SidebarMenuAction>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    className="w-48 rounded-lg"
+                    side={isMobile ? "bottom" : "right"}
+                    align={isMobile ? "end" : "start"}
+                  >
+                    <DropdownMenuItem>
+                      <Plus className="text-muted-foreground" />
+                      <span>Add New {item.name}</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+            </SidebarMenuItem>
           </Collapsible>
         ))}
         {/* <SidebarMenuItem>

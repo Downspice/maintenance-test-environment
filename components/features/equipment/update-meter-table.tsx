@@ -1,35 +1,23 @@
-
-
 "use client";
-
-
-
 
 // Form wrappers
 
 // Schema and types
 
-
-
-
-
-
 import { Input } from "@/components/ui/input";
 import { EditableDataTable } from "@/components/customUI/editableTable";
 
 export default function UpdateMetersTable() {
-  
-  return ( 
-        <EditableDataTable
-          data={data}
-          columns={columns}
-          onDataChange={(newData) => {
-            console.log("Updated Data:", newData);
-          }}
-        /> 
+  return (
+    <EditableDataTable
+      data={data}
+      columns={columns}
+      onDataChange={(newData) => {
+        console.log("Updated Data:", newData);
+      }}
+    />
   );
 }
-
 
 export interface MeterReading {
   equipment: string;

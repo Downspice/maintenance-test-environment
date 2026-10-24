@@ -56,15 +56,15 @@ export default function LaborTab({
         title: "Delete labor entry?",
         description: `Delete labor entry for ${labor?.technicianName}?`,
         confirmText: "Delete",
-      })
+      });
       if (ok) {
         const updated = laborEntries.filter(
           (l) => l.technicianName !== labor?.technicianName
         );
         onUpdateLabor(updated);
-        toast.success("Labor entry deleted")
+        toast.success("Labor entry deleted");
       }
-    })()
+    })();
   };
 
   const handleSave = (labor: AddLaborFormValues) => {
@@ -135,8 +135,7 @@ export default function LaborTab({
                         onEdit={() => {
                           setEditingLabor(labor);
                           setEditingIndex(
-                            idx -
-                              maintenanceItems.filter((m) => m.labor).length
+                            idx - maintenanceItems.filter((m) => m.labor).length
                           );
                           setDialogOpen(true);
                         }}

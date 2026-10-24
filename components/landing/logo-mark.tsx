@@ -27,8 +27,8 @@ export function LogoMark({
     variant === "white"
       ? "brightness-0 invert"
       : variant === "black"
-      ? "brightness-0"
-      : "";
+        ? "brightness-0"
+        : "";
 
   return (
     <Image
@@ -43,12 +43,20 @@ export function LogoMark({
   );
 }
 
-export function LogoWordmark({ compact, priority }: { compact?: boolean; priority?: boolean }) {
+export function LogoWordmark({
+  compact,
+  priority,
+}: {
+  compact?: boolean;
+  priority?: boolean;
+}) {
   return (
     <div className="flex items-center gap-2.5 sm:gap-3">
       <LogoMark size={compact ? "sm" : "md"} priority={priority} />
       <div className="leading-tight">
-        <p className="text-[15px] font-bold tracking-tight text-text-strong-950 sm:text-base">MAINTAIN</p>
+        <p className="text-[15px] font-bold tracking-tight text-text-strong-950 sm:text-base">
+          MAINTAIN
+        </p>
         <p className="text-[10px] font-semibold tracking-[0.18em] text-text-sub-600 uppercase sm:text-[11px]">
           Operations Suite
         </p>

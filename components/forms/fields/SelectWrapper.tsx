@@ -1,28 +1,40 @@
-"use client"
+"use client";
 
-import { cn, isFieldEmpty } from "@/lib/shared/utils"
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import type { Control } from "react-hook-form"
-import { GenericObject } from "@/types/types"
+import { cn, isFieldEmpty } from "@/lib/shared/utils";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import type { Control } from "react-hook-form";
+import { GenericObject } from "@/types/types";
 
 interface SelectWrapperProps {
-  control: Control<any>
-  label: string
-  name: string
-  options: GenericObject[]|[]
-  className?: string
-  placeholder?: string
-  disabled?: boolean
-  required?: boolean
-  direction?: "horizontal" | "vertical" // <- NEW
+  control: Control<any>;
+  label: string;
+  name: string;
+  options: GenericObject[] | [];
+  className?: string;
+  placeholder?: string;
+  disabled?: boolean;
+  required?: boolean;
+  direction?: "horizontal" | "vertical"; // <- NEW
 }
 
 export default function SelectWrapper({
   control,
   name,
   label,
-  options=[],
+  options = [],
   className,
   placeholder,
   disabled = false,
@@ -56,26 +68,35 @@ export default function SelectWrapper({
               {label}
             </FormLabel>
 
-          <div className="flex-1 w-full">
-            <Select onValueChange={field.onChange} defaultValue={field.value} disabled={disabled}>
-              <FormControl>
-                <SelectTrigger className={cn("w-full", className)}>
-                  <SelectValue className="text-gray-400" placeholder={placeholder || `Select ${label.toLowerCase()}`} />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                {options.map((option) => (
-                  <SelectItem key={option.id} value={option.id??""}>
-                    {option.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <FormMessage />
-          </div>
-        </FormItem>
+            <div className="flex-1 w-full">
+              <Select
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+                disabled={disabled}
+              >
+                <FormControl>
+                  <SelectTrigger className={cn("w-full", className)}>
+                    <SelectValue
+                      className="text-gray-400"
+                      placeholder={
+                        placeholder || `Select ${label.toLowerCase()}`
+                      }
+                    />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {options.map((option) => (
+                    <SelectItem key={option.id} value={option.id ?? ""}>
+                      {option.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </div>
+          </FormItem>
         );
       }}
     />
-  )
+  );
 }

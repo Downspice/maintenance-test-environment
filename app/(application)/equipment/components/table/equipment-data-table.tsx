@@ -48,11 +48,7 @@ import { toast } from "sonner";
 import { useConfirmDialog } from "@/lib/shared/confirm-dialog";
 import { DeleteEquipmentModal } from "./modals/delete-equipment-modal";
 
-export default function DataTableDemo({
-  locationId,
-}: {
-  locationId?: string;
-}) {
+export default function DataTableDemo({ locationId }: { locationId?: string }) {
   return <EquipmentTableLoader locationId={locationId} />;
 }
 
@@ -83,7 +79,9 @@ export function EquipmentTableLoader({ locationId }: { locationId?: string }) {
   });
 
   const serverRows = paged?.data ?? [];
-  const currentPage = paged?.current_page ? Number(paged.current_page) : pageIndex + 1;
+  const currentPage = paged?.current_page
+    ? Number(paged.current_page)
+    : pageIndex + 1;
   const totalPages = paged?.last_page ? Number(paged.last_page) : 1;
   const totalRows = paged?.total ? Number(paged.total) : serverRows.length;
   const effectivePageSize = paged?.per_page ? Number(paged.per_page) : pageSize;
@@ -158,7 +156,9 @@ export function EquipmentTableLoader({ locationId }: { locationId?: string }) {
     ...new Set(flatEmployees.map((emp) => emp.serial_number)),
   ];
 
-  const equipmentType = [...new Set(flatEmployees.map((emp) => emp.type?.name ?? ""))];
+  const equipmentType = [
+    ...new Set(flatEmployees.map((emp) => emp.type?.name ?? "")),
+  ];
   const meter = [...new Set(flatEmployees.map((emp) => emp.meter))];
   const taskStatus = [...new Set(flatEmployees.map((emp) => emp.taskStatus))];
 
@@ -198,9 +198,9 @@ export function EquipmentTableLoader({ locationId }: { locationId?: string }) {
       title: "Delete selected equipment?",
       description: `This will delete ${selectedRows.length} item(s). This action cannot be undone.`,
       confirmText: "Delete",
-    })
+    });
     if (ok) {
-      toast.success(`Deleted ${selectedRows.length} rows`)
+      toast.success(`Deleted ${selectedRows.length} rows`);
     }
   };
 
@@ -243,7 +243,9 @@ export function EquipmentTableLoader({ locationId }: { locationId?: string }) {
   // Server-side pagination handler
   const handlePaginationChange = (action: "next" | "previous" | number) => {
     if (action === "next") {
-      setPageIndex((p) => Math.min(p + 1, Math.max(0, paginationInfo.totalPages - 1)));
+      setPageIndex((p) =>
+        Math.min(p + 1, Math.max(0, paginationInfo.totalPages - 1))
+      );
     } else if (action === "previous") {
       setPageIndex((p) => Math.max(p - 1, 0));
     } else if (typeof action === "number") {
@@ -379,11 +381,7 @@ export function EquipmentTableLoader({ locationId }: { locationId?: string }) {
     {
       accessorKey: "color_name",
       header: ({ column }) => (
-        <SortableHeader
-          column={column}
-          title="Color"
-          sortable={true}
-        />
+        <SortableHeader column={column} title="Color" sortable={true} />
       ),
     },
     {

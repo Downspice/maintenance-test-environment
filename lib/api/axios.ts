@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig } from "axios";
- import { toast } from "sonner";
+import { toast } from "sonner";
 
 export const dummyApiClient = async <T>(
   url: string,

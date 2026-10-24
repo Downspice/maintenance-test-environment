@@ -4,17 +4,12 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { AdvancedDataTable } from "@/components/customUI/advanced-data-table";
 import { SortableHeader } from "@/components/customUI/sortable-header";
 
-
-
-
 import { useState } from "react";
 import React from "react";
 import { matchesSearchAllFields } from "@/lib/shared/utils";
 import { EmailHistoryData, EmailHistoryType } from "./emailhistory-data";
- 
-const getAllEmails = (
-  Emails: EmailHistoryType[]
-): EmailHistoryType[] => {
+
+const getAllEmails = (Emails: EmailHistoryType[]): EmailHistoryType[] => {
   const result: EmailHistoryType[] = [];
   const traverse = (emps: EmailHistoryType[]) => {
     emps.forEach((emp) => {
@@ -208,7 +203,7 @@ export default function EmailHistoryDataTable() {
         </div>
       ),
     },
- 
+
     {
       accessorKey: "recipient",
       header: ({ column }) => (
@@ -225,7 +220,7 @@ export default function EmailHistoryDataTable() {
         return value.length === 0 || value.includes(row.getValue(id));
       },
     },
- 
+
     {
       accessorKey: "email",
       header: ({ column }) => (
@@ -240,7 +235,7 @@ export default function EmailHistoryDataTable() {
         return value.length === 0 || value.includes(row.getValue(id));
       },
     },
-     {
+    {
       accessorKey: "subject",
       header: ({ column }) => (
         <SortableHeader
@@ -254,7 +249,7 @@ export default function EmailHistoryDataTable() {
         return value.length === 0 || value.includes(row.getValue(id));
       },
     },
-         {
+    {
       accessorKey: "body",
       header: ({ column }) => (
         <SortableHeader
@@ -293,7 +288,13 @@ export default function EmailHistoryDataTable() {
       <AdvancedDataTable
         columns={columns}
         data={isServerMode ? currentData : EmailHistoryData}
-        defaultVisibleColumns={["date" ,"recipient", "email", "subject", "body"]}
+        defaultVisibleColumns={[
+          "date",
+          "recipient",
+          "email",
+          "subject",
+          "body",
+        ]}
         onRowClick={handleRowClick}
         onCellClick={handleCellClick}
         onPrintSelected={handlePrintSelected}

@@ -11,11 +11,21 @@ export default function MeterUpdatesMoreButton() {
       <table className="min-w-full border-collapse text-sm text-left border">
         <thead>
           <tr>
-            <th rowSpan={2} className="border px-4 py-2 bg-muted">Equipment</th>
-            <th rowSpan={2} className="border px-4 py-2 bg-muted">Category</th>
-            <th colSpan={2} className="border px-4 py-2 bg-muted text-center">Meter 1</th>
-            <th colSpan={2} className="border px-4 py-2 bg-muted text-center">Meter 2</th>
-            <th rowSpan={2} className="border px-4 py-2 bg-muted">Log Date</th>
+            <th rowSpan={2} className="border px-4 py-2 bg-muted">
+              Equipment
+            </th>
+            <th rowSpan={2} className="border px-4 py-2 bg-muted">
+              Category
+            </th>
+            <th colSpan={2} className="border px-4 py-2 bg-muted text-center">
+              Meter 1
+            </th>
+            <th colSpan={2} className="border px-4 py-2 bg-muted text-center">
+              Meter 2
+            </th>
+            <th rowSpan={2} className="border px-4 py-2 bg-muted">
+              Log Date
+            </th>
           </tr>
           <tr>
             <th className="border px-4 py-2 bg-muted">Current</th>
@@ -41,7 +51,9 @@ export default function MeterUpdatesMoreButton() {
                 />
               </td>
               <td className="border px-4 py-2">
-                {row.meter2?.current ?? <span className="text-muted-foreground italic">—</span>}
+                {row.meter2?.current ?? (
+                  <span className="text-muted-foreground italic">—</span>
+                )}
               </td>
               <td className="border px-4 py-2">
                 {row.meter2 ? (

@@ -1,11 +1,8 @@
 "use client";
 
-
-
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { TableRowActions } from "@/components/ui/table-row-actions";
-
 
 import { useEffect, useState } from "react";
 import React from "react";
@@ -26,28 +23,7 @@ import InputWrapper from "@/components/forms/fields/InputWrapper";
 import RadioGroupWrapper from "@/components/forms/fields/RadioGroupWrapper";
 import { Form } from "@/components/ui/form";
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-import {
-  useGetEquipmentCommonParts,
-} from "@/services/setups/equipments";
+import { useGetEquipmentCommonParts } from "@/services/setups/equipments";
 
 const partOptions = [
   {
@@ -97,9 +73,11 @@ type PartsProps = {
 };
 
 export function PartsManager({ equipmentId }: PartsProps) {
-  console.log("equipomen....", equipmentId)
+  console.log("equipomen....", equipmentId);
   // Fetch common parts from API
-  const { data: parts = [], isLoading } = useGetEquipmentCommonParts(equipmentId || "");
+  const { data: parts = [], isLoading } = useGetEquipmentCommonParts(
+    equipmentId || ""
+  );
 
   const [open, setOpen] = useState(false);
   const [editingPart, setEditingPart] = useState<PartRecord | null>(null);
@@ -237,7 +215,11 @@ export function PartsManager({ equipmentId }: PartsProps) {
         }
       >
         <Form {...form}>
-          <form id="part-form" onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-1">
+          <form
+            id="part-form"
+            onSubmit={handleSubmit(onSubmit)}
+            className="flex flex-col gap-1"
+          >
             <InputWrapper
               control={form.control}
               name="equipment"
@@ -321,7 +303,7 @@ export function PartsManager({ equipmentId }: PartsProps) {
           </form>
         </Form>
       </Modal>
-    </div >
+    </div>
   );
 }
 
@@ -330,4 +312,3 @@ type ImageItem = {
   name: string;
   src: string;
 };
-

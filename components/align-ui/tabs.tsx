@@ -1,7 +1,7 @@
-'use client';
-import * as React from 'react';
-import * as TabsPrimitive from '@radix-ui/react-tabs';
-import { cn } from '@/utils/cn';
+"use client";
+import * as React from "react";
+import * as TabsPrimitive from "@radix-ui/react-tabs";
+import { cn } from "@/utils/cn";
 
 const Tabs = TabsPrimitive.Root;
 
@@ -11,7 +11,10 @@ const TabsList = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <TabsPrimitive.List
     ref={ref}
-    className={cn('inline-flex items-center gap-1 rounded-[10px] bg-bg-weak-50 p-1', className)}
+    className={cn(
+      "inline-flex items-center gap-1 rounded-[10px] bg-bg-weak-50 p-1",
+      className
+    )}
     {...props}
   />
 ));
@@ -24,14 +27,14 @@ const TabsTrigger = React.forwardRef<
   <TabsPrimitive.Trigger
     ref={ref}
     className={cn(
-      'inline-flex items-center justify-center whitespace-nowrap rounded-[8px] px-3 py-1.5',
-      'text-label-sm text-text-soft-400 outline-none',
-      'transition-all duration-200',
-      'hover:text-text-sub-600',
-      'focus-visible:ring-2 focus-visible:ring-stroke-strong-950',
-      'disabled:pointer-events-none disabled:opacity-40',
-      'data-[state=active]:bg-bg-white-0 data-[state=active]:text-text-strong-950 data-[state=active]:shadow-regular-xs',
-      className,
+      "inline-flex items-center justify-center whitespace-nowrap rounded-[8px] px-3 py-1.5",
+      "text-label-sm text-text-soft-400 outline-none",
+      "transition-all duration-200",
+      "hover:text-text-sub-600",
+      "focus-visible:ring-2 focus-visible:ring-stroke-strong-950",
+      "disabled:pointer-events-none disabled:opacity-40",
+      "data-[state=active]:bg-bg-white-0 data-[state=active]:text-text-strong-950 data-[state=active]:shadow-regular-xs",
+      className
     )}
     {...props}
   />
@@ -44,7 +47,10 @@ const TabsContent = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <TabsPrimitive.Content
     ref={ref}
-    className={cn('mt-3 outline-none focus-visible:ring-2 focus-visible:ring-stroke-strong-950 focus-visible:ring-offset-2', className)}
+    className={cn(
+      "mt-3 outline-none focus-visible:ring-2 focus-visible:ring-stroke-strong-950 focus-visible:ring-offset-2",
+      className
+    )}
     {...props}
   />
 ));

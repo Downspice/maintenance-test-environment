@@ -54,12 +54,85 @@ import {
   useUpdatePurchaseOrderTerm,
   useUpdateVendorType,
 } from "@/services/setups/lookups";
-import { useAddCostCenter, useAddInventoryCategory, useAddInventoryManufacturer, useAddInventoryUnitType, useDeleteCostCenter, useDeleteInventoryCategory, useDeleteInventoryManufacturer, useDeleteInventoryUnitType, useGetCostCenters, useGetInventoryCategories, useGetInventoryManufacturers, useGetInventoryUnitTypes, useUpdateCostCenter, useUpdateInventoryCategory, useUpdateInventoryManufacturer, useUpdateInventoryUnitType } from "@/services/setups/inventory";
-import { useAddPurchaseOrderShipVia, useDeletePurchaseOrderShipVia, useGetPurchaseOrderShipVias, useUpdatePurchaseOrderShipVia } from "@/services/setups/purchaseOrder";
-import { useAddWorkOrderType, useDeleteWorkOrderType, useGetWorkOrderTypes, useUpdateWorkOrderType } from "@/services/setups/workOrder";
-import { useAddEquipmentColor, useAddEquipmentMake, useAddEquipmentMeterType, useAddEquipmentModel, useAddEquipmentRenewal, useAddEquipmentStatus, useAddEquipmentType, useAddExpenseType, useDeleteEquipmentColor, useDeleteEquipmentMake, useDeleteEquipmentMeterType, useDeleteEquipmentModel, useDeleteEquipmentRenewal, useDeleteEquipmentStatus, useDeleteEquipmentType, useDeleteExpenseType, useGetEquipmentColors, useGetEquipmentMakes, useGetEquipmentMeterTypes, useGetEquipmentModels, useGetEquipmentRenewals, useGetEquipmentStatuses, useGetEquipmentTypes, useGetExpenseTypes, useUpdateEquipmentColor, useUpdateEquipmentMake, useUpdateEquipmentMeterType, useUpdateEquipmentModel, useUpdateEquipmentRenewal, useUpdateEquipmentStatus, useUpdateEquipmentType, useUpdateExpenseType } from "@/services/setups/equipments";
+import {
+  useAddCostCenter,
+  useAddInventoryCategory,
+  useAddInventoryManufacturer,
+  useAddInventoryUnitType,
+  useDeleteCostCenter,
+  useDeleteInventoryCategory,
+  useDeleteInventoryManufacturer,
+  useDeleteInventoryUnitType,
+  useGetCostCenters,
+  useGetInventoryCategories,
+  useGetInventoryManufacturers,
+  useGetInventoryUnitTypes,
+  useUpdateCostCenter,
+  useUpdateInventoryCategory,
+  useUpdateInventoryManufacturer,
+  useUpdateInventoryUnitType,
+} from "@/services/setups/inventory";
+import {
+  useAddPurchaseOrderShipVia,
+  useDeletePurchaseOrderShipVia,
+  useGetPurchaseOrderShipVias,
+  useUpdatePurchaseOrderShipVia,
+} from "@/services/setups/purchaseOrder";
+import {
+  useAddWorkOrderType,
+  useDeleteWorkOrderType,
+  useGetWorkOrderTypes,
+  useUpdateWorkOrderType,
+} from "@/services/setups/workOrder";
+import {
+  useAddEquipmentColor,
+  useAddEquipmentMake,
+  useAddEquipmentMeterType,
+  useAddEquipmentModel,
+  useAddEquipmentRenewal,
+  useAddEquipmentStatus,
+  useAddEquipmentType,
+  useAddExpenseType,
+  useDeleteEquipmentColor,
+  useDeleteEquipmentMake,
+  useDeleteEquipmentMeterType,
+  useDeleteEquipmentModel,
+  useDeleteEquipmentRenewal,
+  useDeleteEquipmentStatus,
+  useDeleteEquipmentType,
+  useDeleteExpenseType,
+  useGetEquipmentColors,
+  useGetEquipmentMakes,
+  useGetEquipmentMeterTypes,
+  useGetEquipmentModels,
+  useGetEquipmentRenewals,
+  useGetEquipmentStatuses,
+  useGetEquipmentTypes,
+  useGetExpenseTypes,
+  useUpdateEquipmentColor,
+  useUpdateEquipmentMake,
+  useUpdateEquipmentMeterType,
+  useUpdateEquipmentModel,
+  useUpdateEquipmentRenewal,
+  useUpdateEquipmentStatus,
+  useUpdateEquipmentType,
+  useUpdateExpenseType,
+} from "@/services/setups/equipments";
 
-import { useAddMaintenanceRepair, useAddMaintenanceRepairType, useAddMaintenanceTaskType, useDeleteMaintenanceRepair, useDeleteMaintenanceRepairType, useDeleteMaintenanceTaskType, useGetMaintenanceRepairs, useGetMaintenanceRepairTypes, useGetMaintenanceTaskTypes, useUpdateMaintenanceRepair, useUpdateMaintenanceRepairType, useUpdateMaintenanceTaskType } from "@/services/setups/maintenance";
+import {
+  useAddMaintenanceRepair,
+  useAddMaintenanceRepairType,
+  useAddMaintenanceTaskType,
+  useDeleteMaintenanceRepair,
+  useDeleteMaintenanceRepairType,
+  useDeleteMaintenanceTaskType,
+  useGetMaintenanceRepairs,
+  useGetMaintenanceRepairTypes,
+  useGetMaintenanceTaskTypes,
+  useUpdateMaintenanceRepair,
+  useUpdateMaintenanceRepairType,
+  useUpdateMaintenanceTaskType,
+} from "@/services/setups/maintenance";
 
 // ==============================
 // CONTENTS OBJECT WITH SERVICES
@@ -434,7 +507,7 @@ export const contents = {
       />
     ),
   },
-}
+};
 
 // ==============================
 // TYPES
@@ -503,7 +576,7 @@ export function TabbedMenuEditor({ tabs, contents }: Props) {
     const sub = main?.subs?.find((s) => s.id === subTabId);
     return isSubTab
       ? `${main?.name ?? ""} › ${sub?.name ?? ""}`
-      : main?.name ?? "";
+      : (main?.name ?? "");
   }, [safeTabs, mainTabId, subTabId, activeTab, isSubTab]);
 
   const openNewDialog = useCallback(() => {
@@ -601,7 +674,7 @@ export function TabbedMenuEditor({ tabs, contents }: Props) {
                           "w-full text-left py-1.5 px-2 rounded-md text-sm transition-colors",
                           "hover:bg-primary/10 focus:outline-none focus:ring-2 focus:ring-primary",
                           activeTab === `${tab.id}:${sub.id}` &&
-                          "bg-primary/20 text-primary font-medium"
+                            "bg-primary/20 text-primary font-medium"
                         )}
                         onClick={() => setActiveTab(`${tab.id}:${sub.id}`)}
                       >
@@ -767,7 +840,10 @@ export function GenericTab({
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h2 className="text-xl font-semibold">{label}</h2>
         {!isAdding && (
-          <Button className="shrink-0 self-start sm:self-auto" onClick={startAdding}>
+          <Button
+            className="shrink-0 self-start sm:self-auto"
+            onClick={startAdding}
+          >
             <Plus className="w-4 h-4 mr-2" /> Add {label}
           </Button>
         )}

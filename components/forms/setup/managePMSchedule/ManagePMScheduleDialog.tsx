@@ -53,7 +53,10 @@ export default function ManagePMScheduleDialog({
 
   const { control, reset } = form;
 
-  const trackByMeterPrimary = useWatch({ control, name: "trackByMeterPrimary" });
+  const trackByMeterPrimary = useWatch({
+    control,
+    name: "trackByMeterPrimary",
+  });
   const trackByMeterSecondary = useWatch({
     control,
     name: "trackByMeterSecondary",

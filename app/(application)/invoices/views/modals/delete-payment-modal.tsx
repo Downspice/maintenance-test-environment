@@ -23,20 +23,29 @@ export function DeletePaymentModal({
       warningTitle="Warning:"
       warningText={
         <>
-          This action <strong className="font-semibold text-text-strong-950">cannot be undone</strong>. Deleting this payment will update the associated invoice balance and remove the payment record.
+          This action{" "}
+          <strong className="font-semibold text-text-strong-950">
+            cannot be undone
+          </strong>
+          . Deleting this payment will update the associated invoice balance and
+          remove the payment record.
         </>
       }
       item={
         payment
           ? {
               name: payment.name || "Payment",
-              description: [
-                payment.invoice_number && `Invoice: ${payment.invoice_number}`,
-                payment.payment_method_name,
-                payment.amount_received != null ? `$${payment.amount_received}` : undefined,
-              ]
-                .filter(Boolean)
-                .join(" • ") || "Payment record",
+              description:
+                [
+                  payment.invoice_number &&
+                    `Invoice: ${payment.invoice_number}`,
+                  payment.payment_method_name,
+                  payment.amount_received != null
+                    ? `$${payment.amount_received}`
+                    : undefined,
+                ]
+                  .filter(Boolean)
+                  .join(" • ") || "Payment record",
             }
           : undefined
       }

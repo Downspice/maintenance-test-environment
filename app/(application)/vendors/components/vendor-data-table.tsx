@@ -10,9 +10,7 @@ import React from "react";
 // Using API response shape directly for table rows
 import ViewVendor from "../views/viewDetailsSheet";
 import EditVendor from "../views/editVendorSheet";
-import {
-  useGetStatusOnes,
-} from "@/services/setups/lookups";
+import { useGetStatusOnes } from "@/services/setups/lookups";
 import {
   useGetVendorsPaginated,
   usePatchVendorIsActive,
@@ -42,7 +40,13 @@ interface VendorRow {
   [key: string]: unknown;
 }
 
-export function VendorTableLoader({ locationId, typeId }: { locationId?: string; typeId?: string }) {
+export function VendorTableLoader({
+  locationId,
+  typeId,
+}: {
+  locationId?: string;
+  typeId?: string;
+}) {
   const patchIsActive = usePatchVendorIsActive();
   const deleteVendor = useDeleteVendor();
   const { data: statusOnes } = useGetStatusOnes<Array<{ id: string }>>();
@@ -75,7 +79,9 @@ export function VendorTableLoader({ locationId, typeId }: { locationId?: string;
   });
 
   const serverRows = paged?.data ?? [];
-  const currentPage = paged?.current_page ? Number(paged.current_page) : pageIndex + 1;
+  const currentPage = paged?.current_page
+    ? Number(paged.current_page)
+    : pageIndex + 1;
   const totalPages = paged?.last_page ? Number(paged.last_page) : 1;
   const totalRows = paged?.total ? Number(paged.total) : serverRows.length;
   const effectivePageSize = paged?.per_page ? Number(paged.per_page) : pageSize;
@@ -87,9 +93,7 @@ export function VendorTableLoader({ locationId, typeId }: { locationId?: string;
     totalRows: totalRows,
   };
 
-  const getAllEmployees = (
-    employees: any[]
-  ): any[] => {
+  const getAllEmployees = (employees: any[]): any[] => {
     const result: any[] = [];
     const traverse = (emps: any[]) => {
       emps.forEach((emp) => {
@@ -103,12 +107,16 @@ export function VendorTableLoader({ locationId, typeId }: { locationId?: string;
   const flatEmployees = getAllEmployees(serverRows);
   const name = [...new Set(flatEmployees.map((emp) => emp.name))];
   const type = [...new Set(flatEmployees.map((emp) => emp.type.name))];
-  const contact = [...new Set(flatEmployees.map((emp) => emp.contact?.phone_one))];
+  const contact = [
+    ...new Set(flatEmployees.map((emp) => emp.contact?.phone_one)),
+  ];
   const address1 = [...new Set(flatEmployees.map((emp) => emp.address))];
   const city = [...new Set(flatEmployees.map((emp) => emp.city))];
   const state_prov = [...new Set(flatEmployees.map((emp) => emp.state))];
   const postal_code = [...new Set(flatEmployees.map((emp) => emp.postal_code))];
-  const email = [...new Set(flatEmployees.map((emp) => emp.vendor_contact.email))];
+  const email = [
+    ...new Set(flatEmployees.map((emp) => emp.vendor_contact.email)),
+  ];
 
   const handleRowClick = (row: any) => {
     console.log("Row clicked:", row.original);
@@ -145,9 +153,9 @@ export function VendorTableLoader({ locationId, typeId }: { locationId?: string;
       title: "Delete selected vendors?",
       description: `This will delete ${selectedRows.length} vendor(s). This action cannot be undone.`,
       confirmText: "Delete",
-    })
+    });
     if (ok) {
-      toast.success(`Deleted ${selectedRows.length} rows`)
+      toast.success(`Deleted ${selectedRows.length} rows`);
       // TODO: bulk delete API when available
     }
   };
@@ -176,7 +184,9 @@ export function VendorTableLoader({ locationId, typeId }: { locationId?: string;
   // Server-side pagination handler
   const handlePaginationChange = (action: "next" | "previous" | number) => {
     if (action === "next") {
-      setPageIndex((p) => Math.min(p + 1, Math.max(0, paginationInfo.totalPages - 1)));
+      setPageIndex((p) =>
+        Math.min(p + 1, Math.max(0, paginationInfo.totalPages - 1))
+      );
     } else if (action === "previous") {
       setPageIndex((p) => Math.max(p - 1, 0));
     } else if (typeof action === "number") {
@@ -211,7 +221,7 @@ export function VendorTableLoader({ locationId, typeId }: { locationId?: string;
           column={column}
           title="Name"
           sortable={true}
-        // filterOptions={name}
+          // filterOptions={name}
         />
       ),
       cell: ({ row }) => (
@@ -232,7 +242,7 @@ export function VendorTableLoader({ locationId, typeId }: { locationId?: string;
           column={column}
           title="Type"
           sortable={true}
-        // filterOptions={type}
+          // filterOptions={type}
         />
       ),
     },
@@ -243,7 +253,7 @@ export function VendorTableLoader({ locationId, typeId }: { locationId?: string;
           column={column}
           title="Contact"
           sortable={true}
-        // filterOptions={contact}
+          // filterOptions={contact}
         />
       ),
       filterFn: (row, id, value) => {
@@ -257,7 +267,7 @@ export function VendorTableLoader({ locationId, typeId }: { locationId?: string;
           column={column}
           title="Address"
           sortable={true}
-        // filterOptions={address1}
+          // filterOptions={address1}
         />
       ),
       filterFn: (row, id, value) => {
@@ -271,7 +281,7 @@ export function VendorTableLoader({ locationId, typeId }: { locationId?: string;
           column={column}
           title="City"
           sortable={true}
-        // filterOptions={city}
+          // filterOptions={city}
         />
       ),
       cell: ({ row }) => <>{row.original.city}</>,
@@ -286,7 +296,7 @@ export function VendorTableLoader({ locationId, typeId }: { locationId?: string;
           column={column}
           title="State"
           sortable={true}
-        // filterOptions={state_prov}
+          // filterOptions={state_prov}
         />
       ),
       filterFn: (row, id, value) => {
@@ -300,7 +310,7 @@ export function VendorTableLoader({ locationId, typeId }: { locationId?: string;
           column={column}
           title="Postal Code"
           sortable={true}
-        // filterOptions={postal_code}
+          // filterOptions={postal_code}
         />
       ),
     },
@@ -311,7 +321,7 @@ export function VendorTableLoader({ locationId, typeId }: { locationId?: string;
           column={column}
           title="Email"
           sortable={true}
-        // filterOptions={email}
+          // filterOptions={email}
         />
       ),
       filterFn: (row, id, value) => {
@@ -448,7 +458,9 @@ export function VendorTableLoader({ locationId, typeId }: { locationId?: string;
         onServerSearch={handleServerSearch}
         serverSorting={sorting}
         onServerSortingChange={handleServerSortingChange}
-        getRowClassName={(row) => (row.original?.status?.is_active === false ? "bg-red-50" : "")}
+        getRowClassName={(row) =>
+          row.original?.status?.is_active === false ? "bg-red-50" : ""
+        }
         isLoading={isLoading}
       />
 

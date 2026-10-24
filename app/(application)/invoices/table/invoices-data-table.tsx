@@ -32,13 +32,14 @@ import { useConfirmDialog } from "@/lib/shared/confirm-dialog";
 import { DeleteInvoiceModal } from "./modals/delete-invoice-modal";
 
 export default function InvoicesDataTable() {
-  const {
-    data: InvoiceData,
-    isLoading,
-  } = useGetInvoices<InvoiceTableInterface[]>();
+  const { data: InvoiceData, isLoading } =
+    useGetInvoices<InvoiceTableInterface[]>();
 
   return (
-    <InvoicesTableLoader InvoiceData={InvoiceData ?? []} isLoading={isLoading} />
+    <InvoicesTableLoader
+      InvoiceData={InvoiceData ?? []}
+      isLoading={isLoading}
+    />
   );
 }
 
@@ -89,16 +90,24 @@ export function InvoicesTableLoader({
     ...new Set(flatEmployees.map((emp) => emp.invoice_number)),
   ];
   const status = [...new Set(flatEmployees.map((emp) => emp.status))];
-  const issued_date = [...new Set(flatEmployees.map((emp) => emp.invoice_date))];
+  const issued_date = [
+    ...new Set(flatEmployees.map((emp) => emp.invoice_date)),
+  ];
   const due_date = [...new Set(flatEmployees.map((emp) => emp.due_date))];
   const customer_name = [
-    ...new Set(flatEmployees.map((emp) => emp.customer?.company_name).filter(Boolean)),
+    ...new Set(
+      flatEmployees.map((emp) => emp.customer?.company_name).filter(Boolean)
+    ),
   ];
   const total = [
-    ...new Set(flatEmployees.map((emp) => emp.total?.toString()).filter(Boolean)),
+    ...new Set(
+      flatEmployees.map((emp) => emp.total?.toString()).filter(Boolean)
+    ),
   ];
   const payment = [
-    ...new Set(flatEmployees.map((emp) => emp.payments?.toString()).filter(Boolean)),
+    ...new Set(
+      flatEmployees.map((emp) => emp.payments?.toString()).filter(Boolean)
+    ),
   ];
 
   const handleRowClick = (row: any) => {
@@ -136,9 +145,9 @@ export function InvoicesTableLoader({
       title: "Delete selected invoices?",
       description: `This will delete ${selectedRows.length} invoice(s). This action cannot be undone.`,
       confirmText: "Delete",
-    })
+    });
     if (ok) {
-      toast.success(`Deleted ${selectedRows.length} rows`)
+      toast.success(`Deleted ${selectedRows.length} rows`);
     }
   };
 
@@ -181,7 +190,9 @@ export function InvoicesTableLoader({
   // Server-side pagination handler
   const handlePaginationChange = (action: "next" | "previous" | number) => {
     if (action === "next") {
-      setPageIndex((p) => Math.min(p + 1, Math.max(0, paginationInfo.totalPages - 1)));
+      setPageIndex((p) =>
+        Math.min(p + 1, Math.max(0, paginationInfo.totalPages - 1))
+      );
     } else if (action === "previous") {
       setPageIndex((p) => Math.max(p - 1, 0));
     } else if (typeof action === "number") {
@@ -355,7 +366,9 @@ export function InvoicesTableLoader({
           ),
         };
         const renderFormContent = () => {
-          const SelectedComponent = selectedProjectType ? formComponents[selectedProjectType] : null;
+          const SelectedComponent = selectedProjectType
+            ? formComponents[selectedProjectType]
+            : null;
           console.log("new selected", SelectedComponent);
           return SelectedComponent ? SelectedComponent : null;
         };

@@ -152,7 +152,11 @@ export default function ManagePMSchedulePartsTab({ serviceName }: Props) {
                   <Button size="sm" onClick={() => onEdit(part)}>
                     Edit
                   </Button>
-                  <Button size="sm" variant="destructive" onClick={() => onDelete(part.id)}>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={() => onDelete(part.id)}
+                  >
                     Delete
                   </Button>
                 </td>
@@ -175,89 +179,87 @@ export default function ManagePMSchedulePartsTab({ serviceName }: Props) {
           onSubmit(data);
         }}
       >
+        <ComboboxFieldWrapper
+          control={form.control}
+          name="equipment"
+          label="Equipment"
+          options={equipmentOptions}
+          placeholder="Select Equipment"
+          emptyText="No equipment found."
+          searchPlaceholder="Search equipment..."
+        />
+
+        <InputWrapper
+          control={form.control}
+          name="service"
+          label="Service"
+          disabled
+          type="text"
+        />
+
+        <RadioGroupWrapper
+          control={form.control}
+          name="mode"
+          label="Part Type"
+          options={[
+            { name: "Assigned Part", id: "assigned" },
+            { name: "Fixed Cost", id: "fixed" },
+          ]}
+        />
+
+        {mode === "fixed" ? (
+          <InputWrapper
+            control={form.control}
+            name="cost"
+            label="Cost"
+            type="number"
+            disabled={!!editingPart}
+          />
+        ) : (
+          <>
             <ComboboxFieldWrapper
               control={form.control}
-              name="equipment"
-              label="Equipment"
-              options={equipmentOptions}
-              placeholder="Select Equipment"
-              emptyText="No equipment found."
-              searchPlaceholder="Search equipment..."
+              name="partNumber"
+              label="Part Number"
+              options={partOptions.map((p) => ({
+                name: p.label,
+                id: p.value,
+              }))}
+              placeholder="Select part"
+              emptyText="No part found"
+              searchPlaceholder="Search parts..."
+              disabled={!!editingPart}
             />
-
             <InputWrapper
               control={form.control}
-              name="service"
-              label="Service"
+              name="warehouse"
+              label="Warehouse"
               disabled
               type="text"
             />
-
-            <RadioGroupWrapper
+            <InputWrapper
               control={form.control}
-              name="mode"
-              label="Part Type"
-              options={[
-                { name: "Assigned Part", id: "assigned" },
-                { name: "Fixed Cost", id: "fixed" },
-              ]}
+              name="name"
+              label="Name"
+              disabled
+              type="text"
             />
-
-            {mode === "fixed" ? (
-              <InputWrapper
-                control={form.control}
-                name="cost"
-                label="Cost"
-                type="number"
-                disabled={!!editingPart}
-              />
-            ) : (
-              <>
-                <ComboboxFieldWrapper
-                  control={form.control}
-                  name="partNumber"
-                  label="Part Number"
-                  options={partOptions.map((p) => ({
-                    name: p.label,
-                    id: p.value,
-                  }))}
-                  placeholder="Select part"
-                  emptyText="No part found"
-                  searchPlaceholder="Search parts..."
-                  disabled={!!editingPart}
-                />
-                <InputWrapper
-                  control={form.control}
-                  name="warehouse"
-                  label="Warehouse"
-                  disabled
-                  type="text"
-                />
-                <InputWrapper
-                  control={form.control}
-                  name="name"
-                  label="Name"
-                  disabled
-                  type="text"
-                />
-                <InputWrapper
-                  control={form.control}
-                  name="description"
-                  label="Description"
-                  disabled
-                  type="text"
-                />
-                <InputWrapper
-                  control={form.control}
-                  name="quantity"
-                  label="Quantity"
-                  type="number"
-                  disabled={!!editingPart && mode === "fixed"}
-                />
-              </>
-            )}
-
-
+            <InputWrapper
+              control={form.control}
+              name="description"
+              label="Description"
+              disabled
+              type="text"
+            />
+            <InputWrapper
+              control={form.control}
+              name="quantity"
+              label="Quantity"
+              type="number"
+              disabled={!!editingPart && mode === "fixed"}
+            />
+          </>
+        )}
       </FormModal>
     </div>
   );

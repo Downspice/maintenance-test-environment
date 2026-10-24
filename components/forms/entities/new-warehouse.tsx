@@ -9,9 +9,7 @@ import { Button } from "@/components/ui/button";
 import { GitPullRequestArrow } from "lucide-react";
 import { toast } from "sonner";
 import InputWrapper from "../fields/InputWrapper";
-import {
-  MultiComboboxWrapper,
-} from "../fields/ComboboxWrapper";
+import { MultiComboboxWrapper } from "../fields/ComboboxWrapper";
 import { assigneeOptions } from "@/lib/schemas/equipment-schema";
 
 // Define the form schema with Zod
@@ -39,7 +37,7 @@ export default function NewWarehouse() {
 
     toast.success("Work Order submitted successfully!");
   }
-  
+
   return (
     <div>
       <Form {...vendorForm}>

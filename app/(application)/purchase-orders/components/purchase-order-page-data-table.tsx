@@ -3,12 +3,7 @@
 import type React from "react";
 
 import { useState, useEffect } from "react";
-import {
-  ChevronRight,
-  ChevronLeft,
-  ArrowDown,
-  ArrowUp,
-} from "lucide-react";
+import { ChevronRight, ChevronLeft, ArrowDown, ArrowUp } from "lucide-react";
 import {
   RiArrowLeftDoubleLine,
   RiArrowLeftSLine,
@@ -20,7 +15,6 @@ import { cn } from "@/lib/shared/utils";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 
-
 import {
   Table,
   TableBody,
@@ -30,7 +24,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-
 
 import {
   PurchaseOrderData,
@@ -338,14 +331,18 @@ export function PurchaseOrderPageDataTable({ realServer }: DataTableProps) {
           <p className="text-paragraph-xs text-text-sub-600 shrink-0">
             Showing{" "}
             <span className="font-medium text-text-strong-950">
-              {filteredData.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1}
+              {filteredData.length === 0
+                ? 0
+                : (currentPage - 1) * itemsPerPage + 1}
             </span>{" "}
             to{" "}
             <span className="font-medium text-text-strong-950">
               {Math.min(currentPage * itemsPerPage, filteredData.length)}
             </span>{" "}
             out of{" "}
-            <span className="font-medium text-text-strong-950">{filteredData.length}</span>
+            <span className="font-medium text-text-strong-950">
+              {filteredData.length}
+            </span>
           </p>
         </div>
         <div className="flex items-center gap-2">

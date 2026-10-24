@@ -23,20 +23,26 @@ export function DeletePurchaseOrderModal({
       warningTitle="Warning:"
       warningText={
         <>
-          This action <strong className="font-semibold text-text-strong-950">cannot be undone</strong>. Deleting this purchase order will remove all its associated data including line items, receiving history, and linked records.
+          This action{" "}
+          <strong className="font-semibold text-text-strong-950">
+            cannot be undone
+          </strong>
+          . Deleting this purchase order will remove all its associated data
+          including line items, receiving history, and linked records.
         </>
       }
       item={
         purchaseOrder
           ? {
               name: purchaseOrder.po_number || "Purchase Order",
-              description: [
-                purchaseOrder.vendor?.name || purchaseOrder.vendor,
-                purchaseOrder.status?.name,
-                purchaseOrder.buyer_name,
-              ]
-                .filter(Boolean)
-                .join(" • ") || "Purchase order record",
+              description:
+                [
+                  purchaseOrder.vendor?.name || purchaseOrder.vendor,
+                  purchaseOrder.status?.name,
+                  purchaseOrder.buyer_name,
+                ]
+                  .filter(Boolean)
+                  .join(" • ") || "Purchase order record",
             }
           : undefined
       }
@@ -47,7 +53,9 @@ export function DeletePurchaseOrderModal({
       onDelete={async () => {
         if (!purchaseOrder?.id) return;
         try {
-          toast.success(`Deleted ${purchaseOrder.po_number || "Purchase Order"}`);
+          toast.success(
+            `Deleted ${purchaseOrder.po_number || "Purchase Order"}`
+          );
         } catch {
           toast.error("Unable to delete purchase order");
         }

@@ -24,10 +24,14 @@ import FileUploadWrapper from "../../fields/FileUploadWrapper";
 import SelectWrapper from "../../fields/SelectWrapper";
 import SingleCheckboxWrapper from "../../fields/SingleCheckboxWrapper";
 import CustomFieldsWrapper from "../../fields/CustomFieldsWrapper";
-import { useGetCostCenters, useGetInventoryCategories, useGetInventoryManufacturers, useGetInventoryUnitTypes, useGetMarkupTypes } from "@/services/setups/inventory";
 import {
-  useGetVendorOptions,
-} from "@/services/setups/vendor";
+  useGetCostCenters,
+  useGetInventoryCategories,
+  useGetInventoryManufacturers,
+  useGetInventoryUnitTypes,
+  useGetMarkupTypes,
+} from "@/services/setups/inventory";
+import { useGetVendorOptions } from "@/services/setups/vendor";
 
 interface NewPartProps {
   formId?: string;
@@ -40,12 +44,11 @@ export default function NewPart({
   hideSubmitButton,
   onSuccess,
 }: NewPartProps = {}) {
-    const { data: equipmentManufacturerOptions } = useGetInventoryManufacturers();
-    const { data:   unitOptions } = useGetInventoryUnitTypes();
+  const { data: equipmentManufacturerOptions } = useGetInventoryManufacturers();
+  const { data: unitOptions } = useGetInventoryUnitTypes();
   const { data: costCenterOptions } = useGetCostCenters();
-    const { data: vendorOptions } = useGetVendorOptions();
-      const{data:markupTypeOptions}=useGetMarkupTypes();
-    
+  const { data: vendorOptions } = useGetVendorOptions();
+  const { data: markupTypeOptions } = useGetMarkupTypes();
 
   const inventoryForm = useForm<z.infer<typeof InventorySchema>>({
     resolver: zodResolver(InventorySchema),
@@ -273,7 +276,10 @@ export default function NewPart({
                       Alternate UPC Codes
                     </TabsTrigger>
                   </TabsList>
-                  <TabsContent value="Part Substitutions" className="mt-4 min-w-0">
+                  <TabsContent
+                    value="Part Substitutions"
+                    className="mt-4 min-w-0"
+                  >
                     <PartSubstitutionTable
                       parts={partOptions}
                       value={partSubs}

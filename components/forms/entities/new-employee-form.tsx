@@ -138,7 +138,9 @@ export default function NewEmployeeForm({
   const handleAddRenewal = (newRenewal: RenewalData) => {
     let updatedRenewals: RenewalData[];
     if (editingId) {
-      updatedRenewals = renewals.map((r) => (r.id === editingId ? newRenewal : r));
+      updatedRenewals = renewals.map((r) =>
+        r.id === editingId ? newRenewal : r
+      );
       setEditingId(null);
     } else {
       updatedRenewals = [
@@ -506,19 +508,24 @@ export default function NewEmployeeForm({
                     <TableBody>
                       {renewals.map((data) => {
                         const renewalName =
-                          renewalOptionsList?.find((r) => r.id === data.renewal_id)?.name ||
-                          data.renewal_id;
+                          renewalOptionsList?.find(
+                            (r) => r.id === data.renewal_id
+                          )?.name || data.renewal_id;
                         return (
                           <TableRow key={data.id}>
                             <TableCell>{renewalName}</TableCell>
                             <TableCell>
                               {data.issued_date
-                                ? new Date(data.issued_date).toLocaleDateString()
+                                ? new Date(
+                                    data.issued_date
+                                  ).toLocaleDateString()
                                 : "-"}
                             </TableCell>
                             <TableCell>
                               {data.expiry_date
-                                ? new Date(data.expiry_date).toLocaleDateString()
+                                ? new Date(
+                                    data.expiry_date
+                                  ).toLocaleDateString()
                                 : "-"}
                             </TableCell>
                             <TableCell>{data.notes || "-"}</TableCell>

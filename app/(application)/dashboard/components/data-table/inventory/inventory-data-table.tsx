@@ -1,41 +1,61 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState, useEffect } from "react"
-import { ArrowDown, ArrowUp, ChevronDown, ChevronLeft, ChevronRight, FileText, ShoppingCart } from "lucide-react"
+import { useState, useEffect } from "react";
+import {
+  ArrowDown,
+  ArrowUp,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  FileText,
+  ShoppingCart,
+} from "lucide-react";
 import {
   RiArrowLeftDoubleLine,
   RiArrowLeftSLine,
   RiArrowRightDoubleLine,
   RiArrowRightSLine,
-} from "@remixicon/react"
-import { cn } from "@/lib/shared/utils"
+} from "@remixicon/react";
+import { cn } from "@/lib/shared/utils";
 
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
-import { useSheet } from "@/lib/providers/sheet-providers"
-import NotCompleteMessage from "@/app/(application)/invoices/page"
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { useSheet } from "@/lib/providers/sheet-providers";
+import NotCompleteMessage from "@/app/(application)/invoices/page";
 
 // Define the data structure
 interface InventoryItem {
-  id: number
-  partNumber: string
-  name: string
-  reorderPoint: number
-  quantity: number
-  vendors: string[]
-  warehouse: string
-  lastOrdered?: string
-  price: number
-  category: string
+  id: number;
+  partNumber: string;
+  name: string;
+  reorderPoint: number;
+  quantity: number;
+  vendors: string[];
+  warehouse: string;
+  lastOrdered?: string;
+  price: number;
+  category: string;
 }
 
-type SortField = keyof InventoryItem | null
-type SortDirection = "asc" | "desc"
+type SortField = keyof InventoryItem | null;
+type SortDirection = "asc" | "desc";
 
 // Mock inventory data
 const mockInventoryData: InventoryItem[] = [
@@ -219,154 +239,187 @@ const mockInventoryData: InventoryItem[] = [
     price: 55.25,
     category: "Emissions",
   },
-]
+];
 
 interface InventoryDataTableProps {
-  realServer: boolean
+  realServer: boolean;
 }
 
 export function InventoryDataTable({ realServer }: InventoryDataTableProps) {
-  const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set())
-  const [currentPage, setCurrentPage] = useState(1)
-  const [data, setData] = useState<InventoryItem[]>([])
-  const [totalPages, setTotalPages] = useState(1)
-  const rowsPerPage = 8
+  const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set());
+  const [currentPage, setCurrentPage] = useState(1);
+  const [data, setData] = useState<InventoryItem[]>([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const rowsPerPage = 8;
   const { openSheet } = useSheet();
-  const [sortField, setSortField] = useState<SortField>(null)
-  const [sortDirection, setSortDirection] = useState<SortDirection>("asc")
+  const [sortField, setSortField] = useState<SortField>(null);
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
 
-  const sortData = (data: InventoryItem[], field: SortField, direction: SortDirection): InventoryItem[] => {
-    if (!field) return data
+  const sortData = (
+    data: InventoryItem[],
+    field: SortField,
+    direction: SortDirection
+  ): InventoryItem[] => {
+    if (!field) return data;
 
     return [...data].sort((a, b) => {
-      const aValue = a[field]
-      const bValue = b[field]
+      const aValue = a[field];
+      const bValue = b[field];
 
       // Handle different data types
       if (typeof aValue === "string" && typeof bValue === "string") {
-        return direction === "asc" ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue)
+        return direction === "asc"
+          ? aValue.localeCompare(bValue)
+          : bValue.localeCompare(aValue);
       }
 
       if (typeof aValue === "number" && typeof bValue === "number") {
-        return direction === "asc" ? aValue - bValue : bValue - aValue
+        return direction === "asc" ? aValue - bValue : bValue - aValue;
       }
 
       // Handle arrays (like vendors)
       if (Array.isArray(aValue) && Array.isArray(bValue)) {
-        const aString = aValue.join(",")
-        const bString = bValue.join(",")
-        return direction === "asc" ? aString.localeCompare(bString) : bString.localeCompare(aString)
+        const aString = aValue.join(",");
+        const bString = bValue.join(",");
+        return direction === "asc"
+          ? aString.localeCompare(bString)
+          : bString.localeCompare(aString);
       }
 
-      return 0
-    })
-  }
+      return 0;
+    });
+  };
 
   // Load data based on pagination
   useEffect(() => {
     if (realServer) {
       // Simulate server-side pagination and sorting
-      fetchServerData(currentPage, rowsPerPage, sortField, sortDirection)
+      fetchServerData(currentPage, rowsPerPage, sortField, sortDirection);
     } else {
       // Client-side pagination and sorting
-      const sortedData = sortData(mockInventoryData, sortField, sortDirection)
-      const startIndex = (currentPage - 1) * rowsPerPage
-      const paginatedData = sortedData.slice(startIndex, startIndex + rowsPerPage)
-      setData(paginatedData)
-      setTotalPages(Math.ceil(mockInventoryData.length / rowsPerPage))
+      const sortedData = sortData(mockInventoryData, sortField, sortDirection);
+      const startIndex = (currentPage - 1) * rowsPerPage;
+      const paginatedData = sortedData.slice(
+        startIndex,
+        startIndex + rowsPerPage
+      );
+      setData(paginatedData);
+      setTotalPages(Math.ceil(mockInventoryData.length / rowsPerPage));
     }
-  }, [currentPage, realServer, sortField, sortDirection])
+  }, [currentPage, realServer, sortField, sortDirection]);
 
   // Simulate fetching data from server
-  const fetchServerData = (page: number, limit: number, field: SortField = null, direction: SortDirection = "asc") => {
-    console.log(`Fetching inventory page ${page} with limit ${limit}, sorting by ${field} ${direction}`)
+  const fetchServerData = (
+    page: number,
+    limit: number,
+    field: SortField = null,
+    direction: SortDirection = "asc"
+  ) => {
+    console.log(
+      `Fetching inventory page ${page} with limit ${limit}, sorting by ${field} ${direction}`
+    );
 
     // Simulate API delay
     setTimeout(() => {
-      const sortedData = sortData(mockInventoryData, field, direction)
-      const startIndex = (page - 1) * limit
-      const paginatedData = sortedData.slice(startIndex, startIndex + limit)
-      setData(paginatedData)
-      setTotalPages(Math.ceil(mockInventoryData.length / limit))
-    }, 300)
-  }
+      const sortedData = sortData(mockInventoryData, field, direction);
+      const startIndex = (page - 1) * limit;
+      const paginatedData = sortedData.slice(startIndex, startIndex + limit);
+      setData(paginatedData);
+      setTotalPages(Math.ceil(mockInventoryData.length / limit));
+    }, 300);
+  };
 
   // Toggle row selection
   const toggleRowSelection = (id: number) => {
-    const newSelectedRows = new Set(selectedRows)
+    const newSelectedRows = new Set(selectedRows);
     if (newSelectedRows.has(id)) {
-      newSelectedRows.delete(id)
+      newSelectedRows.delete(id);
     } else {
-      newSelectedRows.add(id)
+      newSelectedRows.add(id);
     }
-    setSelectedRows(newSelectedRows)
-  }
+    setSelectedRows(newSelectedRows);
+  };
 
   // Create new purchase order
   const createNewPO = () => {
-    console.log("Creating new purchase order for part IDs:", Array.from(selectedRows))
-    setSelectedRows(new Set()) // Clear selections after action
-  }
+    console.log(
+      "Creating new purchase order for part IDs:",
+      Array.from(selectedRows)
+    );
+    setSelectedRows(new Set()); // Clear selections after action
+  };
 
   // Handle row actions
-    const createReceipt = (item: InventoryItem) => {
-      console.log("Creating new work order for:", item);
-      openSheet({
-        title: `Receipt: ${item.partNumber} ${item.name}`,
-        description: "",
-        className: "w-full sm:w-[45%] sm:min-w-[600px] sm:max-w-none lg:max-w-none",
-        content: (
-          <NotCompleteMessage/>
-        ),
-      })
-    }
+  const createReceipt = (item: InventoryItem) => {
+    console.log("Creating new work order for:", item);
+    openSheet({
+      title: `Receipt: ${item.partNumber} ${item.name}`,
+      description: "",
+      className:
+        "w-full sm:w-[45%] sm:min-w-[600px] sm:max-w-none lg:max-w-none",
+      content: <NotCompleteMessage />,
+    });
+  };
 
   // Select all rows on current page
   const toggleSelectAll = () => {
     if (selectedRows.size === data.length) {
-      setSelectedRows(new Set())
+      setSelectedRows(new Set());
     } else {
-      const allIds = data.map((item) => item.id)
-      setSelectedRows(new Set(allIds))
+      const allIds = data.map((item) => item.id);
+      setSelectedRows(new Set(allIds));
     }
-  }
+  };
 
   // Handle pagination
   const handlePageChange = (page: number) => {
-    setCurrentPage(page)
+    setCurrentPage(page);
 
     if (realServer) {
       // This would trigger the server-side pagination callback
-      fetchServerData(page, rowsPerPage, sortField, sortDirection)
+      fetchServerData(page, rowsPerPage, sortField, sortDirection);
     }
-  }
+  };
 
   const handleSort = (field: SortField) => {
     // If clicking the same field, toggle direction
     if (field === sortField) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc")
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
       // New field, set to ascending by default
-      setSortField(field)
-      setSortDirection("asc")
+      setSortField(field);
+      setSortDirection("asc");
     }
 
     // Reset to first page when sorting changes
-    setCurrentPage(1)
-  }
+    setCurrentPage(1);
+  };
 
-  const SortableHeader = ({ field, children }: { field: SortField; children: React.ReactNode }) => (
-    <TableHead className="cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => handleSort(field)}>
+  const SortableHeader = ({
+    field,
+    children,
+  }: {
+    field: SortField;
+    children: React.ReactNode;
+  }) => (
+    <TableHead
+      className="cursor-pointer hover:bg-muted/50 transition-colors"
+      onClick={() => handleSort(field)}
+    >
       <div className="flex items-center justify-between">
         <span>{children}</span>
         {sortField === field && (
           <span className="ml-1">
-            {sortDirection === "asc" ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />}
+            {sortDirection === "asc" ? (
+              <ArrowUp className="h-4 w-4" />
+            ) : (
+              <ArrowDown className="h-4 w-4" />
+            )}
           </span>
         )}
       </div>
     </TableHead>
-  )
+  );
 
   return (
     <div className="space-y-4 shadow-primary">
@@ -383,7 +436,9 @@ export function InventoryDataTable({ realServer }: InventoryDataTableProps) {
               </TableHead>
               <SortableHeader field="partNumber">Part #</SortableHeader>
               <SortableHeader field="name">Name</SortableHeader>
-              <SortableHeader field="reorderPoint">Reorder Point</SortableHeader>
+              <SortableHeader field="reorderPoint">
+                Reorder Point
+              </SortableHeader>
               <SortableHeader field="quantity">Quantity</SortableHeader>
               <SortableHeader field="vendors">Vendors</SortableHeader>
               <SortableHeader field="warehouse">Warehouse</SortableHeader>
@@ -400,7 +455,10 @@ export function InventoryDataTable({ realServer }: InventoryDataTableProps) {
           </TableHeader>
           <TableBody>
             {data.map((item) => (
-              <TableRow key={item.id} className={selectedRows.has(item.id) ? "bg-muted/50" : ""}>
+              <TableRow
+                key={item.id}
+                className={selectedRows.has(item.id) ? "bg-muted/50" : ""}
+              >
                 <TableCell>
                   <Checkbox
                     checked={selectedRows.has(item.id)}
@@ -444,7 +502,9 @@ export function InventoryDataTable({ realServer }: InventoryDataTableProps) {
                         <FileText className="mr-2 h-4 w-4" />
                         Receipts
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleRowAction("purchaseOrders", item)}>
+                      <DropdownMenuItem
+                        onClick={() => handleRowAction("purchaseOrders", item)}
+                      >
                         <ShoppingCart className="mr-2 h-4 w-4" />
                         Purchase Orders
                       </DropdownMenuItem>
@@ -463,14 +523,18 @@ export function InventoryDataTable({ realServer }: InventoryDataTableProps) {
           <p className="text-paragraph-xs text-text-sub-600 shrink-0">
             Showing{" "}
             <span className="font-medium text-text-strong-950">
-              {mockInventoryData.length === 0 ? 0 : (currentPage - 1) * rowsPerPage + 1}
+              {mockInventoryData.length === 0
+                ? 0
+                : (currentPage - 1) * rowsPerPage + 1}
             </span>{" "}
             to{" "}
             <span className="font-medium text-text-strong-950">
               {Math.min(currentPage * rowsPerPage, mockInventoryData.length)}
             </span>{" "}
             out of{" "}
-            <span className="font-medium text-text-strong-950">{mockInventoryData.length}</span>
+            <span className="font-medium text-text-strong-950">
+              {mockInventoryData.length}
+            </span>
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -523,5 +587,5 @@ export function InventoryDataTable({ realServer }: InventoryDataTableProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }

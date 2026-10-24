@@ -48,7 +48,6 @@ export default function NewShipToForm() {
   const { data: categoryOptions } = useGetInventoryCategories();
   const { data: statusOptions } = useGetEquipmentStatuses();
 
-
   async function handleSubmit(data: z.infer<typeof vendorSchema>) {
     console.log(data);
     // Here you would typically send the data to your API

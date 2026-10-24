@@ -5,7 +5,7 @@ import CustomFieldRow from "./CustomFieldRow";
 import { cn } from "@/lib/shared/utils";
 
 interface CustomFieldsWrapperProps<
-  TFieldValues extends FieldValues = FieldValues
+  TFieldValues extends FieldValues = FieldValues,
 > {
   control: Control<TFieldValues> | Control<any>;
   name: string;
@@ -16,7 +16,7 @@ interface CustomFieldsWrapperProps<
 }
 
 export default function CustomFieldsWrapper<
-  TFieldValues extends FieldValues = FieldValues
+  TFieldValues extends FieldValues = FieldValues,
 >({
   control,
   name,

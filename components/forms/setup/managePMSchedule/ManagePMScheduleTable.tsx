@@ -12,12 +12,27 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 const catalog = [
-  { partNumber: "P001", name: "Oil Filter", warehouse: "Warehouse A", onHandQuantity: 100 },
-  { partNumber: "P002", name: "Brake Pad", warehouse: "Warehouse B", onHandQuantity: 50 },
-  { partNumber: "P003", name: "Air Filter", warehouse: "Warehouse C", onHandQuantity: 75 },
+  {
+    partNumber: "P001",
+    name: "Oil Filter",
+    warehouse: "Warehouse A",
+    onHandQuantity: 100,
+  },
+  {
+    partNumber: "P002",
+    name: "Brake Pad",
+    warehouse: "Warehouse B",
+    onHandQuantity: 50,
+  },
+  {
+    partNumber: "P003",
+    name: "Air Filter",
+    warehouse: "Warehouse C",
+    onHandQuantity: 75,
+  },
 ];
 
-const options = catalog.map(c => ({ name: c.partNumber, id: c.partNumber }));
+const options = catalog.map((c) => ({ name: c.partNumber, id: c.partNumber }));
 
 export default function ManagePMScheduleTable({
   parts,
@@ -31,14 +46,14 @@ export default function ManagePMScheduleTable({
 
   const savePart = (newPart: PartType) => {
     const updated = editPart
-      ? parts.map(p => (p.id === newPart.id ? newPart : p))
+      ? parts.map((p) => (p.id === newPart.id ? newPart : p))
       : [...parts, { ...newPart, id: Date.now().toString() }];
     onUpdateParts(updated);
     setDialogOpen(false);
   };
 
   const deletePart = (id: string) => {
-    onUpdateParts(parts.filter(p => p.id !== id));
+    onUpdateParts(parts.filter((p) => p.id !== id));
   };
 
   return (
@@ -52,25 +67,45 @@ export default function ManagePMScheduleTable({
         <span>Actions</span>
       </div>
 
-      {parts.map(part => (
-        <div key={part.id} className="grid grid-cols-6 p-2 border-b items-center text-sm">
+      {parts.map((part) => (
+        <div
+          key={part.id}
+          className="grid grid-cols-6 p-2 border-b items-center text-sm"
+        >
           <span>{part.partNumber}</span>
           <span>{part.name}</span>
           <span>{part.warehouse}</span>
           <span>{part.quantityUsed}</span>
           <span>{part.onHandQuantity}</span>
           <div className="space-x-1">
-            <Button variant="ghost" size="icon" onClick={() => { setEditPart(part); setDialogOpen(true); }}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                setEditPart(part);
+                setDialogOpen(true);
+              }}
+            >
               <Pencil size={16} />
             </Button>
-            <Button variant="ghost" size="icon" onClick={() => deletePart(part.id)}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => deletePart(part.id)}
+            >
               <Trash2 size={16} />
             </Button>
           </div>
         </div>
       ))}
 
-      <Button className="w-full mt-2" onClick={() => { setEditPart(null); setDialogOpen(true); }}>
+      <Button
+        className="w-full mt-2"
+        onClick={() => {
+          setEditPart(null);
+          setDialogOpen(true);
+        }}
+      >
         <Plus size={16} className="mr-2" />
         Add Part
       </Button>
@@ -84,8 +119,8 @@ export default function ManagePMScheduleTable({
     </div>
   );
 }
- 
-const partOptions = catalog.map(c => ({
+
+const partOptions = catalog.map((c) => ({
   name: c.partNumber,
   id: c.partNumber,
 }));
@@ -117,7 +152,9 @@ export function PartForm({
   });
 
   // Find selected part details
-  const selectedPart = catalog.find(c => c.partNumber === form.watch("partNumber"));
+  const selectedPart = catalog.find(
+    (c) => c.partNumber === form.watch("partNumber")
+  );
 
   useEffect(() => {
     if (part) {
@@ -129,7 +166,7 @@ export function PartForm({
   }, [part, form]);
 
   const handleSubmit = (data: FormValues) => {
-    const selected = catalog.find(p => p.partNumber === data.partNumber);
+    const selected = catalog.find((p) => p.partNumber === data.partNumber);
     if (!selected) return;
 
     onSave({

@@ -112,7 +112,8 @@ export default function EmployeesPage() {
   const managePayments = () => {
     openSheet({
       title: "Manage Payments",
-      description: "View payments received and record new payments against invoices.",
+      description:
+        "View payments received and record new payments against invoices.",
       className:
         "w-full sm:w-[92%] sm:min-w-[960px] sm:max-w-none lg:max-w-none",
       showFooter: false,

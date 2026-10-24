@@ -48,7 +48,7 @@ export default function QuickActionsReceivePurchaseOrder({
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editIndex, setEditIndex] = useState<number | null>(null);
-  const {data:PurchaseOrderOptions} = useGetPurchaseOrders();
+  const { data: PurchaseOrderOptions } = useGetPurchaseOrders();
 
   const [items, setItems] = useState<ItemFormValues[]>();
   const [editItems, setEditItems] = useState<ItemFormValues | null>(null);
@@ -158,7 +158,7 @@ export default function QuickActionsReceivePurchaseOrder({
     }
   }, [watchStatus]);
 
-  const watchItems = form.watch("items")??[];
+  const watchItems = form.watch("items") ?? [];
   const updateAllReceived = () => {
     const updatedItems = watchItems.map((item) => {
       const additional =
@@ -187,116 +187,130 @@ export default function QuickActionsReceivePurchaseOrder({
         onSubmit={form.handleSubmit(onSubmit, onError)}
         className="space-y-6"
       >
-          <div className="flex flex-col space-y-2">
-            <div className="flex flex-row w-1/2 gap-x-3">
-              <ComboboxFieldWrapper
-                control={form.control}
-                name={"purchaseOrderNumber"}
-                label={"Purchase Order #"}
-                options={PurchaseOrderOptions} 
-              />
-              <DatePickerWrapper
-                control={form.control}
-                name="dateReceived"
-                label="Date received"
-              />
-            </div>
-            <Fieldset
-              legend={"Items Received"}
-              content={
-                <>
-                  <div className="border rounded p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-medium text-sm">Receive Items</span>
-                      <label className="flex items-center gap-2 text-sm cursor-pointer">
-                        <Checkbox
-                          onCheckedChange={(checked) =>
-                            checked && updateAllReceived()
-                          }
-                        />
-                        All items are received in full
-                      </label>
-                    </div>
-                    <div className="rounded-md border overflow-hidden mt-3">
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Description</TableHead>
-                            <TableHead className="w-[100px] text-center">Ordered</TableHead>
-                            <TableHead className="w-[140px] text-center">Received (Total)</TableHead>
-                            <TableHead className="w-[140px] text-right">Received</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {watchItems.length === 0 ? (
-                            <TableRow>
-                              <TableCell colSpan={4} className="text-center text-text-soft-400 py-4">
-                                No items to receive
-                              </TableCell>
-                            </TableRow>
-                          ) : (
-                            watchItems.map((item, index) => (
-                              <TableRow key={index}>
-                                <TableCell className="font-medium text-text-strong-950">
-                                  {item.description || item.partNumber}
-                                </TableCell>
-                                <TableCell className="text-center">{item.orderQuantity}</TableCell>
-                                <TableCell className="text-center">{item.receivedQuantity || 0}</TableCell>
-                                <TableCell className="text-right">
-                                  <Input
-                                    type="number"
-                                    size="sm"
-                                    min={0}
-                                    className="w-24 ml-auto text-right"
-                                    value={item.newReceivedQuantity || 0}
-                                    onChange={(e) => {
-                                      const val = Number(e.target.value);
-                                      const updatedItems = [...watchItems];
-                                      updatedItems[index].newReceivedQuantity = val;
-                                      form.setValue("items", updatedItems);
-                                    }}
-                                  />
-                                </TableCell>
-                              </TableRow>
-                            ))
-                          )}
-                        </TableBody>
-                      </Table>
-                    </div>
-                    <div className="flex justify-end pt-2">
-                      <button
-                        type="button"
-                        className="bg-blue-600 text-white px-4 py-1 rounded text-sm"
-                        onClick={saveReceivedQuantities}
-                      >
-                        Save Received Quantities
-                      </button>
-                    </div>
-                  </div>
-                </>
-              }
+        <div className="flex flex-col space-y-2">
+          <div className="flex flex-row w-1/2 gap-x-3">
+            <ComboboxFieldWrapper
+              control={form.control}
+              name={"purchaseOrderNumber"}
+              label={"Purchase Order #"}
+              options={PurchaseOrderOptions}
+            />
+            <DatePickerWrapper
+              control={form.control}
+              name="dateReceived"
+              label="Date received"
             />
           </div>
-          {!hideSubmitButton && (
-            <div className="flex justify-end">
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="min-w-32 my-4 w-full"
-              >
-                {isSubmitting ? (
-                  "Creating..."
-                ) : (
-                  <>
-                    <Save className="mr-2 h-4 w-4" />
-                    Save
-                  </>
-                )}
-              </Button>
-            </div>
-          )}
-        </form>
-      </Form>
+          <Fieldset
+            legend={"Items Received"}
+            content={
+              <>
+                <div className="border rounded p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-medium text-sm">Receive Items</span>
+                    <label className="flex items-center gap-2 text-sm cursor-pointer">
+                      <Checkbox
+                        onCheckedChange={(checked) =>
+                          checked && updateAllReceived()
+                        }
+                      />
+                      All items are received in full
+                    </label>
+                  </div>
+                  <div className="rounded-md border overflow-hidden mt-3">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Description</TableHead>
+                          <TableHead className="w-[100px] text-center">
+                            Ordered
+                          </TableHead>
+                          <TableHead className="w-[140px] text-center">
+                            Received (Total)
+                          </TableHead>
+                          <TableHead className="w-[140px] text-right">
+                            Received
+                          </TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {watchItems.length === 0 ? (
+                          <TableRow>
+                            <TableCell
+                              colSpan={4}
+                              className="text-center text-text-soft-400 py-4"
+                            >
+                              No items to receive
+                            </TableCell>
+                          </TableRow>
+                        ) : (
+                          watchItems.map((item, index) => (
+                            <TableRow key={index}>
+                              <TableCell className="font-medium text-text-strong-950">
+                                {item.description || item.partNumber}
+                              </TableCell>
+                              <TableCell className="text-center">
+                                {item.orderQuantity}
+                              </TableCell>
+                              <TableCell className="text-center">
+                                {item.receivedQuantity || 0}
+                              </TableCell>
+                              <TableCell className="text-right">
+                                <Input
+                                  type="number"
+                                  size="sm"
+                                  min={0}
+                                  className="w-24 ml-auto text-right"
+                                  value={item.newReceivedQuantity || 0}
+                                  onChange={(e) => {
+                                    const val = Number(e.target.value);
+                                    const updatedItems = [...watchItems];
+                                    updatedItems[index].newReceivedQuantity =
+                                      val;
+                                    form.setValue("items", updatedItems);
+                                  }}
+                                />
+                              </TableCell>
+                            </TableRow>
+                          ))
+                        )}
+                      </TableBody>
+                    </Table>
+                  </div>
+                  <div className="flex justify-end pt-2">
+                    <button
+                      type="button"
+                      className="bg-blue-600 text-white px-4 py-1 rounded text-sm"
+                      onClick={saveReceivedQuantities}
+                    >
+                      Save Received Quantities
+                    </button>
+                  </div>
+                </div>
+              </>
+            }
+          />
+        </div>
+        {!hideSubmitButton && (
+          <div className="flex justify-end">
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="min-w-32 my-4 w-full"
+            >
+              {isSubmitting ? (
+                "Creating..."
+              ) : (
+                <>
+                  <Save className="mr-2 h-4 w-4" />
+                  Save
+                </>
+              )}
+            </Button>
+          </div>
+        )}
+      </form>
+    </Form>
   );
 
   if (hideSubmitButton) {

@@ -41,7 +41,7 @@ export function BulkDeletePopup({
   const [isLoading, setIsLoading] = React.useState(false);
 
   // Use allSelectedIds if available, otherwise fallback to selectedUsers ids
-  const idsToDelete = allSelectedIds || selectedUsers.map(user => user.id);
+  const idsToDelete = allSelectedIds || selectedUsers.map((user) => user.id);
 
   // Use total count if available, otherwise fallback to visible items count
   const itemCount = totalSelectedCount ?? selectedUsers.length;
@@ -49,10 +49,10 @@ export function BulkDeletePopup({
   const handleDelete = async () => {
     try {
       setIsLoading(true);
-      
+
       // Delete users sequentially
       for (const id of idsToDelete) {
-        const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
+        const numericId = typeof id === "string" ? parseInt(id, 10) : id;
         const response = await deleteUser(numericId);
         if (!response.success) {
           throw new Error(`Failed to delete user ID ${id}`);
@@ -69,7 +69,9 @@ export function BulkDeletePopup({
       resetSelection();
       await queryClient.invalidateQueries({ queryKey: ["users"] });
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to delete users");
+      toast.error(
+        error instanceof Error ? error.message : "Failed to delete users"
+      );
     } finally {
       setIsLoading(false);
     }
@@ -117,4 +119,4 @@ export function BulkDeletePopup({
       </DialogContent>
     </Dialog>
   );
-} 
+}

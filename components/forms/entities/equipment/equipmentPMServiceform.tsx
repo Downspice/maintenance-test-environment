@@ -112,7 +112,6 @@ type PMServiceFormValues = z.infer<typeof pmServiceSchema>;
 type PartFormValues = z.infer<typeof partSchema>;
 
 export default function EquipmentPMServiceForm() {
-
   const form = useForm<PMServiceFormValues>({
     resolver: zodResolver(pmServiceSchema),
     defaultValues: {
@@ -206,26 +205,26 @@ export default function EquipmentPMServiceForm() {
         <div className="grid grid-cols-2">
           <div className="col-span-1">
             <InputWrapper
-          control={form.control}
-          name="pmService"
-          label="PM Service"
-        />
-        <ComboboxFieldWrapper
-          control={form.control}
-          name="type_id"
-          label="Type"
-          options={typeOptions}
-        />
-        <ComboboxFieldWrapper
-          control={form.control}
-          name="priority"
-          label="Priority"
-          options={priorityOptions}
-        />
+              control={form.control}
+              name="pmService"
+              label="PM Service"
+            />
+            <ComboboxFieldWrapper
+              control={form.control}
+              name="type_id"
+              label="Type"
+              options={typeOptions}
+            />
+            <ComboboxFieldWrapper
+              control={form.control}
+              name="priority"
+              label="Priority"
+              options={priorityOptions}
+            />
           </div>
         </div>
-        
-        <Tabs defaultValue="frequency" >
+
+        <Tabs defaultValue="frequency">
           <TabsList>
             <TabsTrigger value="frequency">Frequency</TabsTrigger>
             <TabsTrigger value="parts">Parts</TabsTrigger>
@@ -625,13 +624,12 @@ export function UpdateEquipmentPMServiceForm({
   children: React.ReactNode;
   data: PMServiceFormValues;
 }) {
-      const [open, setOpen] = useState(false);
-    
+  const [open, setOpen] = useState(false);
+
   const form = useForm<PMServiceFormValues>({
     resolver: zodResolver(pmServiceSchema),
     defaultValues: data,
   });
-
 
   const {
     fields: partFields,
@@ -702,436 +700,447 @@ export function UpdateEquipmentPMServiceForm({
   function handlePartDelete(idx: number) {
     removePart(idx);
   }
-  
+
   return (
-
     <Sheet open={open} onOpenChange={setOpen}>
-          <SheetTrigger asChild>{children}</SheetTrigger>
-          <SheetContent  >
-            <SheetHeader>
-              <SheetTitle>
-                <div className="flex justify-between">
-                  <div>Edit PM Service</div>
-                </div>
-              </SheetTitle>
-            </SheetHeader>
-            <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
-              
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit((data) => console.log(data))}
-        className="space-y-6"
-      >
-        <InputWrapper
-          control={form.control}
-          name="pmService"
-          label="PM Service"
-        />
-        <ComboboxFieldWrapper
-          control={form.control}
-          name="type_id"
-          label="Type"
-          options={typeOptions}
-        />
-        <ComboboxFieldWrapper
-          control={form.control}
-          name="priority"
-          label="Priority"
-          options={priorityOptions}
-        />
-        <Tabs defaultValue="frequency">
-          <TabsList>
-            <TabsTrigger value="frequency">Frequency</TabsTrigger>
-            <TabsTrigger value="parts">Parts</TabsTrigger>
-            <TabsTrigger value="instructions">Instructions</TabsTrigger>
-            <TabsTrigger value="advanced">Advanced</TabsTrigger>
-          </TabsList>
-          <TabsContent value="frequency" className="space-y-2">
-            <Fieldset
-              legend="Date"
-              content={
-                <>
-                  <SingleCheckboxWrapper
-                    control={form.control}
-                    name="frequency.dateEnabled"
-                    label="Date"
-                  />
-                  {dateEnabled && (
-                    <>
-                      <RadioGroupWrapper
-                        control={form.control}
-                        name="frequency.dateType"
-                        label="Due"
-                        options={[
-                          { name: "Due On", id: "dueOn" },
-                          { name: "Due Every", id: "dueEvery" },
-                        ]}
-                      />
-                      {dateType === "dueOn" && (
-                        <DatePickerWrapper
-                          control={form.control}
-                          name="frequency.dueOnDate"
-                          label="Due On Date"
-                        />
-                      )}
-                      {dateType === "dueEvery" && (
-                        <>
-                          <InputWrapper
-                            control={form.control}
-                            name="frequency.dueEvery"
-                            label="Due Every"
-                            type="number"
-                          />
-                          <ComboboxFieldWrapper
-                            control={form.control}
-                            name="frequency.dueEveryPeriod"
-                            label="Period"
-                            options={periodOptions}
-                          />
-                        </>
-                      )}
-                      <InputWrapper
-                        control={form.control}
-                        name="frequency.notifyDaysDate"
-                        label="Notify Days In Advance"
-                        type="number"
-                      />
-                    </>
-                  )}
-                </>
-              }
-            />
-            <Fieldset
-              legend="Hours"
-              content={
-                <>
-                  {" "}
-                  <SingleCheckboxWrapper
-                    control={form.control}
-                    name="frequency.hoursEnabled"
-                    label="Hours"
-                  />
-                  {hoursEnabled && (
-                    <>
-                      <RadioGroupWrapper
-                        control={form.control}
-                        name="frequency.hoursType"
-                        label="Due"
-                        options={[
-                          { name: "Due Every", id: "dueEvery" },
-                          { name: "Due At", id: "dueAt" },
-                        ]}
-                      />
-                      {hoursType === "dueEvery" && (
-                        <InputWrapper
-                          control={form.control}
-                          name="frequency.dueEveryHours"
-                          label="Due Every (Hours)"
-                          type="number"
-                        />
-                      )}
-                      {hoursType === "dueAt" && (
-                        <InputWrapper
-                          control={form.control}
-                          name="frequency.dueAtHours"
-                          label="Due At (Hours)"
-                          type="number"
-                        />
-                      )}
-                      <InputWrapper
-                        control={form.control}
-                        name="frequency.notifyDaysHours"
-                        label="Notify Days In Advance"
-                        type="number"
-                      />
-                    </>
-                  )}{" "}
-                </>
-              }
-            />
-          </TabsContent>
-          <TabsContent value="parts" className="space-y-2">
-            <div className="flex justify-end mb-2">
-              <Dialog open={partDialogOpen} onOpenChange={setPartDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button type="button" onClick={() => setPartDialogOpen(true)}>
-                    Add Part
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogTitle>
-                    {editIndex !== null ? "Edit Part" : "Add Part"}
-                  </DialogTitle>
-                  <div className="space-y-2">
-                    <ComboboxFieldWrapper
-                      value={partForm.equipment}
-                      onChange={(v) =>
-                        setPartForm((e) => ({ ...e, equipment: v }))
-                      }
-                      name="equipment"
-                      label="Equipment"
-                      options={equipmentOptions}
-                      disabled={editIndex !== null}
-                    />
-                    <Fieldset
-                      legend="Service"
-                      content={
-                        <>
-                          <InputWrapper
-                            value={form.watch("pmService")}
-                            name="service"
-                            label="Service"
-                            disabled
-                          />
-                        </>
-                      }
-                    />
-                    <RadioGroupWrapper
-                      value={assignedPart ? "assignedPart" : "fixedCost"}
-                      onChange={(v) => setAssignedPart(v === "assignedPart")}
-                      name="partType"
-                      label="Part Type"
-                      options={[
-                        { name: "Assigned Part", id: "assignedPart" },
-                        { name: "Fixed Cost", id: "fixedCost" },
-                      ]}
-                    />
-                    {assignedPart ? (
-                      <>
-                        <ComboboxFieldWrapper
-                          value={partForm.partNumber}
-                          onChange={(v) => {
-                            // Simulate filling warehouse, name, description
-                            setPartForm((e) => ({
-                              ...e,
-                              partNumber: v,
-                              warehouse: "Warehouse A",
-                              name: "Part Name",
-                              description: "Part Description",
-                            }));
-                          }}
-                          name="partNumber"
-                          label="Part Number"
-                          options={partNumberOptions}
-                        />
-                        <InputWrapper
-                          value={partForm.warehouse}
-                          name="warehouse"
-                          label="Warehouse"
-                          disabled
-                        />
-                        <InputWrapper
-                          value={partForm.name}
-                          name="name"
-                          label="Name"
-                          disabled
-                        />
-                        <InputWrapper
-                          value={partForm.description}
-                          name="description"
-                          label="Description"
-                          disabled
-                        />
-                        <InputWrapper
-                          value={partForm.qty}
-                          onChange={(v) =>
-                            setPartForm((e) => ({ ...e, qty: Number(v) }))
-                          }
-                          name="qty"
-                          label="Quantity"
-                          type="number"
-                        />
-                        <InputWrapper
-                          value={partForm.cost}
-                          onChange={(v) =>
-                            setPartForm((e) => ({ ...e, cost: Number(v) }))
-                          }
-                          name="cost"
-                          label="Cost"
-                          type="number"
-                        />
-                      </>
-                    ) : (
-                      <InputWrapper
-                        value={partForm.fixedCost}
-                        onChange={(v) =>
-                          setPartForm((e) => ({ ...e, fixedCost: Number(v) }))
-                        }
-                        name="fixedCost"
-                        label="Fixed Cost"
-                        type="number"
-                      />
-                    )}
-                    <div className="flex justify-end gap-2">
-                      <Button type="button" onClick={handlePartSave}>
-                        Save
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="secondary"
-                        onClick={() => setPartDialogOpen(false)}
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  </div>
-                </DialogContent>
-              </Dialog>
+      <SheetTrigger asChild>{children}</SheetTrigger>
+      <SheetContent>
+        <SheetHeader>
+          <SheetTitle>
+            <div className="flex justify-between">
+              <div>Edit PM Service</div>
             </div>
-            <EditableDataTable
-              columns={[
-                { header: "Part#", accessorKey: "partNumber" },
-                { header: "Name", accessorKey: "name" },
-                { header: "Qty", accessorKey: "qty" },
-                { header: "Cost", accessorKey: "cost" },
-                { header: "Equipment", accessorKey: "equipment" },
-                {
-                  header: "Actions",
-                  cell: ({ row }: any) => (
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        type="button"
-                        onClick={() => handlePartEdit(row.index)}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        size="sm"
-                        type="button"
-                        variant="destructive"
-                        onClick={() => handlePartDelete(row.index)}
-                      >
-                        Delete
-                      </Button>
-                    </div>
-                  ),
-                },
-              ]}
-              data={partFields}
-            />
-          </TabsContent>
-
-          <TabsContent value="instructions" className="space-y-2">
-            <ComboboxFieldWrapper
-              control={form.control}
-              name="instructionsEquipment"
-              label="Equipment"
-              options={equipmentOptions}
-            />
-            <Button type="button">Insert Attachment</Button>
-            <div className="flex flex-wrap gap-2 mt-2">
-              {(form.watch("attachments") || []).map(
-                (file: any, idx: number) => (
-                  <div key={idx} className="border rounded p-2">
-                    {file.name}
-                  </div>
-                )
-              )}
-            </div>
-            <TextareaWrapper
-              control={form.control}
-              name="instructions"
-              label="Instructions"
-            />
-          </TabsContent>
-          <TabsContent value="advanced" className="space-y-2">
-            <InputWrapper
-              control={form.control}
-              name="estimatedLaborTime"
-              label="Estimated Labor Time (hours)"
-              type="number"
-            />
-            <SingleCheckboxWrapper
-              control={form.control}
-              name="includeEmail"
-              label="Include pm service with e-mail notifications"
-            />
-            <SingleCheckboxWrapper
-              control={form.control}
-              name="linkedPMService"
-              label="Linked PM Service"
-            />
-            {linkedPMService && (
+          </SheetTitle>
+        </SheetHeader>
+        <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit((data) => console.log(data))}
+              className="space-y-6"
+            >
+              <InputWrapper
+                control={form.control}
+                name="pmService"
+                label="PM Service"
+              />
               <ComboboxFieldWrapper
                 control={form.control}
-                name="linkedPM"
-                label="PM Options"
-                options={pmOptions}
+                name="type_id"
+                label="Type"
+                options={typeOptions}
               />
-            )}
-            <Fieldset
-              legend="PM Service Termination"
-              content={
-                <>
-                  {" "}
-                  <SingleCheckboxWrapper
-                    control={form.control}
-                    name="termination.terminateOnDate"
-                    label="Terminate tracking on (date)"
+              <ComboboxFieldWrapper
+                control={form.control}
+                name="priority"
+                label="Priority"
+                options={priorityOptions}
+              />
+              <Tabs defaultValue="frequency">
+                <TabsList>
+                  <TabsTrigger value="frequency">Frequency</TabsTrigger>
+                  <TabsTrigger value="parts">Parts</TabsTrigger>
+                  <TabsTrigger value="instructions">Instructions</TabsTrigger>
+                  <TabsTrigger value="advanced">Advanced</TabsTrigger>
+                </TabsList>
+                <TabsContent value="frequency" className="space-y-2">
+                  <Fieldset
+                    legend="Date"
+                    content={
+                      <>
+                        <SingleCheckboxWrapper
+                          control={form.control}
+                          name="frequency.dateEnabled"
+                          label="Date"
+                        />
+                        {dateEnabled && (
+                          <>
+                            <RadioGroupWrapper
+                              control={form.control}
+                              name="frequency.dateType"
+                              label="Due"
+                              options={[
+                                { name: "Due On", id: "dueOn" },
+                                { name: "Due Every", id: "dueEvery" },
+                              ]}
+                            />
+                            {dateType === "dueOn" && (
+                              <DatePickerWrapper
+                                control={form.control}
+                                name="frequency.dueOnDate"
+                                label="Due On Date"
+                              />
+                            )}
+                            {dateType === "dueEvery" && (
+                              <>
+                                <InputWrapper
+                                  control={form.control}
+                                  name="frequency.dueEvery"
+                                  label="Due Every"
+                                  type="number"
+                                />
+                                <ComboboxFieldWrapper
+                                  control={form.control}
+                                  name="frequency.dueEveryPeriod"
+                                  label="Period"
+                                  options={periodOptions}
+                                />
+                              </>
+                            )}
+                            <InputWrapper
+                              control={form.control}
+                              name="frequency.notifyDaysDate"
+                              label="Notify Days In Advance"
+                              type="number"
+                            />
+                          </>
+                        )}
+                      </>
+                    }
                   />
-                  {terminateOnDate && (
-                    <DatePickerWrapper
-                      control={form.control}
-                      name="termination.terminateDate"
-                      label="Terminate Date"
-                    />
-                  )}
-                  <SingleCheckboxWrapper
-                    control={form.control}
-                    name="termination.terminateOnMeters"
-                    label="Terminate tracking on (meters)"
+                  <Fieldset
+                    legend="Hours"
+                    content={
+                      <>
+                        {" "}
+                        <SingleCheckboxWrapper
+                          control={form.control}
+                          name="frequency.hoursEnabled"
+                          label="Hours"
+                        />
+                        {hoursEnabled && (
+                          <>
+                            <RadioGroupWrapper
+                              control={form.control}
+                              name="frequency.hoursType"
+                              label="Due"
+                              options={[
+                                { name: "Due Every", id: "dueEvery" },
+                                { name: "Due At", id: "dueAt" },
+                              ]}
+                            />
+                            {hoursType === "dueEvery" && (
+                              <InputWrapper
+                                control={form.control}
+                                name="frequency.dueEveryHours"
+                                label="Due Every (Hours)"
+                                type="number"
+                              />
+                            )}
+                            {hoursType === "dueAt" && (
+                              <InputWrapper
+                                control={form.control}
+                                name="frequency.dueAtHours"
+                                label="Due At (Hours)"
+                                type="number"
+                              />
+                            )}
+                            <InputWrapper
+                              control={form.control}
+                              name="frequency.notifyDaysHours"
+                              label="Notify Days In Advance"
+                              type="number"
+                            />
+                          </>
+                        )}{" "}
+                      </>
+                    }
                   />
-                  {terminateOnMeters && (
-                    <InputWrapper
-                      control={form.control}
-                      name="termination.terminateMeters"
-                      label="Terminate Meters"
-                      type="number"
-                    />
-                  )}
-                </>
-              }
-            />
-            <Fieldset
-              legend="Seasonal Ticketing"
-              content={
-                <>
-                  <SingleCheckboxWrapper
-                    control={form.control}
-                    name="seasonal.seasonalIgnore"
-                    label="PM service will be ignored during the following date period"
+                </TabsContent>
+                <TabsContent value="parts" className="space-y-2">
+                  <div className="flex justify-end mb-2">
+                    <Dialog
+                      open={partDialogOpen}
+                      onOpenChange={setPartDialogOpen}
+                    >
+                      <DialogTrigger asChild>
+                        <Button
+                          type="button"
+                          onClick={() => setPartDialogOpen(true)}
+                        >
+                          Add Part
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogTitle>
+                          {editIndex !== null ? "Edit Part" : "Add Part"}
+                        </DialogTitle>
+                        <div className="space-y-2">
+                          <ComboboxFieldWrapper
+                            value={partForm.equipment}
+                            onChange={(v) =>
+                              setPartForm((e) => ({ ...e, equipment: v }))
+                            }
+                            name="equipment"
+                            label="Equipment"
+                            options={equipmentOptions}
+                            disabled={editIndex !== null}
+                          />
+                          <Fieldset
+                            legend="Service"
+                            content={
+                              <>
+                                <InputWrapper
+                                  value={form.watch("pmService")}
+                                  name="service"
+                                  label="Service"
+                                  disabled
+                                />
+                              </>
+                            }
+                          />
+                          <RadioGroupWrapper
+                            value={assignedPart ? "assignedPart" : "fixedCost"}
+                            onChange={(v) =>
+                              setAssignedPart(v === "assignedPart")
+                            }
+                            name="partType"
+                            label="Part Type"
+                            options={[
+                              { name: "Assigned Part", id: "assignedPart" },
+                              { name: "Fixed Cost", id: "fixedCost" },
+                            ]}
+                          />
+                          {assignedPart ? (
+                            <>
+                              <ComboboxFieldWrapper
+                                value={partForm.partNumber}
+                                onChange={(v) => {
+                                  // Simulate filling warehouse, name, description
+                                  setPartForm((e) => ({
+                                    ...e,
+                                    partNumber: v,
+                                    warehouse: "Warehouse A",
+                                    name: "Part Name",
+                                    description: "Part Description",
+                                  }));
+                                }}
+                                name="partNumber"
+                                label="Part Number"
+                                options={partNumberOptions}
+                              />
+                              <InputWrapper
+                                value={partForm.warehouse}
+                                name="warehouse"
+                                label="Warehouse"
+                                disabled
+                              />
+                              <InputWrapper
+                                value={partForm.name}
+                                name="name"
+                                label="Name"
+                                disabled
+                              />
+                              <InputWrapper
+                                value={partForm.description}
+                                name="description"
+                                label="Description"
+                                disabled
+                              />
+                              <InputWrapper
+                                value={partForm.qty}
+                                onChange={(v) =>
+                                  setPartForm((e) => ({ ...e, qty: Number(v) }))
+                                }
+                                name="qty"
+                                label="Quantity"
+                                type="number"
+                              />
+                              <InputWrapper
+                                value={partForm.cost}
+                                onChange={(v) =>
+                                  setPartForm((e) => ({
+                                    ...e,
+                                    cost: Number(v),
+                                  }))
+                                }
+                                name="cost"
+                                label="Cost"
+                                type="number"
+                              />
+                            </>
+                          ) : (
+                            <InputWrapper
+                              value={partForm.fixedCost}
+                              onChange={(v) =>
+                                setPartForm((e) => ({
+                                  ...e,
+                                  fixedCost: Number(v),
+                                }))
+                              }
+                              name="fixedCost"
+                              label="Fixed Cost"
+                              type="number"
+                            />
+                          )}
+                          <div className="flex justify-end gap-2">
+                            <Button type="button" onClick={handlePartSave}>
+                              Save
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="secondary"
+                              onClick={() => setPartDialogOpen(false)}
+                            >
+                              Cancel
+                            </Button>
+                          </div>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                  <EditableDataTable
+                    columns={[
+                      { header: "Part#", accessorKey: "partNumber" },
+                      { header: "Name", accessorKey: "name" },
+                      { header: "Qty", accessorKey: "qty" },
+                      { header: "Cost", accessorKey: "cost" },
+                      { header: "Equipment", accessorKey: "equipment" },
+                      {
+                        header: "Actions",
+                        cell: ({ row }: any) => (
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              type="button"
+                              onClick={() => handlePartEdit(row.index)}
+                            >
+                              Edit
+                            </Button>
+                            <Button
+                              size="sm"
+                              type="button"
+                              variant="destructive"
+                              onClick={() => handlePartDelete(row.index)}
+                            >
+                              Delete
+                            </Button>
+                          </div>
+                        ),
+                      },
+                    ]}
+                    data={partFields}
                   />
-                  {seasonalIgnore && (
-                    <>
-                      <DatePickerWrapper
-                        control={form.control}
-                        name="seasonal.startDate"
-                        label="Start Date"
-                      />
-                      <DatePickerWrapper
-                        control={form.control}
-                        name="seasonal.endDate"
-                        label="End Date"
-                      />
-                      <SingleCheckboxWrapper
-                        control={form.control}
-                        name="seasonal.ignoreYear"
-                        label="Ignore Year"
-                      />
-                    </>
-                  )}
-                </>
-              }
-            />
-          </TabsContent>
-        </Tabs>
-        <Button type="submit">Submit</Button>
-      </form>
-    </Form>
+                </TabsContent>
 
-    </ScrollArea>
-          </SheetContent>
-        </Sheet>
+                <TabsContent value="instructions" className="space-y-2">
+                  <ComboboxFieldWrapper
+                    control={form.control}
+                    name="instructionsEquipment"
+                    label="Equipment"
+                    options={equipmentOptions}
+                  />
+                  <Button type="button">Insert Attachment</Button>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {(form.watch("attachments") || []).map(
+                      (file: any, idx: number) => (
+                        <div key={idx} className="border rounded p-2">
+                          {file.name}
+                        </div>
+                      )
+                    )}
+                  </div>
+                  <TextareaWrapper
+                    control={form.control}
+                    name="instructions"
+                    label="Instructions"
+                  />
+                </TabsContent>
+                <TabsContent value="advanced" className="space-y-2">
+                  <InputWrapper
+                    control={form.control}
+                    name="estimatedLaborTime"
+                    label="Estimated Labor Time (hours)"
+                    type="number"
+                  />
+                  <SingleCheckboxWrapper
+                    control={form.control}
+                    name="includeEmail"
+                    label="Include pm service with e-mail notifications"
+                  />
+                  <SingleCheckboxWrapper
+                    control={form.control}
+                    name="linkedPMService"
+                    label="Linked PM Service"
+                  />
+                  {linkedPMService && (
+                    <ComboboxFieldWrapper
+                      control={form.control}
+                      name="linkedPM"
+                      label="PM Options"
+                      options={pmOptions}
+                    />
+                  )}
+                  <Fieldset
+                    legend="PM Service Termination"
+                    content={
+                      <>
+                        {" "}
+                        <SingleCheckboxWrapper
+                          control={form.control}
+                          name="termination.terminateOnDate"
+                          label="Terminate tracking on (date)"
+                        />
+                        {terminateOnDate && (
+                          <DatePickerWrapper
+                            control={form.control}
+                            name="termination.terminateDate"
+                            label="Terminate Date"
+                          />
+                        )}
+                        <SingleCheckboxWrapper
+                          control={form.control}
+                          name="termination.terminateOnMeters"
+                          label="Terminate tracking on (meters)"
+                        />
+                        {terminateOnMeters && (
+                          <InputWrapper
+                            control={form.control}
+                            name="termination.terminateMeters"
+                            label="Terminate Meters"
+                            type="number"
+                          />
+                        )}
+                      </>
+                    }
+                  />
+                  <Fieldset
+                    legend="Seasonal Ticketing"
+                    content={
+                      <>
+                        <SingleCheckboxWrapper
+                          control={form.control}
+                          name="seasonal.seasonalIgnore"
+                          label="PM service will be ignored during the following date period"
+                        />
+                        {seasonalIgnore && (
+                          <>
+                            <DatePickerWrapper
+                              control={form.control}
+                              name="seasonal.startDate"
+                              label="Start Date"
+                            />
+                            <DatePickerWrapper
+                              control={form.control}
+                              name="seasonal.endDate"
+                              label="End Date"
+                            />
+                            <SingleCheckboxWrapper
+                              control={form.control}
+                              name="seasonal.ignoreYear"
+                              label="Ignore Year"
+                            />
+                          </>
+                        )}
+                      </>
+                    }
+                  />
+                </TabsContent>
+              </Tabs>
+              <Button type="submit">Submit</Button>
+            </form>
+          </Form>
+        </ScrollArea>
+      </SheetContent>
+    </Sheet>
   );
 }

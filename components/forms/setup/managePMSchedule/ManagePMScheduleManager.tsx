@@ -66,7 +66,7 @@ export default function ManagePMScheduleManager({
     if (kit.id) {
       form.setValue(
         "partKits",
-        current.map((k) => (k.id === kit.id ? { ...k, ...kit } : k)),
+        current.map((k) => (k.id === kit.id ? { ...k, ...kit } : k))
       );
     } else {
       const newKit = {
@@ -117,7 +117,9 @@ export default function ManagePMScheduleManager({
                 <TableHeader className="sticky top-0 z-10 bg-bg-white-0">
                   <TableRow>
                     <TableHead>Name</TableHead>
-                    <TableHead className="w-[5.5rem] text-right">ACTIONS</TableHead>
+                    <TableHead className="w-[5.5rem] text-right">
+                      ACTIONS
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>

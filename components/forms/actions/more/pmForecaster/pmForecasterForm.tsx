@@ -22,7 +22,7 @@ import CheckboxWrapper from "@/components/forms/fields/CheckboxWrapper";
 import { MaintenanceTypesOptionList } from "@/lib/domains/work-order/mock-data";
 
 const PmForecasterSchema = z.object({
-   intervals: z.string().optional(),
+  intervals: z.string().optional(),
   showMaintenance: z.string().optional(),
   dueRangeOn: z.boolean().optional(),
   dueRangeStart: z.date().optional(),

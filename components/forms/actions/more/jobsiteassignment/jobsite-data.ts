@@ -1,4 +1,4 @@
-export const JobSiteData: EquipmentSchedule[]= [
+export const JobSiteData: EquipmentSchedule[] = [
   {
     equipment: "Compressor A",
     jobSite: "Plant 1",
@@ -39,6 +39,6 @@ export interface JobSiteInterface {
   equipment: string;
   jobSite: string;
   dateOut: string; // format: "YYYY-MM-DD"
-  dateIn: string;  // format: "YYYY-MM-DD"
-  time: string;    // format: "HH:mm" (24-hour) or "HH:mm AM/PM"
+  dateIn: string; // format: "YYYY-MM-DD"
+  time: string; // format: "HH:mm" (24-hour) or "HH:mm AM/PM"
 }

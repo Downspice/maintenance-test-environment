@@ -10,9 +10,7 @@ import { FormModal } from "@/components/ui/form-modal";
 import InputWrapper from "@/components/forms/fields/InputWrapper";
 import { ComboboxFieldWrapper } from "@/components/forms/fields/ComboboxWrapper";
 import RadioGroupWrapper from "@/components/forms/fields/RadioGroupWrapper";
-import {
-  useGetVendorOptions,
-} from "@/services/setups/vendor";
+import { useGetVendorOptions } from "@/services/setups/vendor";
 
 const equipmentOptions = [
   { name: "Forklift", id: "forklift" },
@@ -23,7 +21,6 @@ const employeeOptions = [
   { name: "John Doe", id: "emp1" },
   { name: "Jane Smith", id: "emp2" },
 ];
-
 
 const laborSchema = z.object({
   equipment: z.string().min(1, "Equipment is required"),
@@ -47,7 +44,7 @@ export default function ManageSchedulePMLaborTab({ serviceName }: Props) {
   const [labors, setLabors] = useState<LaborRecord[]>([]);
   const [open, setOpen] = useState(false);
   const [editingLabor, setEditingLabor] = useState<LaborRecord | null>(null);
-    const { data: vendorOptions } = useGetVendorOptions();
+  const { data: vendorOptions } = useGetVendorOptions();
 
   const form = useForm<LaborForm>({
     resolver: zodResolver(laborSchema),
@@ -80,8 +77,8 @@ export default function ManageSchedulePMLaborTab({ serviceName }: Props) {
       data.mode === "fixed"
         ? "Fixed Cost"
         : laborType === "employee"
-        ? employeeOptions.find((e) => e.value === data.laborRef)?.label
-        : vendorOptions.find((v) => v.value === data.laborRef)?.label;
+          ? employeeOptions.find((e) => e.value === data.laborRef)?.label
+          : vendorOptions.find((v) => v.value === data.laborRef)?.label;
 
     if (editingLabor) {
       setLabors((prev) =>
@@ -168,99 +165,97 @@ export default function ManageSchedulePMLaborTab({ serviceName }: Props) {
         scrollable
         onSubmit={onSubmit}
       >
-            <ComboboxFieldWrapper
+        <ComboboxFieldWrapper
+          control={form.control}
+          name="equipment"
+          label="Equipment"
+          options={equipmentOptions}
+          placeholder="Select Equipment"
+          emptyText="No equipment found."
+          searchPlaceholder="Search equipment..."
+        />
+
+        <InputWrapper
+          control={form.control}
+          name="service"
+          label="Service"
+          disabled
+          type="text"
+        />
+
+        <RadioGroupWrapper
+          control={form.control}
+          name="mode"
+          label="Labor Type"
+          options={[
+            { name: "Assigned Laborer", id: "assigned" },
+            { name: "Fixed Cost", id: "fixed" },
+          ]}
+        />
+
+        {mode === "fixed" ? (
+          <InputWrapper
+            control={form.control}
+            name="cost"
+            label="Cost"
+            type="number"
+            disabled={!!editingLabor}
+          />
+        ) : (
+          <>
+            <RadioGroupWrapper
               control={form.control}
-              name="equipment"
-              label="Equipment"
-              options={equipmentOptions}
-              placeholder="Select Equipment"
-              emptyText="No equipment found."
-              searchPlaceholder="Search equipment..."
+              name="laborType"
+              label="Performed By"
+              options={[
+                { name: "Employee", id: "employee" },
+                { name: "Vendor", id: "vendor" },
+              ]}
+            />
+
+            {laborType === "employee" && (
+              <ComboboxFieldWrapper
+                control={form.control}
+                name="laborRef"
+                label="Employee"
+                options={employeeOptions}
+                placeholder="Select Employee"
+                emptyText="No employee found."
+                searchPlaceholder="Search employees..."
+                disabled={!!editingLabor}
+              />
+            )}
+
+            {laborType === "vendor" && (
+              <ComboboxFieldWrapper
+                control={form.control}
+                name="laborRef"
+                label="Vendor"
+                options={vendorOptions}
+                placeholder="Select Vendor"
+                emptyText="No vendor found."
+                searchPlaceholder="Search vendors..."
+                disabled={!!editingLabor}
+              />
+            )}
+
+            <InputWrapper
+              control={form.control}
+              name="rate"
+              label="Rate"
+              type="number"
+              disabled={!!editingLabor && mode === "fixed"}
             />
 
             <InputWrapper
               control={form.control}
-              name="service"
-              label="Service"
-              disabled
-              type="text"
+              name="hours"
+              label="Hours"
+              type="number"
+              disabled={!!editingLabor && mode === "fixed"}
             />
-
-            <RadioGroupWrapper
-              control={form.control}
-              name="mode"
-              label="Labor Type"
-              options={[
-                { name: "Assigned Laborer", id: "assigned" },
-                { name: "Fixed Cost", id: "fixed" },
-              ]}
-            />
-
-            {mode === "fixed" ? (
-              <InputWrapper
-                control={form.control}
-                name="cost"
-                label="Cost"
-                type="number"
-                disabled={!!editingLabor}
-              />
-            ) : (
-              <>
-                <RadioGroupWrapper
-                  control={form.control}
-                  name="laborType"
-                  label="Performed By"
-                  options={[
-                    { name: "Employee", id: "employee" },
-                    { name: "Vendor", id: "vendor" },
-                  ]}
-                />
-
-                {laborType === "employee" && (
-                  <ComboboxFieldWrapper
-                    control={form.control}
-                    name="laborRef"
-                    label="Employee"
-                    options={employeeOptions}
-                    placeholder="Select Employee"
-                    emptyText="No employee found."
-                    searchPlaceholder="Search employees..."
-                    disabled={!!editingLabor}
-                  />
-                )}
-
-                {laborType === "vendor" && (
-                  <ComboboxFieldWrapper
-                    control={form.control}
-                    name="laborRef"
-                    label="Vendor"
-                    options={vendorOptions}
-                    placeholder="Select Vendor"
-                    emptyText="No vendor found."
-                    searchPlaceholder="Search vendors..."
-                    disabled={!!editingLabor}
-                  />
-                )}
-
-                <InputWrapper
-                  control={form.control}
-                  name="rate"
-                  label="Rate"
-                  type="number"
-                  disabled={!!editingLabor && mode === "fixed"}
-                />
-
-                <InputWrapper
-                  control={form.control}
-                  name="hours"
-                  label="Hours"
-                  type="number"
-                  disabled={!!editingLabor && mode === "fixed"}
-                />
-              </>
-            )}
-
-
+          </>
+        )}
       </FormModal>
     </div>
   );

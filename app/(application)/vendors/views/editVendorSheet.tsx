@@ -38,12 +38,10 @@ export default function EditVendor({
     resolver: zodResolver(vendorSchema),
     defaultValues: {},
   });
-  const { data: vendorDetails, isLoading: isQueryLoading } = useGetVendor<VendorDetailData>(
-    initialData.id,
-    {
+  const { data: vendorDetails, isLoading: isQueryLoading } =
+    useGetVendor<VendorDetailData>(initialData.id, {
       enabled: open && !!initialData.id,
-    }
-  );
+    });
   const isLoading = isQueryLoading || (open && !vendorDetails);
 
   useEffect(() => {
@@ -98,7 +96,7 @@ export default function EditVendor({
               : "",
           value:
             Array.isArray(vendorDetails.others) &&
-              vendorDetails.others[0]?.value
+            vendorDetails.others[0]?.value
               ? vendorDetails.others[0].value
               : "",
         },
@@ -109,7 +107,7 @@ export default function EditVendor({
               : "",
           value:
             Array.isArray(vendorDetails.others) &&
-              vendorDetails.others[1]?.value
+            vendorDetails.others[1]?.value
               ? vendorDetails.others[1].value
               : "",
         },
@@ -144,9 +142,9 @@ export default function EditVendor({
     try {
       const validOthers = Array.isArray(formData.others)
         ? formData.others.filter(
-          (item: { name?: string; value?: string }) =>
-            item && (item.name?.trim() || item.value?.trim())
-        )
+            (item: { name?: string; value?: string }) =>
+              item && (item.name?.trim() || item.value?.trim())
+          )
         : [];
 
       const payload = {
@@ -274,181 +272,181 @@ export default function EditVendor({
           </div>
         ) : (
           <Form {...vendorForm}>
-          <form
-            id="edit-vendor-form"
-            onSubmit={vendorForm.handleSubmit((data) => handleSubmit(data))}
-          >
-            <Tabs defaultValue="general" className="w-full">
-              <TabsList>
-                <TabsTrigger value="general">General</TabsTrigger>
-                <TabsTrigger value="contact">Contact</TabsTrigger>
-                <TabsTrigger value="attachment">Attachments</TabsTrigger>
-              </TabsList>
-              <TabsContent value="general">
-                <div className="flex flex-col gap-1">
-                  <InputWrapper
-                    control={vendorForm.control}
-                    name="name"
-                    label="Name"
-                    type="text"
-                    required
-                  />
-                  <InputWrapper
-                    control={vendorForm.control}
-                    name="vendor_number"
-                    label="Vendor #"
-                    type="text"
-                  />
-
-                  <InputWrapper
-                    control={vendorForm.control}
-                    name="contact"
-                    label="Contact"
-                    type="text"
-                  />
-
-                  <InputWrapper
-                    control={vendorForm.control}
-                    name="address"
-                    label="Address"
-                    type="text"
-                  />
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-                    <div className="col-span-1">
-                      <InputWrapper
-                        control={vendorForm.control}
-                        name="city"
-                        label="City"
-                        type="text"
-                      />
-                    </div>
-                    <div className="col-span-1">
-                      <InputWrapper
-                        control={vendorForm.control}
-                        name="state"
-                        label="State /Province"
-                        type="text"
-                      />
-                    </div>
-                    <div className="col-span-1">
-                      <InputWrapper
-                        control={vendorForm.control}
-                        name="postal_code"
-                        label="Postal Code"
-                        type="text"
-                      />
-                    </div>
-                    <div className="col-span-1">
-                      <InputWrapper
-                        control={vendorForm.control}
-                        name="country"
-                        label="Country"
-                        type="text"
-                      />
-                    </div>
-                  </div>
-                  <ChoiceListComboboxField
-                    control={vendorForm.control}
-                    name="location_id"
-                    label="Location"
-                    choiceList="locations"
-                    required
-                  />
-
-                  <ChoiceListComboboxField
-                    control={vendorForm.control}
-                    name="status_id"
-                    label="Status"
-                    choiceList="statusOnes"
-                    required
-                  />
-
-                  <ChoiceListComboboxField
-                    control={vendorForm.control}
-                    name="type_id"
-                    label="Type"
-                    choiceList="vendorTypes"
-                    required
-                  />
-                  <ChoiceListComboboxField
-                    control={vendorForm.control}
-                    name="term_id"
-                    label="Term"
-                    choiceList="purchaseOrders:terms"
-                    required
-                  />
-                  <InputWrapper
-                    control={vendorForm.control}
-                    name="billing_rate"
-                    label="Billing Rate"
-                    type="number"
-                  />
-                  <div className="flex flex-col gap-4">
-                    <TextareaWrapper
+            <form
+              id="edit-vendor-form"
+              onSubmit={vendorForm.handleSubmit((data) => handleSubmit(data))}
+            >
+              <Tabs defaultValue="general" className="w-full">
+                <TabsList>
+                  <TabsTrigger value="general">General</TabsTrigger>
+                  <TabsTrigger value="contact">Contact</TabsTrigger>
+                  <TabsTrigger value="attachment">Attachments</TabsTrigger>
+                </TabsList>
+                <TabsContent value="general">
+                  <div className="flex flex-col gap-1">
+                    <InputWrapper
                       control={vendorForm.control}
-                      name="notes"
-                      label="Notes"
-                      rows={4}
+                      name="name"
+                      label="Name"
+                      type="text"
+                      required
+                    />
+                    <InputWrapper
+                      control={vendorForm.control}
+                      name="vendor_number"
+                      label="Vendor #"
+                      type="text"
+                    />
+
+                    <InputWrapper
+                      control={vendorForm.control}
+                      name="contact"
+                      label="Contact"
+                      type="text"
+                    />
+
+                    <InputWrapper
+                      control={vendorForm.control}
+                      name="address"
+                      label="Address"
+                      type="text"
+                    />
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                      <div className="col-span-1">
+                        <InputWrapper
+                          control={vendorForm.control}
+                          name="city"
+                          label="City"
+                          type="text"
+                        />
+                      </div>
+                      <div className="col-span-1">
+                        <InputWrapper
+                          control={vendorForm.control}
+                          name="state"
+                          label="State /Province"
+                          type="text"
+                        />
+                      </div>
+                      <div className="col-span-1">
+                        <InputWrapper
+                          control={vendorForm.control}
+                          name="postal_code"
+                          label="Postal Code"
+                          type="text"
+                        />
+                      </div>
+                      <div className="col-span-1">
+                        <InputWrapper
+                          control={vendorForm.control}
+                          name="country"
+                          label="Country"
+                          type="text"
+                        />
+                      </div>
+                    </div>
+                    <ChoiceListComboboxField
+                      control={vendorForm.control}
+                      name="location_id"
+                      label="Location"
+                      choiceList="locations"
+                      required
+                    />
+
+                    <ChoiceListComboboxField
+                      control={vendorForm.control}
+                      name="status_id"
+                      label="Status"
+                      choiceList="statusOnes"
+                      required
+                    />
+
+                    <ChoiceListComboboxField
+                      control={vendorForm.control}
+                      name="type_id"
+                      label="Type"
+                      choiceList="vendorTypes"
+                      required
+                    />
+                    <ChoiceListComboboxField
+                      control={vendorForm.control}
+                      name="term_id"
+                      label="Term"
+                      choiceList="purchaseOrders:terms"
+                      required
+                    />
+                    <InputWrapper
+                      control={vendorForm.control}
+                      name="billing_rate"
+                      label="Billing Rate"
+                      type="number"
+                    />
+                    <div className="flex flex-col gap-4">
+                      <TextareaWrapper
+                        control={vendorForm.control}
+                        name="notes"
+                        label="Notes"
+                        rows={4}
+                      />
+                    </div>
+                    <CustomFieldRow
+                      control={vendorForm.control}
+                      nameField="others.0.name"
+                      valueField="others.0.value"
+                    />
+                    <CustomFieldRow
+                      control={vendorForm.control}
+                      nameField="others.1.name"
+                      valueField="others.1.value"
                     />
                   </div>
-                  <CustomFieldRow
+                </TabsContent>
+                <TabsContent value="contact">
+                  <div className="flex flex-col gap-1">
+                    <InputWrapper
+                      control={vendorForm.control}
+                      name="phone_one"
+                      label="Phone 1"
+                      type="text"
+                      required
+                    />
+                    <InputWrapper
+                      control={vendorForm.control}
+                      name="phone_two"
+                      label="Phone 2"
+                      type="text"
+                    />
+                    <InputWrapper
+                      control={vendorForm.control}
+                      name="fax"
+                      label="Fax:"
+                      type="text"
+                    />
+                    <InputWrapper
+                      control={vendorForm.control}
+                      name="email"
+                      label="Email:"
+                      type="text"
+                    />
+                    <InputWrapper
+                      control={vendorForm.control}
+                      name="website"
+                      label="Website:"
+                      type="text"
+                    />
+                  </div>
+                </TabsContent>
+                <TabsContent value="attachment">
+                  <FileUploadWrapper
+                    multiple={true}
                     control={vendorForm.control}
-                    nameField="others.0.name"
-                    valueField="others.0.value"
+                    name={"Attachments"}
+                    label={"Attachments"}
                   />
-                  <CustomFieldRow
-                    control={vendorForm.control}
-                    nameField="others.1.name"
-                    valueField="others.1.value"
-                  />
-                </div>
-              </TabsContent>
-              <TabsContent value="contact">
-                <div className="flex flex-col gap-1">
-                  <InputWrapper
-                    control={vendorForm.control}
-                    name="phone_one"
-                    label="Phone 1"
-                    type="text"
-                    required
-                  />
-                  <InputWrapper
-                    control={vendorForm.control}
-                    name="phone_two"
-                    label="Phone 2"
-                    type="text"
-                  />
-                  <InputWrapper
-                    control={vendorForm.control}
-                    name="fax"
-                    label="Fax:"
-                    type="text"
-                  />
-                  <InputWrapper
-                    control={vendorForm.control}
-                    name="email"
-                    label="Email:"
-                    type="text"
-                  />
-                  <InputWrapper
-                    control={vendorForm.control}
-                    name="website"
-                    label="Website:"
-                    type="text"
-                  />
-                </div>
-              </TabsContent>
-              <TabsContent value="attachment">
-                <FileUploadWrapper
-                  multiple={true}
-                  control={vendorForm.control}
-                  name={"Attachments"}
-                  label={"Attachments"}
-                />
-              </TabsContent>
-            </Tabs>
-          </form>
-        </Form>
+                </TabsContent>
+              </Tabs>
+            </form>
+          </Form>
         )}
       </ScrollArea>
     </Drawer>

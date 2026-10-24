@@ -10,7 +10,7 @@ import { Save } from "lucide-react";
 import InputWrapper from "@/components/forms/fields/InputWrapper";
 import DatePickerWrapper from "@/components/forms/fields/DatePickerWrapper";
 // Schema and types
-import { 
+import {
   assigneeOptions,
   accidentOptions,
 } from "@/lib/schemas/equipment-schema";
@@ -22,7 +22,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   SheetContent,
   SheetHeader,
-  SheetTitle, 
+  SheetTitle,
   Sheet,
   SheetTrigger,
 } from "@/components/ui/sheet";
@@ -76,7 +76,6 @@ export default function NewAccident({
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { data: costCenterOptions } = useGetCostCenters();
-  
 
   const form = useForm<AccidentFormValues>({
     resolver: zodResolver(accidentFormSchema),

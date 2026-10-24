@@ -14,9 +14,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import {
-  ComboboxFieldWrapper,
-} from "@/components/forms/fields/ComboboxWrapper";
+import { ComboboxFieldWrapper } from "@/components/forms/fields/ComboboxWrapper";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Form } from "@/components/ui/form";
 import { Save, Pen, Trash2 } from "lucide-react";

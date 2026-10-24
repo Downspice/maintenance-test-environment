@@ -6,9 +6,7 @@ import { SortableHeader } from "@/components/customUI/sortable-header";
 import { Button } from "@/components/ui/button";
 import { Trash2, FilePenIcon } from "lucide-react";
 import React, { useState, useMemo } from "react";
-import {
-  PaymentReceivedInterface,
-} from "@/lib/domains/invoice/invoices-page-data";
+import { PaymentReceivedInterface } from "@/lib/domains/invoice/invoices-page-data";
 import RecordPaymentForm from "@/components/forms/entities/record-payment-form";
 import EditPaymentReceived from "./edit-payment-received";
 import { toast } from "sonner";
@@ -141,16 +139,20 @@ export default function PaymentReceivedTable() {
   const handleServerSortingChange = (newSorting: SortingState) => {
     setSorting(newSorting);
     // Optional: Reset to first page on sort change? Usually good practice.
-    // setPageIndex(0); 
+    // setPageIndex(0);
   };
 
   // Generate filter options from the fetched data (for column headers)
-  const flatEmployees = useMemo(() => getAllEmployees(paymentReceived), [paymentReceived]);
-  const invoice_number = useMemo(() => [
-    ...new Set(flatEmployees.map((emp) => emp.invoice_number)),
-  ], [flatEmployees]);
+  const flatEmployees = useMemo(
+    () => getAllEmployees(paymentReceived),
+    [paymentReceived]
+  );
+  const invoice_number = useMemo(
+    () => [...new Set(flatEmployees.map((emp) => emp.invoice_number))],
+    [flatEmployees]
+  );
 
-  // ... (other filter options can remain if needed for specific column filters, 
+  // ... (other filter options can remain if needed for specific column filters,
   // but we are using global search mostly)
 
   const handleRowClick = (row: any) => {
@@ -186,9 +188,9 @@ export default function PaymentReceivedTable() {
       title: "Delete selected payments?",
       description: `This will delete ${selectedRows.length} record(s). This action cannot be undone.`,
       confirmText: "Delete",
-    })
+    });
     if (ok) {
-      toast.success(`Deleted ${selectedRows.length} rows`)
+      toast.success(`Deleted ${selectedRows.length} rows`);
     }
   };
 
@@ -234,16 +236,12 @@ export default function PaymentReceivedTable() {
     {
       accessorKey: "date_received", // Fixed accessor key to match interface
       header: ({ column }) => (
-        <SortableHeader
-          column={column}
-          title="Date"
-          sortable={true}
-        />
+        <SortableHeader column={column} title="Date" sortable={true} />
       ),
       cell: ({ row }) => {
         // Format date if needed, or just display
-        return <div>{row.getValue("date_received")}</div>
-      }
+        return <div>{row.getValue("date_received")}</div>;
+      },
     },
     {
       accessorKey: "invoice_number",
@@ -259,57 +257,37 @@ export default function PaymentReceivedTable() {
     {
       accessorKey: "category",
       header: ({ column }) => (
-        <SortableHeader
-          column={column}
-          title="Category"
-          sortable={true}
-        />
+        <SortableHeader column={column} title="Category" sortable={true} />
       ),
     },
     {
       accessorKey: "customer",
       header: ({ column }) => (
-        <SortableHeader
-          column={column}
-          title="Customer"
-          sortable={true}
-        />
+        <SortableHeader column={column} title="Customer" sortable={true} />
       ),
     },
     {
       accessorKey: "payment_method_name",
       header: ({ column }) => (
-        <SortableHeader
-          column={column}
-          title="Method"
-          sortable={true}
-        />
+        <SortableHeader column={column} title="Method" sortable={true} />
       ),
     },
     {
       accessorKey: "metadata.cheque_number",
       header: ({ column }) => (
-        <SortableHeader
-          column={column}
-          title="Cheque#"
-          sortable={true}
-        />
+        <SortableHeader column={column} title="Cheque#" sortable={true} />
       ),
       cell: ({ row }) => {
         // Format date if needed, or just display
-        const metadata = row.original?.metadata
-        console.log(metadata)
-        return <div>{metadata?.cheque_number}</div>
-      }
+        const metadata = row.original?.metadata;
+        console.log(metadata);
+        return <div>{metadata?.cheque_number}</div>;
+      },
     },
     {
       accessorKey: "amount_received",
       header: ({ column }) => (
-        <SortableHeader
-          column={column}
-          title="Amnt"
-          sortable={true}
-        />
+        <SortableHeader column={column} title="Amnt" sortable={true} />
       ),
     },
     {

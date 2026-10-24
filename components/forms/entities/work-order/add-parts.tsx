@@ -29,10 +29,15 @@ export default function AddPart({
   initialValues?: Part | null;
   onSave: (data: Part) => void;
 }) {
-    const { data: costCenterOptions } = useGetCostCenters();
-    const { data: invoices } = useGetInvoices<Array<{ id: string; invoice_number: string }>>();
-    const invoiceOptionsList = convertToOptionList(invoices ?? [], "id", "invoice_number");
-  
+  const { data: costCenterOptions } = useGetCostCenters();
+  const { data: invoices } =
+    useGetInvoices<Array<{ id: string; invoice_number: string }>>();
+  const invoiceOptionsList = convertToOptionList(
+    invoices ?? [],
+    "id",
+    "invoice_number"
+  );
+
   const form = useForm<Part>({
     resolver: zodResolver(PartSchema),
     defaultValues: {

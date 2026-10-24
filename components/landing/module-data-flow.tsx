@@ -65,8 +65,16 @@ export default function ModuleDataFlow({
         >
           <defs>
             <radialGradient id="hub-glow" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="var(--color-primary-base)" stopOpacity="0.14" />
-              <stop offset="100%" stopColor="var(--color-primary-base)" stopOpacity="0" />
+              <stop
+                offset="0%"
+                stopColor="var(--color-primary-base)"
+                stopOpacity="0.14"
+              />
+              <stop
+                offset="100%"
+                stopColor="var(--color-primary-base)"
+                stopOpacity="0"
+              />
             </radialGradient>
           </defs>
 
@@ -95,7 +103,10 @@ export default function ModuleDataFlow({
                 />
                 {!reduceMotion && (
                   <>
-                    <circle r={isActive ? 4 : 3.5} fill="var(--color-primary-base)">
+                    <circle
+                      r={isActive ? 4 : 3.5}
+                      fill="var(--color-primary-base)"
+                    >
                       <animateMotion
                         dur={isActive ? "1.6s" : "2.2s"}
                         repeatCount="indefinite"
@@ -103,7 +114,10 @@ export default function ModuleDataFlow({
                         begin={`${index * 0.38}s`}
                       />
                     </circle>
-                    <circle r={isActive ? 3 : 2.5} fill="var(--color-primary-dark)">
+                    <circle
+                      r={isActive ? 3 : 2.5}
+                      fill="var(--color-primary-dark)"
+                    >
                       <animateMotion
                         dur={isActive ? "1.6s" : "2.2s"}
                         repeatCount="indefinite"
@@ -135,7 +149,10 @@ export default function ModuleDataFlow({
             <div
               key={mod.id}
               className="absolute z-[2] flex -translate-x-1/2 -translate-y-1/2 items-center justify-center"
-              style={{ left: `${(mod.x / 400) * 100}%`, top: `${(mod.y / 300) * 100}%` }}
+              style={{
+                left: `${(mod.x / 400) * 100}%`,
+                top: `${(mod.y / 300) * 100}%`,
+              }}
             >
               <button
                 type="button"

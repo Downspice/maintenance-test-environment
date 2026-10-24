@@ -446,330 +446,322 @@ export default function NewInvoiceForm({
                 />
               </div>
               <Tabs defaultValue="Items" className="w-full">
-                  <TabsList>
-                    <TabsTrigger value="Items">Items</TabsTrigger>
-                    <TabsTrigger value="Payments">Payments</TabsTrigger>
-                    <TabsTrigger value="Notes">Notes</TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="Items">
-                    <div className="flex justify-end mb-2">
-                      <Button
-                        type="button"
-                        variant="primary"
-                        onClick={() => {
-                          setEditIndex(null);
-                          setEditItems(null);
-                          Itemsform.reset({
-                            quantity: 1,
-                            item: "",
-                            cost: 0,
-                            amount: 0,
-                            item_type_id: "",
-                            warehouse_id: "",
-                            extended_cost: 0,
-                            tax_one: 0,
-                            tax_two: 0,
-                            discount: 0,
-                          });
-                          setOpenItems(true);
-                        }}
-                      >
-                        <Plus className="mr-2 h-4 w-4" /> Add Item
-                      </Button>
-                    </div>
-
-                    <Modal
-                      open={openItems}
-                      onOpenChange={(val) => {
-                        setOpenItems(val);
-                        if (!val) {
-                          setEditIndex(null);
-                          setEditItems(null);
-                        }
+                <TabsList>
+                  <TabsTrigger value="Items">Items</TabsTrigger>
+                  <TabsTrigger value="Payments">Payments</TabsTrigger>
+                  <TabsTrigger value="Notes">Notes</TabsTrigger>
+                </TabsList>
+                <TabsContent value="Items">
+                  <div className="flex justify-end mb-2">
+                    <Button
+                      type="button"
+                      variant="primary"
+                      onClick={() => {
+                        setEditIndex(null);
+                        setEditItems(null);
+                        Itemsform.reset({
+                          quantity: 1,
+                          item: "",
+                          cost: 0,
+                          amount: 0,
+                          item_type_id: "",
+                          warehouse_id: "",
+                          extended_cost: 0,
+                          tax_one: 0,
+                          tax_two: 0,
+                          discount: 0,
+                        });
+                        setOpenItems(true);
                       }}
-                      title={
-                        editIndex !== null
-                          ? "Edit Invoice Item"
-                          : "Add Invoice Item"
-                      }
-                      description={
-                        editIndex !== null
-                          ? "Update the details for this invoice line item."
-                          : "Fill out the details below to add an item to this invoice."
-                      }
-                      size="lg"
-                      closeable={true}
-                      renderActions={
-                        <Button
-                          form="invoice-item-form"
-                          type="submit"
-                          variant="primary"
-                        >
-                          {editIndex !== null ? "Update Item" : "Save Item"}
-                        </Button>
-                      }
                     >
-                      <Form {...Itemsform}>
-                        <form
-                          id="invoice-item-form"
-                          onSubmit={Itemsform.handleSubmit(
-                            onSubmitItems,
-                            (errors) => {
-                              console.log(errors);
-                              const firstErrorField =
-                                Object.values(errors)[0];
-                              const message = firstErrorField?.message;
+                      <Plus className="mr-2 h-4 w-4" /> Add Item
+                    </Button>
+                  </div>
 
-                              if (message) {
-                                toast.error(message);
-                              } else {
-                                toast.error(
-                                  "Please check the form for errors."
-                                );
-                              }
-                            }
-                          )}
-                          className="flex flex-col gap-1 py-1"
-                        >
-                          <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-                            <InputWrapper
-                              control={Itemsform.control}
-                              name="quantity"
-                              label="Quantity"
-                              type="number"
-                              required
-                            />
-                            <InputWrapper
-                              control={Itemsform.control}
-                              name="item"
-                              label="Item Name"
-                              type="text"
-                              required
-                            />
-                          </div>
-                          <ComboboxFieldWrapper
-                            control={Itemsform.control}
-                            name="item_type_id"
-                            label="Item Type"
-                            options={itemTypesOptionsList ?? []}
-                            required
-                          />
-                          <ComboboxFieldWrapper
-                            control={Itemsform.control}
-                            name="warehouse_id"
-                            label="Warehouse"
-                            options={warehouseOptionsList ?? []}
-                            required
-                          />
-                          <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-                            <InputWrapper
-                              control={Itemsform.control}
-                              name="cost"
-                              label="Unit Cost"
-                              type="number"
-                              required
-                            />
-                            <InputWrapper
-                              control={Itemsform.control}
-                              name="discount"
-                              label="Discount"
-                              type="number"
-                            />
-                          </div>
-                        </form>
-                      </Form>
-                    </Modal>
-
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Qty</TableHead>
-                          <TableHead>Item</TableHead>
-                          <TableHead>Unit Cost</TableHead>
-                          <TableHead>Amount</TableHead>
-                          <TableHead>Actions</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {items.map((item, idx) => (
-                          <TableRow key={idx}>
-                            <TableCell>{item.quantity}</TableCell>
-                            <TableCell>{item.item}</TableCell>
-                            <TableCell>{item.cost}</TableCell>
-                            <TableCell>{item.amount}</TableCell>
-                            <TableCell
-                              className="w-px whitespace-nowrap"
-                              style={{ width: "1%" }}
-                            >
-                              <TableRowActions
-                                onEdit={() => handleEditItem(item, idx)}
-                                onDelete={() => handleDeleteItem(idx)}
-                              />
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TabsContent>
-                  <TabsContent value="Payments">
-                    <div className="flex justify-end mb-2">
+                  <Modal
+                    open={openItems}
+                    onOpenChange={(val) => {
+                      setOpenItems(val);
+                      if (!val) {
+                        setEditIndex(null);
+                        setEditItems(null);
+                      }
+                    }}
+                    title={
+                      editIndex !== null
+                        ? "Edit Invoice Item"
+                        : "Add Invoice Item"
+                    }
+                    description={
+                      editIndex !== null
+                        ? "Update the details for this invoice line item."
+                        : "Fill out the details below to add an item to this invoice."
+                    }
+                    size="lg"
+                    closeable={true}
+                    renderActions={
                       <Button
-                        type="button"
+                        form="invoice-item-form"
+                        type="submit"
                         variant="primary"
-                        onClick={() => {
-                          setEditPaymentIndex(null);
-                          setEditPayment(null);
-                          PaymentsForm.reset({
-                            amount_received: 0,
-                            metadata: {},
-                          });
-                          setOpenPayments(true);
-                        }}
                       >
-                        <Plus className="mr-2 h-4 w-4" /> Add Payment
+                        {editIndex !== null ? "Update Item" : "Save Item"}
                       </Button>
-                    </div>
+                    }
+                  >
+                    <Form {...Itemsform}>
+                      <form
+                        id="invoice-item-form"
+                        onSubmit={Itemsform.handleSubmit(
+                          onSubmitItems,
+                          (errors) => {
+                            console.log(errors);
+                            const firstErrorField = Object.values(errors)[0];
+                            const message = firstErrorField?.message;
 
-                    <Modal
-                      open={openPayments}
-                      onOpenChange={(val) => {
-                        setOpenPayments(val);
-                        if (!val) {
-                          setEditPaymentIndex(null);
-                          setEditPayment(null);
-                        }
-                      }}
-                      title={
-                        editPaymentIndex !== null
-                          ? "Edit Payment"
-                          : "Add Payment"
-                      }
-                      description={
-                        editPaymentIndex !== null
-                          ? "Update the details for this payment."
-                          : "Fill out the details below to record a payment for this invoice."
-                      }
-                      size="lg"
-                      closeable={true}
-                      renderActions={
-                        <Button
-                          form="invoice-payment-form"
-                          type="submit"
-                          variant="primary"
-                        >
-                          {editPaymentIndex !== null
-                            ? "Update Payment"
-                            : "Save Payment"}
-                        </Button>
-                      }
-                    >
-                      <Form {...PaymentsForm}>
-                        <form
-                          id="invoice-payment-form"
-                          onSubmit={PaymentsForm.handleSubmit(
-                            onSubmitPayment,
-                            (errors) => {
-                              console.log(errors);
-                              const firstErrorField =
-                                Object.values(errors)[0];
-                              const message = firstErrorField?.message;
-
-                              if (message) {
-                                toast.error(message);
-                              } else {
-                                toast.error(
-                                  "Please check the form for errors."
-                                );
-                              }
+                            if (message) {
+                              toast.error(message);
+                            } else {
+                              toast.error("Please check the form for errors.");
                             }
-                          )}
-                          className="flex flex-col gap-1 py-1"
-                        >
-                          <DatePickerWrapper
-                            name="date_received"
-                            label="Date Received"
-                            control={PaymentsForm.control}
-                            required
-                          />
+                          }
+                        )}
+                        className="flex flex-col gap-1 py-1"
+                      >
+                        <div className="grid grid-cols-2 gap-x-4 gap-y-1">
                           <InputWrapper
-                            name="amount_received"
+                            control={Itemsform.control}
+                            name="quantity"
+                            label="Quantity"
                             type="number"
-                            label="Amount Received"
-                            control={PaymentsForm.control}
-                            required
-                          />
-                          <ComboboxFieldWrapper
-                            control={PaymentsForm.control}
-                            name="payment_method_id"
-                            label="Payment Method"
-                            options={invoicePaymentMethodOptionsList ?? []}
                             required
                           />
                           <InputWrapper
-                            name="metadata.cheque_number"
+                            control={Itemsform.control}
+                            name="item"
+                            label="Item Name"
                             type="text"
-                            label="Cheque Number"
-                            control={PaymentsForm.control}
+                            required
                           />
-                        </form>
-                      </Form>
-                    </Modal>
+                        </div>
+                        <ComboboxFieldWrapper
+                          control={Itemsform.control}
+                          name="item_type_id"
+                          label="Item Type"
+                          options={itemTypesOptionsList ?? []}
+                          required
+                        />
+                        <ComboboxFieldWrapper
+                          control={Itemsform.control}
+                          name="warehouse_id"
+                          label="Warehouse"
+                          options={warehouseOptionsList ?? []}
+                          required
+                        />
+                        <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                          <InputWrapper
+                            control={Itemsform.control}
+                            name="cost"
+                            label="Unit Cost"
+                            type="number"
+                            required
+                          />
+                          <InputWrapper
+                            control={Itemsform.control}
+                            name="discount"
+                            label="Discount"
+                            type="number"
+                          />
+                        </div>
+                      </form>
+                    </Form>
+                  </Modal>
 
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Date</TableHead>
-                          <TableHead>Amount</TableHead>
-                          <TableHead>Actions</TableHead>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Qty</TableHead>
+                        <TableHead>Item</TableHead>
+                        <TableHead>Unit Cost</TableHead>
+                        <TableHead>Amount</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {items.map((item, idx) => (
+                        <TableRow key={idx}>
+                          <TableCell>{item.quantity}</TableCell>
+                          <TableCell>{item.item}</TableCell>
+                          <TableCell>{item.cost}</TableCell>
+                          <TableCell>{item.amount}</TableCell>
+                          <TableCell
+                            className="w-px whitespace-nowrap"
+                            style={{ width: "1%" }}
+                          >
+                            <TableRowActions
+                              onEdit={() => handleEditItem(item, idx)}
+                              onDelete={() => handleDeleteItem(idx)}
+                            />
+                          </TableCell>
                         </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {paymentsList.map((payment, index) => (
-                          <TableRow key={index}>
-                            <TableCell>
-                              {payment.date_received.toLocaleDateString()}
-                            </TableCell>
-                            <TableCell>{payment.amount_received}</TableCell>
-                            <TableCell
-                              className="w-px whitespace-nowrap"
-                              style={{ width: "1%" }}
-                            >
-                              <TableRowActions
-                                editLabel="Edit payment"
-                                deleteLabel="Delete payment"
-                                onEdit={() => {
-                                  setEditPaymentIndex(index);
-                                  setEditPayment(payment);
-                                  PaymentsForm.reset(payment);
-                                  setOpenPayments(true);
-                                }}
-                                onDelete={() => {
-                                  setPaymentsList(
-                                    paymentsList.filter((_, i) => i !== index)
-                                  );
-                                }}
-                              />
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TabsContent>
-                  <TabsContent value="Notes">
-                    <TextareaWrapper
-                      label="Invoice Notes"
-                      name="invoice_notes"
-                      control={form.control}
-                      value=""
-                    />
-                    <TextareaWrapper
-                      label="Internal Notes"
-                      name="internal_notes"
-                      control={form.control}
-                      value=""
-                    />
-                  </TabsContent>
-                </Tabs>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TabsContent>
+                <TabsContent value="Payments">
+                  <div className="flex justify-end mb-2">
+                    <Button
+                      type="button"
+                      variant="primary"
+                      onClick={() => {
+                        setEditPaymentIndex(null);
+                        setEditPayment(null);
+                        PaymentsForm.reset({
+                          amount_received: 0,
+                          metadata: {},
+                        });
+                        setOpenPayments(true);
+                      }}
+                    >
+                      <Plus className="mr-2 h-4 w-4" /> Add Payment
+                    </Button>
+                  </div>
+
+                  <Modal
+                    open={openPayments}
+                    onOpenChange={(val) => {
+                      setOpenPayments(val);
+                      if (!val) {
+                        setEditPaymentIndex(null);
+                        setEditPayment(null);
+                      }
+                    }}
+                    title={
+                      editPaymentIndex !== null ? "Edit Payment" : "Add Payment"
+                    }
+                    description={
+                      editPaymentIndex !== null
+                        ? "Update the details for this payment."
+                        : "Fill out the details below to record a payment for this invoice."
+                    }
+                    size="lg"
+                    closeable={true}
+                    renderActions={
+                      <Button
+                        form="invoice-payment-form"
+                        type="submit"
+                        variant="primary"
+                      >
+                        {editPaymentIndex !== null
+                          ? "Update Payment"
+                          : "Save Payment"}
+                      </Button>
+                    }
+                  >
+                    <Form {...PaymentsForm}>
+                      <form
+                        id="invoice-payment-form"
+                        onSubmit={PaymentsForm.handleSubmit(
+                          onSubmitPayment,
+                          (errors) => {
+                            console.log(errors);
+                            const firstErrorField = Object.values(errors)[0];
+                            const message = firstErrorField?.message;
+
+                            if (message) {
+                              toast.error(message);
+                            } else {
+                              toast.error("Please check the form for errors.");
+                            }
+                          }
+                        )}
+                        className="flex flex-col gap-1 py-1"
+                      >
+                        <DatePickerWrapper
+                          name="date_received"
+                          label="Date Received"
+                          control={PaymentsForm.control}
+                          required
+                        />
+                        <InputWrapper
+                          name="amount_received"
+                          type="number"
+                          label="Amount Received"
+                          control={PaymentsForm.control}
+                          required
+                        />
+                        <ComboboxFieldWrapper
+                          control={PaymentsForm.control}
+                          name="payment_method_id"
+                          label="Payment Method"
+                          options={invoicePaymentMethodOptionsList ?? []}
+                          required
+                        />
+                        <InputWrapper
+                          name="metadata.cheque_number"
+                          type="text"
+                          label="Cheque Number"
+                          control={PaymentsForm.control}
+                        />
+                      </form>
+                    </Form>
+                  </Modal>
+
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Amount</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {paymentsList.map((payment, index) => (
+                        <TableRow key={index}>
+                          <TableCell>
+                            {payment.date_received.toLocaleDateString()}
+                          </TableCell>
+                          <TableCell>{payment.amount_received}</TableCell>
+                          <TableCell
+                            className="w-px whitespace-nowrap"
+                            style={{ width: "1%" }}
+                          >
+                            <TableRowActions
+                              editLabel="Edit payment"
+                              deleteLabel="Delete payment"
+                              onEdit={() => {
+                                setEditPaymentIndex(index);
+                                setEditPayment(payment);
+                                PaymentsForm.reset(payment);
+                                setOpenPayments(true);
+                              }}
+                              onDelete={() => {
+                                setPaymentsList(
+                                  paymentsList.filter((_, i) => i !== index)
+                                );
+                              }}
+                            />
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TabsContent>
+                <TabsContent value="Notes">
+                  <TextareaWrapper
+                    label="Invoice Notes"
+                    name="invoice_notes"
+                    control={form.control}
+                    value=""
+                  />
+                  <TextareaWrapper
+                    label="Internal Notes"
+                    name="internal_notes"
+                    control={form.control}
+                    value=""
+                  />
+                </TabsContent>
+              </Tabs>
             </div>
             <div className="col-span-3">
               <Fieldset

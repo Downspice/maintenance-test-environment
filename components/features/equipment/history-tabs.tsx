@@ -1,7 +1,5 @@
 "use client";
 
-
-
 import { Button } from "@/components/ui/button";
 import {
   FilePenIcon,
@@ -21,7 +19,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useState } from "react";
 import React from "react";
 
-
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -33,9 +30,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-
-
-
 
 import {
   ActualWorkOrderForm,
@@ -60,12 +54,13 @@ import InspectionForm, {
   EditInspectionForm,
 } from "@/components/forms/entities/new-inspection";
 
-
 import { MeterReplacementTab } from "./meter-replacement-tab";
 
-
-
-const MaintenanceHistoryComponent = ({ equipmentId }: { equipmentId: string }) => {
+const MaintenanceHistoryComponent = ({
+  equipmentId,
+}: {
+  equipmentId: string;
+}) => {
   const [filter, setFilter] = useState("outstanding");
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
@@ -106,7 +101,12 @@ const MaintenanceHistoryComponent = ({ equipmentId }: { equipmentId: string }) =
             <TableHead>Maintenance Performed</TableHead>
             <TableHead>Assigned To</TableHead>
             <TableHead>Total</TableHead>
-            <TableHead className="w-px whitespace-nowrap" style={{ width: "1%" }}>Actions</TableHead>
+            <TableHead
+              className="w-px whitespace-nowrap"
+              style={{ width: "1%" }}
+            >
+              Actions
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -131,7 +131,10 @@ const MaintenanceHistoryComponent = ({ equipmentId }: { equipmentId: string }) =
                 <TableCell>{wo.maintenancePerformed}</TableCell>
                 <TableCell>{wo.assignedTo}</TableCell>
                 <TableCell>{wo.total}</TableCell>
-                <TableCell className="text-right w-px whitespace-nowrap" style={{ width: "1%" }}>
+                <TableCell
+                  className="text-right w-px whitespace-nowrap"
+                  style={{ width: "1%" }}
+                >
                   <EditActualWorkOrderForm
                     children={
                       <Button type="button" size="icon" variant="secondary">
@@ -139,13 +142,18 @@ const MaintenanceHistoryComponent = ({ equipmentId }: { equipmentId: string }) =
                       </Button>
                     }
                     data={wo}
-                  // onEdit={(wo) => {
-                  //   // Handle edit logic
-                  //   console.log("Edited data:", fuel);
-                  // }}
+                    // onEdit={(wo) => {
+                    //   // Handle edit logic
+                    //   console.log("Edited data:", fuel);
+                    // }}
                   />
 
-                  <Button type="button" size="icon" variant="secondary" className="text-destructive focus:text-destructive">
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="secondary"
+                    className="text-destructive focus:text-destructive"
+                  >
                     <Trash2 className="size-4" />
                   </Button>
                 </TableCell>
@@ -359,7 +367,12 @@ function FluidsTab() {
             <TableHead>Meter 1</TableHead>
             <TableHead>Unit Cost</TableHead>
             <TableHead>Total</TableHead>
-            <TableHead className="w-px whitespace-nowrap" style={{ width: "1%" }}>Actions</TableHead>
+            <TableHead
+              className="w-px whitespace-nowrap"
+              style={{ width: "1%" }}
+            >
+              Actions
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -372,7 +385,10 @@ function FluidsTab() {
               <TableCell>{item.meter1}</TableCell>
               <TableCell>${item.unit_cost.toFixed(2)}</TableCell>
               <TableCell>${item.total.toFixed(2)}</TableCell>{" "}
-              <TableCell className="text-right space-x-2 w-px whitespace-nowrap" style={{ width: "1%" }}>
+              <TableCell
+                className="text-right space-x-2 w-px whitespace-nowrap"
+                style={{ width: "1%" }}
+              >
                 <EditFluidConsumption
                   children={
                     <Button type="button" size="icon" variant="secondary">
@@ -381,7 +397,12 @@ function FluidsTab() {
                   }
                   data={item}
                 />
-                <Button type="button" size="icon" variant="secondary" className="text-destructive focus:text-destructive">
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="secondary"
+                  className="text-destructive focus:text-destructive"
+                >
                   <Trash2 className="size-4" />
                 </Button>
               </TableCell>
@@ -548,7 +569,12 @@ function AssignmentsTab() {
                     }
                     data={item}
                   />
-                  <Button type="button" size="icon" variant="secondary" className="text-destructive focus:text-destructive">
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="secondary"
+                    className="text-destructive focus:text-destructive"
+                  >
                     <Trash2 className="size-4" />
                   </Button>
                 </TableCell>
@@ -670,7 +696,12 @@ function AccidentsTab() {
               <TableHead>Injuries</TableHead>
               <TableHead>Damage</TableHead>
               <TableHead>Other</TableHead>
-              <TableHead className="text-right w-px whitespace-nowrap" style={{ width: "1%" }}>Actions</TableHead>
+              <TableHead
+                className="text-right w-px whitespace-nowrap"
+                style={{ width: "1%" }}
+              >
+                Actions
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -685,7 +716,10 @@ function AccidentsTab() {
                 <TableCell>{item.injuries}</TableCell>
                 <TableCell>{item.damage}</TableCell>
                 <TableCell>{item.other}</TableCell>
-                <TableCell className="text-right space-x-2 w-px whitespace-nowrap" style={{ width: "1%" }}>
+                <TableCell
+                  className="text-right space-x-2 w-px whitespace-nowrap"
+                  style={{ width: "1%" }}
+                >
                   <EditAccidents
                     children={
                       <Button type="button" size="icon" variant="secondary">
@@ -695,7 +729,12 @@ function AccidentsTab() {
                     data={item}
                   />
 
-                  <Button type="button" size="icon" variant="secondary" className="text-destructive focus:text-destructive">
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="secondary"
+                    className="text-destructive focus:text-destructive"
+                  >
                     <Trash2 className="size-4" />
                   </Button>
                 </TableCell>
@@ -890,7 +929,12 @@ function FuelTab() {
               <TableHead>Total</TableHead>
               <TableHead>Economy</TableHead>
               <TableHead>Vendor</TableHead>
-              <TableHead className="text-right w-px whitespace-nowrap" style={{ width: "1%" }}>Actions</TableHead>
+              <TableHead
+                className="text-right w-px whitespace-nowrap"
+                style={{ width: "1%" }}
+              >
+                Actions
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -903,7 +947,10 @@ function FuelTab() {
                 <TableCell>{item.total}</TableCell>
                 <TableCell>{item.economy}</TableCell>
                 <TableCell>{item.vendor}</TableCell>
-                <TableCell className="text-right space-x-2 w-px whitespace-nowrap" style={{ width: "1%" }}>
+                <TableCell
+                  className="text-right space-x-2 w-px whitespace-nowrap"
+                  style={{ width: "1%" }}
+                >
                   <UpdateFuelTransactionForm
                     children={
                       <Button type="button" size="icon" variant="secondary">
@@ -913,7 +960,12 @@ function FuelTab() {
                     data={item}
                   />
 
-                  <Button type="button" size="icon" variant="secondary" className="text-destructive focus:text-destructive">
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="secondary"
+                    className="text-destructive focus:text-destructive"
+                  >
                     <Trash2 className="size-4" />
                   </Button>
                 </TableCell>
@@ -992,7 +1044,12 @@ function ExpensesTab() {
               <TableHead>Cost</TableHead>
               <TableHead>Cost Centre</TableHead>
               <TableHead>Notes</TableHead>
-              <TableHead className="text-right w-px whitespace-nowrap" style={{ width: "1%" }}>Actions</TableHead>
+              <TableHead
+                className="text-right w-px whitespace-nowrap"
+                style={{ width: "1%" }}
+              >
+                Actions
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -1005,7 +1062,10 @@ function ExpensesTab() {
                 <TableCell>{item.cost}</TableCell>
                 <TableCell>{item.costCentre}</TableCell>
                 <TableCell>{item.notes}</TableCell>
-                <TableCell className="text-right space-x-2 w-px whitespace-nowrap" style={{ width: "1%" }}>
+                <TableCell
+                  className="text-right space-x-2 w-px whitespace-nowrap"
+                  style={{ width: "1%" }}
+                >
                   <EditGeneralExpense
                     children={
                       <Button type="button" size="icon" variant="secondary">
@@ -1018,7 +1078,12 @@ function ExpensesTab() {
                     }}
                   />
 
-                  <Button type="button" size="icon" variant="secondary" className="text-destructive focus:text-destructive">
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="secondary"
+                    className="text-destructive focus:text-destructive"
+                  >
                     <Trash2 className="size-4" />
                   </Button>
                 </TableCell>
@@ -1112,7 +1177,12 @@ function InspectionTab() {
               <TableHead>Inspector</TableHead>
               <TableHead>Notes</TableHead>
               <TableHead>Hours</TableHead>
-              <TableHead className="text-right w-px whitespace-nowrap" style={{ width: "1%" }}>Actions</TableHead>
+              <TableHead
+                className="text-right w-px whitespace-nowrap"
+                style={{ width: "1%" }}
+              >
+                Actions
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -1123,7 +1193,10 @@ function InspectionTab() {
                 <TableCell>{item.inspector}</TableCell>
                 <TableCell>{item.notes}</TableCell>
                 <TableCell>{item.hours}</TableCell>
-                <TableCell className="text-right space-x-2 w-px whitespace-nowrap" style={{ width: "1%" }}>
+                <TableCell
+                  className="text-right space-x-2 w-px whitespace-nowrap"
+                  style={{ width: "1%" }}
+                >
                   <EditInspectionForm
                     children={
                       <Button type="button" size="icon" variant="secondary">
@@ -1131,12 +1204,17 @@ function InspectionTab() {
                       </Button>
                     }
                     data={item}
-                  // onEdit={(fuel) => {
-                  //   // Handle edit logic
-                  //   console.log("Edited data:", fuel);
-                  // }}
+                    // onEdit={(fuel) => {
+                    //   // Handle edit logic
+                    //   console.log("Edited data:", fuel);
+                    // }}
                   />
-                  <Button type="button" size="icon" variant="secondary" className="text-destructive focus:text-destructive">
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="secondary"
+                    className="text-destructive focus:text-destructive"
+                  >
                     <Trash2 className="size-4" />
                   </Button>
                 </TableCell>

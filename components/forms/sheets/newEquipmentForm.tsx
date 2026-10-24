@@ -1,20 +1,31 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { toast } from "sonner"
-import { z } from "zod"
-import { Plus } from "lucide-react"
+import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+import { Plus } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Form } from "@/components/ui/form"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
- 
-import InputWrapper from "../fields/InputWrapper"
-import { ComboboxFieldWrapper, ComboboxOption, MultiComboboxWrapper } from "../fields/ComboboxWrapper"
- 
+import { Button } from "@/components/ui/button";
+import { Form } from "@/components/ui/form";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+
+import InputWrapper from "../fields/InputWrapper";
+import {
+  ComboboxFieldWrapper,
+  ComboboxOption,
+  MultiComboboxWrapper,
+} from "../fields/ComboboxWrapper";
+
 // Define your options
 const frameworks: ComboboxOption[] = [
   { id: "next.js", name: "Next.js" },
@@ -27,7 +38,7 @@ const frameworks: ComboboxOption[] = [
   { id: "angular", name: "Angular" },
   { id: "svelte", name: "Svelte" },
   { id: "gatsby", name: "Gatsby" },
-]
+];
 
 const languages: ComboboxOption[] = [
   { id: "typescript", name: "TypeScript" },
@@ -38,7 +49,7 @@ const languages: ComboboxOption[] = [
   { id: "go", name: "Go" },
   { id: "rust", name: "Rust" },
   { id: "php", name: "PHP" },
-]
+];
 
 const countries: ComboboxOption[] = [
   { id: "us", name: "United States" },
@@ -49,7 +60,7 @@ const countries: ComboboxOption[] = [
   { id: "fr", name: "France" },
   { id: "jp", name: "Japan" },
   { id: "br", name: "Brazil" },
-]
+];
 
 const skills: ComboboxOption[] = [
   { id: "react", name: "React" },
@@ -64,7 +75,7 @@ const skills: ComboboxOption[] = [
   { id: "go", name: "Go" },
   { id: "rust", name: "Rust" },
   { id: "php", name: "PHP" },
-]
+];
 
 const interests: ComboboxOption[] = [
   { id: "web-dev", name: "Web Development" },
@@ -77,7 +88,7 @@ const interests: ComboboxOption[] = [
   { id: "game-dev", name: "Game Development" },
   { id: "ui-ux", name: "UI/UX Design" },
   { id: "cloud", name: "Cloud Computing" },
-]
+];
 
 const FormSchema = z.object({
   name: z.string().min(2, {
@@ -106,10 +117,10 @@ const FormSchema = z.object({
   interests: z.array(z.string()).min(1, {
     message: "Please select at least 1 interest.",
   }),
-})
+});
 
 export default function NewEquipmentSheet() {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -119,18 +130,21 @@ export default function NewEquipmentSheet() {
       skills: [],
       interests: [],
     },
-  })
+  });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
     // Log the full data to console for debugging
-    console.log("Form submitted with VALUES:", data)
+    console.log("Form submitted with VALUES:", data);
 
     // Helper function to get labels for display
     const getLabel = (options: ComboboxOption[], id: string) =>
-      options.find((option) => option.value === value)?.label || value
+      options.find((option) => option.value === value)?.label || value;
 
     const getLabels = (options: ComboboxOption[], values: string[]) =>
-      values.map((value) => options.find((option) => option.value === value)?.label || value)
+      values.map(
+        (value) =>
+          options.find((option) => option.value === value)?.label || value
+      );
 
     toast("Project created successfully!", {
       description: (
@@ -144,7 +158,9 @@ export default function NewEquipmentSheet() {
             <div className="flex justify-between">
               <span className="font-medium">Framework:</span>
               <div className="text-right">
-                <p className="text-xs text-muted-foreground">id: {data.framework}</p>
+                <p className="text-xs text-muted-foreground">
+                  id: {data.framework}
+                </p>
                 <p>{getLabel(frameworks, data.framework)}</p>
               </div>
             </div>
@@ -152,7 +168,9 @@ export default function NewEquipmentSheet() {
             <div className="flex justify-between">
               <span className="font-medium">Language:</span>
               <div className="text-right">
-                <p className="text-xs text-muted-foreground">id: {data.language}</p>
+                <p className="text-xs text-muted-foreground">
+                  id: {data.language}
+                </p>
                 <p>{getLabel(languages, data.language)}</p>
               </div>
             </div>
@@ -160,7 +178,9 @@ export default function NewEquipmentSheet() {
             <div className="flex justify-between">
               <span className="font-medium">Country:</span>
               <div className="text-right">
-                <p className="text-xs text-muted-foreground">id: {data.country}</p>
+                <p className="text-xs text-muted-foreground">
+                  id: {data.country}
+                </p>
                 <p>{getLabel(countries, data.country)}</p>
               </div>
             </div>
@@ -169,31 +189,41 @@ export default function NewEquipmentSheet() {
           <div className="text-sm space-y-1">
             <div>
               <p className="font-medium">Skills (Values):</p>
-              <p className="text-xs text-muted-foreground">[{data.skills.map((s) => `"${s}"`).join(", ")}]</p>
-              <p className="text-xs">{getLabels(skills, data.skills).join(", ")}</p>
+              <p className="text-xs text-muted-foreground">
+                [{data.skills.map((s) => `"${s}"`).join(", ")}]
+              </p>
+              <p className="text-xs">
+                {getLabels(skills, data.skills).join(", ")}
+              </p>
             </div>
 
             <div>
               <p className="font-medium">Interests (Values):</p>
-              <p className="text-xs text-muted-foreground">[{data.interests.map((i) => `"${i}"`).join(", ")}]</p>
-              <p className="text-xs">{getLabels(interests, data.interests).join(", ")}</p>
+              <p className="text-xs text-muted-foreground">
+                [{data.interests.map((i) => `"${i}"`).join(", ")}]
+              </p>
+              <p className="text-xs">
+                {getLabels(interests, data.interests).join(", ")}
+              </p>
             </div>
           </div>
         </div>
       ),
       duration: 10000, // Show longer so user can read all the data
-    })
+    });
 
     // Close sheet and reset form
-    setOpen(false)
-    form.reset()
+    setOpen(false);
+    form.reset();
   }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4">
       <div className="text-center space-y-4">
         <h1 className="text-3xl font-bold">Project Management</h1>
-        <p className="text-muted-foreground">Create and manage your development projects</p>
+        <p className="text-muted-foreground">
+          Create and manage your development projects
+        </p>
 
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
@@ -205,26 +235,34 @@ export default function NewEquipmentSheet() {
           <SheetContent className="w-[400px] sm:w-[540px]">
             <SheetHeader>
               <SheetTitle>Create New Project</SheetTitle>
-              <SheetDescription>Fill out the form below to set up your new development project.</SheetDescription>
+              <SheetDescription>
+                Fill out the form below to set up your new development project.
+              </SheetDescription>
             </SheetHeader>
 
             <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-6"
+                >
                   <InputWrapper
-                                      control={form.control}
-                                      name="name"
-                                      label="Project Name"
-                                      type="text"
-                                      required={true}
-                                      warning="This will be the name of your project." value={""}                  />
+                    control={form.control}
+                    name="name"
+                    label="Project Name"
+                    type="text"
+                    required={true}
+                    warning="This will be the name of your project."
+                    value={""}
+                  />
 
                   <InputWrapper
                     control={form.control}
                     name="email"
                     label="Email"
                     type="email"
-                    required={true} value={""} 
+                    required={true}
+                    value={""}
                     warning="We'll use this to send you project updates."
                   />
 
@@ -292,7 +330,12 @@ export default function NewEquipmentSheet() {
                   />
 
                   <div className="flex gap-3 pt-4 pb-6">
-                    <Button type="button" variant="outline" onClick={() => setOpen(false)} className="flex-1">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setOpen(false)}
+                      className="flex-1"
+                    >
                       Cancel
                     </Button>
                     <Button type="submit" className="flex-1">
@@ -317,11 +360,19 @@ export default function NewEquipmentSheet() {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           <div className="p-4 border rounded-lg hover:shadow-md transition-shadow">
             <h3 className="font-medium">E-commerce Platform</h3>
-            <p className="text-sm text-muted-foreground mt-1">Next.js • TypeScript • United States</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Next.js • TypeScript • United States
+            </p>
             <div className="flex flex-wrap gap-1 mt-3">
-              <span className="text-xs bg-secondary px-2 py-1 rounded">React</span>
-              <span className="text-xs bg-secondary px-2 py-1 rounded">TypeScript</span>
-              <span className="text-xs bg-secondary px-2 py-1 rounded">Web Dev</span>
+              <span className="text-xs bg-secondary px-2 py-1 rounded">
+                React
+              </span>
+              <span className="text-xs bg-secondary px-2 py-1 rounded">
+                TypeScript
+              </span>
+              <span className="text-xs bg-secondary px-2 py-1 rounded">
+                Web Dev
+              </span>
             </div>
             <div className="flex justify-between items-center mt-4">
               <span className="text-xs text-muted-foreground">2 days ago</span>
@@ -333,11 +384,19 @@ export default function NewEquipmentSheet() {
 
           <div className="p-4 border rounded-lg hover:shadow-md transition-shadow">
             <h3 className="font-medium">Mobile App</h3>
-            <p className="text-sm text-muted-foreground mt-1">React • JavaScript • Canada</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              React • JavaScript • Canada
+            </p>
             <div className="flex flex-wrap gap-1 mt-3">
-              <span className="text-xs bg-secondary px-2 py-1 rounded">React</span>
-              <span className="text-xs bg-secondary px-2 py-1 rounded">JavaScript</span>
-              <span className="text-xs bg-secondary px-2 py-1 rounded">Mobile Dev</span>
+              <span className="text-xs bg-secondary px-2 py-1 rounded">
+                React
+              </span>
+              <span className="text-xs bg-secondary px-2 py-1 rounded">
+                JavaScript
+              </span>
+              <span className="text-xs bg-secondary px-2 py-1 rounded">
+                Mobile Dev
+              </span>
             </div>
             <div className="flex justify-between items-center mt-4">
               <span className="text-xs text-muted-foreground">1 week ago</span>
@@ -349,11 +408,19 @@ export default function NewEquipmentSheet() {
 
           <div className="p-4 border rounded-lg hover:shadow-md transition-shadow">
             <h3 className="font-medium">AI Dashboard</h3>
-            <p className="text-sm text-muted-foreground mt-1">Vue.js • Python • Germany</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Vue.js • Python • Germany
+            </p>
             <div className="flex flex-wrap gap-1 mt-3">
-              <span className="text-xs bg-secondary px-2 py-1 rounded">Vue</span>
-              <span className="text-xs bg-secondary px-2 py-1 rounded">Python</span>
-              <span className="text-xs bg-secondary px-2 py-1 rounded">AI/ML</span>
+              <span className="text-xs bg-secondary px-2 py-1 rounded">
+                Vue
+              </span>
+              <span className="text-xs bg-secondary px-2 py-1 rounded">
+                Python
+              </span>
+              <span className="text-xs bg-secondary px-2 py-1 rounded">
+                AI/ML
+              </span>
             </div>
             <div className="flex justify-between items-center mt-4">
               <span className="text-xs text-muted-foreground">2 weeks ago</span>
@@ -365,5 +432,5 @@ export default function NewEquipmentSheet() {
         </div>
       </div>
     </div>
-  )
+  );
 }

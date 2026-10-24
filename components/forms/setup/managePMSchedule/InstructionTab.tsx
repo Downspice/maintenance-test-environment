@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
- import TextareaWrapper from "@/components/forms/fields/TextareaWrapper";
+import TextareaWrapper from "@/components/forms/fields/TextareaWrapper";
 import FileUploadWrapper from "@/components/forms/fields/FileUploadWrapper";
 import { ComboboxFieldWrapper } from "@/components/forms/fields/ComboboxWrapper";
 
@@ -38,7 +38,10 @@ export default function InstructionTab() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-xl mx-auto">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="space-y-6 max-w-xl mx-auto"
+    >
       <ComboboxFieldWrapper
         control={form.control}
         name="equipment"
@@ -49,11 +52,7 @@ export default function InstructionTab() {
         searchPlaceholder="Search equipment..."
       />
 
-      <FileUploadWrapper
-        control={form.control}
-        name="photos"
-        label="Photos"
-      />
+      <FileUploadWrapper control={form.control} name="photos" label="Photos" />
 
       <TextareaWrapper
         control={form.control}

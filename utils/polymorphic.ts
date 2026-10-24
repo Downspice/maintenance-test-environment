@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as React from "react";
 
 type AsProp<T extends React.ElementType> = {
   as?: T;
@@ -6,17 +6,19 @@ type AsProp<T extends React.ElementType> = {
 
 type PropsToOmit<T extends React.ElementType, P> = keyof (AsProp<T> & P);
 
-type PolymorphicComponentProp<T extends React.ElementType, Props = {}> = React.PropsWithChildren<
-  Props & AsProp<T>
-> &
+type PolymorphicComponentProp<
+  T extends React.ElementType,
+  Props = {},
+> = React.PropsWithChildren<Props & AsProp<T>> &
   Omit<React.ComponentPropsWithoutRef<T>, PropsToOmit<T, Props>>;
 
-export type PolymorphicRef<T extends React.ElementType> = React.ComponentPropsWithRef<T>['ref'];
+export type PolymorphicRef<T extends React.ElementType> =
+  React.ComponentPropsWithRef<T>["ref"];
 
-type PolymorphicComponentPropWithRef<T extends React.ElementType, Props = {}> = PolymorphicComponentProp<
-  T,
-  Props
-> & { ref?: PolymorphicRef<T> };
+type PolymorphicComponentPropWithRef<
+  T extends React.ElementType,
+  Props = {},
+> = PolymorphicComponentProp<T, Props> & { ref?: PolymorphicRef<T> };
 
 export type PolymorphicComponentPropsWithRef<
   T extends React.ElementType,

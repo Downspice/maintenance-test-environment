@@ -1,4 +1,10 @@
-import type { SortingState, ColumnFiltersState, VisibilityState, PaginationState, ColumnSizingState } from "@tanstack/react-table";
+import type {
+  SortingState,
+  ColumnFiltersState,
+  VisibilityState,
+  PaginationState,
+  ColumnSizingState,
+} from "@tanstack/react-table";
 
 type SortingUpdater = (prev: SortingState) => SortingState;
 type StatePromise = Promise<URLSearchParams> | undefined;
@@ -15,19 +21,20 @@ export function createSortingHandler(
 ) {
   return (updaterOrid: SortingState | SortingUpdater): void => {
     // Handle both direct values and updater functions
-    const newSorting = typeof updaterOrValue === 'function'
-      ? updaterOrValue([])
-      : updaterOrValue;
-    
+    const newSorting =
+      typeof updaterOrValue === "function"
+        ? updaterOrValue([])
+        : updaterOrValue;
+
     // Only update if there's a valid sorting instruction
     if (newSorting.length > 0) {
       const columnId = newSorting[0].id;
       const direction = newSorting[0].desc ? "desc" : "asc";
-      
+
       // Important: Sequential updates to ensure proper synchronization
       // First update the column id
       const sortByResult = setSortBy(columnId);
-      
+
       if (sortByResult instanceof Promise) {
         // If using URL state (Promise-based), chain the updates
         sortByResult.then(() => {
@@ -50,7 +57,10 @@ export function createSortingHandler(
 export function createColumnFiltersHandler(
   setColumnFilters: SetStateFunction<ColumnFiltersState>
 ) {
-  return (updaterOrid: ColumnFiltersState | ((prev: ColumnFiltersState) => ColumnFiltersState)) => {
+  return (
+    updaterOrid:
+      ColumnFiltersState | ((prev: ColumnFiltersState) => ColumnFiltersState)
+  ) => {
     // Pass through to setColumnFilters (which handles updater functions)
     setColumnFilters(updaterOrValue);
   };
@@ -62,7 +72,9 @@ export function createColumnFiltersHandler(
 export function createColumnVisibilityHandler(
   setColumnVisibility: SetStateFunction<VisibilityState>
 ) {
-  return (updaterOrid: VisibilityState | ((prev: VisibilityState) => VisibilityState)) => {
+  return (
+    updaterOrid: VisibilityState | ((prev: VisibilityState) => VisibilityState)
+  ) => {
     // Pass through to setColumnVisibility (which handles updater functions)
     setColumnVisibility(updaterOrValue);
   };
@@ -77,12 +89,18 @@ export function createPaginationHandler(
   currentPage: number,
   currentPageSize: number
 ) {
-  return (updaterOrid: PaginationState | ((prev: PaginationState) => PaginationState)) => {
+  return (
+    updaterOrid: PaginationState | ((prev: PaginationState) => PaginationState)
+  ) => {
     // Handle both direct values and updater functions
-    const newPagination = typeof updaterOrValue === 'function'
-      ? updaterOrValue({ pageIndex: currentPage - 1, pageSize: currentPageSize })
-      : updaterOrValue;
-    
+    const newPagination =
+      typeof updaterOrValue === "function"
+        ? updaterOrValue({
+            pageIndex: currentPage - 1,
+            pageSize: currentPageSize,
+          })
+        : updaterOrValue;
+
     setPage(newPagination.pageIndex + 1);
     setPageSize(newPagination.pageSize);
   };
@@ -95,11 +113,15 @@ export function createColumnSizingHandler(
   setColumnSizing: SetStateFunction<ColumnSizingState>,
   columnSizing: ColumnSizingState
 ) {
-  return (updaterOrid: ColumnSizingState | ((prev: ColumnSizingState) => ColumnSizingState)) => {
+  return (
+    updaterOrid:
+      ColumnSizingState | ((prev: ColumnSizingState) => ColumnSizingState)
+  ) => {
     // Handle both direct values and updater functions
-    const newSizing = typeof updaterOrValue === 'function'
-      ? updaterOrValue(columnSizing)
-      : updaterOrValue;
+    const newSizing =
+      typeof updaterOrValue === "function"
+        ? updaterOrValue(columnSizing)
+        : updaterOrValue;
     setColumnSizing(newSizing);
   };
 }
@@ -108,10 +130,10 @@ export function createColumnSizingHandler(
  * Convert URL sorting parameters to TanStack Table SortingState
  */
 export function createSortingState(
-  sortBy?: string, 
+  sortBy?: string,
   sortOrder?: "asc" | "desc"
 ): SortingState {
   return sortBy && sortOrder
     ? [{ id: sortBy, desc: sortOrder === "desc" }]
     : [];
-} 
+}

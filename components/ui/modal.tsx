@@ -47,11 +47,7 @@ const ModalFooter = React.forwardRef<HTMLDivElement, ModalFooterProps>(
     const actionsToRender = renderActions ?? actions;
 
     return (
-      <AlignModalFooter
-        ref={ref}
-        className={cn(className)}
-        {...props}
-      >
+      <AlignModalFooter ref={ref} className={cn(className)} {...props}>
         {closeable && (
           <ModalClose asChild>
             <Button variant="secondary" type="button">
@@ -69,8 +65,9 @@ const ModalFooter = React.forwardRef<HTMLDivElement, ModalFooterProps>(
 );
 ModalFooter.displayName = "ModalFooter";
 
-interface ModalContentProps
-  extends React.ComponentPropsWithoutRef<typeof AlignModalContent> {
+interface ModalContentProps extends React.ComponentPropsWithoutRef<
+  typeof AlignModalContent
+> {
   closeable?: boolean;
 }
 
@@ -86,8 +83,7 @@ const ModalContent = React.forwardRef<
 ));
 ModalContent.displayName = "ModalContent";
 
-interface ModalProps
-  extends React.ComponentPropsWithoutRef<typeof AlignModal> {
+interface ModalProps extends React.ComponentPropsWithoutRef<typeof AlignModal> {
   closeable?: boolean;
   renderActions?: React.ReactNode | (() => React.ReactNode);
   actions?: React.ReactNode | (() => React.ReactNode);
@@ -145,9 +141,7 @@ const ModalComponent = ({
         {(title || description) && (
           <ModalHeader className={headerClassName}>
             {title && <ModalTitle>{title}</ModalTitle>}
-            {description && (
-              <ModalDescription>{description}</ModalDescription>
-            )}
+            {description && <ModalDescription>{description}</ModalDescription>}
           </ModalHeader>
         )}
         <ModalBody className={bodyClassName}>{children}</ModalBody>

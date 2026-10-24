@@ -71,160 +71,156 @@ export const InventorySchema = z.object({
 
   Photos: z.any().optional(),
   Attachments: z.any().optional(),
-
-
 });
 
 export interface InventoryByIdInterface {
-  id: string
-  part_number: string
-  name: string
-  description: string
-  manufacturer_id: string
-  category_id: string
-  currency: string
-  unit_cost: string
-  unit_of_measure: string
-  upc: string
-  markup_type_id: string
-  markup_id: string
-  days: number
-  primary: number
-  secondary: number
-  notes: string
-  created_by: any
-  updated_by: any
-  created_at: string
-  updated_at: string
-  category: Category
-  unit_type: UnitType
-  manufacturer: Manufacturer
-  inventory_trackings: InventoryTracking[]
-  others: Other[]
-  markup_type: MarkupType
-  inventory_substitutions: InventorySubstitution[]
-  upc_codes: UpcCode[]
-  attachments: any[]
+  id: string;
+  part_number: string;
+  name: string;
+  description: string;
+  manufacturer_id: string;
+  category_id: string;
+  currency: string;
+  unit_cost: string;
+  unit_of_measure: string;
+  upc: string;
+  markup_type_id: string;
+  markup_id: string;
+  days: number;
+  primary: number;
+  secondary: number;
+  notes: string;
+  created_by: any;
+  updated_by: any;
+  created_at: string;
+  updated_at: string;
+  category: Category;
+  unit_type: UnitType;
+  manufacturer: Manufacturer;
+  inventory_trackings: InventoryTracking[];
+  others: Other[];
+  markup_type: MarkupType;
+  inventory_substitutions: InventorySubstitution[];
+  upc_codes: UpcCode[];
+  attachments: any[];
 }
 
 export interface Category {
-  id: string
-  name: string
-  created_by: any
-  updated_by: any
-  created_at: string
-  updated_at: string
+  id: string;
+  name: string;
+  created_by: any;
+  updated_by: any;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface UnitType {
-  id: string
-  name: string
-  created_by: any
-  updated_by: any
-  created_at: string
-  updated_at: string
+  id: string;
+  name: string;
+  created_by: any;
+  updated_by: any;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Manufacturer {
-  id: string
-  name: string
-  created_by: any
-  updated_by: any
-  created_at: string
-  updated_at: string
+  id: string;
+  name: string;
+  created_by: any;
+  updated_by: any;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface InventoryTracking {
-  id: string
-  inventory_id: string
-  warehouse_id: string
-  is_enabled: boolean
-  aisle: string
-  row: string
-  bin: string
-  vendor_id: string
-  cost_center_id: string
-  quantity: string
-  recorder_point: string
-  recorder_quantity: string
-  max_quantity: string
-  lead_time: string
-  tracking_type_id: string
-  created_by: any
-  updated_by: any
-  created_at: string
-  updated_at: string
+  id: string;
+  inventory_id: string;
+  warehouse_id: string;
+  is_enabled: boolean;
+  aisle: string;
+  row: string;
+  bin: string;
+  vendor_id: string;
+  cost_center_id: string;
+  quantity: string;
+  recorder_point: string;
+  recorder_quantity: string;
+  max_quantity: string;
+  lead_time: string;
+  tracking_type_id: string;
+  created_by: any;
+  updated_by: any;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Other {
-  id: string
-  inventory_id: string
-  name: string
-  id: string
-  created_by: any
-  updated_by: any
-  created_at: string
-  updated_at: string
+  id: string;
+  inventory_id: string;
+  name: string;
+  id: string;
+  created_by: any;
+  updated_by: any;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface MarkupType {
-  id: string
-  name: string
-  created_by: any
-  updated_by: any
-  created_at: string
-  updated_at: string
+  id: string;
+  name: string;
+  created_by: any;
+  updated_by: any;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface InventorySubstitution {
-  id: string
-  inventory_id: string
-  part_number: string
-  name: string
-  manufacturer_id: any
-  description: string
-  created_by: any
-  updated_by: any
-  created_at: string
-  updated_at: string
+  id: string;
+  inventory_id: string;
+  part_number: string;
+  name: string;
+  manufacturer_id: any;
+  description: string;
+  created_by: any;
+  updated_by: any;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface UpcCode {
-  id: string
-  inventory_id: string
-  manufacturer_id: string
-  vendor_id: string
-  upc: string
-  created_by: any
-  updated_by: any
-  created_at: string
-  updated_at: string
+  id: string;
+  inventory_id: string;
+  manufacturer_id: string;
+  vendor_id: string;
+  upc: string;
+  created_by: any;
+  updated_by: any;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface InventoryInterface {
-  id: string
-  part_number: string
-  name: string
-  description: string
-  manufacturer_id: string
-  category_id: string
-  currency: string
-  unit_cost: string
-  unit_of_measure: string
-  upc: string
-  markup_type_id: string
-  markup_id: string
-  days: number
-  primary: number
-  secondary: number
-  notes: string
-  created_by: any
-  updated_by: any
-  created_at: string
-  updated_at: string
+  id: string;
+  part_number: string;
+  name: string;
+  description: string;
+  manufacturer_id: string;
+  category_id: string;
+  currency: string;
+  unit_cost: string;
+  unit_of_measure: string;
+  upc: string;
+  markup_type_id: string;
+  markup_id: string;
+  days: number;
+  primary: number;
+  secondary: number;
+  notes: string;
+  created_by: any;
+  updated_by: any;
+  created_at: string;
+  updated_at: string;
 }
-
- 
 
 export const StockAdjustmentHistory = [
   {
@@ -313,129 +309,129 @@ export const purchaseColumns = [
   { accessorKey: "price", header: "Price" },
 ];
 
-export interface InventoryTableInterface{
-id: string
-  part_number: string
-  name: string
-  description: string
-  manufacturer_id: string
-  category_id: string
-  currency: string
-  unit_cost: string
-  unit_of_measure: string
-  upc: string
-  markup_type_id: string
-  markup_id: string
-  days: number
-  primary: number
-  secondary: number
-  notes: string
-  created_by: any
-  updated_by: any
-  created_at: string
-  updated_at: string
-  is_enabled: boolean
-  category: Category
-  unit_type: UnitType
-  manufacturer: Manufacturer
-  inventory_trackings: InventoryTracking[]
-  others: Other[]
-  markup_type: MarkupType
-  inventory_substitutions: InventorySubstitution[]
-  upc_codes: UpcCode[]
-  attachments: any[]
+export interface InventoryTableInterface {
+  id: string;
+  part_number: string;
+  name: string;
+  description: string;
+  manufacturer_id: string;
+  category_id: string;
+  currency: string;
+  unit_cost: string;
+  unit_of_measure: string;
+  upc: string;
+  markup_type_id: string;
+  markup_id: string;
+  days: number;
+  primary: number;
+  secondary: number;
+  notes: string;
+  created_by: any;
+  updated_by: any;
+  created_at: string;
+  updated_at: string;
+  is_enabled: boolean;
+  category: Category;
+  unit_type: UnitType;
+  manufacturer: Manufacturer;
+  inventory_trackings: InventoryTracking[];
+  others: Other[];
+  markup_type: MarkupType;
+  inventory_substitutions: InventorySubstitution[];
+  upc_codes: UpcCode[];
+  attachments: any[];
 }
 
 export interface Category {
-  id: string
-  name: string
-  created_by: any
-  updated_by: any
-  created_at: string
-  updated_at: string
+  id: string;
+  name: string;
+  created_by: any;
+  updated_by: any;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface UnitType {
-  id: string
-  name: string
-  created_by: any
-  updated_by: any
-  created_at: string
-  updated_at: string
+  id: string;
+  name: string;
+  created_by: any;
+  updated_by: any;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Manufacturer {
-  id: string
-  name: string
-  created_by: any
-  updated_by: any
-  created_at: string
-  updated_at: string
+  id: string;
+  name: string;
+  created_by: any;
+  updated_by: any;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface InventoryTracking {
-  id: string
-  inventory_id: string
-  warehouse_id: string
-  is_enabled: boolean
-  aisle: string
-  row: string
-  bin: string
-  vendor_id: string
-  cost_center_id: string
-  quantity: string
-  recorder_point: string
-  recorder_quantity: string
-  max_quantity: string
-  lead_time: string
-  tracking_type_id: string
-  created_by: any
-  updated_by: any
-  created_at: string
-  updated_at: string
+  id: string;
+  inventory_id: string;
+  warehouse_id: string;
+  is_enabled: boolean;
+  aisle: string;
+  row: string;
+  bin: string;
+  vendor_id: string;
+  cost_center_id: string;
+  quantity: string;
+  recorder_point: string;
+  recorder_quantity: string;
+  max_quantity: string;
+  lead_time: string;
+  tracking_type_id: string;
+  created_by: any;
+  updated_by: any;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Other {
-  id: string
-  inventory_id: string
-  name: string
-  id: string
-  created_by: any
-  updated_by: any
-  created_at: string
-  updated_at: string
+  id: string;
+  inventory_id: string;
+  name: string;
+  id: string;
+  created_by: any;
+  updated_by: any;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface MarkupType {
-  id: string
-  name: string
-  created_by: any
-  updated_by: any
-  created_at: string
-  updated_at: string
+  id: string;
+  name: string;
+  created_by: any;
+  updated_by: any;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface InventorySubstitution {
-  id: string
-  inventory_id: string
-  part_number: string
-  name: string
-  manufacturer_id: any
-  description: string
-  created_by: any
-  updated_by: any
-  created_at: string
-  updated_at: string
+  id: string;
+  inventory_id: string;
+  part_number: string;
+  name: string;
+  manufacturer_id: any;
+  description: string;
+  created_by: any;
+  updated_by: any;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface UpcCode {
-  id: string
-  inventory_id: string
-  manufacturer_id: string
-  vendor_id: string
-  upc: string
-  created_by: any
-  updated_by: any
-  created_at: string
-  updated_at: string
+  id: string;
+  inventory_id: string;
+  manufacturer_id: string;
+  vendor_id: string;
+  upc: string;
+  created_by: any;
+  updated_by: any;
+  created_at: string;
+  updated_at: string;
 }

@@ -92,9 +92,13 @@ export default function HowItWorks() {
             <p className="text-xs font-semibold tracking-wide text-text-sub-600 uppercase">
               {idx + 1} · {s.kicker}
             </p>
-            <p className="mt-1 text-base font-semibold text-text-strong-950 sm:text-lg">{s.title}</p>
+            <p className="mt-1 text-base font-semibold text-text-strong-950 sm:text-lg">
+              {s.title}
+            </p>
             {idx === active && (
-              <p className="mt-2 text-sm leading-relaxed text-text-sub-600">{s.body}</p>
+              <p className="mt-2 text-sm leading-relaxed text-text-sub-600">
+                {s.body}
+              </p>
             )}
           </button>
         ))}
@@ -108,8 +112,12 @@ export default function HowItWorks() {
               <Icon className="size-5" strokeWidth={2} />
             </div>
             <div>
-              <p className="text-xs font-medium text-text-sub-600 uppercase">Live preview</p>
-              <p className="text-sm font-semibold text-text-strong-950">{step.mock.title}</p>
+              <p className="text-xs font-medium text-text-sub-600 uppercase">
+                Live preview
+              </p>
+              <p className="text-sm font-semibold text-text-strong-950">
+                {step.mock.title}
+              </p>
             </div>
           </div>
           <ul className="space-y-4">

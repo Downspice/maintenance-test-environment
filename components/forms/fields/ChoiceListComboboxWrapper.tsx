@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { Check, ChevronsUpDown, Plus } from 'lucide-react';
-import { useCallback, useMemo, useState } from 'react';
-import type { Control } from 'react-hook-form';
-import { toast } from 'sonner';
+import { Check, ChevronsUpDown, Plus } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
+import type { Control } from "react-hook-form";
+import { toast } from "sonner";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   Command,
   CommandEmpty,
@@ -14,29 +14,29 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-} from '@/components/ui/command';
+} from "@/components/ui/command";
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
+} from "@/components/ui/form";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
+} from "@/components/ui/popover";
 import {
   CHOICE_LIST_REGISTRY,
   type ChoiceListAddHook,
   type ChoiceListGetHook,
   type ChoiceListKey,
-} from '@/lib/shared/choice-list-registry';
-import { cn, isFieldEmpty } from '@/lib/shared/utils';
-import type { GenericObject } from '@/types/types';
+} from "@/lib/shared/choice-list-registry";
+import { cn, isFieldEmpty } from "@/lib/shared/utils";
+import type { GenericObject } from "@/types/types";
 
-const ADD_OPTION_PREFIX = '__add__';
+const ADD_OPTION_PREFIX = "__add__";
 
 interface BaseFieldProps {
   control: Control<any>;
@@ -49,7 +49,7 @@ interface BaseFieldProps {
   warning?: string;
   emptyText?: string;
   searchPlaceholder?: string;
-  direction?: 'horizontal' | 'vertical';
+  direction?: "horizontal" | "vertical";
   showLabel?: boolean;
 }
 
@@ -65,19 +65,19 @@ interface ChoiceListComboboxFieldProps extends BaseFieldProps {
 function extractChoiceListItemId(
   result: unknown,
   name: string,
-  options: GenericObject[],
+  options: GenericObject[]
 ): string | undefined {
-  if (result && typeof result === 'object') {
+  if (result && typeof result === "object") {
     const record = result as Record<string, unknown>;
 
-    if (typeof record.id === 'string') {
+    if (typeof record.id === "string") {
       return record.id;
     }
 
     const nested = record.data;
-    if (nested && typeof nested === 'object' && !Array.isArray(nested)) {
+    if (nested && typeof nested === "object" && !Array.isArray(nested)) {
       const nestedRecord = nested as Record<string, unknown>;
-      if (typeof nestedRecord.id === 'string') {
+      if (typeof nestedRecord.id === "string") {
         return nestedRecord.id;
       }
     }
@@ -86,10 +86,10 @@ function extractChoiceListItemId(
       const match = nested.find(
         (item) =>
           item &&
-          typeof item === 'object' &&
-          'name' in item &&
-          typeof item.name === 'string' &&
-          item.name.toLowerCase() === name.toLowerCase(),
+          typeof item === "object" &&
+          "name" in item &&
+          typeof item.name === "string" &&
+          item.name.toLowerCase() === name.toLowerCase()
       ) as GenericObject | undefined;
       if (match?.id) {
         return match.id;
@@ -98,7 +98,7 @@ function extractChoiceListItemId(
   }
 
   return options.find(
-    (option) => option.name?.toLowerCase() === name.toLowerCase(),
+    (option) => option.name?.toLowerCase() === name.toLowerCase()
   )?.id;
 }
 
@@ -113,15 +113,15 @@ export function ChoiceListComboboxFieldInner({
   disabled = false,
   required = false,
   warning,
-  emptyText = 'No option found.',
-  searchPlaceholder = 'Search...',
-  direction = 'horizontal',
+  emptyText = "No option found.",
+  searchPlaceholder = "Search...",
+  direction = "horizontal",
   showLabel = true,
 }: ChoiceListComboboxInnerProps) {
   const { data: options = [], isLoading, refetch } = useGet();
   const { mutateAsync, isPending: isAdding } = useAdd();
   const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
 
   const trimmedSearch = search.trim();
 
@@ -130,7 +130,7 @@ export function ChoiceListComboboxFieldInner({
     return options.filter(
       (option) =>
         option.name?.toLowerCase().includes(trimmedSearch.toLowerCase()) ||
-        option.id?.toLowerCase().includes(trimmedSearch.toLowerCase()),
+        option.id?.toLowerCase().includes(trimmedSearch.toLowerCase())
     );
   }, [options, trimmedSearch]);
 
@@ -138,7 +138,7 @@ export function ChoiceListComboboxFieldInner({
     if (!trimmedSearch) return false;
     return !options.some(
       (option) =>
-        option.name?.trim().toLowerCase() === trimmedSearch.toLowerCase(),
+        option.name?.trim().toLowerCase() === trimmedSearch.toLowerCase()
     );
   }, [options, trimmedSearch]);
 
@@ -155,22 +155,24 @@ export function ChoiceListComboboxFieldInner({
         const newId = extractChoiceListItemId(
           result,
           nextName,
-          refreshedOptions,
+          refreshedOptions
         );
 
         if (newId) {
           onChange(newId);
           setOpen(false);
-          setSearch('');
+          setSearch("");
           return;
         }
 
-        toast.error(`Added "${nextName}" but could not select it automatically.`);
+        toast.error(
+          `Added "${nextName}" but could not select it automatically.`
+        );
       } catch {
         toast.error(`Failed to add "${nextName}".`);
       }
     },
-    [mutateAsync, options, refetch],
+    [mutateAsync, options, refetch]
   );
 
   return (
@@ -182,7 +184,7 @@ export function ChoiceListComboboxFieldInner({
           if (id.startsWith(ADD_OPTION_PREFIX)) {
             void handleCreateOption(
               id.slice(ADD_OPTION_PREFIX.length),
-              field.onChange,
+              field.onChange
             );
             return;
           }
@@ -191,7 +193,7 @@ export function ChoiceListComboboxFieldInner({
           if (option?.id) {
             field.onChange(option.id);
             setOpen(false);
-            setSearch('');
+            setSearch("");
           }
         };
 
@@ -202,19 +204,19 @@ export function ChoiceListComboboxFieldInner({
         return (
           <FormItem
             className={cn(
-              'w-full',
-              direction === 'horizontal'
-                ? 'flex items-center gap-4'
-                : 'flex flex-col',
+              "w-full",
+              direction === "horizontal"
+                ? "flex items-center gap-4"
+                : "flex flex-col"
             )}
           >
             {showLabel && (
               <FormLabel
                 className={cn(
-                  direction === 'horizontal'
-                    ? 'w-[10rem] flex items-center justify-end text-right shrink-0'
-                    : 'mb-1',
-                  isMissingRequired && 'text-red-500',
+                  direction === "horizontal"
+                    ? "w-[10rem] flex items-center justify-end text-right shrink-0"
+                    : "mb-1",
+                  isMissingRequired && "text-red-500"
                 )}
               >
                 {label}
@@ -226,7 +228,7 @@ export function ChoiceListComboboxFieldInner({
                 open={open}
                 onOpenChange={(newOpen) => {
                   setOpen(newOpen);
-                  if (!newOpen) setSearch('');
+                  if (!newOpen) setSearch("");
                 }}
                 modal
               >
@@ -238,13 +240,13 @@ export function ChoiceListComboboxFieldInner({
                       aria-expanded={open}
                       disabled={disabled || isLoading}
                       className={cn(
-                        'w-full justify-between',
-                        !field.value && 'text-muted-foreground',
-                        className,
+                        "w-full justify-between",
+                        !field.value && "text-muted-foreground",
+                        className
                       )}
                     >
                       {isLoading
-                        ? 'Loading...'
+                        ? "Loading..."
                         : field.value
                           ? selectedLabel
                           : placeholder || `Select ${label.toLowerCase()}`}
@@ -273,14 +275,14 @@ export function ChoiceListComboboxFieldInner({
                           <CommandItem
                             key={option.id}
                             value={option.name}
-                            onSelect={() => handleSelect(option.id ?? '')}
+                            onSelect={() => handleSelect(option.id ?? "")}
                           >
                             <Check
                               className={cn(
-                                'mr-2 h-4 w-4',
+                                "mr-2 h-4 w-4",
                                 option.id === field.value
-                                  ? 'opacity-100'
-                                  : 'opacity-0',
+                                  ? "opacity-100"
+                                  : "opacity-0"
                               )}
                             />
                             {option.name}
@@ -294,7 +296,9 @@ export function ChoiceListComboboxFieldInner({
                             <CommandItem
                               value={`add-${trimmedSearch}`}
                               onSelect={() =>
-                                handleSelect(`${ADD_OPTION_PREFIX}${trimmedSearch}`)
+                                handleSelect(
+                                  `${ADD_OPTION_PREFIX}${trimmedSearch}`
+                                )
                               }
                               disabled={isAdding}
                             >

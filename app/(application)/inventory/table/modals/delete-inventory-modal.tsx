@@ -25,20 +25,26 @@ export function DeleteInventoryModal({
       warningTitle="Warning:"
       warningText={
         <>
-          This action <strong className="font-semibold text-text-strong-950">cannot be undone</strong>. Deleting this inventory item will remove all its associated data including stock levels, purchase history, and linked records.
+          This action{" "}
+          <strong className="font-semibold text-text-strong-950">
+            cannot be undone
+          </strong>
+          . Deleting this inventory item will remove all its associated data
+          including stock levels, purchase history, and linked records.
         </>
       }
       item={
         item
           ? {
               name: item.name || "Inventory Item",
-              description: [
-                item.part_number && `PN: ${item.part_number}`,
-                item.category?.name || item.category,
-                item.vendor?.name || item.vendor,
-              ]
-                .filter(Boolean)
-                .join(" • ") || "Inventory record",
+              description:
+                [
+                  item.part_number && `PN: ${item.part_number}`,
+                  item.category?.name || item.category,
+                  item.vendor?.name || item.vendor,
+                ]
+                  .filter(Boolean)
+                  .join(" • ") || "Inventory record",
             }
           : undefined
       }

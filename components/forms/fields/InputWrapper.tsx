@@ -65,23 +65,23 @@ export default function InputWrapper({
               {label}
             </FormLabel>
 
-          <div className="flex-1 flex flex-col">
-            <FormControl>
-              <Input
-                type={type??"text"}
-                placeholder={placeholder || `Enter ${label.toLowerCase()}`}
-                className={className}
-                disabled={disabled}
-                readOnly={readOnly}
-                {...field}
-              />
-            </FormControl>
-            <FormMessage />
-            {warning && (
-              <span className="text-xs text-amber-500 mt-1">{warning}</span>
-            )}
-          </div>
-        </FormItem>
+            <div className="flex-1 flex flex-col">
+              <FormControl>
+                <Input
+                  type={type ?? "text"}
+                  placeholder={placeholder || `Enter ${label.toLowerCase()}`}
+                  className={className}
+                  disabled={disabled}
+                  readOnly={readOnly}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+              {warning && (
+                <span className="text-xs text-amber-500 mt-1">{warning}</span>
+              )}
+            </div>
+          </FormItem>
         );
       }}
     />

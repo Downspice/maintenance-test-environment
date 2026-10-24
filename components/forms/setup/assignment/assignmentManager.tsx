@@ -104,22 +104,30 @@ const dummyPartData = [
 ];
 
 export default function AssignmentConfigurations() {
- const [selectedPM, setSelectedPM] = useState<string>(pmTemplates[0]);
-  const [selectedEquipment, setSelectedEquipment] = useState<string | null>(null);
+  const [selectedPM, setSelectedPM] = useState<string>(pmTemplates[0]);
+  const [selectedEquipment, setSelectedEquipment] = useState<string | null>(
+    null
+  );
   const [openDialog, setOpenDialog] = useState(false);
   const [activeTab, setActiveTab] = useState("labor");
   const [radioType, setRadioType] = useState("preventive");
   const [method, setMethod] = useState("assignLabourer");
   const [labourerType, setLabourerType] = useState("employee");
-  const [instructions, setInstructions] = useState<{ service: string; files: string[] }[]>([]);
-  const [laborAssociations, setLaborAssociations] = useState<any[]>(dummyLaborData);
-  const [partAssociations, setPartAssociations] = useState<any[]>(dummyPartData);
-  const [editingLaborIndex, setEditingLaborIndex] = useState<number | null>(null);
+  const [instructions, setInstructions] = useState<
+    { service: string; files: string[] }[]
+  >([]);
+  const [laborAssociations, setLaborAssociations] =
+    useState<any[]>(dummyLaborData);
+  const [partAssociations, setPartAssociations] =
+    useState<any[]>(dummyPartData);
+  const [editingLaborIndex, setEditingLaborIndex] = useState<number | null>(
+    null
+  );
   const [editingPartIndex, setEditingPartIndex] = useState<number | null>(null);
 
   const isEditing = editingLaborIndex !== null || editingPartIndex !== null;
 
-const laborForm = useForm<LaborAssociationFormValues>({
+  const laborForm = useForm<LaborAssociationFormValues>({
     resolver: zodResolver(laborAssociationSchema),
     defaultValues: {
       type: "preventive",
@@ -288,7 +296,6 @@ const laborForm = useForm<LaborAssociationFormValues>({
                 type="number"
               />
             )}
-
           </form>
         </Form>
       );
@@ -351,7 +358,8 @@ const laborForm = useForm<LaborAssociationFormValues>({
                 { id: "assignedPart", name: "Assigned Part" },
                 { id: "fixedCost", name: "Fixed Cost" },
               ]}
-              onChange={(val) => partForm.setValue("method", val as any)} disabled={isEditing}
+              onChange={(val) => partForm.setValue("method", val as any)}
+              disabled={isEditing}
             />
 
             {partForm.watch("method") === "assignedPart" ? (
@@ -399,7 +407,6 @@ const laborForm = useForm<LaborAssociationFormValues>({
                 type="number"
               />
             )}
-
           </form>
         </Form>
       );
@@ -447,7 +454,6 @@ const laborForm = useForm<LaborAssociationFormValues>({
               name="instructionFiles"
               label="Upload Files"
             />
-
           </form>
         </Form>
       );
@@ -491,7 +497,7 @@ const laborForm = useForm<LaborAssociationFormValues>({
 
   const renderAssociationActions = (
     onEdit: () => void,
-    onDelete: () => void,
+    onDelete: () => void
   ) => (
     <div className="flex justify-end gap-2">
       <Button type="button" variant="secondary" size="icon" onClick={onEdit}>
@@ -535,8 +541,8 @@ const laborForm = useForm<LaborAssociationFormValues>({
                   () => handleEditLabor(idx),
                   () =>
                     setLaborAssociations((rows) =>
-                      rows.filter((_, i) => i !== idx),
-                    ),
+                      rows.filter((_, i) => i !== idx)
+                    )
                 )}
               </TableCell>
             </TableRow>
@@ -574,8 +580,8 @@ const laborForm = useForm<LaborAssociationFormValues>({
                   () => handleEditPart(idx),
                   () =>
                     setPartAssociations((rows) =>
-                      rows.filter((_, i) => i !== idx),
-                    ),
+                      rows.filter((_, i) => i !== idx)
+                    )
                 )}
               </TableCell>
             </TableRow>
@@ -590,7 +596,9 @@ const laborForm = useForm<LaborAssociationFormValues>({
       <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 lg:grid-cols-[minmax(260px,1fr)_2.5fr]">
         <div className="flex min-h-0 flex-col gap-3">
           <div className="shrink-0 space-y-1">
-            <Label className="text-label-sm text-text-sub-600">PM Template</Label>
+            <Label className="text-label-sm text-text-sub-600">
+              PM Template
+            </Label>
             <Select
               value={selectedPM}
               onValueChange={(value) => {

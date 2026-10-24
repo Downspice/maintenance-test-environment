@@ -2,16 +2,12 @@
 
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  useForm,
-} from "react-hook-form"; 
+import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { GitPullRequestArrow } from "lucide-react";
 import { toast } from "sonner";
-import { 
-  categoryOptions,
-} from "@/lib/schemas/equipment-schema";
+import { categoryOptions } from "@/lib/schemas/equipment-schema";
 import SelectWrapper from "@/components/forms/fields/SelectWrapper";
 
 // Define the form schema with Zod
@@ -19,17 +15,13 @@ export const CategoryChangeSchema = z.object({
   category: z.string().min(1, "Transfer to warehouse is required"),
 });
 
-export type CategoryChangeInterface = z.infer<
-  typeof CategoryChangeSchema
->;
+export type CategoryChangeInterface = z.infer<typeof CategoryChangeSchema>;
 export default function CategoryChangeForm({
   data,
 }: {
   data: CategoryChangeInterface;
 }) {
-  const CategoryChangeForm = useForm<
-    z.infer<typeof CategoryChangeSchema>
-  >({
+  const CategoryChangeForm = useForm<z.infer<typeof CategoryChangeSchema>>({
     resolver: zodResolver(CategoryChangeSchema),
     defaultValues: { ...data },
   });
@@ -55,7 +47,7 @@ export default function CategoryChangeForm({
               name="category"
               label="Category"
               options={categoryOptions}
-            />  
+            />
           </div>
           <div className="flex justify-between gap-x-4 my-8 w-full">
             <Button className=" w-full">

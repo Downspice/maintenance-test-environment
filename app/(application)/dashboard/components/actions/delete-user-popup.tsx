@@ -46,7 +46,7 @@ export function DeleteUserPopup({
       if (response.success) {
         toast.success("User deleted successfully");
         onOpenChange(false);
-        
+
         // Reset the selection state if the function is provided
         if (resetSelection) {
           resetSelection();
@@ -57,7 +57,9 @@ export function DeleteUserPopup({
         toast.error(response.error || "Failed to delete user");
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to delete user");
+      toast.error(
+        error instanceof Error ? error.message : "Failed to delete user"
+      );
     } finally {
       setIsLoading(false);
     }
@@ -69,7 +71,8 @@ export function DeleteUserPopup({
         <DialogHeader>
           <DialogTitle>Delete User</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete {userName}? This action cannot be undone.
+            Are you sure you want to delete {userName}? This action cannot be
+            undone.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>

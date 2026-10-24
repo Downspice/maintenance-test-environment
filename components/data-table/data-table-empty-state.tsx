@@ -116,7 +116,7 @@ export function DataTableEmptyState({
     <div
       className={cn(
         "flex min-h-[12rem] flex-col items-center justify-center gap-3 px-6 py-10 text-center",
-        className,
+        className
       )}
     >
       <div className="flex size-14 items-center justify-center rounded-full bg-bg-weak-50 text-primary-base ring-1 ring-stroke-soft-200">

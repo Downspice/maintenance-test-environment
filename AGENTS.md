@@ -76,14 +76,15 @@ export default function [Entity]FormWrapper({ variant }: TriggerVariant) {
 1. **Standard Entity Drawers** (Vendors, Employees, Customers, Inventory, Equipment, etc.):
    - Use:
      ```tsx
-     className="w-full sm:w-[45%] sm:min-w-[600px] sm:max-w-none lg:max-w-none"
+     className =
+       "w-full sm:w-[45%] sm:min-w-[600px] sm:max-w-none lg:max-w-none";
      ```
    - Always include `sm:max-w-none lg:max-w-none` to override Radix Sheet max-width constraints.
 
 2. **Complex Document Drawers** (Purchase Orders, Invoices):
    - When entities contain complex line-item tables, multi-column financial totals, and wide tabs, cover the full screen:
      ```tsx
-     className="inset-0 w-full max-w-none sm:max-w-none lg:max-w-none"
+     className = "inset-0 w-full max-w-none sm:max-w-none lg:max-w-none";
      ```
 
 3. **Page "New" Action Buttons (`openSheet`)**:
@@ -122,9 +123,11 @@ export default function [Entity]FormWrapper({ variant }: TriggerVariant) {
 Entity forms rendered inside drawers must follow the Create Vendor layout pattern:
 
 ### 1. Tabs Organization (Optional)
+
 Tabs are **optional and not enforced** for all drawers. Many forms (e.g. Record Payment, simple entity forms, focused dialogs) should be rendered directly without tabs. Use tabs only when an entity has multiple large, distinct categories (e.g. General, Contact, Attachments, Notes).
 
 - **Forms with Tabs**:
+
 ```tsx
 <Tabs defaultValue="general" className="w-full">
   <TabsList>
@@ -134,28 +137,27 @@ Tabs are **optional and not enforced** for all drawers. Many forms (e.g. Record 
     <TabsTrigger value="attachment">Attachments</TabsTrigger>
   </TabsList>
   <TabsContent value="general">
-    <div className="flex flex-col gap-1">
-      {/* Fields */}
-    </div>
+    <div className="flex flex-col gap-1">{/* Fields */}</div>
   </TabsContent>
   ...
 </Tabs>
 ```
 
 - **Forms without Tabs** (e.g. Record Payment, Quick Add forms):
-Directly render fields inside `<div className="flex flex-col gap-1">` (with optional `<FormSubheader />` or `<Fieldset />` dividers where appropriate):
+  Directly render fields inside `<div className="flex flex-col gap-1">` (with optional `<FormSubheader />` or `<Fieldset />` dividers where appropriate):
+
 ```tsx
-<div className="flex flex-col gap-1">
-  {/* Fields rendered directly */}
-</div>
+<div className="flex flex-col gap-1">{/* Fields rendered directly */}</div>
 ```
 
 ### 2. Vertical Field Spacing & Grid Columns
+
 - Each vertical group uses `<div className="flex flex-col gap-1">` (tight, consistent spacing).
 - Multi-column rows use `<div className="grid grid-cols-2 gap-x-4 gap-y-1">`.
 - Section dividers use `<FormSubheader header={"Section Name"} />`.
 
 ### 3. Field Wrappers & Label Alignment
+
 - All fields must use the standardized field wrappers:
   - `InputWrapper`
   - `SelectWrapper`
@@ -170,6 +172,7 @@ Directly render fields inside `<div className="flex flex-col gap-1">` (with opti
   - No asterisks (`*`) in labels.
 
 ### 4. Custom Fields Behavior
+
 - Custom fields must behave like `CustomFieldRow`:
   - Directly render `CustomFieldsWrapper` with `maxFields={2}` (or `CustomFieldRow`).
   - In-place editable labels with pencil icon toggle.

@@ -20,9 +20,24 @@ import {
 } from "@/components/ui/table";
 
 const catalog = [
-  { partNumber: "P001", name: "Oil Filter", warehouse: "Warehouse A", onHandQuantity: 100 },
-  { partNumber: "P002", name: "Brake Pad", warehouse: "Warehouse B", onHandQuantity: 50 },
-  { partNumber: "P003", name: "Air Filter", warehouse: "Warehouse C", onHandQuantity: 75 },
+  {
+    partNumber: "P001",
+    name: "Oil Filter",
+    warehouse: "Warehouse A",
+    onHandQuantity: 100,
+  },
+  {
+    partNumber: "P002",
+    name: "Brake Pad",
+    warehouse: "Warehouse B",
+    onHandQuantity: 50,
+  },
+  {
+    partNumber: "P003",
+    name: "Air Filter",
+    warehouse: "Warehouse C",
+    onHandQuantity: 75,
+  },
 ];
 
 export type PartKitPartsTableHandle = {
@@ -81,7 +96,8 @@ const PartKitPartsTable = forwardRef<
                   colSpan={6}
                   className="py-8 text-center text-paragraph-sm text-text-sub-600"
                 >
-                  No parts in this kit yet. Use Add Part to include inventory items.
+                  No parts in this kit yet. Use Add Part to include inventory
+                  items.
                 </TableCell>
               </TableRow>
             ) : (
@@ -166,7 +182,9 @@ export function PartForm({
     },
   });
 
-  const selectedPart = catalog.find((c) => c.partNumber === form.watch("partNumber"));
+  const selectedPart = catalog.find(
+    (c) => c.partNumber === form.watch("partNumber")
+  );
 
   useEffect(() => {
     if (part) {

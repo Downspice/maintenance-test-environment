@@ -43,7 +43,9 @@ export default function PurchaseOrderDataTable({
   locationId?: string;
   statusId?: string;
 }) {
-  return <PurchaseOrderDataLoader locationId={locationId} statusId={statusId} />;
+  return (
+    <PurchaseOrderDataLoader locationId={locationId} statusId={statusId} />
+  );
 }
 
 export function PurchaseOrderDataLoader({
@@ -79,7 +81,9 @@ export function PurchaseOrderDataLoader({
   });
 
   const serverRows = paged?.data ?? [];
-  const currentPage = paged?.current_page ? Number(paged.current_page) : pageIndex + 1;
+  const currentPage = paged?.current_page
+    ? Number(paged.current_page)
+    : pageIndex + 1;
   const totalPages = paged?.last_page ? Number(paged.last_page) : 1;
   const totalRows = paged?.total ? Number(paged.total) : serverRows.length;
   const effectivePageSize = paged?.per_page ? Number(paged.per_page) : pageSize;
@@ -153,7 +157,9 @@ export function PurchaseOrderDataLoader({
   // Server-side pagination handler
   const handlePaginationChange = (action: "next" | "previous" | number) => {
     if (action === "next") {
-      setPageIndex((p) => Math.min(p + 1, Math.max(0, paginationInfo.totalPages - 1)));
+      setPageIndex((p) =>
+        Math.min(p + 1, Math.max(0, paginationInfo.totalPages - 1))
+      );
     } else if (action === "previous") {
       setPageIndex((p) => Math.max(p - 1, 0));
     } else if (typeof action === "number") {
@@ -235,11 +241,7 @@ export function PurchaseOrderDataLoader({
     {
       accessorKey: "po_number",
       header: ({ column }) => (
-        <SortableHeader
-          column={column}
-          title="PO#"
-          sortable={true}
-        />
+        <SortableHeader column={column} title="PO#" sortable={true} />
       ),
       cell: ({ row }) => (
         // <ViewPurchaseOrder
@@ -258,54 +260,34 @@ export function PurchaseOrderDataLoader({
     {
       accessorKey: "status.name",
       header: ({ column }) => (
-        <SortableHeader
-          column={column}
-          title="Status"
-          sortable={true}
-        />
+        <SortableHeader column={column} title="Status" sortable={true} />
       ),
     },
     {
       accessorKey: "issued_date",
       header: ({ column }) => (
-        <SortableHeader
-          column={column}
-          title="Issued On"
-          sortable={true}
-        />
+        <SortableHeader column={column} title="Issued On" sortable={true} />
       ),
       cell: ({ row }) => <>{row.original.issued_date}</>,
     },
     {
       accessorKey: "due_date",
       header: ({ column }) => (
-        <SortableHeader
-          column={column}
-          title="Due"
-          sortable={true}
-        />
+        <SortableHeader column={column} title="Due" sortable={true} />
       ),
       cell: ({ row }) => <>{row.original.due_date}</>,
     },
     {
       accessorKey: "vendor",
       header: ({ column }) => (
-        <SortableHeader
-          column={column}
-          title="Vendor"
-          sortable={true}
-        />
+        <SortableHeader column={column} title="Vendor" sortable={true} />
       ),
       cell: ({ row }) => <>{row.original.vendor}</>,
     },
     {
       accessorKey: "buyer_name",
       header: ({ column }) => (
-        <SortableHeader
-          column={column}
-          title="Buyer"
-          sortable={true}
-        />
+        <SortableHeader column={column} title="Buyer" sortable={true} />
       ),
       cell: ({ row }) => (
         <>
@@ -390,12 +372,8 @@ export function PurchaseOrderDataLoader({
                   ))}
 
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    Email
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    Print
-                  </DropdownMenuItem>
+                  <DropdownMenuItem>Email</DropdownMenuItem>
+                  <DropdownMenuItem>Print</DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
@@ -425,8 +403,7 @@ export function PurchaseOrderDataLoader({
                   <SheetTitle className="flex items-center gap-2">
                     Receive Purchase Order
                   </SheetTitle>
-                  <SheetDescription>
-                  </SheetDescription>
+                  <SheetDescription></SheetDescription>
                 </SheetHeader>
 
                 <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">

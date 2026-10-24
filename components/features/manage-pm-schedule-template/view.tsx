@@ -1,7 +1,3 @@
-
 export default function ManagePMScheduleTemplateView() {
-  return (
-     <>f
-     </>
-  );
+  return <>f</>;
 }

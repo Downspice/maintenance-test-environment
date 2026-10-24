@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import type { Column } from "@tanstack/react-table"
-import { ArrowUpDown, ArrowUp, ArrowDown, Filter, FilterX } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import type { Column } from "@tanstack/react-table";
+import { ArrowUpDown, ArrowUp, ArrowDown, Filter, FilterX } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -10,13 +10,13 @@ import {
   DropdownMenuTrigger,
   DropdownMenuItem,
   DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 
 interface SortableHeaderProps<TData, TValue> {
-  column: Column<TData, TValue>
-  title: string
-  sortable?: boolean
-  filterOptions?: string[]
+  column: Column<TData, TValue>;
+  title: string;
+  sortable?: boolean;
+  filterOptions?: string[];
 }
 
 export function SortableHeader<TData, TValue>({
@@ -25,8 +25,8 @@ export function SortableHeader<TData, TValue>({
   sortable = true,
   filterOptions = [],
 }: SortableHeaderProps<TData, TValue>) {
-  const currentFilter = column.getFilterValue() as string[] | undefined
-  const hasFilter = filterOptions.length > 0
+  const currentFilter = column.getFilterValue() as string[] | undefined;
+  const hasFilter = filterOptions.length > 0;
 
   return (
     <div className="flex items-center space-x-2">
@@ -63,7 +63,10 @@ export function SortableHeader<TData, TValue>({
           <DropdownMenuContent align="start" className="w-[200px]">
             {currentFilter && currentFilter.length > 0 && (
               <>
-                <DropdownMenuItem onClick={() => column.setFilterValue([])} className="text-destructive">
+                <DropdownMenuItem
+                  onClick={() => column.setFilterValue([])}
+                  className="text-destructive"
+                >
                   Clear Filter
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
@@ -74,11 +77,13 @@ export function SortableHeader<TData, TValue>({
                 key={option}
                 checked={currentFilter?.includes(option) ?? false}
                 onCheckedChange={(checked) => {
-                  const current = currentFilter || []
+                  const current = currentFilter || [];
                   if (checked) {
-                    column.setFilterValue([...current, option])
+                    column.setFilterValue([...current, option]);
                   } else {
-                    column.setFilterValue(current.filter((item) => item !== option))
+                    column.setFilterValue(
+                      current.filter((item) => item !== option)
+                    );
                   }
                 }}
               >
@@ -89,5 +94,5 @@ export function SortableHeader<TData, TValue>({
         </DropdownMenu>
       )}
     </div>
-  )
+  );
 }

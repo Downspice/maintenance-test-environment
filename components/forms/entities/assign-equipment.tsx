@@ -33,9 +33,7 @@ import RadioGroupWrapper, {
   RadioOption,
 } from "@/components/forms/fields/RadioGroupWrapper";
 import SingleCheckboxWrapper from "@/components/forms/fields/SingleCheckboxWrapper";
-import {
-  useGetLocations,
-} from "@/services/setups/lookups";
+import { useGetLocations } from "@/services/setups/lookups";
 
 interface triggerVariant {
   variant?: "icon" | "default";
@@ -126,154 +124,158 @@ export default function EquipmentAssignment({
             <TabsTrigger value="Expenses">Expenses</TabsTrigger>
             <TabsTrigger value="Notes">Notes</TabsTrigger>
           </TabsList>
-          <TabsContent value="Assignment" className="mt-4 flex min-w-0 flex-col gap-1">
-                <ComboboxFieldWrapper
-                  control={form.control}
-                  name="inspectedBy"
-                  label="Inspected By"
-                  options={equipmentOptionsList}
-                />
-                <RadioGroupWrapper
-                  control={form.control}
-                  name="usage"
-                  label="Usage"
-                  options={usageOptions}
-                  orientation="horizontal"
-                />
-                <ComboboxFieldWrapper
-                  control={form.control}
-                  name="job"
-                  label="Job"
-                  options={jobSiteOptionsList}
-                />
-                <ComboboxFieldWrapper
-                  control={form.control}
-                  name="employee"
-                  label="Employee"
-                  options={assigneeOptions}
-                />
-                <ComboboxFieldWrapper
-                  control={form.control}
-                  name="employee"
-                  label="Employee"
-                  options={assigneeOptions}
-                />
-                <ComboboxFieldWrapper
-                  control={form.control}
-                  name="customer"
-                  label="Customer"
-                  options={assigneeOptions}
-                />
+          <TabsContent
+            value="Assignment"
+            className="mt-4 flex min-w-0 flex-col gap-1"
+          >
+            <ComboboxFieldWrapper
+              control={form.control}
+              name="inspectedBy"
+              label="Inspected By"
+              options={equipmentOptionsList}
+            />
+            <RadioGroupWrapper
+              control={form.control}
+              name="usage"
+              label="Usage"
+              options={usageOptions}
+              orientation="horizontal"
+            />
+            <ComboboxFieldWrapper
+              control={form.control}
+              name="job"
+              label="Job"
+              options={jobSiteOptionsList}
+            />
+            <ComboboxFieldWrapper
+              control={form.control}
+              name="employee"
+              label="Employee"
+              options={assigneeOptions}
+            />
+            <ComboboxFieldWrapper
+              control={form.control}
+              name="employee"
+              label="Employee"
+              options={assigneeOptions}
+            />
+            <ComboboxFieldWrapper
+              control={form.control}
+              name="customer"
+              label="Customer"
+              options={assigneeOptions}
+            />
 
-                <Fieldset
-                  legend="Duration"
-                  className="rounded-2xl border-0 bg-bg-weak-50/40 p-4 ring-1 ring-inset ring-stroke-soft-200"
-                  content={
-                    <div className="flex flex-col gap-4">
-                      <div className="flex min-w-0 flex-col gap-1">
-                        <span className="text-label-sm font-medium text-text-sub-600">
-                          OUT
-                        </span>
-                        <div className="grid grid-cols-1 gap-x-4 gap-y-1 sm:grid-cols-3">
-                          <DatePickerWrapper
-                            control={form.control}
-                            name="outDate"
-                            label="Date"
-                          />
-                          <DatePickerWrapper
-                            control={form.control}
-                            name="outTime"
-                            label="Time"
-                          />
-                          <InputWrapper
-                            control={form.control}
-                            name="outHours"
-                            label="Hours"
-                            placeholder="Enter hours"
-                            type="number"
-                          />
-                        </div>
-                      </div>
-                      <div className="flex min-w-0 flex-col gap-1">
-                        <span className="text-label-sm font-medium text-text-sub-600">
-                          IN
-                        </span>
-                        <div className="grid grid-cols-1 gap-x-4 gap-y-1 sm:grid-cols-3">
-                          <DatePickerWrapper
-                            control={form.control}
-                            name="inDate"
-                            label="Date"
-                          />
-                          <DatePickerWrapper
-                            control={form.control}
-                            name="inTime"
-                            label="Time"
-                          />
-                          <InputWrapper
-                            control={form.control}
-                            name="inHours"
-                            label="Hours"
-                            placeholder="Enter hours"
-                            type="number"
-                          />
-                        </div>
-                      </div>
-                      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                        <div className="text-paragraph-sm text-primary-base">
-                          Assigned period: 4 week(s)
-                        </div>
-                        <SingleCheckboxWrapper
-                          control={form.control}
-                          name="excludeWeeekend"
-                          label="Exclude weekends"
-                        />
-                      </div>
-                    </div>
-                  }
-                />
-                <Fieldset
-                  legend="Optional Details"
-                  className="rounded-2xl border-0 bg-bg-weak-50/40 p-4 ring-1 ring-inset ring-stroke-soft-200"
-                  content={
-                    <div className="grid grid-cols-1 gap-x-4 gap-y-1 sm:grid-cols-2">
-                      <ComboboxFieldWrapper
-                        className="cols-span-2"
+            <Fieldset
+              legend="Duration"
+              className="rounded-2xl border-0 bg-bg-weak-50/40 p-4 ring-1 ring-inset ring-stroke-soft-200"
+              content={
+                <div className="flex flex-col gap-4">
+                  <div className="flex min-w-0 flex-col gap-1">
+                    <span className="text-label-sm font-medium text-text-sub-600">
+                      OUT
+                    </span>
+                    <div className="grid grid-cols-1 gap-x-4 gap-y-1 sm:grid-cols-3">
+                      <DatePickerWrapper
                         control={form.control}
-                        name="destination"
-                        label="Destination"
-                        options={destinationOptionsList}
+                        name="outDate"
+                        label="Date"
                       />
-                      <ComboboxFieldWrapper
-                        className="cols-span-1"
+                      <DatePickerWrapper
                         control={form.control}
-                        name="type_id"
-                        label="Type"
-                        options={vendorTypeOptions}
-                      />
-                      <InputWrapper
-                        control={form.control} className="cols-span-1"
-                        name="state"
-                        label="State/Province"
-                        type={"number"}
-                        value={"0.00"}
+                        name="outTime"
+                        label="Time"
                       />
                       <InputWrapper
                         control={form.control}
-                        name="rate"
-                        label={"Rate"}
-                        type={"number"}
-                        value={"0.00"}
-                      />
-                      <ComboboxFieldWrapper
-                        className="cols-span-1"
-                        control={form.control}
-                        name="state"
-                        label="State/Province"
-                        options={rateDurationOptions}
+                        name="outHours"
+                        label="Hours"
+                        placeholder="Enter hours"
+                        type="number"
                       />
                     </div>
-                  }
-                />
+                  </div>
+                  <div className="flex min-w-0 flex-col gap-1">
+                    <span className="text-label-sm font-medium text-text-sub-600">
+                      IN
+                    </span>
+                    <div className="grid grid-cols-1 gap-x-4 gap-y-1 sm:grid-cols-3">
+                      <DatePickerWrapper
+                        control={form.control}
+                        name="inDate"
+                        label="Date"
+                      />
+                      <DatePickerWrapper
+                        control={form.control}
+                        name="inTime"
+                        label="Time"
+                      />
+                      <InputWrapper
+                        control={form.control}
+                        name="inHours"
+                        label="Hours"
+                        placeholder="Enter hours"
+                        type="number"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="text-paragraph-sm text-primary-base">
+                      Assigned period: 4 week(s)
+                    </div>
+                    <SingleCheckboxWrapper
+                      control={form.control}
+                      name="excludeWeeekend"
+                      label="Exclude weekends"
+                    />
+                  </div>
+                </div>
+              }
+            />
+            <Fieldset
+              legend="Optional Details"
+              className="rounded-2xl border-0 bg-bg-weak-50/40 p-4 ring-1 ring-inset ring-stroke-soft-200"
+              content={
+                <div className="grid grid-cols-1 gap-x-4 gap-y-1 sm:grid-cols-2">
+                  <ComboboxFieldWrapper
+                    className="cols-span-2"
+                    control={form.control}
+                    name="destination"
+                    label="Destination"
+                    options={destinationOptionsList}
+                  />
+                  <ComboboxFieldWrapper
+                    className="cols-span-1"
+                    control={form.control}
+                    name="type_id"
+                    label="Type"
+                    options={vendorTypeOptions}
+                  />
+                  <InputWrapper
+                    control={form.control}
+                    className="cols-span-1"
+                    name="state"
+                    label="State/Province"
+                    type={"number"}
+                    value={"0.00"}
+                  />
+                  <InputWrapper
+                    control={form.control}
+                    name="rate"
+                    label={"Rate"}
+                    type={"number"}
+                    value={"0.00"}
+                  />
+                  <ComboboxFieldWrapper
+                    className="cols-span-1"
+                    control={form.control}
+                    name="state"
+                    label="State/Province"
+                    options={rateDurationOptions}
+                  />
+                </div>
+              }
+            />
           </TabsContent>
           <TabsContent value="Expenses" className="mt-4 min-w-0">
             <div className="min-w-0 overflow-x-auto">

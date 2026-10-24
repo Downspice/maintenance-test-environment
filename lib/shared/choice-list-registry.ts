@@ -7,7 +7,7 @@ import {
   useGetEmployeeRenewals,
   useGetEmployeeStatuses,
   useGetEmployeeTypes,
-} from '@/services/setups/employee';
+} from "@/services/setups/employee";
 import {
   useAddEquipmentColor,
   useAddEquipmentMake,
@@ -25,7 +25,7 @@ import {
   useGetEquipmentStatuses,
   useGetEquipmentTypes,
   useGetExpenseTypes,
-} from '@/services/setups/equipments';
+} from "@/services/setups/equipments";
 import {
   useAddCostCenter,
   useAddInventoryCategory,
@@ -35,7 +35,7 @@ import {
   useGetInventoryCategories,
   useGetInventoryManufacturers,
   useGetInventoryUnitTypes,
-} from '@/services/setups/inventory';
+} from "@/services/setups/inventory";
 import {
   useAddMaintenanceRepair,
   useAddMaintenanceRepairType,
@@ -43,7 +43,7 @@ import {
   useGetMaintenanceRepairs,
   useGetMaintenanceRepairTypes,
   useGetMaintenanceTaskTypes,
-} from '@/services/setups/maintenance';
+} from "@/services/setups/maintenance";
 import {
   useAddLocation,
   useAddPurchaseOrderTerm,
@@ -53,16 +53,16 @@ import {
   useGetPurchaseOrderTerms,
   useGetStatusOnes,
   useGetVendorTypes,
-} from '@/services/setups/lookups';
+} from "@/services/setups/lookups";
 import {
   useAddPurchaseOrderShipVia,
   useGetPurchaseOrderShipVias,
-} from '@/services/setups/purchaseOrder';
+} from "@/services/setups/purchaseOrder";
 import {
   useAddWorkOrderType,
   useGetWorkOrderTypes,
-} from '@/services/setups/workOrder';
-import type { GenericObject } from '@/types/types';
+} from "@/services/setups/workOrder";
+import type { GenericObject } from "@/types/types";
 
 export type ChoiceListGetHook = () => {
   data?: GenericObject[];
@@ -85,43 +85,43 @@ export const CHOICE_LIST_REGISTRY = {
     useGet: useGetExpenseTypes,
     useAdd: useAddExpenseType,
   },
-  'equipments:types': {
+  "equipments:types": {
     useGet: useGetEquipmentTypes,
     useAdd: useAddEquipmentType,
   },
-  'equipments:status': {
+  "equipments:status": {
     useGet: useGetEquipmentStatuses,
     useAdd: useAddEquipmentStatus,
   },
-  'equipments:renewals': {
+  "equipments:renewals": {
     useGet: useGetEquipmentRenewals,
     useAdd: useAddEquipmentRenewal,
   },
-  'equipments:models': {
+  "equipments:models": {
     useGet: useGetEquipmentModels,
     useAdd: useAddEquipmentModel,
   },
-  'equipments:meterTypes': {
+  "equipments:meterTypes": {
     useGet: useGetEquipmentMeterTypes,
     useAdd: useAddEquipmentMeterType,
   },
-  'equipments:colors': {
+  "equipments:colors": {
     useGet: useGetEquipmentColors,
     useAdd: useAddEquipmentColor,
   },
-  'equipments:makes': {
+  "equipments:makes": {
     useGet: useGetEquipmentMakes,
     useAdd: useAddEquipmentMake,
   },
-  'workOrders:types': {
+  "workOrders:types": {
     useGet: useGetWorkOrderTypes,
     useAdd: useAddWorkOrderType,
   },
-  'purchaseOrders:terms': {
+  "purchaseOrders:terms": {
     useGet: useGetPurchaseOrderTerms,
     useAdd: useAddPurchaseOrderTerm,
   },
-  'purchaseOrders:shippingMethods': {
+  "purchaseOrders:shippingMethods": {
     useGet: useGetPurchaseOrderShipVias,
     useAdd: useAddPurchaseOrderShipVia,
   },
@@ -129,19 +129,19 @@ export const CHOICE_LIST_REGISTRY = {
     useGet: useGetVendorTypes,
     useAdd: useAddVendorType,
   },
-  'employee:status': {
+  "employee:status": {
     useGet: useGetEmployeeStatuses,
     useAdd: useAddEmployeeStatus,
   },
-  'employee:category': {
+  "employee:category": {
     useGet: useGetEmployeeCategories,
     useAdd: useAddEmployeeCategory,
   },
-  'employee:types': {
+  "employee:types": {
     useGet: useGetEmployeeTypes,
     useAdd: useAddEmployeeType,
   },
-  'employee:renewals': {
+  "employee:renewals": {
     useGet: useGetEmployeeRenewals,
     useAdd: useAddEmployeeRenewal,
   },
@@ -149,27 +149,27 @@ export const CHOICE_LIST_REGISTRY = {
     useGet: useGetCostCenters,
     useAdd: useAddCostCenter,
   },
-  'inventory:manufacturers': {
+  "inventory:manufacturers": {
     useGet: useGetInventoryManufacturers,
     useAdd: useAddInventoryManufacturer,
   },
-  'inventory:categories': {
+  "inventory:categories": {
     useGet: useGetInventoryCategories,
     useAdd: useAddInventoryCategory,
   },
-  'inventory:unitTypes': {
+  "inventory:unitTypes": {
     useGet: useGetInventoryUnitTypes,
     useAdd: useAddInventoryUnitType,
   },
-  'maintenance:repairTypes': {
+  "maintenance:repairTypes": {
     useGet: useGetMaintenanceRepairs,
     useAdd: useAddMaintenanceRepair,
   },
-  'maintenance:repairs': {
+  "maintenance:repairs": {
     useGet: useGetMaintenanceRepairTypes,
     useAdd: useAddMaintenanceRepairType,
   },
-  'maintenance:taskTypes': {
+  "maintenance:taskTypes": {
     useGet: useGetMaintenanceTaskTypes,
     useAdd: useAddMaintenanceTaskType,
   },

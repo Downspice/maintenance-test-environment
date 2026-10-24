@@ -74,11 +74,11 @@ export function MeterReplacementTab() {
   const [filter, setFilter] = useState("");
   const [editOpen, setEditOpen] = useState(false);
   const [editingRow, setEditingRow] = useState<MeterReplacementRow | null>(
-    null,
+    null
   );
 
   const filteredData = rows.filter((item) =>
-    item.replacementMeter.toLowerCase().includes(filter.toLowerCase()),
+    item.replacementMeter.toLowerCase().includes(filter.toLowerCase())
   );
 
   const handleDelete = async (row: MeterReplacementRow) => {

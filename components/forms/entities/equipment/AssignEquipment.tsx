@@ -29,7 +29,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-
 import { Pencil, Trash2 } from "lucide-react";
 import FluidConsumedForm, { EditFluidConsumption } from "./FluidConsumed";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -427,7 +426,10 @@ export default function AssignEquipmentForm() {
                           <TableCell>{fuel.price}</TableCell>
                           <TableCell>{fuel.totalCost}</TableCell>
                           <TableCell>{fuel.state}</TableCell>
-                          <TableCell className="w-px whitespace-nowrap" style={{ width: "1%" }}>
+                          <TableCell
+                            className="w-px whitespace-nowrap"
+                            style={{ width: "1%" }}
+                          >
                             <div className="flex gap-2">
                               <EditFluidConsumption
                                 children={
@@ -879,7 +881,10 @@ export function EditAssignEquipmentForm({
                                   <TableCell>{fuel.price}</TableCell>
                                   <TableCell>{fuel.totalCost}</TableCell>
                                   <TableCell>{fuel.state}</TableCell>
-                                  <TableCell className="w-px whitespace-nowrap" style={{ width: "1%" }}>
+                                  <TableCell
+                                    className="w-px whitespace-nowrap"
+                                    style={{ width: "1%" }}
+                                  >
                                     <div className="flex gap-2">
                                       <EditFluidConsumption
                                         children={

@@ -33,8 +33,10 @@ import {
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-
-import { useGetEquipments, useUpdateEquipmentRepairRequest } from "@/services/setups/equipments";
+import {
+  useGetEquipments,
+  useUpdateEquipmentRepairRequest,
+} from "@/services/setups/equipments";
 import { convertToOptionList } from "@/lib/shared/utils";
 import { GenericObject } from "@/types/types";
 import { useGetEmployees } from "@/services/setups/employee";
@@ -97,8 +99,10 @@ export default function ActualRepairRequestForm({
 }: triggerVariant) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { mutate: updateRepairRequest, isPending } = useUpdateEquipmentRepairRequest();
-  const { data: repairOptionsList } = useGetMaintenanceRepairs<Array<{ id: string; name: string }>>();
+  const { mutate: updateRepairRequest, isPending } =
+    useUpdateEquipmentRepairRequest();
+  const { data: repairOptionsList } =
+    useGetMaintenanceRepairs<Array<{ id: string; name: string }>>();
   const { data: allEquipments } = useGetEquipments<GenericObject[]>();
   const { data: employeeOptions } = useGetEmployees<GenericObject[]>();
   const { data: priorityOptions } = useGetPriorities<GenericObject[]>();
@@ -310,13 +314,11 @@ export default function ActualRepairRequestForm({
             control={form.control}
             name="equipment"
             label="Equipment"
-            options={allEquipments
-              ? convertToOptionList(
-                allEquipments,
-                "id",
-                "unit_number"
-              )
-              : []}
+            options={
+              allEquipments
+                ? convertToOptionList(allEquipments, "id", "unit_number")
+                : []
+            }
           />
 
           <ComboboxFieldWrapper
@@ -347,7 +349,14 @@ export default function ActualRepairRequestForm({
               <EditableDataTable
                 data={repairRows}
                 columns={columns}
-                defaultRow={{ id: Date.now(), repair: "", type: "", priority: "", laborTime: 0, notes: "" }}
+                defaultRow={{
+                  id: Date.now(),
+                  repair: "",
+                  type: "",
+                  priority: "",
+                  laborTime: 0,
+                  notes: "",
+                }}
                 onDataChange={(newData) => {
                   setRepairRows(newData as RepairRequestInterface[]);
                 }}
@@ -387,12 +396,13 @@ export function EditActualUpdateRepairRequestForm({
   data: any;
   equipmentId?: string | number;
 }) {
-  const { mutate: updateRepairRequest, isPending } = useUpdateEquipmentRepairRequest();
-  const { data: repairOptionsList } = useGetMaintenanceRepairs<Array<{ id: string; name: string }>>();
+  const { mutate: updateRepairRequest, isPending } =
+    useUpdateEquipmentRepairRequest();
+  const { data: repairOptionsList } =
+    useGetMaintenanceRepairs<Array<{ id: string; name: string }>>();
   const { data: allEquipments } = useGetEquipments<GenericObject[]>();
   const { data: employeeOptions } = useGetEmployees<GenericObject[]>();
   const { data: priorityOptions } = useGetPriorities<GenericObject[]>();
-
 
   const transformedEmployeeOptions = useMemo(() => {
     return (employeeOptions || []).map((emp: any) => ({
@@ -629,13 +639,15 @@ export function EditActualUpdateRepairRequestForm({
                     control={form.control}
                     name="equipment"
                     label="Equipment"
-                    options={allEquipments
-                      ? convertToOptionList(
-                        allEquipments,
-                        "id",
-                        "unit_number"
-                      )
-                      : []}
+                    options={
+                      allEquipments
+                        ? convertToOptionList(
+                            allEquipments,
+                            "id",
+                            "unit_number"
+                          )
+                        : []
+                    }
                   />
 
                   <ComboboxFieldWrapper
@@ -666,7 +678,14 @@ export function EditActualUpdateRepairRequestForm({
                       <EditableDataTable
                         data={repairRows}
                         columns={columns}
-                        defaultRow={{ id: Date.now(), repair: "", type: "", priority: "", laborTime: 0, notes: "" }}
+                        defaultRow={{
+                          id: Date.now(),
+                          repair: "",
+                          type: "",
+                          priority: "",
+                          laborTime: 0,
+                          notes: "",
+                        }}
                         onDataChange={(newData) => {
                           setRepairRows(newData as RepairRequestInterface[]);
                         }}

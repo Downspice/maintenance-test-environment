@@ -21,7 +21,13 @@ import {
   CustomerTableDataInterface,
 } from "@/lib/domains/customer/customer-data";
 import SingleCheckboxWrapper from "@/components/forms/fields/SingleCheckboxWrapper";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import TextareaWrapper from "@/components/forms/fields/TextareaWrapper";
 import {
@@ -30,11 +36,8 @@ import {
   useGetStatusOnes,
   useGetVendorTypes,
 } from "@/services/setups/lookups";
-import {
-  useUpdateCustomer,
-  useGetCustomer,
-} from "@/services/setups/customer";
-import { deepCleanNulls } from "@/lib/shared/utils"
+import { useUpdateCustomer, useGetCustomer } from "@/services/setups/customer";
+import { deepCleanNulls } from "@/lib/shared/utils";
 import { useGetInventoryCategories } from "@/services/setups/inventory";
 import { useEffect } from "react";
 export default function EditCustomer({
@@ -49,9 +52,16 @@ export default function EditCustomer({
   const [open, setOpen] = useState(false);
 
   // Fetch full customer details by ID
-  const { data: customerDetails, isLoading: isLoadingCustomer } = useGetCustomer<CustomerTableDataInterface & { customer_shipping?: any; discount_type?: string; discount_amount?: string }>(data.id, {
-    enabled: open && !!data.id,
-  } as any);
+  const { data: customerDetails, isLoading: isLoadingCustomer } =
+    useGetCustomer<
+      CustomerTableDataInterface & {
+        customer_shipping?: any;
+        discount_type?: string;
+        discount_amount?: string;
+      }
+    >(data.id, {
+      enabled: open && !!data.id,
+    } as any);
 
   const CustomerForm = useForm<z.infer<typeof customerSchema>>({
     resolver: zodResolver(customerSchema),
@@ -80,34 +90,40 @@ export default function EditCustomer({
         discount_type: customerDetails.discount_type || "",
         discount_percent: customerDetails.discount_percent || "",
         discount_amount: customerDetails.discount_amount || "",
-        billing_rate: customerDetails.billing_rate ? Number(customerDetails.billing_rate) : undefined,
+        billing_rate: customerDetails.billing_rate
+          ? Number(customerDetails.billing_rate)
+          : undefined,
         type_id: customerDetails.type?.id || customerDetails.type_id || "",
-        location_id: customerDetails.location?.id || customerDetails.location_id || "",
+        location_id:
+          customerDetails.location?.id || customerDetails.location_id || "",
         notes: customerDetails.notes || "",
         // Map shipping data
-        shipping: customerDetails.customer_shipping ? {
-          company_name: customerDetails.customer_shipping.company_name || "",
-          contact: customerDetails.customer_shipping.contact || "",
-          address: customerDetails.customer_shipping.address || "",
-          city: customerDetails.customer_shipping.city || "",
-          state: customerDetails.customer_shipping.state || "",
-          postal_code: customerDetails.customer_shipping.postal_code || "",
-          country: customerDetails.customer_shipping.country || "",
-          phone_one: customerDetails.customer_shipping.phone_one || "",
-          fax: customerDetails.customer_shipping.fax || "",
-          email: customerDetails.customer_shipping.email || "",
-        } : {
-          company_name: "",
-          contact: "",
-          address: "",
-          city: "",
-          state: "",
-          postal_code: "",
-          country: "",
-          phone_one: "",
-          fax: "",
-          email: "",
-        },
+        shipping: customerDetails.customer_shipping
+          ? {
+              company_name:
+                customerDetails.customer_shipping.company_name || "",
+              contact: customerDetails.customer_shipping.contact || "",
+              address: customerDetails.customer_shipping.address || "",
+              city: customerDetails.customer_shipping.city || "",
+              state: customerDetails.customer_shipping.state || "",
+              postal_code: customerDetails.customer_shipping.postal_code || "",
+              country: customerDetails.customer_shipping.country || "",
+              phone_one: customerDetails.customer_shipping.phone_one || "",
+              fax: customerDetails.customer_shipping.fax || "",
+              email: customerDetails.customer_shipping.email || "",
+            }
+          : {
+              company_name: "",
+              contact: "",
+              address: "",
+              city: "",
+              state: "",
+              postal_code: "",
+              country: "",
+              phone_one: "",
+              fax: "",
+              email: "",
+            },
         // Map is_same from customer_shipping
         is_same: customerDetails.customer_shipping?.is_same || false,
       };
@@ -129,14 +145,13 @@ export default function EditCustomer({
   const {
     data: statusOptions,
     isLoading: statusOptionsLoading,
-    error: statusOptionsError
-  } = useGetStatusOnes<Array<{ id: string, name: string }>>();
+    error: statusOptionsError,
+  } = useGetStatusOnes<Array<{ id: string; name: string }>>();
   const {
     data: termsOptionsList,
     isLoading: termsOptionsListLoading,
     error: termsOptionsListError,
   } = useGetPurchaseOrderTerms<Array<{ id: string; name: string }>>();
-
 
   const { mutateAsync, isPending } = useUpdateCustomer();
   async function handleSubmit(formData: z.infer<typeof customerSchema>) {
@@ -160,11 +175,12 @@ export default function EditCustomer({
     }
 
     // Here you would typically send the data to your API
-    const res = await mutateAsync(formData as CustomerInterface & { id: string });
+    const res = await mutateAsync(
+      formData as CustomerInterface & { id: string }
+    );
     toast.success((res as any)?.message || "Edited successfully!");
     CustomerForm.reset();
   }
-
 
   const watchdiscount_type = CustomerForm.watch("discount_type");
   const watchIsSame = CustomerForm.watch("is_same");
@@ -339,7 +355,8 @@ export default function EditCustomer({
                             label="Discount Type"
                             options={discount_typesOptions ?? []}
                           />
-                          {watchdiscount_type === "1fcd0622-ebfa-477a-ba12-21cfcb070a62" && (
+                          {watchdiscount_type ===
+                            "1fcd0622-ebfa-477a-ba12-21cfcb070a62" && (
                             <InputWrapper
                               control={CustomerForm.control}
                               name={"discount_percent"}
@@ -348,7 +365,8 @@ export default function EditCustomer({
                               type="text"
                             />
                           )}
-                          {watchdiscount_type === "af4850a7-a669-4898-9adc-83a7c27132b9" && (
+                          {watchdiscount_type ===
+                            "af4850a7-a669-4898-9adc-83a7c27132b9" && (
                             <InputWrapper
                               control={CustomerForm.control}
                               name={"discount_amount"}
@@ -477,7 +495,8 @@ export default function EditCustomer({
                             name="shipping.state"
                             label="State /Province"
                             type="text"
-                            value={""} required
+                            value={""}
+                            required
                             disabled={watchIsSame}
                           />
                         </div>

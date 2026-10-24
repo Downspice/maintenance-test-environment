@@ -25,7 +25,7 @@ export function useFeatureFlags() {
   const context = React.useContext(FeatureFlagsContext);
   if (!context) {
     throw new Error(
-      "useFeatureFlags must be used within a FeatureFlagsProvider",
+      "useFeatureFlags must be used within a FeatureFlagsProvider"
     );
   }
   return context;
@@ -51,14 +51,14 @@ export function FeatureFlagsProvider({ children }: FeatureFlagsProviderProps) {
       clearOnDefault: true,
       shallow: false,
       eq: (a, b) => (!a && !b) || a === b,
-    },
+    }
   );
 
   const onFilterFlagChange = React.useCallback(
     (id: FilterFlag) => {
       setFilterFlag(value);
     },
-    [setFilterFlag],
+    [setFilterFlag]
   );
 
   const contextValue = React.useMemo<FeatureFlagsContextValue>(
@@ -67,7 +67,7 @@ export function FeatureFlagsProvider({ children }: FeatureFlagsProviderProps) {
       enableAdvancedFilter:
         filterFlag === "advancedFilters" || filterFlag === "commandFilters",
     }),
-    [filterFlag],
+    [filterFlag]
   );
 
   return (

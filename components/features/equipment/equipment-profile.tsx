@@ -39,7 +39,8 @@ export default function EquipmentProfile({
 }) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { data: equipmentData, isLoading: isLoadingEquipment } = useGetEquipment(data?.id);
+  const { data: equipmentData, isLoading: isLoadingEquipment } =
+    useGetEquipment(data?.id);
   const sidebarMenu = [
     {
       id: "summary",
@@ -93,7 +94,9 @@ export default function EquipmentProfile({
       id: "notes",
       name: "Notes",
       icon: <StickyNote size={20} />,
-      content: <NotesSection equipmentId={data?.id} equipmentNotes={data?.notes} />,
+      content: (
+        <NotesSection equipmentId={data?.id} equipmentNotes={data?.notes} />
+      ),
     },
   ];
   return (
@@ -117,67 +120,70 @@ export default function EquipmentProfile({
         bodyClassName="p-0 overflow-hidden"
       >
         <ScrollArea className="h-[calc(100vh-80px)] pr-4 mt-2">
-            <SidebarLayout
-              menuItems={sidebarMenu}
-              defaultActiveId="summary"
-              headerItem={
-                <>
-                  <span>{(equipmentData as any)?.unit_number} - {(equipmentData as any)?.type_name}</span>
-                  <div className=" pb-1 border-b border-gray-300 grid grid-cols-1 md:grid-cols-2 gap-1 bg-white ">
-                    {/* Vehicle Image */}
-                    <div className="w-full h-32 md:h-auto flex items-center justify-center bg-gray-100 rounded-lg overflow-hidden">
-                      <img
-                        src="/placeholder-user.jpg" // replace with actual image path or prop
-                        alt="Vehicle"
-                        className="object-cover w-full h-full"
-                      />
+          <SidebarLayout
+            menuItems={sidebarMenu}
+            defaultActiveId="summary"
+            headerItem={
+              <>
+                <span>
+                  {(equipmentData as any)?.unit_number} -{" "}
+                  {(equipmentData as any)?.type_name}
+                </span>
+                <div className=" pb-1 border-b border-gray-300 grid grid-cols-1 md:grid-cols-2 gap-1 bg-white ">
+                  {/* Vehicle Image */}
+                  <div className="w-full h-32 md:h-auto flex items-center justify-center bg-gray-100 rounded-lg overflow-hidden">
+                    <img
+                      src="/placeholder-user.jpg" // replace with actual image path or prop
+                      alt="Vehicle"
+                      className="object-cover w-full h-full"
+                    />
+                  </div>
+                  {/* Text Information */}
+                  <div className="flex text-sm flex-col justify-center space-y-1 text-gray-800">
+                    <div>
+                      <span className="font-semibold text-gray-600">
+                        {(equipmentData as any)?.type_name}
+                      </span>{" "}
                     </div>
-                    {/* Text Information */}
-                    <div className="flex text-sm flex-col justify-center space-y-1 text-gray-800">
+                    <div>
+                      <span>{(equipmentData as any)?.serial_number}</span>
+                    </div>
+                    <div className="flex flex-wrap gap-1 mt-2">
                       <div>
                         <span className="font-semibold text-gray-600">
-                          {(equipmentData as any)?.type_name}
-                        </span>{" "}
+                          Hours:
+                        </span>
+                        <span>1,250 hrs</span>
                       </div>
                       <div>
-                        <span>{(equipmentData as any)?.serial_number}</span>
+                        <span className="font-semibold text-gray-600">
+                          Status:
+                        </span>
+                        <span className="text-green-600 font-semibold">
+                          {(equipmentData as any)?.status_name}
+                        </span>
                       </div>
-                      <div className="flex flex-wrap gap-1 mt-2">
-                        <div>
-                          <span className="font-semibold text-gray-600">
-                            Hours:
-                          </span>
-                          <span>1,250 hrs</span>
-                        </div>
-                        <div>
-                          <span className="font-semibold text-gray-600">
-                            Status:
-                          </span>
-                          <span className="text-green-600 font-semibold">
-                            {(equipmentData as any)?.status_name}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex flex-row justify-end gap-1 col-span-2">
-                      <EditEquipment
-                        children={
-                          <Button variant="outline" size="icon">
-                            <Pen className="h-4 w-4" />
-                          </Button>
-                        }
-                        data={data}
-                      />
-                      <Button variant="outline" size="icon">
-                        <EllipsisVertical className="h-4 w-4 " />
-                      </Button>
                     </div>
                   </div>
-                </>
-              }
-            />
-          </ScrollArea>
-        </Drawer>
+                  <div className="flex flex-row justify-end gap-1 col-span-2">
+                    <EditEquipment
+                      children={
+                        <Button variant="outline" size="icon">
+                          <Pen className="h-4 w-4" />
+                        </Button>
+                      }
+                      data={data}
+                    />
+                    <Button variant="outline" size="icon">
+                      <EllipsisVertical className="h-4 w-4 " />
+                    </Button>
+                  </div>
+                </div>
+              </>
+            }
+          />
+        </ScrollArea>
+      </Drawer>
     </>
   );
 }

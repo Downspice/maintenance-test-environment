@@ -462,7 +462,7 @@ export const performedOptionList: RadioOption[] = [
     name: "Technician",
     id: "Technician",
     description: " ",
-  }, 
+  },
 ];
 export const maintenanceTaskOptionsList = [
   { name: "Check Oil Level", id: "check-oil-level" },

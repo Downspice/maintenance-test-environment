@@ -78,7 +78,7 @@ export default function DailyInspectionTable() {
       updated[editingIndex] = formData;
       setData(updated);
     } else {
-      setData(prev => [...prev, formData]);
+      setData((prev) => [...prev, formData]);
     }
     setOpenDialog(false);
     setEditingIndex(null);
@@ -133,7 +133,10 @@ export default function DailyInspectionTable() {
             ))}
             {data.length === 0 && (
               <tr>
-                <td colSpan={4} className="text-center py-4 text-muted-foreground">
+                <td
+                  colSpan={4}
+                  className="text-center py-4 text-muted-foreground"
+                >
                   No inspections available.
                 </td>
               </tr>
@@ -150,33 +153,28 @@ export default function DailyInspectionTable() {
       <FormModal
         open={openDialog}
         onOpenChange={setOpenDialog}
-        title={
-          editingIndex !== null ? "Edit inspection" : "Create inspection"
-        }
+        title={editingIndex !== null ? "Edit inspection" : "Create inspection"}
         description="Link an inspection type and priority to this PM service."
         formId="pm-daily-inspection-form"
         form={form}
-        submitLabel={editingIndex !== null ? "Save changes" : "Create inspection"}
+        submitLabel={
+          editingIndex !== null ? "Save changes" : "Create inspection"
+        }
         onSubmit={onSubmit}
       >
-            <InputWrapper
-              control={control}
-              name="pmService"
-              label="PM Service"
-            />
-            <SelectWrapper
-              control={control}
-              name="priority"
-              label="Priority"
-              options={priorityOptions}
-            />
-            <SelectWrapper
-              control={control}
-              name="type_id"
-              label="Type"
-              options={typeOptions}
-            />
-
+        <InputWrapper control={control} name="pmService" label="PM Service" />
+        <SelectWrapper
+          control={control}
+          name="priority"
+          label="Priority"
+          options={priorityOptions}
+        />
+        <SelectWrapper
+          control={control}
+          name="type_id"
+          label="Type"
+          options={typeOptions}
+        />
       </FormModal>
 
       {/* Delete Alert Dialog */}

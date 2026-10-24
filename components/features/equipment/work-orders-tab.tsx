@@ -1,7 +1,5 @@
 "use client";
 
-
-
 import { Button } from "@/components/ui/button";
 import {
   MinusSquare,
@@ -20,7 +18,6 @@ import {
 import { useState } from "react";
 import React from "react";
 
-
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -34,29 +31,8 @@ import {
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
-
-
-
-import {
-  ActualWorkOrderForm,
-} from "@/components/forms/entities/work-order-form";
+import { ActualWorkOrderForm } from "@/components/forms/entities/work-order-form";
 import EditWorkOrderForm from "@/app/(application)/work-orders/views/edit-work-order";
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 const workOrders = [
   {
@@ -241,7 +217,12 @@ export function WorkOrdersTab() {
                     data={wo}
                   />
 
-                  <Button type="button" size="icon" variant="secondary" className="text-destructive focus:text-destructive">
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="secondary"
+                    className="text-destructive focus:text-destructive"
+                  >
                     <Trash2 className="size-4" />
                   </Button>
                 </TableCell>
@@ -372,4 +353,4 @@ export function WorkOrdersTab() {
       </Table>
     </div>
   );
-};
+}

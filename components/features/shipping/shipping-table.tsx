@@ -143,9 +143,9 @@ export default function ShippingSheetTable() {
       title: "Delete selected ship-to entries?",
       description: `This will delete ${selectedRows.length} item(s). This action cannot be undone.`,
       confirmText: "Delete",
-    })
+    });
     if (ok) {
-      toast.success(`Deleted ${selectedRows.length} rows`)
+      toast.success(`Deleted ${selectedRows.length} rows`);
     }
   };
 
@@ -365,11 +365,11 @@ export default function ShippingSheetTable() {
               title: "Delete entry?",
               description: `Are you sure you want to delete ${row.original.name}?`,
               confirmText: "Delete",
-            })
+            });
             if (ok) {
-              toast.success(`Deleted ${row.original.name}`)
+              toast.success(`Deleted ${row.original.name}`);
             }
-          })()
+          })();
         };
 
         return (

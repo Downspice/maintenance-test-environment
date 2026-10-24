@@ -10,267 +10,279 @@ import InputWrapper from "../fields/InputWrapper";
 import { ComboboxFieldWrapper } from "../fields/ComboboxWrapper";
 import SingleCheckboxWrapper from "../fields/SingleCheckboxWrapper";
 import DatePickerWrapper from "../fields/DatePickerWrapper";
-import { useGetCostCenters, useGetInventories } from "@/services/setups/inventory";
-import { AddPartUsedSchema, AddPartUsedInterface } from "@/lib/domains/work-order/workOrder-data";
 import {
-  useGetVendorOptions,
-} from "@/services/setups/vendor";
+  useGetCostCenters,
+  useGetInventories,
+} from "@/services/setups/inventory";
+import {
+  AddPartUsedSchema,
+  AddPartUsedInterface,
+} from "@/lib/domains/work-order/workOrder-data";
+import { useGetVendorOptions } from "@/services/setups/vendor";
 import { GenericObject } from "@/types/types";
 import { useGetPurchaseOrders } from "@/services/setups/purchaseOrder";
 import { convertToOptionList } from "@/lib/shared/utils";
 import Fieldset from "@/components/customUI/fieldset";
 
 interface AddPartUsedProps {
-    open: boolean;
-    setOpen: (open: boolean) => void;
-    onAdd: (data: AddPartUsedInterface) => void;
-    maintenanceId?: string;
-    data?: AddPartUsedInterface | null;
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  onAdd: (data: AddPartUsedInterface) => void;
+  maintenanceId?: string;
+  data?: AddPartUsedInterface | null;
 }
 
 export default function AddPartUsed({
-    open,
-    setOpen,
-    onAdd,
-    maintenanceId,
-    data,
+  open,
+  setOpen,
+  onAdd,
+  maintenanceId,
+  data,
 }: AddPartUsedProps) {
-    const { data: inventoriesRes } = useGetInventories();
-    const { data: vendorOptions } = useGetVendorOptions<GenericObject[]>();
-    const { data: costCenterOptions } = useGetCostCenters<GenericObject[]>();
-    const { data: purchaseOrderOptions } = useGetPurchaseOrders<GenericObject[]>();
-    const inventories = inventoriesRes?.data || [];
+  const { data: inventoriesRes } = useGetInventories();
+  const { data: vendorOptions } = useGetVendorOptions<GenericObject[]>();
+  const { data: costCenterOptions } = useGetCostCenters<GenericObject[]>();
+  const { data: purchaseOrderOptions } =
+    useGetPurchaseOrders<GenericObject[]>();
+  const inventories = inventoriesRes?.data || [];
 
-    const form = useForm<AddPartUsedInterface>({
-        resolver: zodResolver(AddPartUsedSchema),
-        defaultValues: {
-            quantity: 1,
-            unit_cost: 0,
-            extended_cost: 0,
-            is_warranty_replaced: false,
-            is_part_under_warranty: false,
-            days: 0,
-            hours: 0,
-        },
-    });
+  const form = useForm<AddPartUsedInterface>({
+    resolver: zodResolver(AddPartUsedSchema),
+    defaultValues: {
+      quantity: 1,
+      unit_cost: 0,
+      extended_cost: 0,
+      is_warranty_replaced: false,
+      is_part_under_warranty: false,
+      days: 0,
+      hours: 0,
+    },
+  });
 
-    // Populate form when data changes (edit mode)
-    useEffect(() => {
-        if (data) {
-            form.reset({
-                part_id: data.part_id,
-                name: data.name,
-                description: data.description,
-                vendor_id: data.vendor_id,
-                cost_center_id: data.cost_center_id,
-                quantity: data.quantity,
-                unit_cost: data.unit_cost,
-                extended_cost: data.extended_cost,
-                is_warranty_replaced: data.is_warranty_replaced,
-                is_part_under_warranty: data.is_part_under_warranty,
-                days: data.days,
-                hours: data.hours,
-                expiry_date: data.expiry_date,
-            });
-        }
-    }, [data, form]);
-
-    const partOptions = Array.isArray(inventories)
-        ? inventories.map((part: any) => ({
-            id: part.id,
-            name: part.part_number || part.name,
-        }))
-        : [];
-
-    const selectedPartId = form.watch("part_id");
-    const quantity = form.watch("quantity");
-    const unitCost = form.watch("unit_cost");
-
-    // Auto-populate fields when part is selected
-    useEffect(() => {
-        if (selectedPartId && Array.isArray(inventories)) {
-            const selectedPart = inventories.find((p: any) => p.id === selectedPartId);
-            if (selectedPart) {
-                console.log("Selected part:", selectedPart); // Debug log
-                form.setValue("name", selectedPart.name || "");
-                form.setValue("description", selectedPart.description || "");
-                form.setValue("vendor_id", selectedPart.vendor_id || "");
-                // Try different possible field names for unit cost
-                const unitCostValue = selectedPart.unit_cost || selectedPart.unitCost || selectedPart.cost || selectedPart.price || 0;
-                form.setValue("unit_cost", unitCostValue);
-            }
-        }
-    }, [selectedPartId, inventories, form]);
-
-    // Calculate extended cost
-    useEffect(() => {
-        const extended = (Number(quantity) || 0) * (Number(unitCost) || 0);
-        form.setValue("extended_cost", extended);
-    }, [quantity, unitCost, form]);
-
-    function handleSubmit(data: AddPartUsedInterface) {
-        if (data) {
-            onAdd(data);
-            form.reset();
-            setOpen(false);
-        }
+  // Populate form when data changes (edit mode)
+  useEffect(() => {
+    if (data) {
+      form.reset({
+        part_id: data.part_id,
+        name: data.name,
+        description: data.description,
+        vendor_id: data.vendor_id,
+        cost_center_id: data.cost_center_id,
+        quantity: data.quantity,
+        unit_cost: data.unit_cost,
+        extended_cost: data.extended_cost,
+        is_warranty_replaced: data.is_warranty_replaced,
+        is_part_under_warranty: data.is_part_under_warranty,
+        days: data.days,
+        hours: data.hours,
+        expiry_date: data.expiry_date,
+      });
     }
+  }, [data, form]);
 
-    function handleSaveAndAdd(e: React.MouseEvent) {
-        e.preventDefault();
-        e.stopPropagation();
-        const data = form.getValues();
-        if (maintenanceId) {
-            console.log("Submitting Part with Maintenance ID:", maintenanceId);
-        }
-        onAdd({ ...data, maintenance_id: maintenanceId } as any);
-        form.reset();
+  const partOptions = Array.isArray(inventories)
+    ? inventories.map((part: any) => ({
+        id: part.id,
+        name: part.part_number || part.name,
+      }))
+    : [];
+
+  const selectedPartId = form.watch("part_id");
+  const quantity = form.watch("quantity");
+  const unitCost = form.watch("unit_cost");
+
+  // Auto-populate fields when part is selected
+  useEffect(() => {
+    if (selectedPartId && Array.isArray(inventories)) {
+      const selectedPart = inventories.find(
+        (p: any) => p.id === selectedPartId
+      );
+      if (selectedPart) {
+        console.log("Selected part:", selectedPart); // Debug log
+        form.setValue("name", selectedPart.name || "");
+        form.setValue("description", selectedPart.description || "");
+        form.setValue("vendor_id", selectedPart.vendor_id || "");
+        // Try different possible field names for unit cost
+        const unitCostValue =
+          selectedPart.unit_cost ||
+          selectedPart.unitCost ||
+          selectedPart.cost ||
+          selectedPart.price ||
+          0;
+        form.setValue("unit_cost", unitCostValue);
+      }
     }
+  }, [selectedPartId, inventories, form]);
 
-    return (
-        <Modal
-            open={open}
-            onOpenChange={setOpen}
-            title={data ? "Edit Part Used" : "Add Part Used"}
-            description={`${data ? "Update the" : "Add a"} part used details below.`}
-            size="lg"
-            closeable={true}
-            renderActions={
-                <div className="flex items-center gap-2">
-                    <Button
-                        type="button"
-                        variant="secondary"
-                        onClick={handleSaveAndAdd}
-                    >
-                        Save +
-                    </Button>
-                    <Button form="add-part-used-form" type="submit" variant="primary">
-                        {data ? "Update Part" : "Save Part"}
-                    </Button>
-                </div>
-            }
+  // Calculate extended cost
+  useEffect(() => {
+    const extended = (Number(quantity) || 0) * (Number(unitCost) || 0);
+    form.setValue("extended_cost", extended);
+  }, [quantity, unitCost, form]);
+
+  function handleSubmit(data: AddPartUsedInterface) {
+    if (data) {
+      onAdd(data);
+      form.reset();
+      setOpen(false);
+    }
+  }
+
+  function handleSaveAndAdd(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    const data = form.getValues();
+    if (maintenanceId) {
+      console.log("Submitting Part with Maintenance ID:", maintenanceId);
+    }
+    onAdd({ ...data, maintenance_id: maintenanceId } as any);
+    form.reset();
+  }
+
+  return (
+    <Modal
+      open={open}
+      onOpenChange={setOpen}
+      title={data ? "Edit Part Used" : "Add Part Used"}
+      description={`${data ? "Update the" : "Add a"} part used details below.`}
+      size="lg"
+      closeable={true}
+      renderActions={
+        <div className="flex items-center gap-2">
+          <Button type="button" variant="secondary" onClick={handleSaveAndAdd}>
+            Save +
+          </Button>
+          <Button form="add-part-used-form" type="submit" variant="primary">
+            {data ? "Update Part" : "Save Part"}
+          </Button>
+        </div>
+      }
+    >
+      <Form {...form}>
+        <form
+          id="add-part-used-form"
+          onSubmit={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            form.handleSubmit(handleSubmit)(e);
+          }}
+          className="flex flex-col gap-1"
         >
-            <Form {...form}>
-                <form
-                    id="add-part-used-form"
-                    onSubmit={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        form.handleSubmit(handleSubmit)(e);
-                    }}
-                    className="flex flex-col gap-1"
-                >
-                    <ComboboxFieldWrapper
-                        control={form.control}
-                        name="part_id"
-                        label="Part Number"
-                        options={partOptions}
-                    />
+          <ComboboxFieldWrapper
+            control={form.control}
+            name="part_id"
+            label="Part Number"
+            options={partOptions}
+          />
 
+          <InputWrapper
+            control={form.control}
+            name="name"
+            label="Name"
+            readOnly
+            placeholder="Auto-filled"
+          />
+
+          <InputWrapper
+            control={form.control}
+            name="description"
+            label="Description"
+            readOnly
+            placeholder="Auto-filled"
+          />
+          <ComboboxFieldWrapper
+            control={form.control}
+            name="vendor_id"
+            label="Vendor"
+            options={vendorOptions || []}
+          />
+          <ComboboxFieldWrapper
+            control={form.control}
+            name="cost_center_id"
+            label="Cost Center"
+            options={costCenterOptions || []}
+          />
+
+          <InputWrapper
+            control={form.control}
+            name="quantity"
+            label="Quantity Used"
+            type="number"
+            placeholder="1"
+          />
+          <InputWrapper
+            control={form.control}
+            name="unit_cost"
+            label="Unit Cost"
+            type="number"
+            readOnly
+            placeholder="0.00"
+          />
+          <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+            <InputWrapper
+              control={form.control}
+              name="extended_cost"
+              label="Extended Cost"
+              type="number"
+              readOnly
+              placeholder="0.00"
+            />
+            <SingleCheckboxWrapper
+              control={form.control}
+              name="is_warranty_replaced"
+              label="Replaced under warranty"
+            />
+          </div>
+
+          <ComboboxFieldWrapper
+            control={form.control}
+            name="po_id"
+            label="PO #"
+            options={convertToOptionList(
+              purchaseOrderOptions ?? [],
+              "id",
+              "po_number"
+            )}
+          />
+
+          <Fieldset
+            legend="Warranty"
+            content={
+              <>
+                <SingleCheckboxWrapper
+                  control={form.control}
+                  name="is_part_under_warranty"
+                  label="Part under warranty"
+                />
+
+                <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-3">
+                  <div className="flex flex-col gap-1">
                     <InputWrapper
-                        control={form.control}
-                        name="name"
-                        label="Name"
-                        readOnly
-                        placeholder="Auto-filled"
-                    />
-
-                    <InputWrapper
-                        control={form.control}
-                        name="description"
-                        label="Description"
-                        readOnly
-                        placeholder="Auto-filled"
-                    />
-                    <ComboboxFieldWrapper
-                        control={form.control}
-                        name="vendor_id"
-                        label="Vendor"
-                        options={vendorOptions || []}
-                    />
-                    <ComboboxFieldWrapper
-                        control={form.control}
-                        name="cost_center_id"
-                        label="Cost Center"
-                        options={costCenterOptions || []}
-                    />
-
-                    <InputWrapper
-                        control={form.control}
-                        name="quantity"
-                        label="Quantity Used"
-                        type="number"
-                        placeholder="1"
+                      control={form.control}
+                      name="days"
+                      label="Days"
+                      type="number"
+                      placeholder="0"
                     />
                     <InputWrapper
-                        control={form.control}
-                        name="unit_cost"
-                        label="Unit Cost"
-                        type="number"
-                        readOnly
-                        placeholder="0.00"
+                      control={form.control}
+                      name="hours"
+                      label="Hours"
+                      type="number"
+                      placeholder="0"
                     />
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-                        <InputWrapper
-                            control={form.control}
-                            name="extended_cost"
-                            label="Extended Cost"
-                            type="number"
-                            readOnly
-                            placeholder="0.00"
-                        />
-                        <SingleCheckboxWrapper
-                            control={form.control}
-                            name="is_warranty_replaced"
-                            label="Replaced under warranty"
-                        />
-                    </div>
-
-                    <ComboboxFieldWrapper
-                        control={form.control}
-                        name="po_id"
-                        label="PO #"
-                        options={convertToOptionList(purchaseOrderOptions ?? [], "id", "po_number")}
-                    />
-
-                    <Fieldset
-                        legend="Warranty"
-                        content={
-                            <>
-                                <SingleCheckboxWrapper
-                                    control={form.control}
-                                    name="is_part_under_warranty"
-                                    label="Part under warranty"
-                                />
-
-                                <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-3">
-                                    <div className="flex flex-col gap-1">
-                                        <InputWrapper
-                                            control={form.control}
-                                            name="days"
-                                            label="Days"
-                                            type="number"
-                                            placeholder="0"
-                                        />
-                                        <InputWrapper
-                                            control={form.control}
-                                            name="hours"
-                                            label="Hours"
-                                            type="number"
-                                            placeholder="0"
-                                        />
-                                    </div>
-                                    <DatePickerWrapper
-                                        control={form.control}
-                                        name="expiry_date"
-                                        label="Expires"
-                                    />
-                                </div>
-                            </>
-                        }
-                    />
-                </form>
-            </Form>
-        </Modal>
-    );
+                  </div>
+                  <DatePickerWrapper
+                    control={form.control}
+                    name="expiry_date"
+                    label="Expires"
+                  />
+                </div>
+              </>
+            }
+          />
+        </form>
+      </Form>
+    </Modal>
+  );
 }

@@ -9,22 +9,16 @@ import { GitPullRequestArrow } from "lucide-react";
 import TextareaWrapper from "../fields/TextareaWrapper";
 import { toast } from "sonner";
 import InputWrapper from "../fields/InputWrapper";
-import {
-  substituteOptions,
-} from "@/lib/schemas/equipment-schema";
+import { substituteOptions } from "@/lib/schemas/equipment-schema";
 import SelectWrapper from "../fields/SelectWrapper";
-import {
-  inventoryAdjustmentType,
-} from "@/lib/shared/option-list";
+import { inventoryAdjustmentType } from "@/lib/shared/option-list";
 import DatePickerWrapper from "../fields/DatePickerWrapper";
 import { ComboboxFieldWrapper } from "../fields/ComboboxWrapper";
 import { useGetWarehouses } from "@/services/setups/inventory";
-import {
-  useGetVendors,
-} from "@/services/setups/vendor";
+import { useGetVendors } from "@/services/setups/vendor";
 
 // Define the form schema with Zod
-export const AdjustInventorySchema = z.object({ 
+export const AdjustInventorySchema = z.object({
   adjustmentType: z.string().min(1, "Adjustment Type is required"),
   partNumber: z.string().min(1, "Part Number is required"),
   name: z.string().min(1, "Name is required"),
@@ -75,7 +69,9 @@ export default function AdjustInventoryForm({
       <Form {...AdjustInventoryForm}>
         <form
           id={formId}
-          onSubmit={AdjustInventoryForm.handleSubmit((data) => handleSubmit(data))}
+          onSubmit={AdjustInventoryForm.handleSubmit((data) =>
+            handleSubmit(data)
+          )}
           className="w-full"
         >
           <div className="flex flex-col">
@@ -185,5 +181,6 @@ export default function AdjustInventoryForm({
           )}
         </form>
       </Form>
-    </div> )
+    </div>
+  );
 }

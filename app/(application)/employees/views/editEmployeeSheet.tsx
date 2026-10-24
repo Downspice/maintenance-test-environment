@@ -208,23 +208,32 @@ export default function EditEmployee({
   const [openRenewal, setOpenRenewal] = useState(false);
   const [editingRenewalId, setEditingRenewalId] = useState<string | null>(null);
 
-  const { data, isLoading: isEmployeeLoading } = useGetEmployee<EmployeeDetailData>(pageId, {
-    enabled: open && !!pageId,
-  });
+  const { data, isLoading: isEmployeeLoading } =
+    useGetEmployee<EmployeeDetailData>(pageId, {
+      enabled: open && !!pageId,
+    });
 
-  const { data: statusOptions } = useGetEmployeeStatuses<Array<{ id: string; name: string }>>({
+  const { data: statusOptions } = useGetEmployeeStatuses<
+    Array<{ id: string; name: string }>
+  >({
     enabled: open,
   });
 
-  const { data: employeeTypeOptions } = useGetEmployeeTypes<Array<{ id: string; name: string }>>({
+  const { data: employeeTypeOptions } = useGetEmployeeTypes<
+    Array<{ id: string; name: string }>
+  >({
     enabled: open,
   });
 
-  const { data: locationOptionsList } = useGetLocations<Array<{ id: string; name: string }>>({
+  const { data: locationOptionsList } = useGetLocations<
+    Array<{ id: string; name: string }>
+  >({
     enabled: open,
   });
 
-  const { data: categoryOptions } = useGetEmployeeCategories<Array<{ id: string; name: string }>>({
+  const { data: categoryOptions } = useGetEmployeeCategories<
+    Array<{ id: string; name: string }>
+  >({
     enabled: open,
   });
 
@@ -234,7 +243,8 @@ export default function EditEmployee({
     resolver: zodResolver(employeeSchema),
   });
 
-  const renewals = (employeeForm.watch("renewals") as RenewalData[] | undefined) ?? [];
+  const renewals =
+    (employeeForm.watch("renewals") as RenewalData[] | undefined) ?? [];
   const isLoading = isEmployeeLoading || (open && !data);
 
   useEffect(() => {
@@ -249,7 +259,8 @@ export default function EditEmployee({
   }, [data, open, employeeForm]);
 
   const handleAddRenewal = (newRenewal: RenewalData) => {
-    const currentRenewals = (employeeForm.getValues("renewals") as RenewalData[] | undefined) ?? [];
+    const currentRenewals =
+      (employeeForm.getValues("renewals") as RenewalData[] | undefined) ?? [];
     let updated: RenewalData[];
 
     if (editingRenewalId) {
@@ -268,7 +279,8 @@ export default function EditEmployee({
   };
 
   const handleDeleteRenewal = (id: string) => {
-    const currentRenewals = (employeeForm.getValues("renewals") as RenewalData[] | undefined) ?? [];
+    const currentRenewals =
+      (employeeForm.getValues("renewals") as RenewalData[] | undefined) ?? [];
     const updated = currentRenewals.filter((r) => r.id !== id);
     employeeForm.setValue("renewals", updated, { shouldDirty: true });
     toast.success("Renewal removed");
@@ -291,7 +303,8 @@ export default function EditEmployee({
         payload as unknown as Parameters<typeof mutateAsync>[0]
       );
       toast.success(
-        (res as { message?: string })?.message ?? "Employee updated successfully!"
+        (res as { message?: string })?.message ??
+          "Employee updated successfully!"
       );
       employeeForm.reset();
       setOpen(false);
@@ -304,7 +317,9 @@ export default function EditEmployee({
   }
 
   const employeeFullName = data
-    ? [data.first_name, data.middle_name, data.last_name].filter(Boolean).join(" ")
+    ? [data.first_name, data.middle_name, data.last_name]
+        .filter(Boolean)
+        .join(" ")
     : "Employee";
 
   return (
@@ -339,8 +354,8 @@ export default function EditEmployee({
                 const firstErrorField = Object.values(errors)[0];
                 const message =
                   firstErrorField &&
-                    typeof firstErrorField === "object" &&
-                    "message" in firstErrorField
+                  typeof firstErrorField === "object" &&
+                  "message" in firstErrorField
                     ? String(firstErrorField.message)
                     : undefined;
 
@@ -357,9 +372,7 @@ export default function EditEmployee({
                   <TabsTrigger value="employee">Employee</TabsTrigger>
                   <TabsTrigger value="details">Details</TabsTrigger>
                   <TabsTrigger value="renewals">Renewals</TabsTrigger>
-                  <TabsTrigger value="notifications">
-                    Notifications
-                  </TabsTrigger>
+                  <TabsTrigger value="notifications">Notifications</TabsTrigger>
                   <TabsTrigger value="photos">Photos</TabsTrigger>
                   <TabsTrigger value="attachments">Attachments</TabsTrigger>
                 </TabsList>
@@ -611,8 +624,7 @@ export default function EditEmployee({
                             </SheetTitle>
                             <SheetDescription>
                               Fill out the form below to{" "}
-                              {editingRenewalId ? "edit" : "create"} a
-                              renewal.
+                              {editingRenewalId ? "edit" : "create"} a renewal.
                             </SheetDescription>
                           </SheetHeader>
                           <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
@@ -621,8 +633,8 @@ export default function EditEmployee({
                               editingRenewal={
                                 editingRenewalId
                                   ? renewals.find(
-                                    (r) => r.id === editingRenewalId
-                                  )
+                                      (r) => r.id === editingRenewalId
+                                    )
                                   : undefined
                               }
                             />
@@ -649,12 +661,16 @@ export default function EditEmployee({
                               <TableCell>
                                 {data?.issued_date instanceof Date
                                   ? data.issued_date.toLocaleDateString()
-                                  : new Date(data?.issued_date).toLocaleDateString()}
+                                  : new Date(
+                                      data?.issued_date
+                                    ).toLocaleDateString()}
                               </TableCell>
                               <TableCell>
                                 {data?.expiry_date instanceof Date
                                   ? data.expiry_date.toLocaleDateString()
-                                  : new Date(data?.expiry_date).toLocaleDateString()}
+                                  : new Date(
+                                      data?.expiry_date
+                                    ).toLocaleDateString()}
                               </TableCell>
                               <TableCell>{data?.notes || "-"}</TableCell>
                               <TableCell>
@@ -684,10 +700,7 @@ export default function EditEmployee({
                         <SelectContent>
                           <SelectGroup>
                             {locationOptionsList?.map((location) => (
-                              <SelectItem
-                                key={location.id}
-                                value={location.id}
-                              >
+                              <SelectItem key={location.id} value={location.id}>
                                 {location.name}
                               </SelectItem>
                             ))}
@@ -702,10 +715,7 @@ export default function EditEmployee({
                         <div className="col-span-3">Options</div>
                       </div>
                       {equipmentOptionsList.map((equipment) => (
-                        <div
-                          className="grid grid-cols-4"
-                          key={equipment.value}
-                        >
+                        <div className="grid grid-cols-4" key={equipment.value}>
                           <div className="col-span-1 flex item-baseline ">
                             {equipment.label}
                           </div>
@@ -804,7 +814,10 @@ function RenewalFormContent({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-4">
+      <form
+        onSubmit={form.handleSubmit(handleFormSubmit)}
+        className="space-y-4"
+      >
         <SelectWrapper
           control={form.control}
           name="renewal_id"

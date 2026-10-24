@@ -65,7 +65,7 @@ export default function PartKitManager({
     if (kit.id) {
       form.setValue(
         "partKits",
-        current.map((k) => (k.id === kit.id ? { ...k, ...kit } : k)),
+        current.map((k) => (k.id === kit.id ? { ...k, ...kit } : k))
       );
     } else {
       const newKit = {
@@ -103,7 +103,12 @@ export default function PartKitManager({
               <span className="text-label-sm font-medium text-text-sub-600">
                 Kits
               </span>
-              <Button type="button" size="sm" variant="primary" onClick={openAddKit}>
+              <Button
+                type="button"
+                size="sm"
+                variant="primary"
+                onClick={openAddKit}
+              >
                 <Plus className="mr-2 size-4" />
                 Add Kit
               </Button>
@@ -113,7 +118,9 @@ export default function PartKitManager({
                 <TableHeader className="sticky top-0 z-10 bg-bg-white-0">
                   <TableRow>
                     <TableHead>Name</TableHead>
-                    <TableHead className="w-[5.5rem] text-right">ACTIONS</TableHead>
+                    <TableHead className="w-[5.5rem] text-right">
+                      ACTIONS
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -193,8 +200,8 @@ export default function PartKitManager({
                         form
                           .getValues("partKits")
                           .map((k) =>
-                            k.id === selected.id ? { ...k, parts: updated } : k,
-                          ),
+                            k.id === selected.id ? { ...k, parts: updated } : k
+                          )
                       );
                     }}
                   />

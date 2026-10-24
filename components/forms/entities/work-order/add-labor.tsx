@@ -13,13 +13,12 @@ import InputWrapper from "@/components/forms/fields/InputWrapper";
 import RadioGroupWrapper from "@/components/forms/fields/RadioGroupWrapper";
 import { performedOptionList } from "@/lib/domains/work-order/mock-data";
 import TextareaWrapper from "@/components/forms/fields/TextareaWrapper";
-import { AddLaborFormValues ,AddLaborSchema} from "@/lib/domains/work-order/workOrder-data";
-import { useGetCostCenters } from "@/services/setups/inventory";
 import {
-  useGetVendors,
-} from "@/services/setups/vendor";
-
-
+  AddLaborFormValues,
+  AddLaborSchema,
+} from "@/lib/domains/work-order/workOrder-data";
+import { useGetCostCenters } from "@/services/setups/inventory";
+import { useGetVendors } from "@/services/setups/vendor";
 
 type AddLaborProps = {
   onSave: (cost: Partial<AddLaborFormValues>) => void;
@@ -30,7 +29,7 @@ export default function AddLabor({ onSave, initialValues }: AddLaborProps) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { data: costCenterOptions } = useGetCostCenters();
-    const { data: vendorOptions } = useGetVendors();
+  const { data: vendorOptions } = useGetVendors();
 
   const form = useForm<AddLaborFormValues>({
     resolver: zodResolver(AddLaborSchema),
@@ -157,7 +156,7 @@ export default function AddLabor({ onSave, initialValues }: AddLaborProps) {
             ) : (
               <>
                 <Save className="mr-2 h-4 w-4" />
-                 Add Labor
+                Add Labor
               </>
             )}
           </Button>

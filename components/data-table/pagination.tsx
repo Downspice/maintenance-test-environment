@@ -68,8 +68,8 @@ export function DataTablePagination<TData>({
     <div className="flex w-full items-center justify-between gap-4 px-4 py-3 bg-bg-white-0 border-t border-stroke-soft-200">
       {/* Left side: "Showing X to Y out of Z" */}
       <p className="text-paragraph-xs text-text-sub-600 shrink-0">
-        Showing <span className="font-medium text-text-strong-950">{from}</span> to{" "}
-        <span className="font-medium text-text-strong-950">{to}</span> out of{" "}
+        Showing <span className="font-medium text-text-strong-950">{from}</span>{" "}
+        to <span className="font-medium text-text-strong-950">{to}</span> out of{" "}
         <span className="font-medium text-text-strong-950">{actualTotal}</span>
       </p>
 
@@ -140,7 +140,11 @@ export function DataTablePagination<TData>({
         </SelectTrigger>
         <SelectContent side="top" align="end">
           {pageSizeOptions.map((n) => (
-            <SelectItem key={n} value={`${n}`} className="cursor-pointer text-label-xs">
+            <SelectItem
+              key={n}
+              value={`${n}`}
+              className="cursor-pointer text-label-xs"
+            >
               {n} / page
             </SelectItem>
           ))}

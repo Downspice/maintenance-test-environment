@@ -7,7 +7,9 @@ interface DeleteVendorModalProps {
   vendor: any | null;
   onClose: () => void;
   deleteVendor: { mutateAsync: (args: { id: string }) => Promise<any> };
-  patchIsActive: { mutateAsync: (args: { id: string; status_id: string }) => Promise<any> };
+  patchIsActive: {
+    mutateAsync: (args: { id: string; status_id: string }) => Promise<any>;
+  };
   statusOnes?: Array<{ id: string }>;
 }
 
@@ -29,20 +31,27 @@ export function DeleteVendorModal({
       warningTitle="Warning:"
       warningText={
         <>
-          This action <strong className="font-semibold text-text-strong-950">cannot be undone</strong>. Deleting this vendor will remove all its associated data. Any linked purchase orders, invoices, parts, and contacts will be affected.
+          This action{" "}
+          <strong className="font-semibold text-text-strong-950">
+            cannot be undone
+          </strong>
+          . Deleting this vendor will remove all its associated data. Any linked
+          purchase orders, invoices, parts, and contacts will be affected.
         </>
       }
       item={
         vendor
           ? {
               name: vendor.name || "Vendor",
-              description: [
-                vendor.type?.name,
-                vendor.vendor_contact?.email || vendor.vendor_contact?.phone_one,
-                vendor.city,
-              ]
-                .filter(Boolean)
-                .join(" • ") || "Vendor record",
+              description:
+                [
+                  vendor.type?.name,
+                  vendor.vendor_contact?.email ||
+                    vendor.vendor_contact?.phone_one,
+                  vendor.city,
+                ]
+                  .filter(Boolean)
+                  .join(" • ") || "Vendor record",
             }
           : undefined
       }
@@ -54,7 +63,8 @@ export function DeleteVendorModal({
         if (!vendor?.id) return;
         const currentStatusId: string | undefined = vendor.status?.id;
         const otherStatusId: string | undefined = Array.isArray(statusOnes)
-          ? statusOnes.find((s: { id?: string }) => s?.id !== currentStatusId)?.id
+          ? statusOnes.find((s: { id?: string }) => s?.id !== currentStatusId)
+              ?.id
           : undefined;
 
         try {

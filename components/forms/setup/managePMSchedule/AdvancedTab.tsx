@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import InputWrapper from "@/components/forms/fields/InputWrapper";
 import SingleCheckboxWrapper from "@/components/forms/fields/SingleCheckboxWrapper";
- import DatePickerWrapper from "@/components/forms/fields/DatePickerWrapper";
+import DatePickerWrapper from "@/components/forms/fields/DatePickerWrapper";
 import { ComboboxFieldWrapper } from "@/components/forms/fields/ComboboxWrapper";
 
 const advancedSchema = z.object({
@@ -64,7 +64,10 @@ export default function ManagePMAdvancedTab() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-xl mx-auto">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="space-y-6 max-w-xl mx-auto"
+    >
       <InputWrapper
         control={control}
         name="estimatedLaborTime"
@@ -103,7 +106,11 @@ export default function ManagePMAdvancedTab() {
       />
 
       {terminateOnDate && (
-        <DatePickerWrapper control={control} name="terminateDate" label="Terminate Date" />
+        <DatePickerWrapper
+          control={control}
+          name="terminateDate"
+          label="Terminate Date"
+        />
       )}
 
       <SingleCheckboxWrapper
@@ -143,7 +150,10 @@ export default function ManagePMAdvancedTab() {
       )}
 
       <div className="flex justify-end pt-2">
-        <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
+        <button
+          type="submit"
+          className="bg-blue-600 text-white px-4 py-2 rounded"
+        >
           Save
         </button>
       </div>

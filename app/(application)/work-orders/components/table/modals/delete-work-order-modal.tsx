@@ -25,20 +25,29 @@ export function DeleteWorkOrderModal({
       warningTitle="Warning:"
       warningText={
         <>
-          This action <strong className="font-semibold text-text-strong-950">cannot be undone</strong>. Deleting this work order will remove all its associated data including tasks, labor, parts, and linked records.
+          This action{" "}
+          <strong className="font-semibold text-text-strong-950">
+            cannot be undone
+          </strong>
+          . Deleting this work order will remove all its associated data
+          including tasks, labor, parts, and linked records.
         </>
       }
       item={
         workOrder
           ? {
-              name: workOrder.wo_number || workOrder.workOrderNumber || "Work Order",
-              description: [
-                workOrder.equipment?.name,
-                workOrder.status?.name || workOrder.status,
-                workOrder.total != null ? `$${workOrder.total}` : undefined,
-              ]
-                .filter(Boolean)
-                .join(" • ") || "Work order record",
+              name:
+                workOrder.wo_number ||
+                workOrder.workOrderNumber ||
+                "Work Order",
+              description:
+                [
+                  workOrder.equipment?.name,
+                  workOrder.status?.name || workOrder.status,
+                  workOrder.total != null ? `$${workOrder.total}` : undefined,
+                ]
+                  .filter(Boolean)
+                  .join(" • ") || "Work order record",
             }
           : undefined
       }
@@ -52,7 +61,9 @@ export function DeleteWorkOrderModal({
           await deleteWorkOrderAsync({ id: workOrder.id });
           toast.success(`Deleted ${workOrder.wo_number || "Work Order"}`);
         } catch (error: any) {
-          toast.error(error?.response?.data?.message || "Failed to delete work order");
+          toast.error(
+            error?.response?.data?.message || "Failed to delete work order"
+          );
         }
         onClose();
       }}

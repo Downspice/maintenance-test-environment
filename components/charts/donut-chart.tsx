@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Label, Pie, PieChart } from "recharts"
+import * as React from "react";
+import { Label, Pie, PieChart } from "recharts";
 
 import {
   Card,
@@ -9,27 +9,27 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart"
+} from "@/components/ui/chart";
 
 type DonutChartCardProps = {
   data: {
-    name: string
-    statistic: number
-    fill: string
-  }[]
-  config: ChartConfig
-  title?: string
-  description?: string
-  footerTrendText?: string
-  footerSubText?: string
-  centerLabel?: string
-}
+    name: string;
+    statistic: number;
+    fill: string;
+  }[];
+  config: ChartConfig;
+  title?: string;
+  description?: string;
+  footerTrendText?: string;
+  footerSubText?: string;
+  centerLabel?: string;
+};
 
 export const DonutChartCard: React.FC<DonutChartCardProps> = ({
   data,
@@ -43,7 +43,7 @@ export const DonutChartCard: React.FC<DonutChartCardProps> = ({
   const totalStatistic = React.useMemo(
     () => data.reduce((acc, curr) => acc + curr.statistic, 0),
     [data]
-  )
+  );
 
   return (
     <Card className="flex flex-col h-fit py-2 gap-2 ">
@@ -93,7 +93,7 @@ export const DonutChartCard: React.FC<DonutChartCardProps> = ({
                           {centerLabel}
                         </tspan>
                       </text>
-                    )
+                    );
                   }
                 }}
               />
@@ -105,11 +105,11 @@ export const DonutChartCard: React.FC<DonutChartCardProps> = ({
         <div className="flex items-center gap-2 font-medium leading-none">
           {footerTrendText} 
           {/* <TrendingUp className="h-4 w-4" /> */}
-        {/* </div>
+      {/* </div>
         <div className="leading-none text-muted-foreground">
           {footerSubText}
         </div>
       </CardFooter>  */}
     </Card>
-  )
-}
+  );
+};

@@ -1,5 +1,5 @@
 export interface GenericObject {
-  id?:string ;
+  id?: string;
   name: string;
 }
 

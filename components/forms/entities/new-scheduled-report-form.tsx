@@ -14,13 +14,8 @@ import {
   MultiComboboxWrapper,
 } from "@/components/forms/fields/ComboboxWrapper";
 import { Modal } from "@/components/ui/modal";
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-} from "@/components/ui/tabs";
-import { Checkbox } from "@/components/ui/checkbox"; 
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   dateFieldTypeOptionsList,
   dateIntervalOptionsList,
@@ -29,9 +24,7 @@ import {
   reportFrequencyTypeOptionsList,
   reportTypeOptionsList,
 } from "@/lib/shared/option-list";
-import {
-  useGetLocations,
-} from "@/services/setups/lookups";
+import { useGetLocations } from "@/services/setups/lookups";
 
 const ScheduledReportSchema = z.object({
   report: z.string().min(1, "Report type is required"),
@@ -62,13 +55,15 @@ export default function NewScheduledReportForm({
 }: NewScheduledReportFormProps) {
   const confirmDialog = useConfirmDialog();
   const [recipientModalOpen, setRecipientModalOpen] = useState(false);
-  const { 
-      data: locationOptionsList, 
-      isLoading:locationOptionsListLoading, 
-      error: locationOptionsListError
-    } = useGetLocations<Array<{ id: string, name: string }>>();
+  const {
+    data: locationOptionsList,
+    isLoading: locationOptionsListLoading,
+    error: locationOptionsListError,
+  } = useGetLocations<Array<{ id: string; name: string }>>();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [recipients, setRecipients] = useState<z.infer<typeof ScheduledReportSchema>["recipients"]>([]);
+  const [recipients, setRecipients] = useState<
+    z.infer<typeof ScheduledReportSchema>["recipients"]
+  >([]);
   const [tab, setTab] = useState("employees");
 
   const form = useForm<z.infer<typeof ScheduledReportSchema>>({
@@ -128,18 +123,18 @@ export default function NewScheduledReportForm({
           : undefined,
       });
       if (ok) {
-        setRecipients(prev => prev.filter(r => r.email !== email));
-        toast.success("Recipient deleted")
+        setRecipients((prev) => prev.filter((r) => r.email !== email));
+        toast.success("Recipient deleted");
       }
-    })()
+    })();
   };
 
   const toggleRecipient = (name: string, email: string) => {
-    const exists = recipients.find(r => r.email === email);
+    const exists = recipients.find((r) => r.email === email);
     if (exists) {
-      setRecipients(prev => prev.filter(r => r.email !== email));
+      setRecipients((prev) => prev.filter((r) => r.email !== email));
     } else {
-      setRecipients(prev => [...prev, { name, email }]);
+      setRecipients((prev) => [...prev, { name, email }]);
     }
   };
 
@@ -148,16 +143,11 @@ export default function NewScheduledReportForm({
       { name: "Alice Smith", email: "alice@company.com" },
       { name: "Bob Jones", email: "bob@company.com" },
     ],
-    customers: [
-      { name: "Jane Customer", email: "jane@customer.com" },
-    ],
-    vendors: [
-      { name: "Vendor Guy", email: "vendor@guy.com" },
-    ],
+    customers: [{ name: "Jane Customer", email: "jane@customer.com" }],
+    vendors: [{ name: "Vendor Guy", email: "vendor@guy.com" }],
   };
 
   return (
-    
     <Form {...form}>
       <form
         id={formId}
@@ -165,13 +155,48 @@ export default function NewScheduledReportForm({
         className="space-y-6"
       >
         <div className="flex flex-col">
-          <ComboboxFieldWrapper control={form.control} name="report" label="Report" options={reportTypeOptionsList} />
-          <ComboboxFieldWrapper control={form.control} name="frequency" label="Frequency" options={reportFrequencyTypeOptionsList} />
-          <ComboboxFieldWrapper control={form.control} name="dateField" label="Date Field" options={dateFieldTypeOptionsList} />
-          <ComboboxFieldWrapper control={form.control} name="location" label="Location Filter" options={locationOptionsList} />
-          <ComboboxFieldWrapper control={form.control} name="category" label="Category Filter" options={reportCategoryTypeOptionsList} />
-          <MultiComboboxWrapper control={form.control} name="equipmentFilter" label="Equipment Filter" options={equipmentOptionsList} />
-          <ComboboxFieldWrapper control={form.control} name="dateInterval" label="Date Interval" options={dateIntervalOptionsList} />
+          <ComboboxFieldWrapper
+            control={form.control}
+            name="report"
+            label="Report"
+            options={reportTypeOptionsList}
+          />
+          <ComboboxFieldWrapper
+            control={form.control}
+            name="frequency"
+            label="Frequency"
+            options={reportFrequencyTypeOptionsList}
+          />
+          <ComboboxFieldWrapper
+            control={form.control}
+            name="dateField"
+            label="Date Field"
+            options={dateFieldTypeOptionsList}
+          />
+          <ComboboxFieldWrapper
+            control={form.control}
+            name="location"
+            label="Location Filter"
+            options={locationOptionsList}
+          />
+          <ComboboxFieldWrapper
+            control={form.control}
+            name="category"
+            label="Category Filter"
+            options={reportCategoryTypeOptionsList}
+          />
+          <MultiComboboxWrapper
+            control={form.control}
+            name="equipmentFilter"
+            label="Equipment Filter"
+            options={equipmentOptionsList}
+          />
+          <ComboboxFieldWrapper
+            control={form.control}
+            name="dateInterval"
+            label="Date Interval"
+            options={dateIntervalOptionsList}
+          />
 
           <div className="my-6">
             <div className="flex justify-between items-center mb-2">
@@ -243,7 +268,7 @@ export default function NewScheduledReportForm({
                   </tr>
                 </thead>
                 <tbody>
-                  {recipients.map(r => (
+                  {recipients.map((r) => (
                     <tr key={r.email} className="border-t">
                       <td className="p-2">{r.name}</td>
                       <td className="p-2">{r.email}</td>
@@ -261,7 +286,10 @@ export default function NewScheduledReportForm({
                   ))}
                   {recipients.length === 0 && (
                     <tr>
-                      <td colSpan={3} className="text-center p-4 text-muted-foreground">
+                      <td
+                        colSpan={3}
+                        className="text-center p-4 text-muted-foreground"
+                      >
                         No recipients added yet.
                       </td>
                     </tr>

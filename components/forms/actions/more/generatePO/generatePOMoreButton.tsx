@@ -14,13 +14,26 @@ import EditPurchaseOrderFormMoreButton from "./editGeneratePOMoreButton";
 
 // Dummy table data
 const dummyTableData = [
-  { vendor: "Vendor A", workOrder: "WO-101", partNumber: "P-001", name: "Part A" },
-  { vendor: "Vendor B", workOrder: "WO-102", partNumber: "P-002", name: "Part B" },
+  {
+    vendor: "Vendor A",
+    workOrder: "WO-101",
+    partNumber: "P-001",
+    name: "Part A",
+  },
+  {
+    vendor: "Vendor B",
+    workOrder: "WO-102",
+    partNumber: "P-002",
+    name: "Part B",
+  },
 ];
 
 const generatePOOptions = [
   { id: "Manual PO", name: "Manual PO" },
-  { id: "Automatic PO -Work Order Based", name: "Automatic PO -Work Order Based" },
+  {
+    id: "Automatic PO -Work Order Based",
+    name: "Automatic PO -Work Order Based",
+  },
   { id: "Automatic PO -Reorder Based", name: "Automatic PO -Reorder Based" },
 ];
 
@@ -35,7 +48,8 @@ export default function GeneratePOMoreButtonView() {
   });
 
   const [showEditPOForm, setShowEditPOForm] = useState(false);
-  const [submittedPOData, setSubmittedPOData] = useState<Partial<PurchaseOrderInterface> | null>(null);
+  const [submittedPOData, setSubmittedPOData] =
+    useState<Partial<PurchaseOrderInterface> | null>(null);
   const [showTableModal, setShowTableModal] = useState(false);
 
   const onSubmit = (data: GeneratePOFormValues) => {
@@ -80,11 +94,14 @@ export default function GeneratePOMoreButtonView() {
         <div className="p-4 border rounded shadow">
           <h2 className="text-xl font-semibold mb-2">Edit Purchase Order</h2>
           {/* <pre>{JSON.stringify(submittedPOData, null, 2)}</pre> */}
-          <EditPurchaseOrderFormMoreButton data={submittedPOData}/>
+          <EditPurchaseOrderFormMoreButton data={submittedPOData} />
         </div>
       ) : (
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit, onError)} className="space-y-6">
+          <form
+            onSubmit={form.handleSubmit(onSubmit, onError)}
+            className="space-y-6"
+          >
             <Fieldset
               legend="Generate PO"
               content={
@@ -96,7 +113,9 @@ export default function GeneratePOMoreButtonView() {
                 />
               }
             />
-            <Button type="submit" className="w-full">Generate</Button>
+            <Button type="submit" className="w-full">
+              Generate
+            </Button>
           </form>
         </Form>
       )}
@@ -130,7 +149,9 @@ export default function GeneratePOMoreButtonView() {
             </div>
           </div>
           <DialogFooter className="mt-4">
-            <Button variant="secondary" onClick={handleCancel}>Cancel</Button>
+            <Button variant="secondary" onClick={handleCancel}>
+              Cancel
+            </Button>
             <Button onClick={handleOkay}>Okay</Button>
           </DialogFooter>
         </DialogContent>

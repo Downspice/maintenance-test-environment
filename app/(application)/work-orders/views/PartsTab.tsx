@@ -50,15 +50,15 @@ export default function PartsTab({
         title: "Delete part?",
         description: `Delete part ${part.partNumber}?`,
         confirmText: "Delete",
-      })
+      });
       if (ok) {
         const updatedParts = workOrderParts.filter(
           (p) => p.partNumber !== part.partNumber
         );
         onUpdateParts(updatedParts);
-        toast.success("Part deleted")
+        toast.success("Part deleted");
       }
-    })()
+    })();
   };
 
   const handleSavePart = (newPart: Part) => {
@@ -98,8 +98,8 @@ export default function PartsTab({
       </div>
 
       <div className="border rounded-md">
-        <Table  >
-          <TableHeader  >
+        <Table>
+          <TableHeader>
             <TableRow>
               <TableHead className="p-2">Part#</TableHead>
               <TableHead className="p-2">Name</TableHead>

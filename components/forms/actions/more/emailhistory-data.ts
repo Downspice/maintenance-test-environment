@@ -1,12 +1,12 @@
 export type EmailHistoryType = {
-  date: string;        // ISO string format e.g. "2025-07-17T10:32:00Z"
-  recipient: string;   // Name of the recipient
-  email: string;       // Email address of the recipient
-  subject: string;     // Subject line of the message
-  body: string;        // Body content of the message
+  date: string; // ISO string format e.g. "2025-07-17T10:32:00Z"
+  recipient: string; // Name of the recipient
+  email: string; // Email address of the recipient
+  subject: string; // Subject line of the message
+  body: string; // Body content of the message
 };
 
-export const EmailHistoryData:EmailHistoryType[] = [
+export const EmailHistoryData: EmailHistoryType[] = [
   {
     date: "2025-07-17T10:32:00Z",
     recipient: "John Doe",

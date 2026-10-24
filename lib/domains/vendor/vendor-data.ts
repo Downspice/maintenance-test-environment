@@ -30,90 +30,89 @@ export const VendorSchema = z.object({
   billing_rate: z.coerce.number(),
   location: z.string(),
   notes: z.string().optional(),
-})
+});
 
 // Type inference (optional)
-export type VendorInterface = z.infer<typeof VendorSchema>
+export type VendorInterface = z.infer<typeof VendorSchema>;
 
-export interface VendorTableInterface  {
-  id: string
-  name: string
-  vendor_number: string
-  contact: any
-  address: string
-  city: string
-  state: string
-  postal_code: string
-  country: any
-  location_id: string
-  status_id: string
-  type_id: string
-  term_id: string
-  billing_rate: string
-  notes: any
-  created_by: any
-  updated_by: any
-  created_at: string
-  updated_at: string
-  location: Location
-  status: Status
-  type: Type
-  term: Term
-  attachments: any[]
-  vendor_contact: VendorContact
+export interface VendorTableInterface {
+  id: string;
+  name: string;
+  vendor_number: string;
+  contact: any;
+  address: string;
+  city: string;
+  state: string;
+  postal_code: string;
+  country: any;
+  location_id: string;
+  status_id: string;
+  type_id: string;
+  term_id: string;
+  billing_rate: string;
+  notes: any;
+  created_by: any;
+  updated_by: any;
+  created_at: string;
+  updated_at: string;
+  location: Location;
+  status: Status;
+  type: Type;
+  term: Term;
+  attachments: any[];
+  vendor_contact: VendorContact;
 }
 
 export interface Location {
-  id: string
-  name: string
-  created_by: any
-  updated_by: any
-  created_at: string
-  updated_at: string
+  id: string;
+  name: string;
+  created_by: any;
+  updated_by: any;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Status {
-  id: string
-  name: string
-  is_active: boolean
-  created_by: any
-  updated_by: any
-  created_at: string
-  updated_at: string
+  id: string;
+  name: string;
+  is_active: boolean;
+  created_by: any;
+  updated_by: any;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Type {
-  id: string
-  name: string
-  created_by: any
-  updated_by: any
-  created_at: string
-  updated_at: string
+  id: string;
+  name: string;
+  created_by: any;
+  updated_by: any;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Term {
-  id: string
-  name: string
-  created_by: any
-  updated_by: any
-  created_at: string
-  updated_at: string
+  id: string;
+  name: string;
+  created_by: any;
+  updated_by: any;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface VendorContact {
-  id: string
-  vendor_id: string
-  phone_one: string
-  phone_two: any
-  fax: any
-  email: string
-  website: any
-  created_by: any
-  updated_by: any
-  created_at: string
-  updated_at: string
+  id: string;
+  vendor_id: string;
+  phone_one: string;
+  phone_two: any;
+  fax: any;
+  email: string;
+  website: any;
+  created_by: any;
+  updated_by: any;
+  created_at: string;
+  updated_at: string;
 }
-
 
 export const VendorData = [
   {

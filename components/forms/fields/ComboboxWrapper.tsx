@@ -43,8 +43,9 @@ interface BaseFieldProps<TFieldValues extends FieldValues = FieldValues> {
   showLabel?: boolean;
 }
 
-interface ComboboxFieldProps<TFieldValues extends FieldValues = FieldValues>
-  extends BaseFieldProps<TFieldValues> {
+interface ComboboxFieldProps<
+  TFieldValues extends FieldValues = FieldValues,
+> extends BaseFieldProps<TFieldValues> {
   options: GenericObject[];
 }
 
@@ -259,11 +260,13 @@ export function MultiComboboxWrapper<
         const getValidationMessage = () => {
           const count = selectedValues.length;
           if (minSelections && count < minSelections)
-            return `Please select at least ${minSelections} option${minSelections > 1 ? "s" : ""
-              }.`;
+            return `Please select at least ${minSelections} option${
+              minSelections > 1 ? "s" : ""
+            }.`;
           if (maxSelections && count > maxSelections)
-            return `Please select no more than ${maxSelections} option${maxSelections > 1 ? "s" : ""
-              }.`;
+            return `Please select no more than ${maxSelections} option${
+              maxSelections > 1 ? "s" : ""
+            }.`;
           return null;
         };
 
@@ -358,9 +361,7 @@ export function MultiComboboxWrapper<
                       <CommandEmpty>{emptyText}</CommandEmpty>
                       <CommandGroup>
                         {filteredOptions.map((option) => {
-                          const isSelected = selectedValues.includes(
-                            option.id
-                          );
+                          const isSelected = selectedValues.includes(option.id);
                           const isDisabled =
                             !isSelected &&
                             maxSelections &&

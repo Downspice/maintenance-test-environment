@@ -97,9 +97,8 @@ export default function RepairRequestTable({
   onDelete,
   onDeleteMany,
 }: RepairRequestTableProps) {
-  const [internalData, setInternalData] = useState<MoreButtonRequestInterface[]>(
-    DummyRepairRequests
-  );
+  const [internalData, setInternalData] =
+    useState<MoreButtonRequestInterface[]>(DummyRepairRequests);
   const data = externalData ?? internalData;
 
   const [isServerMode, setIsServerMode] = useState(false);
@@ -430,10 +429,7 @@ export default function RepairRequestTable({
             className="flex flex-row gap-1 items-center"
             onClick={(e) => e.stopPropagation()}
           >
-            <EditRepairRequestForm
-              data={row.original}
-              onUpdate={onUpdate}
-            >
+            <EditRepairRequestForm data={row.original} onUpdate={onUpdate}>
               <Button variant="secondary" size="icon">
                 <FilePenIcon className="size-4" />
               </Button>

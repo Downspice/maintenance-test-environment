@@ -8,7 +8,10 @@ import { Button } from "@/components/ui/button";
 import { GitPullRequestArrow, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { inventoryMovement, partOptions } from "@/lib/domains/inventory/mock-data";
+import {
+  inventoryMovement,
+  partOptions,
+} from "@/lib/domains/inventory/mock-data";
 import Fieldset from "@/components/customUI/fieldset";
 import {
   Sheet,
@@ -39,9 +42,7 @@ import {
   useGetWarehouses,
   useUpdateInventory,
 } from "@/services/setups/inventory";
-import {
-  useGetVendors,
-} from "@/services/setups/vendor";
+import { useGetVendors } from "@/services/setups/vendor";
 import { GenericObject } from "@/types/types";
 import { InventorySchema } from "@/components/forms/entities/new-inventory-form";
 
@@ -86,7 +87,8 @@ function EditInventoryContent({
   const { data: markupTypeOptions } = useGetMarkupTypes<GenericObject[]>();
   const { data: categoryOptions } =
     useGetInventoryCategories<GenericObject[]>();
-  const { mutateAsync: updateInventory, isPending: isUpdating } = useUpdateInventory();
+  const { mutateAsync: updateInventory, isPending: isUpdating } =
+    useUpdateInventory();
 
   const inventoryForm = useForm<z.infer<typeof InventorySchema>>({
     resolver: zodResolver(InventorySchema),
@@ -448,10 +450,7 @@ function EditInventoryContent({
                     />
                   </div>
                   <div className="col-span-2">
-                    <Tabs
-                      defaultValue="Part Substitutions"
-                      className="w-full"
-                    >
+                    <Tabs defaultValue="Part Substitutions" className="w-full">
                       <TabsList>
                         <TabsTrigger value="Part Substitutions">
                           Part Substitutions
@@ -460,7 +459,10 @@ function EditInventoryContent({
                           Alternate UPC Codes
                         </TabsTrigger>
                       </TabsList>
-                      <TabsContent value="Part Substitutions" className="mt-4 min-w-0">
+                      <TabsContent
+                        value="Part Substitutions"
+                        className="mt-4 min-w-0"
+                      >
                         <PartSubstitutionTable
                           parts={partOptions ?? []}
                           value={partSubs}

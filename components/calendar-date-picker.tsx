@@ -11,7 +11,7 @@ import {
   startOfYear,
   endOfYear,
   startOfDay,
-  endOfDay
+  endOfDay,
 } from "date-fns";
 import { toDate, formatInTimeZone } from "date-fns-tz";
 import { DateRange } from "react-day-picker";
@@ -22,14 +22,14 @@ import { Button } from "@/components/ui/button";
 import {
   Popover,
   PopoverContent,
-  PopoverTrigger
+  PopoverTrigger,
 } from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
+  SelectValue,
 } from "@/components/ui/select";
 import { Calendar } from "./ui/calendar";
 
@@ -45,7 +45,7 @@ const months = [
   "September",
   "October",
   "November",
-  "December"
+  "December",
 ];
 
 const multiSelectVariants = cva(
@@ -61,17 +61,18 @@ const multiSelectVariants = cva(
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground text-background",
-        link: " underline-offset-4 hover:underline text-background"
-      }
+        link: " underline-offset-4 hover:underline text-background",
+      },
     },
     defaultVariants: {
-      variant: "default"
-    }
+      variant: "default",
+    },
   }
 );
 
 interface CalendarDatePickerProps
-  extends React.HTMLAttributes<HTMLButtonElement>,
+  extends
+    React.HTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof multiSelectVariants> {
   id?: string;
   className?: string;
@@ -169,12 +170,12 @@ export const CalendarDatePicker = React.forwardRef<
             numberOfMonths === 2
               ? startOfMonth(toDate(newMonth, { timeZone }))
               : date?.from
-              ? new Date(
-                  date.from.getFullYear(),
-                  newMonth.getMonth(),
-                  date.from.getDate()
-                )
-              : newMonth;
+                ? new Date(
+                    date.from.getFullYear(),
+                    newMonth.getMonth(),
+                    date.from.getDate()
+                  )
+                : newMonth;
           const to =
             numberOfMonths === 2
               ? date.to
@@ -218,8 +219,8 @@ export const CalendarDatePicker = React.forwardRef<
             numberOfMonths === 2
               ? startOfMonth(toDate(newMonth, { timeZone }))
               : date.from
-              ? new Date(newYear, newMonth.getMonth(), date.from.getDate())
-              : newMonth;
+                ? new Date(newYear, newMonth.getMonth(), date.from.getDate())
+                : newMonth;
           const to =
             numberOfMonths === 2
               ? date.to
@@ -270,30 +271,30 @@ export const CalendarDatePicker = React.forwardRef<
       {
         name: "This Week",
         start: startOfWeek(today, { weekStartsOn: 1 }),
-        end: endOfWeek(today, { weekStartsOn: 1 })
+        end: endOfWeek(today, { weekStartsOn: 1 }),
       },
       {
         name: "Last Week",
         start: subDays(startOfWeek(today, { weekStartsOn: 1 }), 7),
-        end: subDays(endOfWeek(today, { weekStartsOn: 1 }), 7)
+        end: subDays(endOfWeek(today, { weekStartsOn: 1 }), 7),
       },
       { name: "Last 7 Days", start: subDays(today, 6), end: today },
       {
         name: "This Month",
         start: startOfMonth(today),
-        end: endOfMonth(today)
+        end: endOfMonth(today),
       },
       {
         name: "Last Month",
         start: startOfMonth(subDays(today, today.getDate())),
-        end: endOfMonth(subDays(today, today.getDate()))
+        end: endOfMonth(subDays(today, today.getDate())),
       },
       { name: "This Year", start: startOfYear(today), end: endOfYear(today) },
       {
         name: "Last Year",
         start: startOfYear(subDays(today, 365)),
-        end: endOfYear(subDays(today, 365))
-      }
+        end: endOfYear(subDays(today, 365)),
+      },
     ];
 
     const handleMouseOver = (part: string) => {
@@ -359,7 +360,7 @@ export const CalendarDatePicker = React.forwardRef<
         firstYearElement,
         secondDayElement,
         secondMonthElement,
-        secondYearElement
+        secondYearElement,
       ];
 
       const addPassiveEventListener = (element: HTMLElement | null) => {
@@ -368,7 +369,7 @@ export const CalendarDatePicker = React.forwardRef<
             "wheel",
             handleWheel as unknown as EventListener,
             {
-              passive: false
+              passive: false,
             }
           );
         }
@@ -552,7 +553,7 @@ export const CalendarDatePicker = React.forwardRef<
               onEscapeKeyDown={handleClose}
               style={{
                 maxHeight: "var(--radix-popover-content-available-height)",
-                overflowY: "auto"
+                overflowY: "auto",
               }}
             >
               <div className="flex">

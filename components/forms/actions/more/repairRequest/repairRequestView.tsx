@@ -12,9 +12,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function RepairRequestView() {
   const [open, setOpen] = useState(false);
-  const [data, setData] = useState<MoreButtonRequestInterface[]>(
-    DummyRepairRequests
-  );
+  const [data, setData] =
+    useState<MoreButtonRequestInterface[]>(DummyRepairRequests);
 
   const handleAdd = (newRecord: MoreButtonRequestInterface) => {
     setData((prev) => [newRecord, ...prev]);

@@ -1,5 +1,8 @@
-'use client'
-import { NotesInterface, NotesSchema } from "@/lib/domains/work-order/workOrder-data";
+"use client";
+import {
+  NotesInterface,
+  NotesSchema,
+} from "@/lib/domains/work-order/workOrder-data";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";

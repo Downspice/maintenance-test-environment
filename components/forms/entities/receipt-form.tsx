@@ -15,10 +15,8 @@ import InputWrapper from "../fields/InputWrapper";
 import CheckboxWrapper from "../fields/CheckboxWrapper";
 import { toast } from "sonner";
 import { ComboboxFieldWrapper } from "../fields/ComboboxWrapper";
-import {
-  useGetVendors,
-} from "@/services/setups/vendor";
- // Define the form schema with Zod
+import { useGetVendors } from "@/services/setups/vendor";
+// Define the form schema with Zod
 export const workOrderSchema = z.object({
   partId: z.string({
     required_error: "Equipment is required",
@@ -37,7 +35,6 @@ export const workOrderSchema = z.object({
 
 // Equipment options
 const equipmentOptions = [{ id: "1311827", name: "AC-001-07 Class 8" }];
-
 
 // Priority options
 const priorityOptions = [
@@ -64,14 +61,13 @@ const taskOptions = [
   },
 ];
 
-export default function  ReceiptForm() {
+export default function ReceiptForm() {
   const [customFields, setCustomFields] = useState<
     { name: string; id: string }[]
   >([]);
   const { data: vendorOptions } = useGetVendors();
-  
 
-  const  receiptForm = useForm<z.infer<typeof workOrderSchema>>({
+  const receiptForm = useForm<z.infer<typeof workOrderSchema>>({
     resolver: zodResolver(workOrderSchema),
     // defaultValues: {
     //   equipmentId: "1311827",
@@ -84,7 +80,7 @@ export default function  ReceiptForm() {
   async function handleSubmit(data: z.infer<typeof workOrderSchema>) {
     console.log(data);
     // Here you would typically send the data to your API
-     
+
     toast.success("Work Order submitted successfully!");
   }
 
@@ -93,16 +89,13 @@ export default function  ReceiptForm() {
   };
 
   return (
-    <div> 
-
-      <Form {... receiptForm}>
-        <form
-          onSubmit={ receiptForm.handleSubmit((data) => handleSubmit(data))}
-        >
+    <div>
+      <Form {...receiptForm}>
+        <form onSubmit={receiptForm.handleSubmit((data) => handleSubmit(data))}>
           <div className="work-order-form-wrapper">
             <div className="pt-2">
               <ComboboxFieldWrapper
-                control={ receiptForm.control}
+                control={receiptForm.control}
                 name="equipmentId"
                 label="Equipment"
                 options={equipmentOptions}
@@ -115,7 +108,7 @@ export default function  ReceiptForm() {
               <div id="fields">
                 <div className="pt-4">
                   <MultiSelectWrapper
-                    control={ receiptForm.control}
+                    control={receiptForm.control}
                     name="assigneeIds"
                     label="Assignee"
                     options={vendorOptions}
@@ -146,13 +139,13 @@ export default function  ReceiptForm() {
 
                 <div className="grid grid-cols-2 gap-4 pt-4">
                   <DatePickerWrapper
-                    control={ receiptForm.control}
+                    control={receiptForm.control}
                     name="scheduledOn"
                     label="Scheduled"
                   />
 
                   <DatePickerWrapper
-                    control={ receiptForm.control}
+                    control={receiptForm.control}
                     name="dueOn"
                     label="Due"
                   />
@@ -160,7 +153,7 @@ export default function  ReceiptForm() {
 
                 <div className="grid grid-cols-2 gap-4 pt-4">
                   <SelectWrapper
-                    control={ receiptForm.control}
+                    control={receiptForm.control}
                     name="priority"
                     label="Priority"
                     options={priorityOptions}
@@ -168,7 +161,7 @@ export default function  ReceiptForm() {
                   />
 
                   <SelectWrapper
-                    control={ receiptForm.control}
+                    control={receiptForm.control}
                     name="workOrderType"
                     label="Type"
                     options={workOrderTypeOptions}
@@ -177,7 +170,7 @@ export default function  ReceiptForm() {
 
                 <div className="pt-4">
                   <TextareaWrapper
-                    control={ receiptForm.control}
+                    control={receiptForm.control}
                     name="initialNotes"
                     label="Initial Notes"
                     value={""}
@@ -196,14 +189,14 @@ export default function  ReceiptForm() {
                     {customFields.map((field, index) => (
                       <div key={index} className="grid grid-cols-2 gap-4 mb-2">
                         <InputWrapper
-                          control={ receiptForm.control}
+                          control={receiptForm.control}
                           type="text"
                           name={`customFields.${index}.name`}
                           label="Field Name"
                           value={field.name}
                         />
                         <InputWrapper
-                          control={ receiptForm.control}
+                          control={receiptForm.control}
                           type="text"
                           name={`customFields.${index}.value`}
                           label="Field Value"
@@ -228,7 +221,7 @@ export default function  ReceiptForm() {
               <div id="task-selection-table" className="pt-6">
                 <h2 className="text-xl font-semibold mb-4">Tasks</h2>
                 <CheckboxWrapper
-                  control={ receiptForm.control}
+                  control={receiptForm.control}
                   name="taskIds"
                   label="Select Tasks"
                   options={taskOptions}

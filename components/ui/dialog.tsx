@@ -1,3 +1,3 @@
-'use client';
+"use client";
 // Redirected to AlignUI — all existing imports continue to work.
-export * from '@/components/align-ui/dialog';
+export * from "@/components/align-ui/dialog";

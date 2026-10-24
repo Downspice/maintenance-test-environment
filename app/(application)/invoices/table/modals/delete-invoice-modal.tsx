@@ -25,20 +25,26 @@ export function DeleteInvoiceModal({
       warningTitle="Warning:"
       warningText={
         <>
-          This action <strong className="font-semibold text-text-strong-950">cannot be undone</strong>. Deleting this invoice will remove all its associated data including payments, line items, and linked records.
+          This action{" "}
+          <strong className="font-semibold text-text-strong-950">
+            cannot be undone
+          </strong>
+          . Deleting this invoice will remove all its associated data including
+          payments, line items, and linked records.
         </>
       }
       item={
         invoice
           ? {
               name: invoice.invoice_number || "Invoice",
-              description: [
-                invoice.customer?.company_name || invoice.customer,
-                invoice.status,
-                invoice.total != null ? `$${invoice.total}` : undefined,
-              ]
-                .filter(Boolean)
-                .join(" • ") || "Invoice record",
+              description:
+                [
+                  invoice.customer?.company_name || invoice.customer,
+                  invoice.status,
+                  invoice.total != null ? `$${invoice.total}` : undefined,
+                ]
+                  .filter(Boolean)
+                  .join(" • ") || "Invoice record",
             }
           : undefined
       }

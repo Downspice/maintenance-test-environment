@@ -573,7 +573,12 @@ export function EquipmentDataTable({ realServer }: DataTableProps) {
       description:
         "Fill out the form below to create a new work order for equipment maintenance or repair.",
       className: "inset-0 w-full max-w-none sm:max-w-none lg:max-w-none",
-      content: <ActualWorkOrderForm formId="create-wo-equipment-form" hideSubmitButton />,
+      content: (
+        <ActualWorkOrderForm
+          formId="create-wo-equipment-form"
+          hideSubmitButton
+        />
+      ),
       renderActions: (
         <Button form="create-wo-equipment-form" type="submit" variant="primary">
           Create Work Order
@@ -991,14 +996,18 @@ export function EquipmentDataTable({ realServer }: DataTableProps) {
           <p className="text-paragraph-xs text-text-sub-600 shrink-0">
             Showing{" "}
             <span className="font-medium text-text-strong-950">
-              {mockCarData.length === 0 ? 0 : (currentPage - 1) * rowsPerPage + 1}
+              {mockCarData.length === 0
+                ? 0
+                : (currentPage - 1) * rowsPerPage + 1}
             </span>{" "}
             to{" "}
             <span className="font-medium text-text-strong-950">
               {Math.min(currentPage * rowsPerPage, mockCarData.length)}
             </span>{" "}
             out of{" "}
-            <span className="font-medium text-text-strong-950">{mockCarData.length}</span>
+            <span className="font-medium text-text-strong-950">
+              {mockCarData.length}
+            </span>
           </p>
         </div>
         <div className="flex items-center gap-2">

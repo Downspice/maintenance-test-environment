@@ -45,7 +45,6 @@ export default function EditShipToForm({
   const { data: categoryOptions } = useGetInventoryCategories();
   const { data: statusOptions } = useGetEquipmentStatuses();
 
-
   const [customFields, setCustomFields] = useState<
     { name: string; id: string }[]
   >([]);

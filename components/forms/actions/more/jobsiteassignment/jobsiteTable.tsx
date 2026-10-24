@@ -249,7 +249,7 @@ export default function JobSiteDataTable() {
         return value.length === 0 || value.includes(row.getValue(id));
       },
     },
-        {
+    {
       accessorKey: "dateIn",
       header: ({ column }) => (
         <SortableHeader

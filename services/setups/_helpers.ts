@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
 import {
   useMutation,
   useQueryClient,
   type UseMutationOptions,
-} from '@tanstack/react-query';
-import type { AxiosError } from 'axios';
-import { dummyApiClient } from '@/lib/api/axios';
-import type { ApiError, ApiResponse } from '@/types/types';
+} from "@tanstack/react-query";
+import type { AxiosError } from "axios";
+import { dummyApiClient } from "@/lib/api/axios";
+import type { ApiError, ApiResponse } from "@/types/types";
 
 export type TId = string | number;
 export type TEntity = unknown;
@@ -22,14 +22,14 @@ export const useBaseMutation = <
 >(
   mutationKey: string[],
   endpoint: (payload: TPayload) => string,
-  method: 'post' | 'put' | 'delete' | 'patch',
+  method: "post" | "put" | "delete" | "patch",
   invalidateKeys: (payload: TPayload) => unknown[],
   options?: UseMutationOptions<
     TResponse,
     AxiosError<ApiError>,
     TPayload,
     TContext
-  >,
+  >
 ) => {
   const queryClient = useQueryClient();
 
@@ -38,7 +38,7 @@ export const useBaseMutation = <
     const response = await dummyApiClient<ApiResponse<TResponse>>(url, {
       method,
       data:
-        method === 'post' || method === 'put' || method === 'patch'
+        method === "post" || method === "put" || method === "patch"
           ? payload
           : undefined,
     });

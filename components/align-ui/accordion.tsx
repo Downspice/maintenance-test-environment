@@ -1,8 +1,8 @@
-'use client';
-import * as React from 'react';
-import * as AccordionPrimitive from '@radix-ui/react-accordion';
-import { RiArrowDownSLine } from '@remixicon/react';
-import { cn } from '@/utils/cn';
+"use client";
+import * as React from "react";
+import * as AccordionPrimitive from "@radix-ui/react-accordion";
+import { RiArrowDownSLine } from "@remixicon/react";
+import { cn } from "@/utils/cn";
 
 const Accordion = AccordionPrimitive.Root;
 
@@ -10,9 +10,13 @@ const AccordionItem = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Item>,
   React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Item>
 >(({ className, ...props }, ref) => (
-  <AccordionPrimitive.Item ref={ref} className={cn('border-b border-stroke-soft-200', className)} {...props} />
+  <AccordionPrimitive.Item
+    ref={ref}
+    className={cn("border-b border-stroke-soft-200", className)}
+    {...props}
+  />
 ));
-AccordionItem.displayName = 'AccordionItem';
+AccordionItem.displayName = "AccordionItem";
 
 const AccordionTrigger = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Trigger>,
@@ -22,11 +26,11 @@ const AccordionTrigger = React.forwardRef<
     <AccordionPrimitive.Trigger
       ref={ref}
       className={cn(
-        'group flex flex-1 items-center justify-between py-4 gap-2 outline-none',
-        'text-label-sm text-text-strong-950 transition-all duration-200',
-        'hover:text-text-sub-600',
-        '[&[data-state=open]>svg]:rotate-180',
-        className,
+        "group flex flex-1 items-center justify-between py-4 gap-2 outline-none",
+        "text-label-sm text-text-strong-950 transition-all duration-200",
+        "hover:text-text-sub-600",
+        "[&[data-state=open]>svg]:rotate-180",
+        className
       )}
       {...props}
     >
@@ -44,9 +48,9 @@ const AccordionContent = React.forwardRef<
   <AccordionPrimitive.Content
     ref={ref}
     className={cn(
-      'overflow-hidden text-paragraph-sm text-text-sub-600',
-      'data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down',
-      className,
+      "overflow-hidden text-paragraph-sm text-text-sub-600",
+      "data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down",
+      className
     )}
     {...props}
   >

@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -12,7 +12,7 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table"
+} from "@tanstack/react-table";
 
 import {
   Table,
@@ -21,27 +21,27 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
+} from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { ChevronDown, ArrowDown, ArrowUp } from "lucide-react"
-import { cn } from "@/lib/shared/utils"
-import debounce from "debounce"
+} from "@/components/ui/dropdown-menu";
+import { ChevronDown, ArrowDown, ArrowUp } from "lucide-react";
+import { cn } from "@/lib/shared/utils";
+import debounce from "debounce";
 
 type EditableDataTableProps<TData> = {
-  data: TData[]
-  columns: ColumnDef<TData, any>[]
-  onDataChange?: (updatedData: TData[]) => void
-  searchable?: boolean
-  columnToggle?: boolean
-  defaultRow?: TData // 👈 used to insert a new row
-}
+  data: TData[];
+  columns: ColumnDef<TData, any>[];
+  onDataChange?: (updatedData: TData[]) => void;
+  searchable?: boolean;
+  columnToggle?: boolean;
+  defaultRow?: TData; // 👈 used to insert a new row
+};
 
 export function EditableDataTable<TData>({
   data: initialData,
@@ -51,11 +51,14 @@ export function EditableDataTable<TData>({
   columnToggle = true,
   defaultRow,
 }: EditableDataTableProps<TData>) {
-  const [data, setData] = React.useState<TData[]>(initialData)
-  const [globalFilter, setGlobalFilter] = React.useState("")
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
-  const [sorting, setSorting] = React.useState<SortingState>([])
+  const [data, setData] = React.useState<TData[]>(initialData);
+  const [globalFilter, setGlobalFilter] = React.useState("");
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  );
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
+  const [sorting, setSorting] = React.useState<SortingState>([]);
 
   const table = useReactTable({
     data,
@@ -74,7 +77,7 @@ export function EditableDataTable<TData>({
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-  })
+  });
 
   const debouncedChange = debounce((updated: TData[]) => {
     onDataChange?.(updated);
@@ -120,7 +123,9 @@ export function EditableDataTable<TData>({
                     <DropdownMenuCheckboxItem
                       key={column.id}
                       checked={column.getIsVisible()}
-                      onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
                     >
                       {String(column.columnDef.header ?? column.id)}
                     </DropdownMenuCheckboxItem>
@@ -132,10 +137,10 @@ export function EditableDataTable<TData>({
         </div>
 
         {defaultRow && (
-        <Button type='button' onClick={addNewRow} variant="default">
-          Add Row
-        </Button>)}
-
+          <Button type="button" onClick={addNewRow} variant="default">
+            Add Row
+          </Button>
+        )}
       </div>
 
       {/* Table */}
@@ -149,7 +154,7 @@ export function EditableDataTable<TData>({
                     header.column.id === "actions" ||
                     header.id === "actions" ||
                     (typeof header.column.columnDef.header === "string" &&
-                      /actions?/i.test(header.column.columnDef.header))
+                      /actions?/i.test(header.column.columnDef.header));
                   return (
                     <TableHead
                       key={header.id}
@@ -161,21 +166,29 @@ export function EditableDataTable<TData>({
                       }
                       className={cn(
                         header.colSpan > 1 && "text-center font-bold bg-muted",
-                        header.column.getCanSort() && "cursor-pointer select-none",
+                        header.column.getCanSort() &&
+                          "cursor-pointer select-none",
                         isActions &&
                           "sticky right-0 z-20 bg-bg-weak-50 shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.08)] border-l border-stroke-soft-200 w-px whitespace-nowrap"
                       )}
-                      style={isActions ? { width: "1%", whiteSpace: "nowrap" } : undefined}
+                      style={
+                        isActions
+                          ? { width: "1%", whiteSpace: "nowrap" }
+                          : undefined
+                      }
                     >
                       <div className="flex items-center justify-center gap-1">
-                        {flexRender(header.column.columnDef.header, header.getContext())}
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                         {{
                           asc: <ArrowUp className="h-4 w-4" />,
                           desc: <ArrowDown className="h-4 w-4" />,
                         }[header.column.getIsSorted() as string] ?? null}
                       </div>
                     </TableHead>
-                  )
+                  );
                 })}
               </TableRow>
             ))}
@@ -189,7 +202,7 @@ export function EditableDataTable<TData>({
                     cell.column.id === "actions" ||
                     cell.id.includes("actions") ||
                     (typeof cell.column.columnDef.header === "string" &&
-                      /actions?/i.test(cell.column.columnDef.header))
+                      /actions?/i.test(cell.column.columnDef.header));
                   return (
                     <TableCell
                       key={cell.id}
@@ -197,7 +210,11 @@ export function EditableDataTable<TData>({
                         isActions &&
                           "sticky right-0 z-10 bg-bg-white-0 group-hover/row:bg-bg-weak-50 transition-colors shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.08)] border-l border-stroke-soft-200 w-px whitespace-nowrap"
                       )}
-                      style={isActions ? { width: "1%", whiteSpace: "nowrap" } : undefined}
+                      style={
+                        isActions
+                          ? { width: "1%", whiteSpace: "nowrap" }
+                          : undefined
+                      }
                     >
                       {flexRender(cell.column.columnDef.cell, {
                         ...cell.getContext(),
@@ -205,7 +222,7 @@ export function EditableDataTable<TData>({
                         rowIndex: row.index,
                       })}
                     </TableCell>
-                  )
+                  );
                 })}
               </TableRow>
             ))}
@@ -213,5 +230,5 @@ export function EditableDataTable<TData>({
         </Table>
       </div>
     </div>
-  )
+  );
 }

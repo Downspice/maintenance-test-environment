@@ -7,15 +7,25 @@ export function extractDefaultColumnSizes<TData>(
   columns: ColumnDef<TData, any>[]
 ): Record<string, number> {
   const defaultSizing: Record<string, number> = {};
-  
-  columns.forEach(column => {
-    if ('id' in column && column.id && 'size' in column && typeof column.size === 'number') {
+
+  columns.forEach((column) => {
+    if (
+      "id" in column &&
+      column.id &&
+      "size" in column &&
+      typeof column.size === "number"
+    ) {
       defaultSizing[column.id] = column.size;
-    } else if ('accessorKey' in column && typeof column.accessorKey === 'string' && 'size' in column && typeof column.size === 'number') {
+    } else if (
+      "accessorKey" in column &&
+      typeof column.accessorKey === "string" &&
+      "size" in column &&
+      typeof column.size === "number"
+    ) {
       defaultSizing[column.accessorKey] = column.size;
     }
   });
-  
+
   return defaultSizing;
 }
 
@@ -29,13 +39,13 @@ export function initializeColumnSizes<TData>(
 ): void {
   // Only proceed if we have columns to work with
   if (columns.length === 0) return;
-  
+
   // Extract default sizes from column definitions
   const defaultSizing = extractDefaultColumnSizes(columns);
-  
+
   // Only set if we have sizes to apply
   if (Object.keys(defaultSizing).length === 0) return;
-  
+
   // Check localStorage first
   try {
     const savedSizing = localStorage.getItem(`table-column-sizing-${tableId}`);
@@ -45,13 +55,13 @@ export function initializeColumnSizes<TData>(
     } else {
       // Parse saved sizing
       const parsedSizing = JSON.parse(savedSizing);
-      
+
       // Apply saved sizing
       setColumnSizing(parsedSizing);
     }
   } catch (error) {
     // If localStorage fails, apply defaults
-    console.warn('Failed to load saved column sizes. Using defaults.', error);
+    console.warn("Failed to load saved column sizes. Using defaults.", error);
     setColumnSizing(defaultSizing);
   }
 }
@@ -61,10 +71,10 @@ export function initializeColumnSizes<TData>(
  */
 export function trackColumnResizing(
   isResizing: boolean,
-  attribute = 'data-resizing'
+  attribute = "data-resizing"
 ): void {
   if (isResizing) {
-    document.body.setAttribute(attribute, 'true');
+    document.body.setAttribute(attribute, "true");
   } else {
     document.body.removeAttribute(attribute);
   }
@@ -73,8 +83,6 @@ export function trackColumnResizing(
 /**
  * Clean up column resizing tracking when component unmounts
  */
-export function cleanupColumnResizing(
-  attribute = 'data-resizing'
-): void {
+export function cleanupColumnResizing(attribute = "data-resizing"): void {
   document.body.removeAttribute(attribute);
-} 
+}

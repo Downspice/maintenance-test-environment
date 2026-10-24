@@ -40,10 +40,11 @@ export const fluidConsumedSchema = z.object({
 
 type FluidConsumedFormValues = z.infer<typeof fluidConsumedSchema>;
 
-export default function FluidConsumedForm(  {onCreate}: {
+export default function FluidConsumedForm({
+  onCreate,
+}: {
   onCreate?: (data: FluidConsumedFormValues) => void; // optional callback
-}  
-) {
+}) {
   const [total, setTotal] = useState(0);
 
   const form = useForm<FluidConsumedFormValues>({
@@ -281,5 +282,3 @@ export function EditFluidConsumption({
     </Sheet>
   );
 }
-
- 

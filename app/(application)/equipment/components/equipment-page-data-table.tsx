@@ -668,7 +668,12 @@ export function EquipmentPageDataTable({ realServer }: DataTableProps) {
                   <SortableHeader field="meters">Meters</SortableHeader>
                   <TableHead>Task</TableHead>
                   <TableHead>Inspections</TableHead>
-                  <TableHead className="w-px whitespace-nowrap" style={{ width: "1%" }}>Actions</TableHead>
+                  <TableHead
+                    className="w-px whitespace-nowrap"
+                    style={{ width: "1%" }}
+                  >
+                    Actions
+                  </TableHead>
                 </>
               )}
             </TableRow>
@@ -735,7 +740,7 @@ export function EquipmentPageDataTable({ realServer }: DataTableProps) {
                       <div className="flex flex-wrap gap-1">
                         {car.keywords.map((keyword, index) => (
                           <Badge
-                            key={index+keyword}
+                            key={index + keyword}
                             variant="outline"
                             className="text-xs"
                           >
@@ -780,7 +785,9 @@ export function EquipmentPageDataTable({ realServer }: DataTableProps) {
                           </Badge>
                           <Button
                             onClick={() =>
-                              handleInspectionClick(car.inspection!.date.toString)
+                              handleInspectionClick(
+                                car.inspection!.date.toString
+                              )
                             }
                             className="text-sm text-blue-600 hover:text-blue-800 underline text-left"
                           >
@@ -789,7 +796,10 @@ export function EquipmentPageDataTable({ realServer }: DataTableProps) {
                         </div>
                       )}
                     </TableCell>
-                    <TableCell className="w-px whitespace-nowrap" style={{ width: "1%" }}>
+                    <TableCell
+                      className="w-px whitespace-nowrap"
+                      style={{ width: "1%" }}
+                    >
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="outline" size="sm">
@@ -919,7 +929,9 @@ export function EquipmentPageDataTable({ realServer }: DataTableProps) {
               {Math.min(currentPage * rowsPerPage, totalItems)}
             </span>{" "}
             out of{" "}
-            <span className="font-medium text-text-strong-950">{totalItems}</span>
+            <span className="font-medium text-text-strong-950">
+              {totalItems}
+            </span>
           </p>
 
           {/* Center: Navigation buttons */}
@@ -987,7 +999,11 @@ export function EquipmentPageDataTable({ realServer }: DataTableProps) {
             </SelectTrigger>
             <SelectContent side="top" align="end">
               {[5, 10, 20, 30, 50].map((n) => (
-                <SelectItem key={n} value={`${n}`} className="cursor-pointer text-label-xs">
+                <SelectItem
+                  key={n}
+                  value={`${n}`}
+                  className="cursor-pointer text-label-xs"
+                >
                   {n} / page
                 </SelectItem>
               ))}

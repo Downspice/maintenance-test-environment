@@ -1,3 +1,3 @@
-export default function ManagePMScheduleDailyInspectionsTable(){
-    return()
+export default function ManagePMScheduleDailyInspectionsTable() {
+  return null;
 }
