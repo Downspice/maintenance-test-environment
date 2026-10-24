@@ -24,10 +24,10 @@ export function Sidebar() {
       <div
         onMouseEnter={() => setIsHover(true)}
         onMouseLeave={() => setIsHover(false)}
-        className="relative h-full flex flex-col px-1 py-4 overflow-y-auto border-r border-stroke-soft-200"
+        className="relative h-full flex flex-col px-1 py-4 overflow-hidden border-r border-stroke-soft-200"
       >
         <Button
-          className="w-full h-auto p-0 mb-3 justify-center hover:no-underline"
+          className="shrink-0 w-full h-auto p-0 mb-3 justify-center hover:no-underline"
           variant="link"
           asChild
         >
