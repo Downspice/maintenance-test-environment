@@ -33,8 +33,8 @@ const chartData = [
 
 const chartConfig = {
   maintenanceCost: {
-    name: "Maintenance Cost",
-    color: "hsl(var(--chart-1))",
+    label: "Maintenance Cost",
+    color: "var(--primary)",
   },
 } satisfies ChartConfig;
 
@@ -66,11 +66,7 @@ export function MonthlyMaintenanceChart() {
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
             />
-            <Bar
-              dataKey="maintenanceCost"
-              fill="var(--color-desktop)"
-              radius={8}
-            >
+            <Bar dataKey="maintenanceCost" fill="var(--primary)" radius={8}>
               <LabelList
                 position="top"
                 offset={12}

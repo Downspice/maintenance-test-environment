@@ -39,32 +39,18 @@ const employeeCardData = {
   soon: "5  ",
 };
 
-const data = [
-  { name: "Chrome", statistic: 20, fill: "#55B2C9" },
-  // { name: "Safari", statistic: 200, fill: "var(--color-safari)" },
-  // { name: "Firefox", statistic: 287, fill: "var(--color-firefox)" },
-  // { name: "Edge", statistic: 173, fill: "var(--color-edge)" },
-  // { name: "Other", statistic: 190, fill: "var(--color-other)" },
-];
+const data = [{ name: "Work Orders", statistic: 20, fill: "var(--primary)" }];
 const config = {
-  statistic: { name: "Total" },
-  Chrome: { name: "Work Order", color: "#55B2C9" },
-  // Safari: { name: "Safari", color: "hsl(var(--chart-2))" },
-  // Firefox: { name: "Firefox", color: "hsl(var(--chart-3))" },
-  // Edge: { name: "Edge", color: "hsl(var(--chart-4))" },
-  // Other: { name: "Other", color: "hsl(var(--chart-5))" },
+  statistic: { label: "Total" },
+  "Work Orders": { label: "Work Orders", color: "var(--primary)" },
 };
 
 const purchaseOrders = [
-  { name: "Purchase Order", statistic: 27, fill: "#55B2C9" },
+  { name: "Purchase Orders", statistic: 27, fill: "var(--primary)" },
 ];
 const purchaseConfig = {
-  statistic: { name: "Total" },
-  Chrome: { name: "Work Order", color: "#55B2C9" },
-  // Safari: { name: "Safari", color: "hsl(var(--chart-2))" },
-  // Firefox: { name: "Firefox", color: "hsl(var(--chart-3))" },
-  // Edge: { name: "Edge", color: "hsl(var(--chart-4))" },
-  // Other: { name: "Other", color: "hsl(var(--chart-5))" },
+  statistic: { label: "Total" },
+  "Purchase Orders": { label: "Purchase Orders", color: "var(--primary)" },
 };
 
 const options = ["All Locations", "Location 1", "Location 2", "Main Location"];
