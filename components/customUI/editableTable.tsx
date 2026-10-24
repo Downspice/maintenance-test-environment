@@ -169,7 +169,7 @@ export function EditableDataTable<TData>({
                         header.column.getCanSort() &&
                           "cursor-pointer select-none",
                         isActions &&
-                          "sticky right-0 z-20 bg-bg-weak-50 shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.08)] border-l border-stroke-soft-200 w-px whitespace-nowrap"
+                          "sticky right-0 z-20 bg-bg-weak-50 border-l border-stroke-soft-200 w-px whitespace-nowrap"
                       )}
                       style={
                         isActions
@@ -208,7 +208,7 @@ export function EditableDataTable<TData>({
                       key={cell.id}
                       className={cn(
                         isActions &&
-                          "sticky right-0 z-10 bg-bg-white-0 group-hover/row:bg-bg-weak-50 transition-colors shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.08)] border-l border-stroke-soft-200 w-px whitespace-nowrap"
+                          "sticky right-0 z-10 bg-bg-white-0 group-hover/row:bg-bg-weak-50 transition-colors border-l border-stroke-soft-200 w-px whitespace-nowrap"
                       )}
                       style={
                         isActions

@@ -770,7 +770,7 @@ export function DataTable<TData, TValue>({
                       className={cn(
                         "px-2 py-2 relative text-left group/th",
                         isActions &&
-                          "sticky right-0 z-20 bg-bg-weak-50 shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.08)] border-l border-stroke-soft-200 w-px whitespace-nowrap"
+                          "sticky right-0 z-20 bg-bg-weak-50 border-l border-stroke-soft-200 w-px whitespace-nowrap"
                       )}
                       key={header.id}
                       colSpan={header.colSpan}
@@ -824,7 +824,7 @@ export function DataTable<TData, TValue>({
                         className={cn(
                           "px-4 py-2 text-left",
                           isActions
-                            ? "sticky right-0 z-10 bg-bg-white-0 shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.08)] border-l border-stroke-soft-200 w-px whitespace-nowrap"
+                            ? "sticky right-0 z-10 bg-bg-white-0 border-l border-stroke-soft-200 w-px whitespace-nowrap"
                             : "truncate max-w-0"
                         )}
                         style={
@@ -879,7 +879,7 @@ export function DataTable<TData, TValue>({
                         className={cn(
                           "px-4 py-2 text-left",
                           isActions
-                            ? "sticky right-0 z-10 bg-bg-white-0 group-hover/row:bg-bg-weak-50 group-data-[state=selected]/row:bg-bg-weak-50 transition-colors shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.08)] border-l border-stroke-soft-200 w-px whitespace-nowrap"
+                            ? "sticky right-0 z-10 bg-bg-white-0 group-hover/row:bg-bg-weak-50 group-data-[state=selected]/row:bg-bg-weak-50 transition-colors border-l border-stroke-soft-200 w-px whitespace-nowrap"
                             : "truncate max-w-0"
                         )}
                         style={

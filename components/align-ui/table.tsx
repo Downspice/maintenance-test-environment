@@ -92,7 +92,7 @@ const TableHead = React.forwardRef<
         "text-subheading-xs text-text-soft-400 uppercase tracking-wide",
         "[&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
         isActions
-          ? "sticky right-0 z-20 bg-bg-weak-50 shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.08)] border-l border-stroke-soft-200 w-px whitespace-nowrap"
+          ? "sticky right-0 z-20 bg-bg-weak-50 border-l border-stroke-soft-200 w-px whitespace-nowrap"
           : "",
         className
       )}
@@ -123,7 +123,7 @@ const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
         className={cn(
           "px-3 py-3 align-middle text-text-sub-600 border-b border-stroke-soft-200 [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
           isActionsCell &&
-            "sticky right-0 z-10 bg-bg-white-0 group-hover/row:bg-bg-weak-50 group-data-[state=selected]/row:bg-bg-weak-50 transition-colors shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.08)] border-l border-stroke-soft-200 w-px whitespace-nowrap",
+            "sticky right-0 z-10 bg-bg-white-0 group-hover/row:bg-bg-weak-50 group-data-[state=selected]/row:bg-bg-weak-50 transition-colors border-l border-stroke-soft-200 w-px whitespace-nowrap",
           className
         )}
         style={

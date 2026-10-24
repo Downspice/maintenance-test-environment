@@ -31,6 +31,7 @@ export function TableRowActions({
           variant="secondary"
           size="icon"
           aria-label={editLabel}
+          className="shadow-none"
           onClick={(e) => {
             e.stopPropagation();
             onEdit();
@@ -45,7 +46,7 @@ export function TableRowActions({
           variant="secondary"
           size="icon"
           aria-label={deleteLabel}
-          className="text-destructive focus:text-destructive"
+          className="text-destructive focus:text-destructive shadow-none"
           onClick={(e) => {
             e.stopPropagation();
             onDelete();
