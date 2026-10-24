@@ -110,7 +110,6 @@ export default function EmployeesPage() {
     <div className="flex flex-col flex-1 min-h-0 w-full p-4 md:p-6 space-y-4 overflow-hidden">
       <div className="flex flex-row items-center space-x-2 shrink-0">
         <h1 className="text-xl font-semibold">Employees</h1>
-        {/* <Badge>10</Badge> */}
       </div>
 
       <div className="flex justify-between items-center space-x-4 shrink-0">
