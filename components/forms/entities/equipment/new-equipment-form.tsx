@@ -470,13 +470,13 @@ export function ActualEquipmentForm({
                         control={formControl}
                         name="make_id"
                         label="Make"
-                        options={makeOptionsList??[]}
+                        options={makeOptionsList ?? []}
                       />
                       <ComboboxFieldWrapper
                         control={formControl}
                         name="model_id"
                         label="Model"
-                        options={carModelOptionsList??[]}
+                        options={carModelOptionsList ?? []}
                       />
                       <InputWrapper
                         control={formControl}
@@ -503,7 +503,7 @@ export function ActualEquipmentForm({
                         control={formControl}
                         name="type_id"
                         label="Equipment Type"
-                        options={equipmentTypeOptions??[]}
+                        options={equipmentTypeOptions ?? []}
                       />
                       <TextareaWrapper
                         control={formControl}
@@ -524,7 +524,7 @@ export function ActualEquipmentForm({
                         control={formControl}
                         name="status_id"
                         label="Status"
-                        options={statusOptions??[]}
+                        options={statusOptions ?? []}
                         required
                       />
 
@@ -547,14 +547,14 @@ export function ActualEquipmentForm({
                         control={formControl}
                         name="location"
                         label="Location"
-                        options={categoryOptions??[]}
+                        options={categoryOptions ?? []}
                       />
 
                       <ComboboxFieldWrapper
                         control={formControl}
                         name="costCenter"
                         label="Cost Center"
-                        options={costCenterOptions??[]}
+                        options={costCenterOptions ?? []}
                       />
 
                       <ComboboxFieldWrapper
@@ -607,7 +607,7 @@ export function ActualEquipmentForm({
                     <ComboboxFieldWrapper
                       label="Color"
                       control={formControl}
-                      options={colorOptions??[]}
+                      options={colorOptions ?? []}
                       name="color_id"
                     />
                   </div>
@@ -702,7 +702,7 @@ export function ActualEquipmentForm({
                   <ComboboxFieldWrapper
                     label="Vendor"
                     control={formControl}
-                    options={vendorOptions??[]}
+                    options={vendorOptions ?? []}
                     name="purchase.vendor_id"
                   />
                   <DatePickerWrapper
@@ -782,7 +782,7 @@ export function ActualEquipmentForm({
                         control={formControl}
                         name="purchase.ownership_id"
                         label="Ownership"
-                        options={ownershipOptions??[]}
+                        options={ownershipOptions ?? []}
                       />
                       <DatePickerWrapper
                         control={formControl}
