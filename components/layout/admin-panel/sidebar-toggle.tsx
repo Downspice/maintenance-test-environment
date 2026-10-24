@@ -10,16 +10,16 @@ interface SidebarToggleProps {
 
 export function SidebarToggle({ isOpen, setIsOpen }: SidebarToggleProps) {
   return (
-    <div className="invisible lg:visible absolute top-[12px] -right-[16px] z-20">
+    <div className="invisible lg:visible absolute top-[18px] -right-3 z-20">
       <Button
         onClick={() => setIsOpen?.()}
-        className="rounded-md w-8 h-8"
-        variant="outline"
-        size="icon"
+        className="size-6 rounded-full p-0 flex items-center justify-center bg-bg-white-0 hover:bg-bg-weak-50 text-text-sub-600 hover:text-text-strong-950 ring-1 ring-inset ring-stroke-soft-200 shadow-xs transition-colors"
+        variant="ghost"
+        aria-label={isOpen === false ? "Expand sidebar" : "Collapse sidebar"}
       >
         <ChevronLeft
           className={cn(
-            "h-4 w-4 transition-transform ease-in-out duration-700",
+            "size-3.5 transition-transform ease-in-out duration-300",
             isOpen === false ? "rotate-180" : "rotate-0"
           )}
         />
