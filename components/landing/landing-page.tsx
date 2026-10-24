@@ -6,6 +6,7 @@ import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import {
   motion,
+  AnimatePresence,
   useReducedMotion,
   useInView,
 } from "framer-motion";
@@ -21,7 +22,6 @@ import {
   CheckCircle2,
   Menu,
   X,
-  Wrench,
   Gauge,
   Shield,
   Zap,
@@ -32,12 +32,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { Drawer } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { LogoWordmark } from "@/components/landing/logo-mark";
 import { LogoMark } from "@/components/landing/logo-mark";
 import { cn } from "@/lib/shared/utils";
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   EASING & ANIMATION HELPERS
+   EASING & ANIMATION CONSTANTS
+   Following Emil Kowalski's animation philosophy (RECIPES.md):
+   --ease-out: cubic-bezier(0.23, 1, 0.32, 1)
+   Duration under 300ms for UI actions, active:scale-[0.97] for button presses
    ─────────────────────────────────────────────────────────────────────────── */
 const EASE_OUT = [0.23, 1, 0.32, 1] as const;
 
@@ -58,12 +60,73 @@ function FadeUp({
     <motion.div
       ref={ref}
       className={className}
-      initial={reduceMotion ? false : { opacity: 0, y: 32 }}
+      initial={reduceMotion ? false : { opacity: 0, y: 28 }}
       animate={inView ? { opacity: 1, y: 0 } : undefined}
-      transition={{ duration: 0.65, ease: EASE_OUT, delay }}
+      transition={{ duration: 0.55, ease: EASE_OUT, delay }}
     >
       {children}
     </motion.div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   ANIMATED METRIC COUNTER
+   Smooth RAF-driven count up on scroll into view with ease-out cubic
+   ─────────────────────────────────────────────────────────────────────────── */
+function AnimatedCounter({
+  value,
+  suffix,
+}: {
+  value: string;
+  suffix: string;
+}) {
+  const ref = useRef<HTMLParagraphElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-40px" });
+  const [displayValue, setDisplayValue] = useState("0");
+  const numValue = parseFloat(value);
+  const isDecimal = value.includes(".");
+  const reduceMotion = useReducedMotion();
+
+  useEffect(() => {
+    if (reduceMotion) {
+      setDisplayValue(value);
+      return;
+    }
+    if (!inView) return;
+
+    let start = 0;
+    const duration = 1100;
+    const startTime = performance.now();
+
+    function update(now: number) {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = start + (numValue - start) * eased;
+      setDisplayValue(
+        isDecimal ? current.toFixed(1) : Math.round(current).toString()
+      );
+
+      if (progress < 1) {
+        requestAnimationFrame(update);
+      } else {
+        setDisplayValue(value);
+      }
+    }
+    const rafId = requestAnimationFrame(update);
+    return () => cancelAnimationFrame(rafId);
+  }, [inView, numValue, value, isDecimal, reduceMotion]);
+
+  return (
+    <p
+      ref={ref}
+      className="shrink-0 text-[clamp(2.5rem,5vw,4.5rem)] font-bold leading-none tracking-tight tabular-nums transition-colors duration-200"
+    >
+      {displayValue}
+      <span className="font-serif text-[0.65em] italic font-normal text-[#1a1a1a]/50">
+        {suffix}
+      </span>
+    </p>
   );
 }
 
@@ -220,9 +283,9 @@ const PLAN_FEATURES = [
 ];
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   COMPONENTS
+   NAVBAR COMPONENT
+   Interactive focus states, button press scale, and smooth sticky transition
    ─────────────────────────────────────────────────────────────────────────── */
-
 function Navbar({
   onRequestDemo,
 }: {
@@ -244,24 +307,32 @@ function Navbar({
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
         scrolled
-          ? "bg-[#0a0a0a]/90 backdrop-blur-xl border-b border-white/5"
+          ? "bg-[#0a0a0a]/90 backdrop-blur-xl border-b border-white/10 shadow-lg"
           : "bg-transparent"
       )}
     >
       <div className="mx-auto flex h-16 max-w-[1400px] items-center justify-between px-6 lg:px-10">
-        <Link href="/" className="shrink-0 flex items-center gap-2.5">
-          <LogoMark size="sm" className="brightness-0 invert" priority />
-          <span className="text-base font-bold tracking-tight text-white">
+        <Link
+          href="/"
+          className="group shrink-0 flex items-center gap-2.5 rounded-lg py-1 px-1.5 transition-all outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] active:scale-[0.97]"
+        >
+          <LogoMark
+            size="sm"
+            className="brightness-0 invert transition-transform duration-200 group-hover:scale-105"
+            priority
+          />
+          <span className="text-base font-bold tracking-tight text-white transition-opacity group-hover:opacity-90">
             MAINTAIN
           </span>
         </Link>
 
+        {/* Desktop Nav Items with explicit focus-visible and active feedback */}
         <div className="hidden items-center gap-1 md:flex">
           {["Home", "Modules", "Process", "Pricing"].map((item) => (
             <a
               key={item}
               href={`#${item.toLowerCase()}`}
-              className="px-4 py-2 text-sm text-white/70 transition-colors hover:text-white"
+              className="rounded-full px-4 py-2 text-sm text-white/70 transition-all duration-150 hover:text-white hover:bg-white/5 outline-none focus-visible:text-white focus-visible:bg-white/10 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] active:scale-[0.97]"
             >
               {item}
             </a>
@@ -272,7 +343,7 @@ function Navbar({
           <Button
             variant="ghost"
             size="sm"
-            className="hidden text-sm text-white/70 hover:text-white hover:bg-white/5 sm:inline-flex"
+            className="hidden text-sm text-white/70 hover:text-white hover:bg-white/5 rounded-full px-4 py-2 outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] active:scale-[0.97] transition-all sm:inline-flex"
             asChild
           >
             <Link href="/dashboard">Sign in</Link>
@@ -280,14 +351,14 @@ function Navbar({
           <button
             type="button"
             onClick={onRequestDemo}
-            className="hidden items-center gap-2 rounded-full border border-white/20 bg-white px-5 py-2 text-sm font-medium text-[#0a0a0a] transition-all hover:bg-white/90 sm:inline-flex"
+            className="hidden items-center gap-2 rounded-full border border-white/20 bg-white px-5 py-2 text-sm font-medium text-[#0a0a0a] shadow-sm transition-all duration-150 hover:bg-white/90 hover:shadow-md outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] active:scale-[0.97] sm:inline-flex"
           >
             Get Started
-            <ArrowRight className="size-4" />
+            <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
           </button>
           <button
             type="button"
-            className="inline-flex size-9 items-center justify-center rounded-lg text-white/70 hover:text-white md:hidden"
+            className="inline-flex size-9 items-center justify-center rounded-lg text-white/70 transition-colors hover:text-white hover:bg-white/5 outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] active:scale-[0.97] md:hidden"
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
             onClick={() => setMobileOpen((o) => !o)}
           >
@@ -301,47 +372,61 @@ function Navbar({
       </div>
 
       {/* Mobile menu */}
-      {mobileOpen && (
-        <div className="border-t border-white/5 bg-[#0a0a0a]/95 backdrop-blur-xl px-6 py-4 md:hidden">
-          <div className="flex flex-col gap-1">
-            {["Home", "Modules", "Process", "Pricing"].map((item) => (
-              <a
-                key={item}
-                href={`#${item.toLowerCase()}`}
-                className="rounded-lg px-4 py-2.5 text-sm text-white/70 hover:text-white hover:bg-white/5"
-                onClick={() => setMobileOpen(false)}
-              >
-                {item}
-              </a>
-            ))}
-            <div className="mt-3 flex flex-col gap-2">
-              <Button variant="ghost" size="sm" className="text-white/70 justify-start" asChild>
-                <Link href="/dashboard">Sign in</Link>
-              </Button>
-              <button
-                type="button"
-                onClick={() => {
-                  onRequestDemo();
-                  setMobileOpen(false);
-                }}
-                className="flex items-center justify-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-medium text-[#0a0a0a]"
-              >
-                Get Started
-                <ArrowRight className="size-4" />
-              </button>
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2, ease: EASE_OUT }}
+            className="overflow-hidden border-t border-white/10 bg-[#0a0a0a]/95 backdrop-blur-xl px-6 py-4 md:hidden"
+          >
+            <div className="flex flex-col gap-1">
+              {["Home", "Modules", "Process", "Pricing"].map((item) => (
+                <a
+                  key={item}
+                  href={`#${item.toLowerCase()}`}
+                  className="rounded-lg px-4 py-2.5 text-sm text-white/70 transition-all hover:text-white hover:bg-white/5 outline-none focus-visible:bg-white/10 focus-visible:ring-2 focus-visible:ring-white active:scale-[0.98]"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {item}
+                </a>
+              ))}
+              <div className="mt-3 flex flex-col gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-white/70 justify-start rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-white active:scale-[0.98]"
+                  asChild
+                >
+                  <Link href="/dashboard">Sign in</Link>
+                </Button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onRequestDemo();
+                    setMobileOpen(false);
+                  }}
+                  className="flex items-center justify-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-medium text-[#0a0a0a] transition-all hover:bg-white/90 outline-none focus-visible:ring-2 focus-visible:ring-white active:scale-[0.97]"
+                >
+                  Get Started
+                  <ArrowRight className="size-4" />
+                </button>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   SERVICE ACCORDION
+   SERVICE ACCORDION WITH ANIMATED DETAIL TRANSITIONS & FOCUS STATES
    ─────────────────────────────────────────────────────────────────────────── */
 function ServiceAccordion() {
   const [activeIdx, setActiveIdx] = useState(0);
+  const reduceMotion = useReducedMotion();
 
   return (
     <div className="grid gap-8 lg:grid-cols-2 lg:gap-16">
@@ -355,19 +440,30 @@ function ServiceAccordion() {
               type="button"
               onClick={() => setActiveIdx(i)}
               className={cn(
-                "group flex items-center gap-4 border-b border-white/10 py-5 text-left transition-all duration-300",
-                isActive ? "opacity-100" : "opacity-40 hover:opacity-70"
+                "group relative flex items-center gap-4 rounded-xl border-b border-white/10 px-3 py-5 text-left transition-all duration-200 outline-none",
+                "focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f0f0f] focus-visible:bg-white/[0.04]",
+                isActive
+                  ? "opacity-100 bg-white/[0.03]"
+                  : "opacity-40 hover:opacity-80 hover:bg-white/[0.015]"
               )}
             >
-              <span className="font-serif text-lg italic text-white/50">
+              {/* Active left glowing pill indicator */}
+              {isActive && (
+                <motion.div
+                  layoutId="serviceActivePill"
+                  className="absolute left-0 top-3 bottom-3 w-1 rounded-r-full bg-white shadow-[0_0_12px_rgba(255,255,255,0.7)]"
+                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                />
+              )}
+              <span className="font-serif text-lg italic text-white/50 transition-colors group-hover:text-white/70">
                 ({svc.num})
               </span>
-              <span className="text-lg font-medium text-white sm:text-xl">
+              <span className="text-lg font-medium text-white transition-colors duration-150 sm:text-xl">
                 {svc.title}
               </span>
               <ChevronRight
                 className={cn(
-                  "ml-auto size-5 text-white/40 transition-transform duration-300",
+                  "ml-auto size-5 text-white/40 transition-transform duration-200",
                   isActive && "rotate-90 text-white"
                 )}
               />
@@ -376,34 +472,62 @@ function ServiceAccordion() {
         })}
       </div>
 
-      {/* Right: detail panel */}
+      {/* Right: animated detail panel */}
       <div className="relative flex flex-col justify-center">
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-sm sm:p-8">
-          {(() => {
-            const svc = SERVICES[activeIdx];
-            const Icon = svc.icon;
-            return (
-              <>
-                <div className="mb-4 flex size-12 items-center justify-center rounded-xl border border-white/10 bg-white/5">
-                  <Icon className="size-6 text-white/80" />
-                </div>
-                <p className="mb-6 text-sm leading-relaxed text-white/60 sm:text-base">
-                  {svc.description}
-                </p>
-                <div className="grid grid-cols-2 gap-3">
-                  {svc.features.map((feat) => (
-                    <div
-                      key={feat}
-                      className="flex items-center gap-2 text-sm text-white/80"
-                    >
-                      <span className="size-1.5 shrink-0 rounded-full bg-white/40" />
-                      {feat}
-                    </div>
-                  ))}
-                </div>
-              </>
-            );
-          })()}
+        <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-sm sm:p-8 shadow-2xl transition-all duration-300 hover:border-white/20">
+          <AnimatePresence mode="wait">
+            {(() => {
+              const svc = SERVICES[activeIdx];
+              const Icon = svc.icon;
+              return (
+                <motion.div
+                  key={svc.num}
+                  initial={
+                    reduceMotion
+                      ? false
+                      : { opacity: 0, y: 12, filter: "blur(4px)" }
+                  }
+                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  exit={
+                    reduceMotion
+                      ? undefined
+                      : { opacity: 0, y: -12, filter: "blur(4px)" }
+                  }
+                  transition={{ duration: 0.22, ease: EASE_OUT }}
+                >
+                  <div className="mb-4 flex size-12 items-center justify-center rounded-xl border border-white/15 bg-white/5 shadow-inner">
+                    <Icon className="size-6 text-white/90" />
+                  </div>
+                  <h4 className="mb-2 text-xl font-semibold text-white tracking-tight">
+                    {svc.title}
+                  </h4>
+                  <p className="mb-6 text-sm leading-relaxed text-white/70 sm:text-base">
+                    {svc.description}
+                  </p>
+                  <div className="grid grid-cols-2 gap-3 pt-2 border-t border-white/10">
+                    {svc.features.map((feat, fIdx) => (
+                      <motion.div
+                        key={feat}
+                        initial={
+                          reduceMotion ? false : { opacity: 0, x: -6 }
+                        }
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{
+                          duration: 0.25,
+                          delay: fIdx * 0.04,
+                          ease: EASE_OUT,
+                        }}
+                        className="flex items-center gap-2 text-sm text-white/80"
+                      >
+                        <span className="size-1.5 shrink-0 rounded-full bg-white/50" />
+                        {feat}
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.div>
+              );
+            })()}
+          </AnimatePresence>
         </div>
       </div>
     </div>
@@ -433,33 +557,49 @@ export default function LandingPage() {
       <Navbar onRequestDemo={() => setDemoOpen(true)} />
 
       {/* ================================================================
-          1. HERO — Full-screen dark with background image
+          1. HERO — Full-screen dark with background image & fluid motion
           ================================================================ */}
       <section
         id="home"
         className="relative flex min-h-screen flex-col justify-between overflow-hidden bg-[#0a0a0a]"
       >
-        {/* Background image */}
+        {/* Background image with subtle ambient pulse */}
         <div className="absolute inset-0 z-0">
           <Image
             src="/landing-hero-bg.jpg"
             alt=""
             fill
-            className="object-cover opacity-60"
+            className="object-cover opacity-60 scale-105 animate-[pulse_8s_ease-in-out_infinite]"
+            style={{ animationDuration: "14s" }}
             priority
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a]/40 via-transparent to-[#0a0a0a]/80" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a]/50 via-transparent to-[#0a0a0a]/85" />
+          {/* Subtle luminous ambient spotlight */}
+          <div className="pointer-events-none absolute -top-40 left-1/2 size-[650px] -translate-x-1/2 rounded-full bg-white/[0.04] blur-3xl" />
         </div>
 
         {/* Hero content */}
         <div className="relative z-10 flex flex-1 flex-col justify-center px-6 pt-24 pb-12 lg:px-10">
           <div className="mx-auto w-full max-w-[1400px]">
+            {/* Tagline pill */}
+            <motion.div
+              initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: EASE_OUT }}
+              className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3.5 py-1.5 backdrop-blur-md"
+            >
+              <Sparkles className="size-3.5 text-white/70" />
+              <span className="text-xs font-medium tracking-wide text-white/80 uppercase">
+                Autonomous Industrial Operations
+              </span>
+            </motion.div>
+
             <motion.h1
               className="text-[clamp(3rem,10vw,9rem)] font-bold leading-[0.9] tracking-tighter text-white"
-              initial={reduceMotion ? false : { opacity: 0, y: 50 }}
+              initial={reduceMotion ? false : { opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: EASE_OUT, delay: 0.2 }}
+              transition={{ duration: 0.75, ease: EASE_OUT, delay: 0.15 }}
             >
               Maintain
               <br />
@@ -476,7 +616,7 @@ export default function LandingPage() {
           className="relative z-10 px-6 pb-8 lg:px-10"
           initial={reduceMotion ? false : { opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: EASE_OUT, delay: 0.6 }}
+          transition={{ duration: 0.6, ease: EASE_OUT, delay: 0.35 }}
         >
           <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
             {/* Left description */}
@@ -494,7 +634,7 @@ export default function LandingPage() {
               </p>
             </div>
 
-            {/* Right: numbered features */}
+            {/* Right: numbered features with focus states */}
             <div className="flex flex-col gap-1 text-right">
               {[
                 { n: "01", label: "Work Order Management" },
@@ -504,7 +644,7 @@ export default function LandingPage() {
               ].map((item) => (
                 <div
                   key={item.n}
-                  className="flex items-center justify-end gap-3 text-sm text-white/80"
+                  className="flex items-center justify-end gap-3 text-sm text-white/80 transition-colors duration-150 hover:text-white"
                 >
                   <span className="font-serif italic text-white/40">
                     ({item.n})
@@ -514,7 +654,7 @@ export default function LandingPage() {
               ))}
               <Link
                 href="/dashboard"
-                className="mt-4 inline-flex items-center gap-2 self-end rounded-full border border-white/20 bg-white/10 px-5 py-2.5 text-sm font-medium text-white backdrop-blur-sm transition-all hover:bg-white hover:text-[#0a0a0a]"
+                className="mt-4 inline-flex items-center gap-2 self-end rounded-full border border-white/20 bg-white/10 px-5 py-2.5 text-sm font-medium text-white backdrop-blur-sm shadow-md transition-all duration-150 hover:bg-white hover:text-[#0a0a0a] outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] active:scale-[0.97]"
               >
                 Launch workspace
                 <ArrowRight className="size-4" />
@@ -525,19 +665,22 @@ export default function LandingPage() {
       </section>
 
       {/* ================================================================
-          2. ABOUT / MISSION — Light section with large centered text
+          2. ABOUT / MISSION — Light section with diagonal texture
           ================================================================ */}
       <section className="relative overflow-hidden bg-[#f5f5f3] px-6 py-32 lg:px-10 lg:py-44">
         {/* Subtle diagonal lines */}
-        <div className="absolute inset-0 opacity-[0.03]" style={{
-          backgroundImage: `repeating-linear-gradient(
-            -45deg,
-            transparent,
-            transparent 80px,
-            #000 80px,
-            #000 81px
-          )`,
-        }} />
+        <div
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage: `repeating-linear-gradient(
+              -45deg,
+              transparent,
+              transparent 80px,
+              #000 80px,
+              #000 81px
+            )`,
+          }}
+        />
 
         <div className="relative mx-auto max-w-[1400px]">
           <FadeUp>
@@ -566,7 +709,10 @@ export default function LandingPage() {
 
           <FadeUp delay={0.2}>
             <div className="mt-12 flex flex-wrap items-center justify-center gap-6">
-              <div className="flex items-center gap-3 rounded-xl border border-[#1a1a1a]/10 bg-white/60 px-5 py-3 backdrop-blur-sm">
+              <div
+                tabIndex={0}
+                className="flex items-center gap-3 rounded-xl border border-[#1a1a1a]/10 bg-white/70 px-5 py-3 backdrop-blur-sm transition-all duration-200 hover:shadow-md hover:border-[#1a1a1a]/20 outline-none focus-visible:ring-2 focus-visible:ring-[#1a1a1a] focus-visible:ring-offset-2"
+              >
                 <div className="flex">
                   {[1, 2, 3, 4, 5].map((s) => (
                     <Star
@@ -583,7 +729,10 @@ export default function LandingPage() {
                 </div>
               </div>
               <div className="h-8 w-px bg-[#1a1a1a]/10" />
-              <div className="flex items-center gap-3 rounded-xl border border-[#1a1a1a]/10 bg-white/60 px-5 py-3 backdrop-blur-sm">
+              <div
+                tabIndex={0}
+                className="flex items-center gap-3 rounded-xl border border-[#1a1a1a]/10 bg-white/70 px-5 py-3 backdrop-blur-sm transition-all duration-200 hover:shadow-md hover:border-[#1a1a1a]/20 outline-none focus-visible:ring-2 focus-visible:ring-[#1a1a1a] focus-visible:ring-offset-2"
+              >
                 <div className="flex">
                   {[1, 2, 3, 4].map((s) => (
                     <Star
@@ -606,32 +755,39 @@ export default function LandingPage() {
       </section>
 
       {/* ================================================================
-          3. ABOUT DETAIL — Light + image + description text
+          3. ABOUT DETAIL — Image with hover depth + description text
           ================================================================ */}
       <section className="bg-[#f5f5f3] px-6 pb-24 lg:px-10">
         <div className="mx-auto max-w-[1400px]">
           <FadeUp>
-            <div className="relative mx-auto aspect-[16/7] max-w-4xl overflow-hidden rounded-2xl border border-[#1a1a1a]/5 shadow-2xl">
+            <div
+              tabIndex={0}
+              className="group relative mx-auto aspect-[16/7] max-w-4xl overflow-hidden rounded-2xl border border-[#1a1a1a]/10 shadow-2xl transition-all duration-300 hover:shadow-[0_20px_50px_rgba(0,0,0,0.15)] outline-none focus-visible:ring-2 focus-visible:ring-[#1a1a1a] focus-visible:ring-offset-2"
+            >
               <Image
                 src="/landing-team-bg.jpg"
                 alt="Operations center"
                 fill
-                className="object-cover"
+                className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                 sizes="(max-width: 1024px) 100vw, 800px"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/60 via-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/70 via-transparent" />
               <div className="absolute bottom-4 left-4 right-4 flex items-center justify-center">
-                <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/10 px-5 py-2.5 backdrop-blur-md">
+                <button
+                  type="button"
+                  onClick={() => setDemoOpen(true)}
+                  className="flex items-center gap-3 rounded-xl border border-white/20 bg-white/10 px-5 py-2.5 backdrop-blur-md shadow-lg transition-all duration-150 hover:bg-white/20 outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 active:scale-[0.97]"
+                >
                   <LogoMark size="sm" />
-                  <div>
+                  <div className="text-left">
                     <p className="text-sm font-semibold text-white">
                       Discuss your operations
                     </p>
-                    <p className="text-xs text-white/60">
-                      Speak with the team lead
+                    <p className="text-xs text-white/70">
+                      Speak with our engineering lead
                     </p>
                   </div>
-                </div>
+                </button>
               </div>
             </div>
           </FadeUp>
@@ -657,7 +813,7 @@ export default function LandingPage() {
             <div className="mt-8 flex justify-center">
               <Link
                 href="/dashboard"
-                className="inline-flex items-center gap-2 rounded-full bg-[#1a1a1a] px-6 py-3 text-sm font-medium text-white transition-all hover:bg-[#333]"
+                className="inline-flex items-center gap-2 rounded-full bg-[#1a1a1a] px-6 py-3 text-sm font-medium text-white shadow-sm transition-all duration-150 hover:bg-[#333] hover:shadow-md outline-none focus-visible:ring-2 focus-visible:ring-[#1a1a1a] focus-visible:ring-offset-2 active:scale-[0.97]"
               >
                 View our platform
                 <ArrowRight className="size-4" />
@@ -668,7 +824,7 @@ export default function LandingPage() {
       </section>
 
       {/* ================================================================
-          4. SERVICES — Dark section with accordion
+          4. SERVICES — Dark section with interactive accordion
           ================================================================ */}
       <section
         id="modules"
@@ -698,18 +854,24 @@ export default function LandingPage() {
       </section>
 
       {/* ================================================================
-          5. PROCESS — Light section with step cards
+          5. PROCESS — Step cards with rich focus & hover elevation
           ================================================================ */}
-      <section id="process" className="relative bg-[#f5f5f3] px-6 py-24 lg:px-10 lg:py-32">
-        <div className="absolute inset-0 opacity-[0.03]" style={{
-          backgroundImage: `repeating-linear-gradient(
-            -45deg,
-            transparent,
-            transparent 80px,
-            #000 80px,
-            #000 81px
-          )`,
-        }} />
+      <section
+        id="process"
+        className="relative bg-[#f5f5f3] px-6 py-24 lg:px-10 lg:py-32"
+      >
+        <div
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage: `repeating-linear-gradient(
+              -45deg,
+              transparent,
+              transparent 80px,
+              #000 80px,
+              #000 81px
+            )`,
+          }}
+        />
 
         <div className="relative mx-auto max-w-[1400px]">
           <FadeUp>
@@ -738,26 +900,35 @@ export default function LandingPage() {
             {PROCESS_STEPS.map((step, i) => {
               const Icon = step.icon;
               return (
-                <FadeUp key={step.title} delay={0.15 + i * 0.1}>
-                  <div className="group rounded-2xl border border-[#1a1a1a]/5 bg-white/70 p-6 backdrop-blur-sm transition-all duration-300 hover:border-[#1a1a1a]/10 hover:shadow-xl sm:p-8">
+                <FadeUp key={step.title} delay={0.12 + i * 0.08}>
+                  <div
+                    tabIndex={0}
+                    className="group relative rounded-2xl border border-[#1a1a1a]/10 bg-white/70 p-6 backdrop-blur-sm transition-all duration-200 hover:-translate-y-1.5 hover:border-[#1a1a1a]/20 hover:shadow-xl focus:-translate-y-1.5 focus:border-[#1a1a1a]/30 focus:shadow-xl outline-none focus-visible:ring-2 focus-visible:ring-[#1a1a1a] focus-visible:ring-offset-2 sm:p-8"
+                  >
                     <div className="mb-4 flex items-center justify-between">
-                      <h3 className="text-lg font-semibold">{step.title}</h3>
+                      <h3 className="text-lg font-semibold tracking-tight text-[#1a1a1a]">
+                        {step.title}
+                      </h3>
                       <div className="flex items-center gap-1">
                         {[...Array(3)].map((_, j) => (
                           <Sparkles
                             key={j}
                             className={cn(
-                              "text-[#1a1a1a]/20",
-                              j === 0 ? "size-4" : j === 1 ? "size-3" : "size-2.5"
+                              "text-[#1a1a1a]/20 transition-colors duration-200 group-hover:text-[#1a1a1a]/50 group-focus:text-[#1a1a1a]/50",
+                              j === 0
+                                ? "size-4"
+                                : j === 1
+                                ? "size-3"
+                                : "size-2.5"
                             )}
                           />
                         ))}
                       </div>
                     </div>
-                    <div className="mb-6 flex size-16 items-center justify-center rounded-2xl bg-[#f5f5f3]">
-                      <Icon className="size-8 text-[#1a1a1a]/50" />
+                    <div className="mb-6 flex size-16 items-center justify-center rounded-2xl bg-[#f5f5f3] transition-transform duration-200 group-hover:scale-105 group-focus:scale-105">
+                      <Icon className="size-8 text-[#1a1a1a]/60 transition-colors duration-200 group-hover:text-[#1a1a1a]" />
                     </div>
-                    <p className="text-sm leading-relaxed text-[#1a1a1a]/60">
+                    <p className="text-sm leading-relaxed text-[#1a1a1a]/70">
                       {step.description}
                     </p>
                   </div>
@@ -769,7 +940,7 @@ export default function LandingPage() {
       </section>
 
       {/* ================================================================
-          6. METRICS — Light section with big numbers (Ignitex style)
+          6. METRICS — Animated count up numbers on scroll & focus states
           ================================================================ */}
       <section className="bg-[#f5f5f3] px-6 py-24 lg:px-10 lg:py-32">
         <div className="mx-auto max-w-[1400px]">
@@ -795,7 +966,7 @@ export default function LandingPage() {
               <FadeUp delay={0.2}>
                 <Link
                   href="/dashboard"
-                  className="mt-8 inline-flex items-center gap-2 rounded-full bg-[#1a1a1a] px-6 py-3 text-sm font-medium text-white transition-all hover:bg-[#333]"
+                  className="mt-8 inline-flex items-center gap-2 rounded-full bg-[#1a1a1a] px-6 py-3 text-sm font-medium text-white shadow-sm transition-all duration-150 hover:bg-[#333] hover:shadow-md outline-none focus-visible:ring-2 focus-visible:ring-[#1a1a1a] focus-visible:ring-offset-2 active:scale-[0.97]"
                 >
                   Know more about us
                   <ArrowRight className="size-4" />
@@ -803,23 +974,22 @@ export default function LandingPage() {
               </FadeUp>
             </div>
 
-            {/* Right metric rows */}
+            {/* Right metric rows with animated count-up numbers */}
             <div className="flex flex-col">
               {METRICS.map((metric, i) => (
-                <FadeUp key={metric.value} delay={0.15 + i * 0.08}>
+                <FadeUp key={metric.value} delay={0.12 + i * 0.08}>
                   <div
+                    tabIndex={0}
                     className={cn(
-                      "flex items-center gap-6 py-6",
+                      "group flex items-center gap-6 py-6 px-3 rounded-xl transition-all duration-150 outline-none hover:bg-black/[0.02] focus-visible:ring-2 focus-visible:ring-[#1a1a1a] focus-visible:bg-black/[0.03]",
                       i < METRICS.length - 1 && "border-b border-[#1a1a1a]/10"
                     )}
                   >
-                    <p className="shrink-0 text-[clamp(2.5rem,5vw,4.5rem)] font-bold leading-none tracking-tight">
-                      {metric.value}
-                      <span className="font-serif text-[0.65em] italic font-normal text-[#1a1a1a]/50">
-                        {metric.suffix}
-                      </span>
-                    </p>
-                    <p className="text-sm leading-relaxed text-[#1a1a1a]/60">
+                    <AnimatedCounter
+                      value={metric.value}
+                      suffix={metric.suffix}
+                    />
+                    <p className="text-sm leading-relaxed text-[#1a1a1a]/70">
                       {metric.label}
                     </p>
                   </div>
@@ -831,7 +1001,7 @@ export default function LandingPage() {
       </section>
 
       {/* ================================================================
-          7. PRICING — Dark section
+          7. PRICING — Animated sliding billing pill toggle & active states
           ================================================================ */}
       <section
         id="pricing"
@@ -858,41 +1028,73 @@ export default function LandingPage() {
 
           <FadeUp delay={0.2}>
             <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
-              {/* Plan card */}
-              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-sm sm:p-8">
+              {/* Plan card with focus-within highlight */}
+              <div
+                tabIndex={0}
+                className="group relative rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-sm sm:p-8 shadow-xl transition-all duration-300 hover:border-white/20 focus-within:border-white/30 focus-within:ring-1 focus-within:ring-white/20 outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f0f0f]"
+              >
                 <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div>
-                    <h3 className="text-xl font-semibold text-white">
+                    <h3 className="text-xl font-semibold text-white tracking-tight">
                       Operations Suite
                     </h3>
                     <p className="mt-1 text-sm text-white/50">
                       Ideal for facilities needing full maintenance coverage.
                     </p>
                   </div>
-                  <div className="flex rounded-full border border-white/10 bg-white/5 p-0.5">
+
+                  {/* Spring-animated Sliding Pill Toggle */}
+                  <div className="relative flex rounded-full border border-white/10 bg-white/5 p-1 backdrop-blur-sm">
                     <button
                       type="button"
                       onClick={() => setBillingCycle("monthly")}
                       className={cn(
-                        "rounded-full px-4 py-1.5 text-sm font-medium transition-all",
+                        "relative z-10 rounded-full px-4 py-1.5 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-white active:scale-[0.97]",
                         billingCycle === "monthly"
-                          ? "bg-white text-[#0a0a0a]"
-                          : "text-white/50 hover:text-white"
+                          ? "text-[#0a0a0a]"
+                          : "text-white/60 hover:text-white"
                       )}
                     >
-                      Monthly
+                      {billingCycle === "monthly" && (
+                        <motion.div
+                          layoutId="billingPillIndicator"
+                          className="absolute inset-0 rounded-full bg-white shadow-sm"
+                          transition={{
+                            type: "spring",
+                            stiffness: 420,
+                            damping: 32,
+                          }}
+                        />
+                      )}
+                      <span className="relative z-10">Monthly</span>
                     </button>
                     <button
                       type="button"
                       onClick={() => setBillingCycle("annual")}
                       className={cn(
-                        "rounded-full px-4 py-1.5 text-sm font-medium transition-all",
+                        "relative z-10 rounded-full px-4 py-1.5 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-white active:scale-[0.97]",
                         billingCycle === "annual"
-                          ? "bg-white text-[#0a0a0a]"
-                          : "text-white/50 hover:text-white"
+                          ? "text-[#0a0a0a]"
+                          : "text-white/60 hover:text-white"
                       )}
                     >
-                      Annual
+                      {billingCycle === "annual" && (
+                        <motion.div
+                          layoutId="billingPillIndicator"
+                          className="absolute inset-0 rounded-full bg-white shadow-sm"
+                          transition={{
+                            type: "spring",
+                            stiffness: 420,
+                            damping: 32,
+                          }}
+                        />
+                      )}
+                      <span className="relative z-10 flex items-center gap-1.5">
+                        Annual
+                        <span className="rounded-full bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-300">
+                          -17%
+                        </span>
+                      </span>
                     </button>
                   </div>
                 </div>
@@ -901,11 +1103,11 @@ export default function LandingPage() {
                   <p className="mb-3 text-xs font-medium tracking-wider text-white/40 uppercase">
                     What&apos;s included
                   </p>
-                  <div className="grid gap-2 sm:grid-cols-2">
+                  <div className="grid gap-2.5 sm:grid-cols-2">
                     {PLAN_FEATURES.map((feat) => (
                       <div
                         key={feat}
-                        className="flex items-center gap-2 text-sm text-white/70"
+                        className="flex items-center gap-2 text-sm text-white/70 transition-colors duration-150 hover:text-white"
                       >
                         <CheckCircle2 className="size-4 shrink-0 text-white/30" />
                         {feat}
@@ -915,27 +1117,46 @@ export default function LandingPage() {
                 </div>
 
                 <div className="flex items-end gap-2">
-                  <span className="text-4xl font-bold text-white">
-                    {billingCycle === "monthly" ? "$299" : "$249"}
-                  </span>
+                  <AnimatePresence mode="wait">
+                    <motion.span
+                      key={billingCycle}
+                      initial={
+                        reduceMotion ? false : { opacity: 0, y: -6 }
+                      }
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={
+                        reduceMotion ? undefined : { opacity: 0, y: 6 }
+                      }
+                      transition={{ duration: 0.16, ease: EASE_OUT }}
+                      className="text-4xl font-bold text-white tabular-nums"
+                    >
+                      {billingCycle === "monthly" ? "$299" : "$249"}
+                    </motion.span>
+                  </AnimatePresence>
                   <span className="mb-1 text-sm text-white/40">
                     /month {billingCycle === "annual" && "(billed annually)"}
                   </span>
                 </div>
               </div>
 
-              {/* CTA card */}
-              <div className="flex flex-col items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] p-8 text-center backdrop-blur-sm">
-                <div className="mb-4 flex size-16 items-center justify-center rounded-full bg-white/5">
+              {/* Discovery Call CTA card */}
+              <div
+                tabIndex={0}
+                className="flex flex-col items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] p-8 text-center backdrop-blur-sm shadow-xl transition-all duration-300 hover:border-white/20 focus-within:border-white/30 focus-within:ring-1 focus-within:ring-white/20 outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f0f0f]"
+              >
+                <div className="mb-4 flex size-16 items-center justify-center rounded-full bg-white/5 shadow-inner">
                   <LogoMark size="sm" />
                 </div>
                 <div className="mb-2 flex items-center gap-2">
-                  <span className="size-2 rounded-full bg-emerald-400" />
-                  <span className="text-xs text-emerald-400">
+                  <span className="relative flex size-2">
+                    <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                    <span className="relative inline-flex size-2 rounded-full bg-emerald-400" />
+                  </span>
+                  <span className="text-xs font-medium text-emerald-400">
                     3 Spots Available
                   </span>
                 </div>
-                <h3 className="mb-2 text-xl font-semibold text-white">
+                <h3 className="mb-2 text-xl font-semibold text-white tracking-tight">
                   Schedule a discovery call
                 </h3>
                 <p className="mb-6 text-sm text-white/50">
@@ -945,7 +1166,7 @@ export default function LandingPage() {
                 <button
                   type="button"
                   onClick={() => setDemoOpen(true)}
-                  className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-[#0a0a0a] transition-all hover:bg-white/90"
+                  className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-[#0a0a0a] shadow-sm transition-all duration-150 hover:bg-white/90 hover:shadow-md outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 active:scale-[0.97]"
                 >
                   Book a call
                   <ArrowRight className="size-4" />
@@ -968,7 +1189,7 @@ export default function LandingPage() {
             className="object-cover opacity-40"
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a]/80 via-[#0a0a0a]/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a]/85 via-[#0a0a0a]/45 to-transparent" />
         </div>
 
         <div className="relative z-10 flex min-h-[80vh] flex-col justify-between px-6 py-16 lg:px-10">
@@ -1003,7 +1224,7 @@ export default function LandingPage() {
               <div className="mt-6 flex flex-wrap items-center gap-4">
                 <Link
                   href="/dashboard"
-                  className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-[#0a0a0a] transition-all hover:bg-white/90"
+                  className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-[#0a0a0a] shadow-sm transition-all duration-150 hover:bg-white/90 hover:shadow-md outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 active:scale-[0.97]"
                 >
                   Launch workspace
                   <ArrowRight className="size-4" />
@@ -1020,33 +1241,42 @@ export default function LandingPage() {
       {/* ================================================================
           9. FOOTER
           ================================================================ */}
-      <footer className="bg-[#0a0a0a] px-6 py-12 lg:px-10">
+      <footer className="bg-[#0a0a0a] px-6 py-12 lg:px-10 border-t border-white/5">
         <div className="mx-auto max-w-[1400px]">
           <div className="flex flex-col gap-8 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-3">
+            <Link
+              href="/"
+              className="flex items-center gap-3 rounded-lg py-1 px-1.5 transition-all outline-none focus-visible:ring-2 focus-visible:ring-white active:scale-[0.97]"
+            >
               <LogoMark size="sm" className="brightness-0 invert" />
               <span className="text-sm font-bold tracking-tight text-white">
                 MAINTAIN
               </span>
-            </div>
+            </Link>
             <div className="flex flex-wrap items-center gap-6 text-sm text-white/40">
               <Link
                 href="/dashboard"
-                className="transition-colors hover:text-white"
+                className="rounded px-2 py-1 transition-colors hover:text-white outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:text-white"
               >
                 Dashboard
               </Link>
               <button
                 type="button"
                 onClick={() => setDemoOpen(true)}
-                className="transition-colors hover:text-white"
+                className="rounded px-2 py-1 transition-colors hover:text-white outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:text-white"
               >
                 Request Demo
               </button>
-              <a href="#modules" className="transition-colors hover:text-white">
+              <a
+                href="#modules"
+                className="rounded px-2 py-1 transition-colors hover:text-white outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:text-white"
+              >
                 Modules
               </a>
-              <a href="#pricing" className="transition-colors hover:text-white">
+              <a
+                href="#pricing"
+                className="rounded px-2 py-1 transition-colors hover:text-white outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:text-white"
+              >
                 Pricing
               </a>
             </div>
@@ -1057,15 +1287,19 @@ export default function LandingPage() {
               rights reserved.
             </p>
             <div className="flex items-center gap-4 text-xs text-white/30">
-              <span>Privacy Policy</span>
-              <span>Terms of Service</span>
+              <span className="cursor-pointer hover:text-white/60 transition-colors">
+                Privacy Policy
+              </span>
+              <span className="cursor-pointer hover:text-white/60 transition-colors">
+                Terms of Service
+              </span>
             </div>
           </div>
         </div>
       </footer>
 
       {/* ================================================================
-          DEMO / WALKTHROUGH DRAWER
+          DEMO / WALKTHROUGH DRAWER WITH ACCESSIBLE FOCUS-VISIBLE INPUTS
           ================================================================ */}
       <Drawer
         open={demoOpen}
@@ -1074,7 +1308,12 @@ export default function LandingPage() {
         description="Share your details and modules of interest. We will tailor a live demonstration to your facility."
         closeable={true}
         renderActions={
-          <Button form="landing-demo-form" type="submit" variant="primary">
+          <Button
+            form="landing-demo-form"
+            type="submit"
+            variant="primary"
+            className="active:scale-[0.97] outline-none focus-visible:ring-2 focus-visible:ring-primary-base focus-visible:ring-offset-2"
+          >
             Submit Request
           </Button>
         }
@@ -1086,10 +1325,10 @@ export default function LandingPage() {
             onSubmit={handleDemoSubmit}
             className="flex flex-col gap-4 py-2"
           >
-            <div className="space-y-1.5">
+            <div className="group space-y-1.5">
               <label
                 htmlFor="wt-name"
-                className="text-xs font-semibold uppercase tracking-wider text-text-sub-600"
+                className="text-xs font-semibold uppercase tracking-wider text-text-sub-600 transition-colors group-focus-within:text-text-strong-950"
               >
                 Full Name
               </label>
@@ -1098,14 +1337,14 @@ export default function LandingPage() {
                 name="name"
                 required
                 placeholder="e.g. Sarah Jenkins"
-                className="w-full rounded-xl border border-stroke-soft-200 bg-bg-white-0 px-3.5 py-2.5 text-sm text-text-strong-950 placeholder:text-text-soft-400 outline-none focus-visible:ring-2 focus-visible:ring-primary-base/40"
+                className="w-full rounded-xl border border-stroke-soft-200 bg-bg-white-0 px-3.5 py-2.5 text-sm text-text-strong-950 placeholder:text-text-soft-400 outline-none transition-all duration-150 focus-visible:border-text-strong-950 focus-visible:ring-2 focus-visible:ring-text-strong-950/20"
               />
             </div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <div className="space-y-1.5">
+              <div className="group space-y-1.5">
                 <label
                   htmlFor="wt-email"
-                  className="text-xs font-semibold uppercase tracking-wider text-text-sub-600"
+                  className="text-xs font-semibold uppercase tracking-wider text-text-sub-600 transition-colors group-focus-within:text-text-strong-950"
                 >
                   Work Email
                 </label>
@@ -1115,13 +1354,13 @@ export default function LandingPage() {
                   type="email"
                   required
                   placeholder="sarah@company.com"
-                  className="w-full rounded-xl border border-stroke-soft-200 bg-bg-white-0 px-3.5 py-2.5 text-sm text-text-strong-950 placeholder:text-text-soft-400 outline-none focus-visible:ring-2 focus-visible:ring-primary-base/40"
+                  className="w-full rounded-xl border border-stroke-soft-200 bg-bg-white-0 px-3.5 py-2.5 text-sm text-text-strong-950 placeholder:text-text-soft-400 outline-none transition-all duration-150 focus-visible:border-text-strong-950 focus-visible:ring-2 focus-visible:ring-text-strong-950/20"
                 />
               </div>
-              <div className="space-y-1.5">
+              <div className="group space-y-1.5">
                 <label
                   htmlFor="wt-org"
-                  className="text-xs font-semibold uppercase tracking-wider text-text-sub-600"
+                  className="text-xs font-semibold uppercase tracking-wider text-text-sub-600 transition-colors group-focus-within:text-text-strong-950"
                 >
                   Company
                 </label>
@@ -1130,7 +1369,7 @@ export default function LandingPage() {
                   name="org"
                   required
                   placeholder="Apex Manufacturing"
-                  className="w-full rounded-xl border border-stroke-soft-200 bg-bg-white-0 px-3.5 py-2.5 text-sm text-text-strong-950 placeholder:text-text-soft-400 outline-none focus-visible:ring-2 focus-visible:ring-primary-base/40"
+                  className="w-full rounded-xl border border-stroke-soft-200 bg-bg-white-0 px-3.5 py-2.5 text-sm text-text-strong-950 placeholder:text-text-soft-400 outline-none transition-all duration-150 focus-visible:border-text-strong-950 focus-visible:ring-2 focus-visible:ring-text-strong-950/20"
                 />
               </div>
             </div>
@@ -1142,24 +1381,24 @@ export default function LandingPage() {
                 {SERVICES.map((m) => (
                   <label
                     key={m.num}
-                    className="flex cursor-pointer items-center gap-2 rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-2 text-xs font-medium text-text-strong-950 hover:bg-bg-weak-50"
+                    className="flex cursor-pointer items-center gap-2 rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-2.5 text-xs font-medium text-text-strong-950 transition-all duration-150 hover:bg-bg-weak-50 hover:border-stroke-sub-300 focus-within:ring-2 focus-within:ring-text-strong-950 focus-within:border-text-strong-950 outline-none"
                   >
                     <input
                       type="checkbox"
                       name="modules"
                       value={m.num}
                       defaultChecked={m.num === "01" || m.num === "02"}
-                      className="size-3.5 rounded border-stroke-soft-200 text-primary-base focus:ring-primary-base/40"
+                      className="size-3.5 rounded border-stroke-soft-200 text-primary-base focus:ring-0 outline-none"
                     />
                     <span>{m.title}</span>
                   </label>
                 ))}
               </div>
             </div>
-            <div className="space-y-1.5">
+            <div className="group space-y-1.5">
               <label
                 htmlFor="wt-notes"
-                className="text-xs font-semibold uppercase tracking-wider text-text-sub-600"
+                className="text-xs font-semibold uppercase tracking-wider text-text-sub-600 transition-colors group-focus-within:text-text-strong-950"
               >
                 Notes (Optional)
               </label>
@@ -1168,7 +1407,7 @@ export default function LandingPage() {
                 name="notes"
                 rows={3}
                 placeholder="Team size, assets, integrations..."
-                className="w-full resize-none rounded-xl border border-stroke-soft-200 bg-bg-white-0 px-3.5 py-2.5 text-sm text-text-strong-950 placeholder:text-text-soft-400 outline-none focus-visible:ring-2 focus-visible:ring-primary-base/40"
+                className="w-full resize-none rounded-xl border border-stroke-soft-200 bg-bg-white-0 px-3.5 py-2.5 text-sm text-text-strong-950 placeholder:text-text-soft-400 outline-none transition-all duration-150 focus-visible:border-text-strong-950 focus-visible:ring-2 focus-visible:ring-text-strong-950/20"
               />
             </div>
             <div className="rounded-xl border border-primary-base/20 bg-primary-lighter/40 p-3 text-xs text-primary-dark">
