@@ -160,7 +160,8 @@ export const equipmentSchema = z.object({
   budget: z.coerce.number().optional(),
 });
 
-export type EquipmentFormValues = z.infer<typeof equipmentSchema>;
+export type EquipmentFormInput = z.input<typeof equipmentSchema>;
+export type EquipmentFormValues = z.output<typeof equipmentSchema>;
 
 export interface ActualEquipmentFormProps {
   formId?: string;
@@ -335,7 +336,7 @@ export function ActualEquipmentForm({
     },
   ];
 
-  const form = useForm<EquipmentFormValues>({
+  const form = useForm<EquipmentFormInput, unknown, EquipmentFormValues>({
     resolver: zodResolver(equipmentSchema),
     defaultValues: {
       status_id: "active",
@@ -357,6 +358,8 @@ export function ActualEquipmentForm({
       },
     },
   });
+
+  const formControl = form.control as any;
 
   const watchStatus = form.watch("status_id");
   const watchOwnership = form.watch("purchase.ownership_id");
@@ -456,7 +459,7 @@ export function ActualEquipmentForm({
                   content={
                     <>
                       <InputWrapper
-                        control={form.control}
+                        control={formControl}
                         name="unit_number"
                         label="Unit #"
                         type="text"
@@ -464,46 +467,46 @@ export function ActualEquipmentForm({
                         value=""
                       />
                       <ComboboxFieldWrapper
-                        control={form.control}
+                        control={formControl}
                         name="make_id"
                         label="Make"
-                        options={makeOptionsList}
+                        options={makeOptionsList??[]}
                       />
                       <ComboboxFieldWrapper
-                        control={form.control}
+                        control={formControl}
                         name="model_id"
                         label="Model"
-                        options={carModelOptionsList}
+                        options={carModelOptionsList??[]}
                       />
                       <InputWrapper
-                        control={form.control}
+                        control={formControl}
                         name="serial_number"
                         label="Serial #"
                         type="text"
                         value=""
                       />
                       <InputWrapper
-                        control={form.control}
+                        control={formControl}
                         name="year"
                         label="Year"
                         type="text"
                         value=""
                       />
                       <InputWrapper
-                        control={form.control}
+                        control={formControl}
                         name="tag_number"
                         label="Tag #"
                         type="text"
                         value=""
                       />
                       <ComboboxFieldWrapper
-                        control={form.control}
+                        control={formControl}
                         name="type_id"
                         label="Equipment Type"
-                        options={equipmentTypeOptions}
+                        options={equipmentTypeOptions??[]}
                       />
                       <TextareaWrapper
-                        control={form.control}
+                        control={formControl}
                         name="description"
                         label="Description"
                         placeholder=""
@@ -518,15 +521,15 @@ export function ActualEquipmentForm({
                   content={
                     <div className="space-y-1">
                       <SelectWrapper
-                        control={form.control}
+                        control={formControl}
                         name="status_id"
                         label="Status"
-                        options={statusOptions}
+                        options={statusOptions??[]}
                         required
                       />
 
                       <SelectWrapper
-                        control={form.control}
+                        control={formControl}
                         name="employee_id"
                         label="Assignee"
                         options={
@@ -541,21 +544,21 @@ export function ActualEquipmentForm({
                       />
 
                       <SelectWrapper
-                        control={form.control}
+                        control={formControl}
                         name="location"
                         label="Location"
-                        options={categoryOptions}
+                        options={categoryOptions??[]}
                       />
 
                       <ComboboxFieldWrapper
-                        control={form.control}
+                        control={formControl}
                         name="costCenter"
                         label="Cost Center"
-                        options={costCenterOptions}
+                        options={costCenterOptions??[]}
                       />
 
                       <ComboboxFieldWrapper
-                        control={form.control}
+                        control={formControl}
                         name="parent_id"
                         label="Parent Equipment"
                         options={
@@ -570,7 +573,7 @@ export function ActualEquipmentForm({
                       />
 
                       <SingleCheckboxWrapper
-                        control={form.control}
+                        control={formControl}
                         name="is_sync"
                         label="Sync with external system"
                       />
@@ -584,7 +587,7 @@ export function ActualEquipmentForm({
                   legend="Custom Fields"
                   content={
                     <CustomFieldsWrapper
-                      control={form.control}
+                      control={formControl}
                       name="main_others"
                       label="Custom Fields"
                     />
@@ -603,15 +606,15 @@ export function ActualEquipmentForm({
                   <div className="col-span-1">
                     <ComboboxFieldWrapper
                       label="Color"
-                      control={form.control}
-                      options={colorOptions}
+                      control={formControl}
+                      options={colorOptions??[]}
                       name="color_id"
                     />
                   </div>
                   <div className="col-span-1">
                     <InputWrapper
                       label="Length"
-                      control={form.control}
+                      control={formControl}
                       name="length"
                       type="text"
                       value=""
@@ -620,7 +623,7 @@ export function ActualEquipmentForm({
                   <div className="col-span-1">
                     <InputWrapper
                       label="Width"
-                      control={form.control}
+                      control={formControl}
                       name="width"
                       type="text"
                       value=""
@@ -629,7 +632,7 @@ export function ActualEquipmentForm({
                   <div className="col-span-1">
                     <InputWrapper
                       label="Height"
-                      control={form.control}
+                      control={formControl}
                       name="height"
                       type="text"
                       value=""
@@ -638,7 +641,7 @@ export function ActualEquipmentForm({
                   <div className="col-span-1">
                     <InputWrapper
                       label="Gross Weight"
-                      control={form.control}
+                      control={formControl}
                       name="gross_weight"
                       type="number"
                       value="0"
@@ -652,7 +655,7 @@ export function ActualEquipmentForm({
               legend="Custom Specifications"
               content={
                 <CustomFieldsWrapper
-                  control={form.control}
+                  control={formControl}
                   name="specification_others"
                   label="Custom Fields"
                 />
@@ -678,7 +681,7 @@ export function ActualEquipmentForm({
               legend="Custom Warranty Fields"
               content={
                 <CustomFieldsWrapper
-                  control={form.control}
+                  control={formControl}
                   name="warranty_others"
                   label="Custom Fields"
                 />
@@ -698,24 +701,24 @@ export function ActualEquipmentForm({
                 <>
                   <ComboboxFieldWrapper
                     label="Vendor"
-                    control={form.control}
-                    options={vendorOptions}
+                    control={formControl}
+                    options={vendorOptions??[]}
                     name="purchase.vendor_id"
                   />
                   <DatePickerWrapper
-                    control={form.control}
+                    control={formControl}
                     name="purchase.date"
                     label="Purchase Date"
                   />
                   <InputWrapper
-                    control={form.control}
+                    control={formControl}
                     name="purchase.price"
                     label="Purchase Price"
                     type="number"
                     value=""
                   />
                   <TextareaWrapper
-                    control={form.control}
+                    control={formControl}
                     name="purchase.notes"
                     label="Notes"
                     placeholder=""
@@ -731,35 +734,35 @@ export function ActualEquipmentForm({
               content={
                 <>
                   <InputWrapper
-                    control={form.control}
+                    control={formControl}
                     name="purchase.term"
                     label="Term (Months)"
                     type="number"
                     value=""
                   />
                   <InputWrapper
-                    control={form.control}
+                    control={formControl}
                     name="purchase.depreciation_start_value"
                     label="Starting Value"
                     type="number"
                     value=""
                   />
                   <InputWrapper
-                    control={form.control}
+                    control={formControl}
                     name="purchase.salvage_value"
                     label="Salvage Value"
                     type="number"
                     value=""
                   />
                   <InputWrapper
-                    control={form.control}
+                    control={formControl}
                     name="purchase.depreciation"
                     label="Monthly Depreciation"
                     type="number"
                     value=""
                   />
                   <InputWrapper
-                    control={form.control}
+                    control={formControl}
                     name="purchase.current_value"
                     label="Current Value"
                     type="number"
@@ -776,42 +779,42 @@ export function ActualEquipmentForm({
                   <div className="grid grid-cols-2 gap-4">
                     <div className="col-span-1">
                       <ComboboxFieldWrapper
-                        control={form.control}
+                        control={formControl}
                         name="purchase.ownership_id"
                         label="Ownership"
-                        options={ownershipOptions}
+                        options={ownershipOptions??[]}
                       />
                       <DatePickerWrapper
-                        control={form.control}
+                        control={formControl}
                         name="purchase.in_service_date"
                         label="In Service Date"
                       />
                       <DatePickerWrapper
-                        control={form.control}
+                        control={formControl}
                         name="purchase.out_of_service_date"
                         label="Out of Service Date"
                       />
                     </div>
                     <div className="col-span-1">
                       <DatePickerWrapper
-                        control={form.control}
+                        control={formControl}
                         name="purchase.transferred_date"
                         label="Transferred Date"
                       />
                       <DatePickerWrapper
-                        control={form.control}
+                        control={formControl}
                         name="purchase.sold_date"
                         label="Sold Date"
                       />
                       <InputWrapper
-                        control={form.control}
+                        control={formControl}
                         name="purchase.sold_to"
                         label="Sold To"
                         type="text"
                         value=""
                       />
                       <TextareaWrapper
-                        control={form.control}
+                        control={formControl}
                         name="purchase.ownership_notes"
                         label="Ownership Notes"
                         placeholder=""
@@ -828,7 +831,7 @@ export function ActualEquipmentForm({
                 legend="Custom Purchase Fields"
                 content={
                   <CustomFieldsWrapper
-                    control={form.control}
+                    control={formControl}
                     name="purchase_others"
                     label="Custom Fields"
                   />
@@ -866,7 +869,7 @@ export function ActualEquipmentForm({
           <TabsContent value="attachments">
             <FileUploadWrapper
               multiple={true}
-              control={form.control}
+              control={formControl}
               name="attachments"
               label="Attachments"
             />
@@ -883,7 +886,7 @@ export function ActualEquipmentForm({
             )}
           >
             <TextareaWrapper
-              control={form.control}
+              control={formControl}
               name="notes"
               label={hideSubmitButton ? undefined : "General Notes"}
               placeholder="Enter any additional notes..."
@@ -899,7 +902,7 @@ export function ActualEquipmentForm({
               legend="Track the following details"
               content={
                 <CheckboxWrapper
-                  control={form.control}
+                  control={formControl}
                   name="tracker"
                   label=""
                   options={equipmentCheckboxOptions}
@@ -910,7 +913,7 @@ export function ActualEquipmentForm({
               legend="Budget"
               content={
                 <InputWrapper
-                  control={form.control}
+                  control={formControl}
                   name="budget"
                   label="Annual Operating Budget"
                   value=""
