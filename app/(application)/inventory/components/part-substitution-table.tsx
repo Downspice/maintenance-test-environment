@@ -105,7 +105,7 @@ export default function PartSubstitutionTable({
         </Button>
       </div>
 
-      <div className="min-w-0 overflow-x-auto rounded-md ring-1 ring-inset ring-stroke-soft-200">
+      <div className="min-w-0 overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
