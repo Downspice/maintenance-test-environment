@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/hooks/use-sidebar";
 import { useStore } from "@/hooks/use-store";
 import { cn } from "@/lib/shared/utils";
+import { LogoMark } from "@/components/landing/logo-mark";
 import Link from "next/link";
 
 export function Sidebar() {
@@ -26,24 +27,29 @@ export function Sidebar() {
         className="relative h-full flex flex-col px-1 py-4 overflow-y-auto border-r border-stroke-soft-200"
       >
         <Button
-          className={cn(
-            "transition-transform ease-in-out duration-300 mb-1",
-            !getOpenState() ? "translate-x-1" : "translate-x-0"
-          )}
+          className="w-full h-auto p-0 mb-3 justify-center hover:no-underline"
           variant="link"
           asChild
         >
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <h1
+          <Link
+            href="/dashboard"
+            className="flex flex-col items-center justify-center gap-1.5 w-full py-1 hover:no-underline group"
+          >
+            <LogoMark
+              size={!getOpenState() ? "md" : "lg"}
+              priority
+              className="shrink-0 transition-transform duration-200 group-hover:scale-105"
+            />
+            <span
               className={cn(
-                "font-bold text-lg whitespace-nowrap transition-[transform,opacity,display] ease-in-out duration-300",
+                "text-xs font-medium tracking-tight text-text-sub-600 dark:text-zinc-400 whitespace-nowrap transition-[opacity,transform,display] duration-300",
                 !getOpenState()
-                  ? "-translate-x-96 opacity-0 hidden"
-                  : "translate-x-0 opacity-100"
+                  ? "opacity-0 -translate-y-1 pointer-events-none hidden"
+                  : "opacity-100 translate-y-0"
               )}
             >
-              ERP test
-            </h1>
+              Maintenance Operations
+            </span>
           </Link>
         </Button>
         <Menu isOpen={getOpenState()} />
