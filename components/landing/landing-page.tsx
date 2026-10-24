@@ -122,7 +122,7 @@ function AnimatedCounter({
       className="shrink-0 text-[clamp(2.5rem,5vw,4.5rem)] font-bold leading-none tracking-tight tabular-nums transition-colors duration-200"
     >
       {displayValue}
-      <span className="font-serif text-[0.65em] italic font-normal text-[#1a1a1a]/50">
+      <span className="font-serif text-[0.65em] italic font-normal text-primary ml-0.5">
         {suffix}
       </span>
     </p>
@@ -300,11 +300,12 @@ function Navbar({
       <div className="mx-auto flex h-16 max-w-[1400px] items-center justify-between px-6 lg:px-10">
         <Link
           href="/"
-          className="group shrink-0 flex items-center gap-2.5 rounded-lg py-1 px-1.5 transition-all outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] active:scale-[0.97]"
+          className="group shrink-0 flex items-center gap-2.5 rounded-lg py-1 px-1.5 transition-all outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] active:scale-[0.97]"
         >
           <LogoMark
             size="sm"
-            className="brightness-0 invert transition-transform duration-200 group-hover:scale-105"
+            variant="default"
+            className="transition-transform duration-200 group-hover:scale-105"
             priority
           />
           <span className="text-base font-bold tracking-tight text-white transition-opacity group-hover:opacity-90">
@@ -318,7 +319,7 @@ function Navbar({
             <a
               key={item}
               href={`#${item.toLowerCase()}`}
-              className="rounded-full px-4 py-2 text-sm text-white/70 transition-all duration-150 hover:text-white hover:bg-white/5 outline-none focus-visible:text-white focus-visible:bg-white/10 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] active:scale-[0.97]"
+              className="rounded-full px-4 py-2 text-sm text-white/70 transition-all duration-150 hover:text-white hover:bg-white/5 outline-none focus-visible:text-white focus-visible:bg-white/10 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] active:scale-[0.97]"
             >
               {item}
             </a>
@@ -329,7 +330,7 @@ function Navbar({
           <Button
             variant="ghost"
             size="sm"
-            className="hidden text-sm text-white/70 hover:text-white hover:bg-white/5 rounded-full px-4 py-2 outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] active:scale-[0.97] transition-all sm:inline-flex"
+            className="hidden text-sm text-white/70 hover:text-white hover:bg-white/5 rounded-full px-4 py-2 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] active:scale-[0.97] transition-all sm:inline-flex"
             asChild
           >
             <Link href="/dashboard">Sign in</Link>
@@ -337,14 +338,14 @@ function Navbar({
           <button
             type="button"
             onClick={onRequestDemo}
-            className="hidden items-center gap-2 rounded-full border border-white/20 bg-white px-5 py-2 text-sm font-medium text-[#0a0a0a] shadow-sm transition-all duration-150 hover:bg-white/90 hover:shadow-md outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] active:scale-[0.97] sm:inline-flex"
+            className="hidden items-center gap-2 rounded-full border border-orange-400/30 bg-primary px-5 py-2 text-sm font-medium text-white shadow-[0_0_20px_rgba(249,115,22,0.35)] transition-all duration-150 hover:bg-orange-600 hover:shadow-[0_0_28px_rgba(249,115,22,0.55)] outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] active:scale-[0.97] sm:inline-flex"
           >
             Get Started
             <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
           </button>
           <button
             type="button"
-            className="inline-flex size-9 items-center justify-center rounded-lg text-white/70 transition-colors hover:text-white hover:bg-white/5 outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] active:scale-[0.97] md:hidden"
+            className="inline-flex size-9 items-center justify-center rounded-lg text-white/70 transition-colors hover:text-white hover:bg-white/5 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] active:scale-[0.97] md:hidden"
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
             onClick={() => setMobileOpen((o) => !o)}
           >
@@ -393,7 +394,7 @@ function Navbar({
                     onRequestDemo();
                     setMobileOpen(false);
                   }}
-                  className="flex items-center justify-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-medium text-[#0a0a0a] transition-all hover:bg-white/90 outline-none focus-visible:ring-2 focus-visible:ring-white active:scale-[0.97]"
+                  className="flex items-center justify-center gap-2 rounded-full border border-orange-400/30 bg-primary px-5 py-2.5 text-sm font-medium text-white shadow-[0_0_20px_rgba(249,115,22,0.35)] transition-all hover:bg-orange-600 outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-[0.97]"
                 >
                   Get Started
                   <ArrowRight className="size-4" />
@@ -427,21 +428,28 @@ function ServiceAccordion() {
               onClick={() => setActiveIdx(i)}
               className={cn(
                 "group relative flex items-center gap-4 rounded-xl border-b border-white/10 px-3 py-5 text-left transition-all duration-200 outline-none",
-                "focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f0f0f] focus-visible:bg-white/[0.04]",
+                "focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f0f0f] focus-visible:bg-white/[0.04]",
                 isActive
-                  ? "opacity-100 bg-white/[0.03]"
+                  ? "opacity-100 bg-white/[0.04]"
                   : "opacity-40 hover:opacity-80 hover:bg-white/[0.015]"
               )}
             >
-              {/* Active left glowing pill indicator */}
+              {/* Active left glowing pill indicator in primary orange */}
               {isActive && (
                 <motion.div
                   layoutId="serviceActivePill"
-                  className="absolute left-0 top-3 bottom-3 w-1 rounded-r-full bg-white shadow-[0_0_12px_rgba(255,255,255,0.7)]"
+                  className="absolute left-0 top-3 bottom-3 w-1 rounded-r-full bg-primary shadow-[0_0_14px_rgba(249,115,22,0.85)]"
                   transition={{ type: "spring", stiffness: 380, damping: 30 }}
                 />
               )}
-              <span className="font-serif text-lg italic text-white/50 transition-colors group-hover:text-white/70">
+              <span
+                className={cn(
+                  "font-serif text-lg italic transition-colors",
+                  isActive
+                    ? "text-primary font-medium"
+                    : "text-white/50 group-hover:text-white/70"
+                )}
+              >
                 ({svc.num})
               </span>
               <span className="text-lg font-medium text-white transition-colors duration-150 sm:text-xl">
@@ -450,7 +458,7 @@ function ServiceAccordion() {
               <ChevronRight
                 className={cn(
                   "ml-auto size-5 text-white/40 transition-transform duration-200",
-                  isActive && "rotate-90 text-white"
+                  isActive && "rotate-90 text-primary"
                 )}
               />
             </button>
@@ -481,8 +489,8 @@ function ServiceAccordion() {
                   }
                   transition={{ duration: 0.22, ease: EASE_OUT }}
                 >
-                  <div className="mb-4 flex size-12 items-center justify-center rounded-xl border border-white/15 bg-white/5 shadow-inner">
-                    <Icon className="size-6 text-white/90" />
+                  <div className="mb-4 flex size-12 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 shadow-inner">
+                    <Icon className="size-6 text-primary" />
                   </div>
                   <h4 className="mb-2 text-xl font-semibold text-white tracking-tight">
                     {svc.title}
@@ -490,7 +498,7 @@ function ServiceAccordion() {
                   <p className="mb-6 text-sm leading-relaxed text-white/70 sm:text-base">
                     {svc.description}
                   </p>
-                  <div className="grid grid-cols-2 gap-3 pt-2 border-t border-white/10">
+                  <div className="grid grid-cols-1 gap-3 pt-2 border-t border-white/10">
                     {svc.features.map((feat, fIdx) => (
                       <motion.div
                         key={feat}
@@ -505,7 +513,7 @@ function ServiceAccordion() {
                         }}
                         className="flex items-center gap-2 text-sm text-white/80"
                       >
-                        <span className="size-1.5 shrink-0 rounded-full bg-white/50" />
+                        <span className="size-1.5 shrink-0 rounded-full bg-primary shadow-[0_0_8px_rgba(249,115,22,0.6)]" />
                         {feat}
                       </motion.div>
                     ))}
@@ -560,6 +568,8 @@ export default function LandingPage() {
           <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a]/50 via-transparent to-[#0a0a0a]/85" />
           {/* Subtle luminous ambient spotlight */}
           <div className="pointer-events-none absolute -top-40 left-1/2 size-[650px] -translate-x-1/2 rounded-full bg-white/[0.04] blur-3xl" />
+          {/* Ambient primary orange atmospheric glow */}
+          <div className="pointer-events-none absolute -bottom-32 -left-20 size-[600px] rounded-full bg-primary/15 blur-[140px]" />
         </div>
 
         {/* Hero content */}
@@ -570,10 +580,10 @@ export default function LandingPage() {
               initial={reduceMotion ? false : { opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, ease: EASE_OUT }}
-              className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3.5 py-1.5 backdrop-blur-md"
+              className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/[0.08] px-3.5 py-1.5 backdrop-blur-md"
             >
-              <LogoMark size="xs" variant="white" className="opacity-80" />
-              <span className="text-xs font-medium tracking-wide text-white/80 uppercase">
+              <LogoMark size="xs" variant="default" />
+              <span className="text-xs font-medium tracking-wide text-orange-200 uppercase">
                 Autonomous Industrial Operations
               </span>
             </motion.div>
@@ -605,7 +615,7 @@ export default function LandingPage() {
             {/* Left description */}
             <div className="max-w-md">
               <div className="mb-3 flex items-center gap-2 text-sm text-white/50">
-                <LogoMark size="xs" variant="white" className="opacity-60" />
+                <LogoMark size="xs" variant="default" />
                 <span>Unified Maintenance Platform</span>
               </div>
               <p className="text-sm leading-relaxed text-white/70 sm:text-base">
@@ -637,7 +647,7 @@ export default function LandingPage() {
               ))}
               <Link
                 href="/dashboard"
-                className="mt-4 inline-flex items-center gap-2 self-end rounded-full border border-white/20 bg-white/10 px-5 py-2.5 text-sm font-medium text-white backdrop-blur-sm shadow-md transition-all duration-150 hover:bg-white hover:text-[#0a0a0a] outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] active:scale-[0.97]"
+                className="mt-4 inline-flex items-center gap-2 self-end rounded-full border border-orange-400/30 bg-primary px-5 py-2.5 text-sm font-medium text-white backdrop-blur-sm shadow-[0_0_25px_rgba(249,115,22,0.4)] transition-all duration-150 hover:bg-orange-600 hover:shadow-[0_0_35px_rgba(249,115,22,0.6)] outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] active:scale-[0.97]"
               >
                 Launch workspace
                 <ArrowRight className="size-4" />
@@ -796,7 +806,7 @@ export default function LandingPage() {
             <div className="mt-8 flex justify-center">
               <Link
                 href="/dashboard"
-                className="inline-flex items-center gap-2 rounded-full bg-[#1a1a1a] px-6 py-3 text-sm font-medium text-white shadow-sm transition-all duration-150 hover:bg-[#333] hover:shadow-md outline-none focus-visible:ring-2 focus-visible:ring-[#1a1a1a] focus-visible:ring-offset-2 active:scale-[0.97]"
+                className="inline-flex items-center gap-2 rounded-full border border-orange-400/30 bg-primary px-6 py-3 text-sm font-medium text-white shadow-[0_4px_18px_rgba(249,115,22,0.3)] transition-all duration-150 hover:bg-orange-600 hover:shadow-[0_4px_24px_rgba(249,115,22,0.45)] outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:scale-[0.97]"
               >
                 View our platform
                 <ArrowRight className="size-4" />
@@ -815,8 +825,8 @@ export default function LandingPage() {
       >
         <div className="mx-auto max-w-[1400px]">
           <FadeUp>
-            <div className="mb-4 flex items-center gap-2 text-sm text-white/40">
-              <LogoMark size="xs" variant="white" className="opacity-60" />
+            <div className="mb-4 flex items-center gap-2 text-sm text-white/50">
+              <LogoMark size="xs" variant="default" />
               <span>What we build</span>
             </div>
           </FadeUp>
@@ -886,22 +896,22 @@ export default function LandingPage() {
                 <FadeUp key={step.title} delay={0.12 + i * 0.08}>
                   <div
                     tabIndex={0}
-                    className="group relative rounded-2xl border border-[#1a1a1a]/10 bg-white/70 p-6 backdrop-blur-sm transition-all duration-200 hover:-translate-y-1.5 hover:border-[#1a1a1a]/20 hover:shadow-xl focus:-translate-y-1.5 focus:border-[#1a1a1a]/30 focus:shadow-xl outline-none focus-visible:ring-2 focus-visible:ring-[#1a1a1a] focus-visible:ring-offset-2 sm:p-8"
+                    className="group relative rounded-2xl border border-[#1a1a1a]/10 bg-white/70 p-6 backdrop-blur-sm transition-all duration-200 hover:-translate-y-1.5 hover:border-primary/40 hover:shadow-xl focus:-translate-y-1.5 focus:border-primary/50 focus:shadow-xl outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 sm:p-8"
                   >
                     <div className="mb-4 flex items-center justify-between">
-                      <h3 className="text-lg font-semibold tracking-tight text-[#1a1a1a]">
+                      <h3 className="text-lg font-semibold tracking-tight text-[#1a1a1a] transition-colors duration-150 group-hover:text-[#000]">
                         {step.title}
                       </h3>
                       <div className="flex items-center">
                         <LogoMark
                           size="2xs"
-                          variant="black"
-                          className="opacity-25 transition-opacity duration-200 group-hover:opacity-70 group-focus:opacity-70"
+                          variant="default"
+                          className="opacity-40 transition-all duration-200 group-hover:opacity-100 group-focus:opacity-100 group-hover:scale-110"
                         />
                       </div>
                     </div>
-                    <div className="mb-6 flex size-16 items-center justify-center rounded-2xl bg-[#f5f5f3] transition-transform duration-200 group-hover:scale-105 group-focus:scale-105">
-                      <Icon className="size-8 text-[#1a1a1a]/60 transition-colors duration-200 group-hover:text-[#1a1a1a]" />
+                    <div className="mb-6 flex size-16 items-center justify-center rounded-2xl bg-[#f5f5f3] transition-all duration-200 group-hover:scale-105 group-hover:bg-primary/10 group-focus:scale-105 group-focus:bg-primary/10">
+                      <Icon className="size-8 text-[#1a1a1a]/60 transition-colors duration-200 group-hover:text-primary group-focus:text-primary" />
                     </div>
                     <p className="text-sm leading-relaxed text-[#1a1a1a]/70">
                       {step.description}
@@ -941,7 +951,7 @@ export default function LandingPage() {
               <FadeUp delay={0.2}>
                 <Link
                   href="/dashboard"
-                  className="mt-8 inline-flex items-center gap-2 rounded-full bg-[#1a1a1a] px-6 py-3 text-sm font-medium text-white shadow-sm transition-all duration-150 hover:bg-[#333] hover:shadow-md outline-none focus-visible:ring-2 focus-visible:ring-[#1a1a1a] focus-visible:ring-offset-2 active:scale-[0.97]"
+                  className="mt-8 inline-flex items-center gap-2 rounded-full border border-orange-400/30 bg-primary px-6 py-3 text-sm font-medium text-white shadow-[0_4px_18px_rgba(249,115,22,0.3)] transition-all duration-150 hover:bg-orange-600 hover:shadow-[0_4px_24px_rgba(249,115,22,0.45)] outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:scale-[0.97]"
                 >
                   Know more about us
                   <ArrowRight className="size-4" />
@@ -982,10 +992,13 @@ export default function LandingPage() {
         id="pricing"
         className="relative overflow-hidden bg-[#0f0f0f] px-6 py-28 lg:px-10 lg:py-36"
       >
+        {/* Ambient primary orange atmospheric glow */}
+        <div className="pointer-events-none absolute -top-40 right-10 size-[500px] rounded-full bg-primary/10 blur-[130px]" />
+
         <div className="mx-auto max-w-[1400px]">
           <FadeUp>
             <div className="mb-4 flex items-center justify-center gap-2 text-sm text-white/40">
-              <LogoMark size="xs" variant="white" className="opacity-60" />
+              <LogoMark size="xs" variant="default" />
               <span>Investment &amp; Scoping</span>
             </div>
           </FadeUp>
@@ -1008,10 +1021,10 @@ export default function LandingPage() {
             <div className="mx-auto mt-12 max-w-2xl rounded-2xl border border-white/10 bg-white/[0.03] p-8 text-center backdrop-blur-sm shadow-xl transition-all duration-300 hover:border-white/20">
               <div className="mb-4 flex items-center justify-center gap-2">
                 <span className="relative flex size-2">
-                  <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                  <span className="relative inline-flex size-2 rounded-full bg-emerald-400" />
+                  <span className="absolute inline-flex size-full animate-ping rounded-full bg-orange-400 opacity-75" />
+                  <span className="relative inline-flex size-2 rounded-full bg-primary" />
                 </span>
-                <span className="text-xs font-medium text-emerald-400">
+                <span className="text-xs font-medium text-orange-400">
                   Custom Enterprise SLA Scoping
                 </span>
               </div>
@@ -1024,7 +1037,7 @@ export default function LandingPage() {
               <button
                 type="button"
                 onClick={() => setDemoOpen(true)}
-                className="inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-medium text-[#0a0a0a] shadow-lg transition-all duration-150 hover:bg-white/90 outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 active:scale-[0.97]"
+                className="inline-flex items-center gap-2 rounded-full border border-orange-400/30 bg-primary px-7 py-3.5 text-sm font-medium text-white shadow-[0_0_25px_rgba(249,115,22,0.4)] transition-all duration-150 hover:bg-orange-600 hover:shadow-[0_0_35px_rgba(249,115,22,0.6)] outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:scale-[0.97]"
               >
                 Schedule a discovery call
                 <ArrowRight className="size-4" />
@@ -1052,8 +1065,8 @@ export default function LandingPage() {
         <div className="relative z-10 flex min-h-[80vh] flex-col justify-between px-6 py-16 lg:px-10">
           <div className="mx-auto w-full max-w-[1400px]">
             <FadeUp>
-              <div className="flex items-center gap-2 text-sm text-white/40">
-                <LogoMark size="xs" variant="white" className="opacity-60" />
+              <div className="flex items-center gap-2 text-sm text-white/50">
+                <LogoMark size="xs" variant="default" />
                 <span>Your operational partners</span>
               </div>
             </FadeUp>
@@ -1081,7 +1094,7 @@ export default function LandingPage() {
               <div className="mt-6 flex flex-wrap items-center gap-4">
                 <Link
                   href="/dashboard"
-                  className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-[#0a0a0a] shadow-sm transition-all duration-150 hover:bg-white/90 hover:shadow-md outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 active:scale-[0.97]"
+                  className="inline-flex items-center gap-2 rounded-full border border-orange-400/30 bg-primary px-6 py-3 text-sm font-medium text-white shadow-[0_0_25px_rgba(249,115,22,0.4)] transition-all duration-150 hover:bg-orange-600 hover:shadow-[0_0_35px_rgba(249,115,22,0.6)] outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:scale-[0.97]"
                 >
                   Launch workspace
                   <ArrowRight className="size-4" />
@@ -1103,9 +1116,9 @@ export default function LandingPage() {
           <div className="flex flex-col gap-8 sm:flex-row sm:items-center sm:justify-between">
             <Link
               href="/"
-              className="flex items-center gap-3 rounded-lg py-1 px-1.5 transition-all outline-none focus-visible:ring-2 focus-visible:ring-white active:scale-[0.97]"
+              className="flex items-center gap-3 rounded-lg py-1 px-1.5 transition-all outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-[0.97]"
             >
-              <LogoMark size="sm" className="brightness-0 invert" />
+              <LogoMark size="sm" variant="default" />
               <span className="text-sm font-bold tracking-tight text-white">
                 MAINTAIN
               </span>
