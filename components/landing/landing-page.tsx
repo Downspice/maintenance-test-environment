@@ -1,14 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useId, useEffect, useRef } from "react";
+import Image from "next/image";
+import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import {
   motion,
-  AnimatePresence,
   useReducedMotion,
-  useSpring,
-  useMotionValue,
+  useInView,
 } from "framer-motion";
 import {
   ArrowRight,
@@ -18,9 +17,7 @@ import {
   Users,
   Store,
   BarChart,
-  HelpCircle,
   Sparkles,
-  ExternalLink,
   CheckCircle2,
   Menu,
   X,
@@ -28,720 +25,1151 @@ import {
   Gauge,
   Shield,
   Zap,
+  Star,
+  ChevronRight,
   type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Drawer } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import { LogoWordmark } from "@/components/landing/logo-mark";
 import { LogoMark } from "@/components/landing/logo-mark";
 import { cn } from "@/lib/shared/utils";
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   CUSTOM EASING TOKENS (from animate skill — never use built-in ease-out)
+   EASING & ANIMATION HELPERS
    ─────────────────────────────────────────────────────────────────────────── */
 const EASE_OUT = [0.23, 1, 0.32, 1] as const;
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   MODULE DATA
-   ─────────────────────────────────────────────────────────────────────────── */
-interface ModuleConfig {
-  id: string;
-  name: string;
-  tag: string;
-  icon: LucideIcon;
-  path: string;
-  statusBadge: string;
-  statusColor: string;
-  snippetTitle: string;
-  snippetDetail: string;
-  accentFrom: string;
-  accentTo: string;
-}
-
-const MODULES: ModuleConfig[] = [
-  {
-    id: "wo",
-    name: "Work Orders",
-    tag: "Execution",
-    icon: ClipboardList,
-    path: "/work-orders",
-    statusBadge: "WO-1842 Active",
-    statusColor: "text-blue-600 bg-blue-50 border-blue-200",
-    snippetTitle: "WO-1842 · Conveyor Drive PM",
-    snippetDetail: "North Crew · In Progress · 1 Belt Kit reserved",
-    accentFrom: "#3b82f6",
-    accentTo: "#06b6d4",
-  },
-  {
-    id: "eq",
-    name: "Equipment",
-    tag: "Assets",
-    icon: Tractor,
-    path: "/equipment",
-    statusBadge: "98.4% Health",
-    statusColor: "text-emerald-700 bg-emerald-50 border-emerald-200",
-    snippetTitle: "Hydraulic Press #4",
-    snippetDetail: "1,420 Run-Hours · PM due in 3 days",
-    accentFrom: "#10b981",
-    accentTo: "#34d399",
-  },
-  {
-    id: "inv",
-    name: "Inventory",
-    tag: "Parts",
-    icon: Package,
-    path: "/inventory",
-    statusBadge: "Stock Synced",
-    statusColor: "text-amber-700 bg-amber-50 border-amber-200",
-    snippetTitle: "SKU 4401 · Belt Kit",
-    snippetDetail: "12 On Hand · 2 Reserved · Bin B-14",
-    accentFrom: "#f59e0b",
-    accentTo: "#fbbf24",
-  },
-  {
-    id: "wf",
-    name: "Workforce",
-    tag: "People",
-    icon: Users,
-    path: "/employees",
-    statusBadge: "100% Coverage",
-    statusColor: "text-purple-700 bg-purple-50 border-purple-200",
-    snippetTitle: "Morning Ops Crew",
-    snippetDetail: "8 Techs active · 2 Leads on shift",
-    accentFrom: "#8b5cf6",
-    accentTo: "#a78bfa",
-  },
-  {
-    id: "ven",
-    name: "Vendors",
-    tag: "Supply",
-    icon: Store,
-    path: "/vendors",
-    statusBadge: "PO-9021",
-    statusColor: "text-rose-700 bg-rose-50 border-rose-200",
-    snippetTitle: "Apex Hydraulics",
-    snippetDetail: "PO fulfilled · Net 30 · Preferred",
-    accentFrom: "#f43f5e",
-    accentTo: "#fb7185",
-  },
-  {
-    id: "ana",
-    name: "Analytics",
-    tag: "Intel",
-    icon: BarChart,
-    path: "/reports",
-    statusBadge: "96.2% PM",
-    statusColor: "text-indigo-700 bg-indigo-50 border-indigo-200",
-    snippetTitle: "Facility Overview",
-    snippetDetail: "Downtime -14% MoM · 0 Critical",
-    accentFrom: "#6366f1",
-    accentTo: "#818cf8",
-  },
-];
-
-const faqs = [
-  {
-    q: "What is Maintenance OS?",
-    a: "An integrated maintenance and operations workspace that combines work orders, equipment, inventory, vendors, workforce, and analytics on one shared record set.",
-  },
-  {
-    q: "Do we have to adopt every module?",
-    a: "No. Start with the module you need today and add others as you grow. All modules seamlessly share the same assets, parts, and workforce records.",
-  },
-  {
-    q: "Can this work with our existing ERP?",
-    a: "Yes. The suite is designed to run alongside ERP and accounting systems, providing real-time shop-floor execution while syncing accounting and inventory data.",
-  },
-  {
-    q: "Is there a mobile experience for technicians?",
-    a: "Yes. Technicians receive and update work orders, upload photos, and scan parts from any mobile browser or tablet with full offline capability.",
-  },
-];
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   FLOATING OBJECTS — CSS keyframe-driven (off main thread, smooth under load)
-   Each object is a glassmorphic card with an icon related to the application
-   ─────────────────────────────────────────────────────────────────────────── */
-interface FloatingObject {
-  icon: LucideIcon;
-  label: string;
-  x: string;
-  y: string;
-  size: "sm" | "md" | "lg";
-  delay: string;
-  duration: string;
-  drift: "float-drift-a" | "float-drift-b" | "float-drift-c";
-}
-
-const FLOATING_OBJECTS: FloatingObject[] = [
-  { icon: Wrench, label: "PM", x: "8%", y: "18%", size: "md", delay: "0s", duration: "18s", drift: "float-drift-a" },
-  { icon: Gauge, label: "MTBF", x: "85%", y: "12%", size: "sm", delay: "2s", duration: "22s", drift: "float-drift-b" },
-  { icon: Shield, label: "Audit", x: "78%", y: "72%", size: "md", delay: "1s", duration: "20s", drift: "float-drift-c" },
-  { icon: Zap, label: "Live", x: "12%", y: "75%", size: "sm", delay: "3s", duration: "24s", drift: "float-drift-a" },
-  { icon: ClipboardList, label: "WO", x: "92%", y: "42%", size: "lg", delay: "0.5s", duration: "19s", drift: "float-drift-b" },
-  { icon: Package, label: "Parts", x: "5%", y: "48%", size: "sm", delay: "1.5s", duration: "21s", drift: "float-drift-c" },
-  { icon: Tractor, label: "Asset", x: "72%", y: "88%", size: "sm", delay: "2.5s", duration: "23s", drift: "float-drift-a" },
-  { icon: BarChart, label: "KPI", x: "22%", y: "90%", size: "md", delay: "4s", duration: "17s", drift: "float-drift-b" },
-];
-
-const floatingSizes = {
-  sm: "size-8 text-[9px]",
-  md: "size-10 text-[10px]",
-  lg: "size-12 text-[11px]",
-} as const;
-
-const floatingIconSizes = {
-  sm: "size-3",
-  md: "size-3.5",
-  lg: "size-4",
-} as const;
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   ORBITAL RING — the 6 module icons orbiting a central hub
-   Pure CSS animations for buttery smooth motion off the main thread
-   ─────────────────────────────────────────────────────────────────────────── */
-function OrbitalRing({
-  activeId,
-  onSelect,
+function FadeUp({
+  children,
+  className,
+  delay = 0,
 }: {
-  activeId: string;
-  onSelect: (id: string) => void;
+  children: React.ReactNode;
+  className?: string;
+  delay?: number;
 }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-60px" });
   const reduceMotion = useReducedMotion();
 
   return (
-    <div className="landing-orbital-container relative mx-auto aspect-square w-[280px] sm:w-[320px] lg:w-[340px]">
-      {/* Outer glow ring */}
-      <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary-base/8 to-transparent" />
+    <motion.div
+      ref={ref}
+      className={className}
+      initial={reduceMotion ? false : { opacity: 0, y: 32 }}
+      animate={inView ? { opacity: 1, y: 0 } : undefined}
+      transition={{ duration: 0.65, ease: EASE_OUT, delay }}
+    >
+      {children}
+    </motion.div>
+  );
+}
 
-      {/* Concentric rings */}
-      <svg
-        viewBox="0 0 340 340"
-        className="absolute inset-0 h-full w-full"
-        aria-hidden="true"
-      >
-        <defs>
-          <linearGradient id="ring-grad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="var(--color-primary-base)" stopOpacity="0.15" />
-            <stop offset="100%" stopColor="var(--color-primary-base)" stopOpacity="0.04" />
-          </linearGradient>
-        </defs>
-        <circle cx="170" cy="170" r="155" fill="none" stroke="url(#ring-grad)" strokeWidth="1" />
-        <circle cx="170" cy="170" r="120" fill="none" stroke="url(#ring-grad)" strokeWidth="0.6" strokeDasharray="4 6" />
-        <circle cx="170" cy="170" r="80" fill="none" stroke="url(#ring-grad)" strokeWidth="0.4" strokeDasharray="2 8" />
-        {/* Animated sweeper line */}
-        {!reduceMotion && (
-          <line
-            x1="170" y1="170" x2="170" y2="15"
-            stroke="var(--color-primary-base)"
-            strokeOpacity="0.12"
-            strokeWidth="0.8"
-            className="landing-orbital-sweeper"
-            style={{ transformOrigin: "170px 170px" }}
-          />
-        )}
-      </svg>
+/* ─────────────────────────────────────────────────────────────────────────────
+   DATA
+   ─────────────────────────────────────────────────────────────────────────── */
+interface ServiceItem {
+  num: string;
+  title: string;
+  description: string;
+  features: string[];
+  icon: LucideIcon;
+}
 
-      {/* Central hub */}
-      <div className="absolute left-1/2 top-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center">
-        <div
-          className={cn(
-            "flex size-16 sm:size-[4.5rem] items-center justify-center rounded-2xl border bg-bg-white-0/95 shadow-regular-sm backdrop-blur-sm transition-transform duration-200",
-            "border-primary-base/25",
-            !reduceMotion && "landing-hub-pulse"
-          )}
-        >
-          <LogoMark size="sm" />
+const SERVICES: ServiceItem[] = [
+  {
+    num: "01",
+    title: "Work Order Management",
+    description:
+      "Create, assign, and track maintenance work from request to completion. Built-in scheduling, priority queues, and real-time status updates keep your entire operation synchronized.",
+    features: [
+      "Preventive & corrective WOs",
+      "Priority scheduling",
+      "Mobile field updates",
+      "Automated assignments",
+    ],
+    icon: ClipboardList,
+  },
+  {
+    num: "02",
+    title: "Equipment & Asset Tracking",
+    description:
+      "Full lifecycle visibility for every asset — from commissioning to decommission. Track run-hours, health scores, maintenance history, and warranty status in one place.",
+    features: [
+      "Asset health scoring",
+      "Run-hour tracking",
+      "Maintenance history",
+      "QR/barcode scanning",
+    ],
+    icon: Tractor,
+  },
+  {
+    num: "03",
+    title: "Inventory & Parts Control",
+    description:
+      "Real-time stock levels, automated reorder points, and bin-level tracking. Every part consumed on a work order is traced, costed, and reconciled automatically.",
+    features: [
+      "Real-time stock levels",
+      "Automated reorder points",
+      "Bin-level tracking",
+      "Cost allocation",
+    ],
+    icon: Package,
+  },
+  {
+    num: "04",
+    title: "Workforce Coordination",
+    description:
+      "Manage crews, certifications, and shift coverage. Assign the right technician to the right job based on skill, location, and availability.",
+    features: [
+      "Crew scheduling",
+      "Skill-based routing",
+      "Certification tracking",
+      "Overtime management",
+    ],
+    icon: Users,
+  },
+  {
+    num: "05",
+    title: "Vendor & Procurement",
+    description:
+      "Streamline purchasing from request to receipt. Manage vendor performance, purchase orders, and receiving — all linked to your inventory and work orders.",
+    features: [
+      "Purchase order flow",
+      "Vendor scorecards",
+      "Receiving & QC",
+      "Contract management",
+    ],
+    icon: Store,
+  },
+  {
+    num: "06",
+    title: "Analytics & Reporting",
+    description:
+      "Actionable dashboards for MTBF, MTTR, PM compliance, and cost trends. Turn maintenance data into strategic decisions.",
+    features: [
+      "KPI dashboards",
+      "PM compliance tracking",
+      "Cost trend analysis",
+      "Custom report builder",
+    ],
+    icon: BarChart,
+  },
+];
+
+const METRICS = [
+  {
+    value: "98.4",
+    suffix: "%",
+    label: "Average uptime across all connected facilities and tracked assets.",
+  },
+  {
+    value: "6",
+    suffix: "+",
+    label:
+      "Integrated modules sharing one live record set — zero reconciliation.",
+  },
+  {
+    value: "14",
+    suffix: "%",
+    label:
+      "Average downtime reduction month-over-month after full deployment.",
+  },
+  {
+    value: "100",
+    suffix: "%",
+    label:
+      "Complete audit trail on every work order, part, and asset interaction.",
+  },
+];
+
+const PROCESS_STEPS = [
+  {
+    title: "Discover & Configure",
+    description:
+      "Map your facility layout, assets, and team structure. We configure modules to mirror your existing workflow — no disruption.",
+    icon: Gauge,
+  },
+  {
+    title: "Connect & Integrate",
+    description:
+      "Link your ERP, accounting, and sensor feeds. Maintenance OS syncs bi-directionally so your source-of-truth stays unified.",
+    icon: Zap,
+  },
+  {
+    title: "Deploy & Scale",
+    description:
+      "Roll out to field teams with mobile-first tooling. Add facilities, crews, and modules as your operation grows.",
+    icon: Shield,
+  },
+];
+
+const PLAN_FEATURES = [
+  "Unlimited work orders",
+  "Equipment & asset registry",
+  "Inventory management",
+  "Workforce scheduling",
+  "Vendor & procurement",
+  "Analytics dashboards",
+  "Mobile field access",
+  "API & ERP integration",
+  "Dedicated onboarding",
+  "Priority support",
+];
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   COMPONENTS
+   ─────────────────────────────────────────────────────────────────────────── */
+
+function Navbar({
+  onRequestDemo,
+}: {
+  onRequestDemo: () => void;
+}) {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    function onScroll() {
+      setScrolled(window.scrollY > 40);
+    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  return (
+    <nav
+      className={cn(
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
+        scrolled
+          ? "bg-[#0a0a0a]/90 backdrop-blur-xl border-b border-white/5"
+          : "bg-transparent"
+      )}
+    >
+      <div className="mx-auto flex h-16 max-w-[1400px] items-center justify-between px-6 lg:px-10">
+        <Link href="/" className="shrink-0 flex items-center gap-2.5">
+          <LogoMark size="sm" className="brightness-0 invert" priority />
+          <span className="text-base font-bold tracking-tight text-white">
+            MAINTAIN
+          </span>
+        </Link>
+
+        <div className="hidden items-center gap-1 md:flex">
+          {["Home", "Modules", "Process", "Pricing"].map((item) => (
+            <a
+              key={item}
+              href={`#${item.toLowerCase()}`}
+              className="px-4 py-2 text-sm text-white/70 transition-colors hover:text-white"
+            >
+              {item}
+            </a>
+          ))}
         </div>
-        <span className="mt-1.5 text-[9px] font-bold tracking-[0.16em] text-primary-dark uppercase">
-          Shared Core
-        </span>
+
+        <div className="flex items-center gap-3">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="hidden text-sm text-white/70 hover:text-white hover:bg-white/5 sm:inline-flex"
+            asChild
+          >
+            <Link href="/dashboard">Sign in</Link>
+          </Button>
+          <button
+            type="button"
+            onClick={onRequestDemo}
+            className="hidden items-center gap-2 rounded-full border border-white/20 bg-white px-5 py-2 text-sm font-medium text-[#0a0a0a] transition-all hover:bg-white/90 sm:inline-flex"
+          >
+            Get Started
+            <ArrowRight className="size-4" />
+          </button>
+          <button
+            type="button"
+            className="inline-flex size-9 items-center justify-center rounded-lg text-white/70 hover:text-white md:hidden"
+            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            onClick={() => setMobileOpen((o) => !o)}
+          >
+            {mobileOpen ? (
+              <X className="size-5" />
+            ) : (
+              <Menu className="size-5" />
+            )}
+          </button>
+        </div>
       </div>
 
-      {/* Orbiting nodes */}
-      {MODULES.map((mod, i) => {
-        const Icon = mod.icon;
-        const isActive = mod.id === activeId;
-        const angle = (i * 60 - 90) * (Math.PI / 180);
-        const radius = 140;
-        const cx = 50 + (Math.cos(angle) * radius) / 3.4;
-        const cy = 50 + (Math.sin(angle) * radius) / 3.4;
-
-        return (
-          <div
-            key={mod.id}
-            className="absolute z-20"
-            style={{
-              left: `${cx}%`,
-              top: `${cy}%`,
-              transform: "translate(-50%, -50%)",
-            }}
-          >
-            <button
-              type="button"
-              onClick={() => onSelect(mod.id)}
-              className={cn(
-                "group flex flex-col items-center gap-1 outline-none",
-                "focus-visible:ring-2 focus-visible:ring-primary-base/40 rounded-xl"
-              )}
-              aria-label={`Select ${mod.name}`}
-              aria-pressed={isActive}
-            >
-              <div
-                className={cn(
-                  "landing-orbit-node flex size-10 sm:size-11 items-center justify-center rounded-xl border-2 backdrop-blur-sm shadow-regular-xs",
-                  "transition-transform duration-200 transition-colors duration-200",
-                  isActive
-                    ? "border-primary-base bg-primary-lighter text-primary-dark shadow-regular-sm"
-                    : "border-stroke-soft-200/80 bg-bg-white-0/90 text-text-sub-600 group-hover:border-primary-base/40 group-hover:text-primary-base",
-                  !reduceMotion && "landing-orbit-bob"
-                )}
-                style={{
-                  animationDelay: `${i * 0.6}s`,
-                  ...(isActive && {
-                    boxShadow: `0 0 20px ${mod.accentFrom}22, 0 4px 12px ${mod.accentFrom}18`,
-                  }),
-                }}
+      {/* Mobile menu */}
+      {mobileOpen && (
+        <div className="border-t border-white/5 bg-[#0a0a0a]/95 backdrop-blur-xl px-6 py-4 md:hidden">
+          <div className="flex flex-col gap-1">
+            {["Home", "Modules", "Process", "Pricing"].map((item) => (
+              <a
+                key={item}
+                href={`#${item.toLowerCase()}`}
+                className="rounded-lg px-4 py-2.5 text-sm text-white/70 hover:text-white hover:bg-white/5"
+                onClick={() => setMobileOpen(false)}
               >
-                <Icon className="size-4 sm:size-[18px]" strokeWidth={isActive ? 2.5 : 2} />
-              </div>
-              <span
-                className={cn(
-                  "text-[9px] font-semibold tracking-wide uppercase transition-colors duration-200",
-                  isActive ? "text-primary-dark" : "text-text-soft-400 group-hover:text-text-sub-600"
-                )}
-              >
-                {mod.name}
-              </span>
-            </button>
-
-            {/* Active connection line (drawn with CSS) */}
-            {isActive && !reduceMotion && (
-              <div
-                className="landing-active-pulse pointer-events-none absolute left-1/2 top-1/2 size-14 -translate-x-1/2 -translate-y-1/2 rounded-xl"
-                style={{
-                  background: `radial-gradient(circle, ${mod.accentFrom}15 0%, transparent 70%)`,
+                {item}
+              </a>
+            ))}
+            <div className="mt-3 flex flex-col gap-2">
+              <Button variant="ghost" size="sm" className="text-white/70 justify-start" asChild>
+                <Link href="/dashboard">Sign in</Link>
+              </Button>
+              <button
+                type="button"
+                onClick={() => {
+                  onRequestDemo();
+                  setMobileOpen(false);
                 }}
-              />
-            )}
+                className="flex items-center justify-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-medium text-[#0a0a0a]"
+              >
+                Get Started
+                <ArrowRight className="size-4" />
+              </button>
+            </div>
           </div>
-        );
-      })}
+        </div>
+      )}
+    </nav>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SERVICE ACCORDION
+   ─────────────────────────────────────────────────────────────────────────── */
+function ServiceAccordion() {
+  const [activeIdx, setActiveIdx] = useState(0);
+
+  return (
+    <div className="grid gap-8 lg:grid-cols-2 lg:gap-16">
+      {/* Left: accordion list */}
+      <div className="flex flex-col">
+        {SERVICES.map((svc, i) => {
+          const isActive = i === activeIdx;
+          return (
+            <button
+              key={svc.num}
+              type="button"
+              onClick={() => setActiveIdx(i)}
+              className={cn(
+                "group flex items-center gap-4 border-b border-white/10 py-5 text-left transition-all duration-300",
+                isActive ? "opacity-100" : "opacity-40 hover:opacity-70"
+              )}
+            >
+              <span className="font-serif text-lg italic text-white/50">
+                ({svc.num})
+              </span>
+              <span className="text-lg font-medium text-white sm:text-xl">
+                {svc.title}
+              </span>
+              <ChevronRight
+                className={cn(
+                  "ml-auto size-5 text-white/40 transition-transform duration-300",
+                  isActive && "rotate-90 text-white"
+                )}
+              />
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Right: detail panel */}
+      <div className="relative flex flex-col justify-center">
+        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-sm sm:p-8">
+          {(() => {
+            const svc = SERVICES[activeIdx];
+            const Icon = svc.icon;
+            return (
+              <>
+                <div className="mb-4 flex size-12 items-center justify-center rounded-xl border border-white/10 bg-white/5">
+                  <Icon className="size-6 text-white/80" />
+                </div>
+                <p className="mb-6 text-sm leading-relaxed text-white/60 sm:text-base">
+                  {svc.description}
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  {svc.features.map((feat) => (
+                    <div
+                      key={feat}
+                      className="flex items-center gap-2 text-sm text-white/80"
+                    >
+                      <span className="size-1.5 shrink-0 rounded-full bg-white/40" />
+                      {feat}
+                    </div>
+                  ))}
+                </div>
+              </>
+            );
+          })()}
+        </div>
+      </div>
     </div>
   );
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   MOUSE PARALLAX — spring-based, decorative (animate skill §5: spring for
-   mouse-tracking because it's decorative, useSpring adds momentum)
-   ─────────────────────────────────────────────────────────────────────────── */
-function useMouseParallax(factor = 0.02) {
-  const reduceMotion = useReducedMotion();
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-  const springX = useSpring(mouseX, { stiffness: 60, damping: 20 });
-  const springY = useSpring(mouseY, { stiffness: 60, damping: 20 });
-
-  useEffect(() => {
-    if (reduceMotion) return;
-    function onMove(e: MouseEvent) {
-      const cx = window.innerWidth / 2;
-      const cy = window.innerHeight / 2;
-      mouseX.set((e.clientX - cx) * factor);
-      mouseY.set((e.clientY - cy) * factor);
-    }
-    window.addEventListener("mousemove", onMove, { passive: true });
-    return () => window.removeEventListener("mousemove", onMove);
-  }, [factor, mouseX, mouseY, reduceMotion]);
-
-  return { x: springX, y: springY };
-}
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   LANDING PAGE COMPONENT
+   MAIN LANDING PAGE
    ─────────────────────────────────────────────────────────────────────────── */
 export default function LandingPage() {
-  const [activeModuleId, setActiveModuleId] = useState("wo");
-  const [walkthroughOpen, setWalkthroughOpen] = useState(false);
-  const [faqOpen, setFaqOpen] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const walkthroughFormId = useId();
+  const [demoOpen, setDemoOpen] = useState(false);
+  const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">(
+    "monthly"
+  );
   const reduceMotion = useReducedMotion();
-  const parallax = useMouseParallax(0.015);
-
-  const activeModule = MODULES.find((m) => m.id === activeModuleId) ?? MODULES[0];
-  const ActiveIcon = activeModule.icon;
-
-  // Auto-cycle modules for the orbital demo
-  const autoplayRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  useEffect(() => {
-    autoplayRef.current = setInterval(() => {
-      setActiveModuleId((prev) => {
-        const idx = MODULES.findIndex((m) => m.id === prev);
-        return MODULES[(idx + 1) % MODULES.length].id;
-      });
-    }, 4000);
-    return () => { if (autoplayRef.current) clearInterval(autoplayRef.current); };
-  }, []);
-
-  // Stop autoplay on user interaction
-  function selectModule(id: string) {
-    if (autoplayRef.current) clearInterval(autoplayRef.current);
-    autoplayRef.current = null;
-    setActiveModuleId(id);
-  }
 
   function handleDemoSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    toast.success("Thanks — we'll tailor a live walkthrough to your operation.");
-    setWalkthroughOpen(false);
+    toast.success(
+      "Thanks — we'll tailor a live walkthrough to your operation."
+    );
+    setDemoOpen(false);
   }
 
   return (
-    <div
-      className="landing-page relative flex h-screen max-h-screen flex-col overflow-hidden font-sans text-text-strong-950 antialiased"
-      style={{ background: "var(--gradient-background)" }}
-    >
-      {/* ━━━ FLOATING OBJECTS (CSS keyframes — off main thread) ━━━ */}
-      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden="true">
-        {/* Ambient radial glows */}
-        <div className="landing-glow-a absolute -top-[20%] -left-[10%] size-[600px] rounded-full bg-primary-base/[0.04] blur-[120px]" />
-        <div className="landing-glow-b absolute -bottom-[15%] -right-[10%] size-[500px] rounded-full bg-blue-500/[0.04] blur-[100px]" />
+    <div className="landing-page-v2 relative w-full overflow-x-hidden bg-[#f5f5f3] text-[#1a1a1a]">
+      <Navbar onRequestDemo={() => setDemoOpen(true)} />
 
-        {FLOATING_OBJECTS.map((obj) => {
-          const Icon = obj.icon;
-          return (
-            <div
-              key={obj.label}
-              className={cn(
-                "absolute flex flex-col items-center justify-center rounded-xl",
-                "border border-stroke-soft-200/40 bg-bg-white-0/50 backdrop-blur-sm shadow-regular-xs",
-                floatingSizes[obj.size],
-                obj.drift,
-              )}
-              style={{
-                left: obj.x,
-                top: obj.y,
-                animationDelay: obj.delay,
-                animationDuration: obj.duration,
-              }}
-            >
-              <Icon className={cn(floatingIconSizes[obj.size], "text-primary-base/60")} strokeWidth={1.5} />
-              <span className="mt-0.5 font-bold text-text-soft-400/70">{obj.label}</span>
-            </div>
-          );
-        })}
-
-        {/* Tiny floating dots (purely decorative ambient particles) */}
-        {!reduceMotion && (
-          <>
-            <div className="landing-particle absolute left-[30%] top-[25%] size-1.5 rounded-full bg-primary-base/20" style={{ animationDelay: "0s" }} />
-            <div className="landing-particle absolute left-[65%] top-[15%] size-1 rounded-full bg-blue-400/25" style={{ animationDelay: "3s" }} />
-            <div className="landing-particle absolute left-[45%] top-[80%] size-1.5 rounded-full bg-emerald-400/20" style={{ animationDelay: "1.5s" }} />
-            <div className="landing-particle absolute left-[80%] top-[55%] size-1 rounded-full bg-amber-400/20" style={{ animationDelay: "4s" }} />
-            <div className="landing-particle absolute left-[15%] top-[60%] size-1 rounded-full bg-violet-400/20" style={{ animationDelay: "2s" }} />
-          </>
-        )}
-      </div>
-
-      {/* ━━━ 1. HEADER ━━━ */}
-      <motion.header
-        className="relative z-30 shrink-0 border-b border-stroke-soft-200/80 bg-bg-white-0/70 backdrop-blur-xl"
-        initial={reduceMotion ? false : { transform: "translateY(-100%)", opacity: 0 }}
-        animate={{ transform: "translateY(0)", opacity: 1 }}
-        transition={{ duration: 0.5, ease: EASE_OUT }}
+      {/* ================================================================
+          1. HERO — Full-screen dark with background image
+          ================================================================ */}
+      <section
+        id="home"
+        className="relative flex min-h-screen flex-col justify-between overflow-hidden bg-[#0a0a0a]"
       >
-        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-          <Link href="/" className="shrink-0">
-            <LogoWordmark compact priority />
-          </Link>
+        {/* Background image */}
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/landing-hero-bg.jpg"
+            alt=""
+            fill
+            className="object-cover opacity-60"
+            priority
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a]/40 via-transparent to-[#0a0a0a]/80" />
+        </div>
 
-          {/* Live status pill */}
-          <div className="hidden items-center gap-2 rounded-full border border-stroke-soft-200/60 bg-bg-white-0/60 px-3 py-1 text-xs text-text-sub-600 shadow-regular-xs backdrop-blur-sm md:flex">
-            <span className="relative flex size-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
-            </span>
-            <span className="font-medium text-text-strong-950">Live Sync</span>
-            <span className="text-text-soft-400">·</span>
-            <span>6 Modules</span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost" size="sm"
-              className="hidden text-xs text-text-sub-600 hover:text-text-strong-950 sm:inline-flex"
-              onClick={() => setFaqOpen(true)}
+        {/* Hero content */}
+        <div className="relative z-10 flex flex-1 flex-col justify-center px-6 pt-24 pb-12 lg:px-10">
+          <div className="mx-auto w-full max-w-[1400px]">
+            <motion.h1
+              className="text-[clamp(3rem,10vw,9rem)] font-bold leading-[0.9] tracking-tighter text-white"
+              initial={reduceMotion ? false : { opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: EASE_OUT, delay: 0.2 }}
             >
-              <HelpCircle className="mr-1.5 size-3.5" />FAQ
-            </Button>
-            <Button variant="ghost" size="sm" className="text-xs text-text-sub-600 hover:text-text-strong-950" asChild>
-              <Link href="/dashboard">Sign in</Link>
-            </Button>
-            <Button size="sm" variant="primary" className="text-xs" asChild>
-              <Link href="/dashboard">
-                Open workspace<ArrowRight className="ml-1.5 size-3.5" />
-              </Link>
-            </Button>
-            <button
-              type="button"
-              className="inline-flex size-8 items-center justify-center rounded-lg border border-stroke-soft-200 text-text-sub-600 sm:hidden"
-              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-              onClick={() => setMobileMenuOpen((o) => !o)}
-            >
-              {mobileMenuOpen ? <X className="size-4" /> : <Menu className="size-4" />}
-            </button>
+              Maintain
+              <br />
+              <span className="font-serif italic font-normal tracking-tight text-white/70">
+                &amp;&nbsp;
+              </span>
+              Operate
+            </motion.h1>
           </div>
         </div>
 
-        {mobileMenuOpen && (
-          <div className="border-t border-stroke-soft-200 bg-bg-white-0 px-4 py-3 sm:hidden">
-            <div className="flex flex-col gap-2">
-              <Button variant="ghost" size="sm" className="justify-start text-xs" onClick={() => { setFaqOpen(true); setMobileMenuOpen(false); }}>
-                <HelpCircle className="mr-2 size-3.5" />FAQ
-              </Button>
-              <Button variant="secondary" size="sm" className="justify-start text-xs" onClick={() => { setWalkthroughOpen(true); setMobileMenuOpen(false); }}>
-                <Sparkles className="mr-2 size-3.5" />Request Walkthrough
-              </Button>
-            </div>
-          </div>
-        )}
-      </motion.header>
-
-      {/* ━━━ 2. MAIN HERO — single frame ━━━ */}
-      <main className="relative z-10 flex flex-1 items-center overflow-hidden px-4 sm:px-6 lg:px-8">
+        {/* Bottom bar */}
         <motion.div
-          className="relative mx-auto grid w-full max-w-7xl items-center gap-8 lg:grid-cols-2 lg:gap-12"
-          style={reduceMotion ? undefined : { x: parallax.x, y: parallax.y }}
+          className="relative z-10 px-6 pb-8 lg:px-10"
+          initial={reduceMotion ? false : { opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: EASE_OUT, delay: 0.6 }}
         >
-          {/* ── LEFT: Copy + CTAs ── */}
-          <div className="flex flex-col">
-            {/* Badge — stagger index 0 */}
-            <motion.div
-              initial={reduceMotion ? false : { transform: "translateY(12px)", opacity: 0 }}
-              animate={{ transform: "translateY(0)", opacity: 1 }}
-              transition={{ duration: 0.45, ease: EASE_OUT, delay: 0.1 }}
-              className="mb-4 inline-flex w-fit items-center gap-2 rounded-full border border-stroke-soft-200/60 bg-bg-white-0/70 px-3.5 py-1.5 text-xs text-text-sub-600 shadow-regular-xs backdrop-blur-sm"
-            >
-              <span className="relative flex size-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary-base opacity-60" />
-                <span className="relative inline-flex size-2 rounded-full bg-primary-base" />
-              </span>
-              Unified Maintenance Operations
-            </motion.div>
+          <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+            {/* Left description */}
+            <div className="max-w-md">
+              <div className="mb-3 flex items-center gap-2 text-sm text-white/50">
+                <Sparkles className="size-3.5" />
+                <span>Unified Maintenance Platform</span>
+              </div>
+              <p className="text-sm leading-relaxed text-white/70 sm:text-base">
+                We turn complex maintenance operations into streamlined,
+                auditable workflows. One platform for your entire facility.
+              </p>
+              <p className="mt-2 text-xs text-white/40">
+                © {new Date().getFullYear()} Maintenance Operations Suite
+              </p>
+            </div>
 
-            {/* Headline — stagger index 1 */}
-            <motion.h1
-              initial={reduceMotion ? false : { transform: "translateY(16px)", opacity: 0 }}
-              animate={{ transform: "translateY(0)", opacity: 1 }}
-              transition={{ duration: 0.5, ease: EASE_OUT, delay: 0.16 }}
-              className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl lg:text-[2.75rem] lg:leading-[1.1]"
-            >
-              Run the entire operation{" "}
-              <span className="bg-gradient-to-r from-primary-base to-primary-dark bg-clip-text text-transparent">
-                from one platform.
-              </span>
-            </motion.h1>
-
-            {/* Sub — stagger index 2 */}
-            <motion.p
-              initial={reduceMotion ? false : { transform: "translateY(12px)", opacity: 0 }}
-              animate={{ transform: "translateY(0)", opacity: 1 }}
-              transition={{ duration: 0.45, ease: EASE_OUT, delay: 0.22 }}
-              className="mt-4 max-w-lg text-pretty text-sm leading-relaxed text-text-sub-600 sm:text-base"
-            >
-              Work orders, equipment, inventory, workforce, and vendors — one
-              synchronized core. Zero reconciliation. 100% auditable.
-            </motion.p>
-
-            {/* CTAs — stagger index 3 */}
-            <motion.div
-              initial={reduceMotion ? false : { transform: "translateY(12px)", opacity: 0 }}
-              animate={{ transform: "translateY(0)", opacity: 1 }}
-              transition={{ duration: 0.45, ease: EASE_OUT, delay: 0.28 }}
-              className="mt-6 flex flex-wrap items-center gap-3"
-            >
-              <Button size="lg" variant="primary" className="shadow-regular-xs landing-btn-glow" asChild>
-                <Link href="/dashboard">
-                  Launch workspace
-                  <ArrowRight className="ml-2 size-4" />
-                </Link>
-              </Button>
-              <Button size="lg" variant="secondary" onClick={() => setWalkthroughOpen(true)}>
-                <Sparkles className="mr-2 size-4 text-primary-base" />
-                Request walkthrough
-              </Button>
-            </motion.div>
-
-            {/* Stats row — stagger index 4 */}
-            <motion.div
-              initial={reduceMotion ? false : { transform: "translateY(12px)", opacity: 0 }}
-              animate={{ transform: "translateY(0)", opacity: 1 }}
-              transition={{ duration: 0.45, ease: EASE_OUT, delay: 0.36 }}
-              className="mt-8 grid grid-cols-3 gap-3"
-            >
+            {/* Right: numbered features */}
+            <div className="flex flex-col gap-1 text-right">
               {[
-                { label: "6 Modules", sub: "Shared live data" },
-                { label: "Field Sync", sub: "Mobile & floor ready" },
-                { label: "100% Audit", sub: "Total traceability" },
-              ].map((stat) => (
+                { n: "01", label: "Work Order Management" },
+                { n: "02", label: "Equipment Tracking" },
+                { n: "03", label: "Inventory Control" },
+                { n: "04", label: "Workforce Coordination" },
+              ].map((item) => (
                 <div
-                  key={stat.label}
-                  className="group rounded-xl border border-stroke-soft-200/60 bg-bg-white-0/60 p-2.5 shadow-regular-xs backdrop-blur-sm transition-all duration-200 hover:border-primary-base/30 hover:bg-bg-white-0/80 hover:shadow-regular-sm sm:p-3"
+                  key={item.n}
+                  className="flex items-center justify-end gap-3 text-sm text-white/80"
                 >
-                  <p className="text-xs font-semibold text-text-strong-950 sm:text-sm">{stat.label}</p>
-                  <p className="mt-0.5 text-[10px] leading-tight text-text-sub-600 sm:text-[11px]">{stat.sub}</p>
+                  <span className="font-serif italic text-white/40">
+                    ({item.n})
+                  </span>
+                  <span>{item.label}</span>
                 </div>
               ))}
-            </motion.div>
-          </div>
-
-          {/* ── RIGHT: Interactive Orbital + Module Detail ── */}
-          <motion.div
-            initial={reduceMotion ? false : { transform: "scale(0.96)", opacity: 0 }}
-            animate={{ transform: "scale(1)", opacity: 1 }}
-            transition={{ duration: 0.55, ease: EASE_OUT, delay: 0.2 }}
-            className="relative flex flex-col items-center"
-          >
-            {/* Orbital visualization */}
-            <OrbitalRing activeId={activeModuleId} onSelect={selectModule} />
-
-            {/* Active Module Card — animated swap */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeModuleId}
-                initial={reduceMotion ? false : { transform: "translateY(8px) scale(0.97)", opacity: 0 }}
-                animate={{ transform: "translateY(0) scale(1)", opacity: 1 }}
-                exit={reduceMotion ? undefined : { transform: "translateY(-6px) scale(0.98)", opacity: 0 }}
-                transition={{ duration: 0.25, ease: EASE_OUT }}
-                className="mt-4 w-full max-w-sm rounded-xl border border-stroke-soft-200/70 bg-bg-white-0/80 p-3 shadow-regular-sm backdrop-blur-md sm:p-4"
+              <Link
+                href="/dashboard"
+                className="mt-4 inline-flex items-center gap-2 self-end rounded-full border border-white/20 bg-white/10 px-5 py-2.5 text-sm font-medium text-white backdrop-blur-sm transition-all hover:bg-white hover:text-[#0a0a0a]"
               >
-                <div className="flex items-center gap-3">
-                  <div
-                    className="flex size-9 shrink-0 items-center justify-center rounded-lg"
-                    style={{
-                      background: `linear-gradient(135deg, ${activeModule.accentFrom}18, ${activeModule.accentTo}10)`,
-                      border: `1px solid ${activeModule.accentFrom}30`,
-                    }}
-                  >
-                    <ActiveIcon className="size-4" style={{ color: activeModule.accentFrom }} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <p className="truncate text-xs font-semibold text-text-strong-950">
-                        {activeModule.snippetTitle}
-                      </p>
-                      <span className={cn("shrink-0 rounded-full border px-1.5 py-0.5 text-[9px] font-semibold", activeModule.statusColor)}>
-                        {activeModule.statusBadge}
-                      </span>
-                    </div>
-                    <p className="mt-0.5 truncate text-[10px] text-text-sub-600">
-                      {activeModule.snippetDetail}
+                Launch workspace
+                <ArrowRight className="size-4" />
+              </Link>
+            </div>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* ================================================================
+          2. ABOUT / MISSION — Light section with large centered text
+          ================================================================ */}
+      <section className="relative overflow-hidden bg-[#f5f5f3] px-6 py-32 lg:px-10 lg:py-44">
+        {/* Subtle diagonal lines */}
+        <div className="absolute inset-0 opacity-[0.03]" style={{
+          backgroundImage: `repeating-linear-gradient(
+            -45deg,
+            transparent,
+            transparent 80px,
+            #000 80px,
+            #000 81px
+          )`,
+        }} />
+
+        <div className="relative mx-auto max-w-[1400px]">
+          <FadeUp>
+            <div className="mb-8 flex items-center justify-between text-xs text-[#1a1a1a]/40">
+              <div className="flex items-center gap-2">
+                <Sparkles className="size-3.5" />
+                <span>Inside the Platform</span>
+              </div>
+              <span>(©19–26)</span>
+            </div>
+          </FadeUp>
+
+          <FadeUp delay={0.1}>
+            <h2 className="mx-auto max-w-4xl text-center text-[clamp(2rem,5vw,4rem)] font-bold leading-[1.1] tracking-tight">
+              Driven by{" "}
+              <span className="font-serif italic font-normal">
+                Reliability,
+              </span>{" "}
+              fueled by data. We craft operations‑first solutions that help{" "}
+              <span className="font-serif italic font-normal">
+                Facilities
+              </span>{" "}
+              run and thrive in the modern age
+            </h2>
+          </FadeUp>
+
+          <FadeUp delay={0.2}>
+            <div className="mt-12 flex flex-wrap items-center justify-center gap-6">
+              <div className="flex items-center gap-3 rounded-xl border border-[#1a1a1a]/10 bg-white/60 px-5 py-3 backdrop-blur-sm">
+                <div className="flex">
+                  {[1, 2, 3, 4, 5].map((s) => (
+                    <Star
+                      key={s}
+                      className="size-4 fill-amber-400 text-amber-400"
+                    />
+                  ))}
+                </div>
+                <div>
+                  <p className="text-sm font-semibold">4.9/5</p>
+                  <p className="text-xs text-[#1a1a1a]/50">
+                    Based on 250 reviews
+                  </p>
+                </div>
+              </div>
+              <div className="h-8 w-px bg-[#1a1a1a]/10" />
+              <div className="flex items-center gap-3 rounded-xl border border-[#1a1a1a]/10 bg-white/60 px-5 py-3 backdrop-blur-sm">
+                <div className="flex">
+                  {[1, 2, 3, 4].map((s) => (
+                    <Star
+                      key={s}
+                      className="size-4 fill-amber-400 text-amber-400"
+                    />
+                  ))}
+                  <Star className="size-4 fill-amber-400/30 text-amber-400/30" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold">4.0/5</p>
+                  <p className="text-xs text-[#1a1a1a]/50">
+                    Based on 186 reviews
+                  </p>
+                </div>
+              </div>
+            </div>
+          </FadeUp>
+        </div>
+      </section>
+
+      {/* ================================================================
+          3. ABOUT DETAIL — Light + image + description text
+          ================================================================ */}
+      <section className="bg-[#f5f5f3] px-6 pb-24 lg:px-10">
+        <div className="mx-auto max-w-[1400px]">
+          <FadeUp>
+            <div className="relative mx-auto aspect-[16/7] max-w-4xl overflow-hidden rounded-2xl border border-[#1a1a1a]/5 shadow-2xl">
+              <Image
+                src="/landing-team-bg.jpg"
+                alt="Operations center"
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 800px"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/60 via-transparent" />
+              <div className="absolute bottom-4 left-4 right-4 flex items-center justify-center">
+                <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/10 px-5 py-2.5 backdrop-blur-md">
+                  <LogoMark size="sm" />
+                  <div>
+                    <p className="text-sm font-semibold text-white">
+                      Discuss your operations
+                    </p>
+                    <p className="text-xs text-white/60">
+                      Speak with the team lead
                     </p>
                   </div>
-                  <Button size="sm" variant="ghost" className="hidden shrink-0 text-[10px] text-primary-base sm:inline-flex" asChild>
-                    <Link href={activeModule.path}>
-                      Open<ExternalLink className="ml-1 size-3" />
-                    </Link>
-                  </Button>
                 </div>
-              </motion.div>
-            </AnimatePresence>
-          </motion.div>
-        </motion.div>
-      </main>
+              </div>
+            </div>
+          </FadeUp>
 
-      {/* ━━━ 3. COMPACT FOOTER DOCK ━━━ */}
-      <motion.footer
-        className="relative z-30 shrink-0 border-t border-stroke-soft-200/60 bg-bg-white-0/60 backdrop-blur-xl"
-        initial={reduceMotion ? false : { transform: "translateY(100%)", opacity: 0 }}
-        animate={{ transform: "translateY(0)", opacity: 1 }}
-        transition={{ duration: 0.5, ease: EASE_OUT, delay: 0.4 }}
+          <FadeUp delay={0.1}>
+            <p className="mx-auto mt-12 max-w-2xl text-center text-base leading-relaxed text-[#1a1a1a]/70 sm:text-lg">
+              We&apos;re not just building software — we&apos;re{" "}
+              <strong className="text-[#1a1a1a]">
+                operational partners
+              </strong>
+              , problem-solvers, and{" "}
+              <strong className="text-[#1a1a1a]">system builders</strong>.
+              Blending deep maintenance expertise with modern technology, we
+              craft experiences that connect, optimize, and stand out in a{" "}
+              <strong className="text-[#1a1a1a]">
+                complex industrial
+              </strong>{" "}
+              world.
+            </p>
+          </FadeUp>
+
+          <FadeUp delay={0.15}>
+            <div className="mt-8 flex justify-center">
+              <Link
+                href="/dashboard"
+                className="inline-flex items-center gap-2 rounded-full bg-[#1a1a1a] px-6 py-3 text-sm font-medium text-white transition-all hover:bg-[#333]"
+              >
+                View our platform
+                <ArrowRight className="size-4" />
+              </Link>
+            </div>
+          </FadeUp>
+        </div>
+      </section>
+
+      {/* ================================================================
+          4. SERVICES — Dark section with accordion
+          ================================================================ */}
+      <section
+        id="modules"
+        className="relative overflow-hidden bg-[#0f0f0f] px-6 py-24 lg:px-10 lg:py-32"
       >
-        <div className="mx-auto flex h-11 max-w-7xl items-center justify-between gap-4 px-4 text-xs text-text-sub-600 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-1.5">
-            <span className="hidden text-[10px] font-medium text-text-soft-400 lg:inline">Modules:</span>
-            {MODULES.map((mod) => {
-              const Icon = mod.icon;
+        <div className="mx-auto max-w-[1400px]">
+          <FadeUp>
+            <div className="mb-4 flex items-center gap-2 text-sm text-white/40">
+              <Sparkles className="size-3.5" />
+              <span>What we build</span>
+            </div>
+          </FadeUp>
+          <FadeUp delay={0.1}>
+            <h2 className="mb-16 text-[clamp(2.5rem,6vw,5rem)] font-bold leading-[1] tracking-tight text-white">
+              Solutions that{" "}
+              <span className="font-serif italic font-normal text-white/60">
+                Drive
+              </span>
+              <br />
+              results
+            </h2>
+          </FadeUp>
+          <FadeUp delay={0.2}>
+            <ServiceAccordion />
+          </FadeUp>
+        </div>
+      </section>
+
+      {/* ================================================================
+          5. PROCESS — Light section with step cards
+          ================================================================ */}
+      <section id="process" className="relative bg-[#f5f5f3] px-6 py-24 lg:px-10 lg:py-32">
+        <div className="absolute inset-0 opacity-[0.03]" style={{
+          backgroundImage: `repeating-linear-gradient(
+            -45deg,
+            transparent,
+            transparent 80px,
+            #000 80px,
+            #000 81px
+          )`,
+        }} />
+
+        <div className="relative mx-auto max-w-[1400px]">
+          <FadeUp>
+            <div className="mb-4 flex items-center justify-center gap-2 text-sm text-[#1a1a1a]/40">
+              <Sparkles className="size-3.5" />
+              <span>From concept to launch</span>
+            </div>
+          </FadeUp>
+
+          <FadeUp delay={0.1}>
+            <h2 className="mb-20 text-center text-[clamp(2rem,5vw,4rem)] font-bold leading-[1.1] tracking-tight">
+              Your operations{" "}
+              <span className="font-serif italic font-normal">
+                transform
+              </span>
+              <br />
+              into{" "}
+              <span className="font-serif italic font-normal">
+                Reliable
+              </span>{" "}
+              systems
+            </h2>
+          </FadeUp>
+
+          <div className="grid gap-6 sm:grid-cols-3">
+            {PROCESS_STEPS.map((step, i) => {
+              const Icon = step.icon;
               return (
-                <Link
-                  key={mod.id}
-                  href={mod.path}
-                  title={`Open ${mod.name}`}
-                  className="inline-flex size-6 items-center justify-center rounded-md text-text-sub-600 transition-colors duration-150 hover:bg-bg-weak-50 hover:text-primary-base"
-                >
-                  <Icon className="size-3" />
-                </Link>
+                <FadeUp key={step.title} delay={0.15 + i * 0.1}>
+                  <div className="group rounded-2xl border border-[#1a1a1a]/5 bg-white/70 p-6 backdrop-blur-sm transition-all duration-300 hover:border-[#1a1a1a]/10 hover:shadow-xl sm:p-8">
+                    <div className="mb-4 flex items-center justify-between">
+                      <h3 className="text-lg font-semibold">{step.title}</h3>
+                      <div className="flex items-center gap-1">
+                        {[...Array(3)].map((_, j) => (
+                          <Sparkles
+                            key={j}
+                            className={cn(
+                              "text-[#1a1a1a]/20",
+                              j === 0 ? "size-4" : j === 1 ? "size-3" : "size-2.5"
+                            )}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                    <div className="mb-6 flex size-16 items-center justify-center rounded-2xl bg-[#f5f5f3]">
+                      <Icon className="size-8 text-[#1a1a1a]/50" />
+                    </div>
+                    <p className="text-sm leading-relaxed text-[#1a1a1a]/60">
+                      {step.description}
+                    </p>
+                  </div>
+                </FadeUp>
               );
             })}
           </div>
-          <p className="hidden text-center text-[10px] text-text-soft-400 sm:block">
-            Shared record architecture · Technicians, planners, and leadership connected
-          </p>
-          <div className="flex items-center gap-3">
-            <button type="button" onClick={() => setFaqOpen(true)} className="text-[10px] underline-offset-4 hover:underline">FAQ</button>
-            <span className="text-text-soft-400">·</span>
-            <span className="text-[10px] text-text-soft-400">© {new Date().getFullYear()} Maintenance OS</span>
+        </div>
+      </section>
+
+      {/* ================================================================
+          6. METRICS — Light section with big numbers (Ignitex style)
+          ================================================================ */}
+      <section className="bg-[#f5f5f3] px-6 py-24 lg:px-10 lg:py-32">
+        <div className="mx-auto max-w-[1400px]">
+          <div className="grid gap-12 lg:grid-cols-2 lg:gap-20">
+            {/* Left text */}
+            <div>
+              <FadeUp>
+                <div className="mb-4 flex items-center gap-2 text-sm text-[#1a1a1a]/40">
+                  <Sparkles className="size-3.5" />
+                  <span>Our track record</span>
+                </div>
+              </FadeUp>
+              <FadeUp delay={0.1}>
+                <h2 className="text-[clamp(2.5rem,5vw,4.5rem)] font-bold leading-[1] tracking-tight">
+                  Metrics that{" "}
+                  <span className="font-serif italic font-normal">
+                    Prove
+                  </span>
+                  <br />
+                  value
+                </h2>
+              </FadeUp>
+              <FadeUp delay={0.2}>
+                <Link
+                  href="/dashboard"
+                  className="mt-8 inline-flex items-center gap-2 rounded-full bg-[#1a1a1a] px-6 py-3 text-sm font-medium text-white transition-all hover:bg-[#333]"
+                >
+                  Know more about us
+                  <ArrowRight className="size-4" />
+                </Link>
+              </FadeUp>
+            </div>
+
+            {/* Right metric rows */}
+            <div className="flex flex-col">
+              {METRICS.map((metric, i) => (
+                <FadeUp key={metric.value} delay={0.15 + i * 0.08}>
+                  <div
+                    className={cn(
+                      "flex items-center gap-6 py-6",
+                      i < METRICS.length - 1 && "border-b border-[#1a1a1a]/10"
+                    )}
+                  >
+                    <p className="shrink-0 text-[clamp(2.5rem,5vw,4.5rem)] font-bold leading-none tracking-tight">
+                      {metric.value}
+                      <span className="font-serif text-[0.65em] italic font-normal text-[#1a1a1a]/50">
+                        {metric.suffix}
+                      </span>
+                    </p>
+                    <p className="text-sm leading-relaxed text-[#1a1a1a]/60">
+                      {metric.label}
+                    </p>
+                  </div>
+                </FadeUp>
+              ))}
+            </div>
           </div>
         </div>
-      </motion.footer>
+      </section>
 
-      {/* ━━━ 4. WALKTHROUGH DRAWER ━━━ */}
+      {/* ================================================================
+          7. PRICING — Dark section
+          ================================================================ */}
+      <section
+        id="pricing"
+        className="relative overflow-hidden bg-[#0f0f0f] px-6 py-24 lg:px-10 lg:py-32"
+      >
+        <div className="mx-auto max-w-[1400px]">
+          <FadeUp>
+            <div className="mb-4 flex items-center justify-center gap-2 text-sm text-white/40">
+              <Sparkles className="size-3.5" />
+              <span>No hidden fees</span>
+            </div>
+          </FadeUp>
+          <FadeUp delay={0.1}>
+            <h2 className="mb-16 text-center text-[clamp(2.5rem,6vw,5rem)] font-bold leading-[1] tracking-tight text-white">
+              Clear{" "}
+              <span className="font-serif italic font-normal text-white/60">
+                Pricing,
+              </span>{" "}
+              clear
+              <br />
+              results
+            </h2>
+          </FadeUp>
+
+          <FadeUp delay={0.2}>
+            <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
+              {/* Plan card */}
+              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-sm sm:p-8">
+                <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <h3 className="text-xl font-semibold text-white">
+                      Operations Suite
+                    </h3>
+                    <p className="mt-1 text-sm text-white/50">
+                      Ideal for facilities needing full maintenance coverage.
+                    </p>
+                  </div>
+                  <div className="flex rounded-full border border-white/10 bg-white/5 p-0.5">
+                    <button
+                      type="button"
+                      onClick={() => setBillingCycle("monthly")}
+                      className={cn(
+                        "rounded-full px-4 py-1.5 text-sm font-medium transition-all",
+                        billingCycle === "monthly"
+                          ? "bg-white text-[#0a0a0a]"
+                          : "text-white/50 hover:text-white"
+                      )}
+                    >
+                      Monthly
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setBillingCycle("annual")}
+                      className={cn(
+                        "rounded-full px-4 py-1.5 text-sm font-medium transition-all",
+                        billingCycle === "annual"
+                          ? "bg-white text-[#0a0a0a]"
+                          : "text-white/50 hover:text-white"
+                      )}
+                    >
+                      Annual
+                    </button>
+                  </div>
+                </div>
+
+                <div className="mb-6 border-t border-white/10 pt-6">
+                  <p className="mb-3 text-xs font-medium tracking-wider text-white/40 uppercase">
+                    What&apos;s included
+                  </p>
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    {PLAN_FEATURES.map((feat) => (
+                      <div
+                        key={feat}
+                        className="flex items-center gap-2 text-sm text-white/70"
+                      >
+                        <CheckCircle2 className="size-4 shrink-0 text-white/30" />
+                        {feat}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex items-end gap-2">
+                  <span className="text-4xl font-bold text-white">
+                    {billingCycle === "monthly" ? "$299" : "$249"}
+                  </span>
+                  <span className="mb-1 text-sm text-white/40">
+                    /month {billingCycle === "annual" && "(billed annually)"}
+                  </span>
+                </div>
+              </div>
+
+              {/* CTA card */}
+              <div className="flex flex-col items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] p-8 text-center backdrop-blur-sm">
+                <div className="mb-4 flex size-16 items-center justify-center rounded-full bg-white/5">
+                  <LogoMark size="sm" />
+                </div>
+                <div className="mb-2 flex items-center gap-2">
+                  <span className="size-2 rounded-full bg-emerald-400" />
+                  <span className="text-xs text-emerald-400">
+                    3 Spots Available
+                  </span>
+                </div>
+                <h3 className="mb-2 text-xl font-semibold text-white">
+                  Schedule a discovery call
+                </h3>
+                <p className="mb-6 text-sm text-white/50">
+                  Let&apos;s connect and see how we can bring your vision to
+                  life.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setDemoOpen(true)}
+                  className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-[#0a0a0a] transition-all hover:bg-white/90"
+                >
+                  Book a call
+                  <ArrowRight className="size-4" />
+                </button>
+              </div>
+            </div>
+          </FadeUp>
+        </div>
+      </section>
+
+      {/* ================================================================
+          8. TEAM / CTA — Full-bleed dark image with text overlay
+          ================================================================ */}
+      <section className="relative min-h-[80vh] overflow-hidden bg-[#0a0a0a]">
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/landing-team-bg.jpg"
+            alt=""
+            fill
+            className="object-cover opacity-40"
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a]/80 via-[#0a0a0a]/40 to-transparent" />
+        </div>
+
+        <div className="relative z-10 flex min-h-[80vh] flex-col justify-between px-6 py-16 lg:px-10">
+          <div className="mx-auto w-full max-w-[1400px]">
+            <FadeUp>
+              <div className="flex items-center gap-2 text-sm text-white/40">
+                <Sparkles className="size-3.5" />
+                <span>Your operational partners</span>
+              </div>
+            </FadeUp>
+
+            <FadeUp delay={0.1}>
+              <h2 className="mt-8 max-w-2xl text-[clamp(3rem,7vw,7rem)] font-bold leading-[0.9] tracking-tighter text-white">
+                We&apos;re your{" "}
+                <span className="font-serif italic font-normal text-white/70">
+                  Operations
+                </span>{" "}
+                partners
+              </h2>
+            </FadeUp>
+          </div>
+
+          <div className="mx-auto w-full max-w-[1400px]">
+            <FadeUp delay={0.2}>
+              <p className="max-w-xl text-base leading-relaxed text-white/60">
+                We&apos;re a dedicated team that values purposeful design,
+                operational excellence, and work that truly makes an impact
+                on your bottom line.
+              </p>
+            </FadeUp>
+            <FadeUp delay={0.25}>
+              <div className="mt-6 flex flex-wrap items-center gap-4">
+                <Link
+                  href="/dashboard"
+                  className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-[#0a0a0a] transition-all hover:bg-white/90"
+                >
+                  Launch workspace
+                  <ArrowRight className="size-4" />
+                </Link>
+                <span className="text-xs text-white/30">
+                  © {new Date().getFullYear()} Maintain — Team up with us
+                </span>
+              </div>
+            </FadeUp>
+          </div>
+        </div>
+      </section>
+
+      {/* ================================================================
+          9. FOOTER
+          ================================================================ */}
+      <footer className="bg-[#0a0a0a] px-6 py-12 lg:px-10">
+        <div className="mx-auto max-w-[1400px]">
+          <div className="flex flex-col gap-8 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3">
+              <LogoMark size="sm" className="brightness-0 invert" />
+              <span className="text-sm font-bold tracking-tight text-white">
+                MAINTAIN
+              </span>
+            </div>
+            <div className="flex flex-wrap items-center gap-6 text-sm text-white/40">
+              <Link
+                href="/dashboard"
+                className="transition-colors hover:text-white"
+              >
+                Dashboard
+              </Link>
+              <button
+                type="button"
+                onClick={() => setDemoOpen(true)}
+                className="transition-colors hover:text-white"
+              >
+                Request Demo
+              </button>
+              <a href="#modules" className="transition-colors hover:text-white">
+                Modules
+              </a>
+              <a href="#pricing" className="transition-colors hover:text-white">
+                Pricing
+              </a>
+            </div>
+          </div>
+          <div className="mt-8 border-t border-white/5 pt-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-xs text-white/30">
+              © {new Date().getFullYear()} Maintenance Operations Suite. All
+              rights reserved.
+            </p>
+            <div className="flex items-center gap-4 text-xs text-white/30">
+              <span>Privacy Policy</span>
+              <span>Terms of Service</span>
+            </div>
+          </div>
+        </div>
+      </footer>
+
+      {/* ================================================================
+          DEMO / WALKTHROUGH DRAWER
+          ================================================================ */}
       <Drawer
-        open={walkthroughOpen}
-        onOpenChange={setWalkthroughOpen}
+        open={demoOpen}
+        onOpenChange={setDemoOpen}
         title="Request an Operations Walkthrough"
         description="Share your details and modules of interest. We will tailor a live demonstration to your facility."
         closeable={true}
         renderActions={
-          <Button form={walkthroughFormId} type="submit" variant="primary">
+          <Button form="landing-demo-form" type="submit" variant="primary">
             Submit Request
           </Button>
         }
         className="w-full sm:w-[45%] sm:min-w-[600px] sm:max-w-none lg:max-w-none"
       >
         <ScrollArea className="h-[calc(100vh-160px)] pr-4">
-          <form id={walkthroughFormId} onSubmit={handleDemoSubmit} className="flex flex-col gap-4 py-2">
+          <form
+            id="landing-demo-form"
+            onSubmit={handleDemoSubmit}
+            className="flex flex-col gap-4 py-2"
+          >
             <div className="space-y-1.5">
-              <label htmlFor="wt-name" className="text-xs font-semibold uppercase tracking-wider text-text-sub-600">Full Name</label>
-              <input id="wt-name" name="name" required placeholder="e.g. Sarah Jenkins"
-                className="w-full rounded-xl border border-stroke-soft-200 bg-bg-white-0 px-3.5 py-2.5 text-sm text-text-strong-950 placeholder:text-text-soft-400 outline-none focus-visible:ring-2 focus-visible:ring-primary-base/40" />
+              <label
+                htmlFor="wt-name"
+                className="text-xs font-semibold uppercase tracking-wider text-text-sub-600"
+              >
+                Full Name
+              </label>
+              <input
+                id="wt-name"
+                name="name"
+                required
+                placeholder="e.g. Sarah Jenkins"
+                className="w-full rounded-xl border border-stroke-soft-200 bg-bg-white-0 px-3.5 py-2.5 text-sm text-text-strong-950 placeholder:text-text-soft-400 outline-none focus-visible:ring-2 focus-visible:ring-primary-base/40"
+              />
             </div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div className="space-y-1.5">
-                <label htmlFor="wt-email" className="text-xs font-semibold uppercase tracking-wider text-text-sub-600">Work Email</label>
-                <input id="wt-email" name="email" type="email" required placeholder="sarah@company.com"
-                  className="w-full rounded-xl border border-stroke-soft-200 bg-bg-white-0 px-3.5 py-2.5 text-sm text-text-strong-950 placeholder:text-text-soft-400 outline-none focus-visible:ring-2 focus-visible:ring-primary-base/40" />
+                <label
+                  htmlFor="wt-email"
+                  className="text-xs font-semibold uppercase tracking-wider text-text-sub-600"
+                >
+                  Work Email
+                </label>
+                <input
+                  id="wt-email"
+                  name="email"
+                  type="email"
+                  required
+                  placeholder="sarah@company.com"
+                  className="w-full rounded-xl border border-stroke-soft-200 bg-bg-white-0 px-3.5 py-2.5 text-sm text-text-strong-950 placeholder:text-text-soft-400 outline-none focus-visible:ring-2 focus-visible:ring-primary-base/40"
+                />
               </div>
               <div className="space-y-1.5">
-                <label htmlFor="wt-org" className="text-xs font-semibold uppercase tracking-wider text-text-sub-600">Company</label>
-                <input id="wt-org" name="org" required placeholder="Apex Manufacturing"
-                  className="w-full rounded-xl border border-stroke-soft-200 bg-bg-white-0 px-3.5 py-2.5 text-sm text-text-strong-950 placeholder:text-text-soft-400 outline-none focus-visible:ring-2 focus-visible:ring-primary-base/40" />
+                <label
+                  htmlFor="wt-org"
+                  className="text-xs font-semibold uppercase tracking-wider text-text-sub-600"
+                >
+                  Company
+                </label>
+                <input
+                  id="wt-org"
+                  name="org"
+                  required
+                  placeholder="Apex Manufacturing"
+                  className="w-full rounded-xl border border-stroke-soft-200 bg-bg-white-0 px-3.5 py-2.5 text-sm text-text-strong-950 placeholder:text-text-soft-400 outline-none focus-visible:ring-2 focus-visible:ring-primary-base/40"
+                />
               </div>
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold uppercase tracking-wider text-text-sub-600">Modules of Interest</label>
+              <label className="text-xs font-semibold uppercase tracking-wider text-text-sub-600">
+                Modules of Interest
+              </label>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                {MODULES.map((m) => (
-                  <label key={m.id} className="flex cursor-pointer items-center gap-2 rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-2 text-xs font-medium text-text-strong-950 hover:bg-bg-weak-50">
-                    <input type="checkbox" name="modules" value={m.id} defaultChecked={m.id === "wo" || m.id === "eq"}
-                      className="size-3.5 rounded border-stroke-soft-200 text-primary-base focus:ring-primary-base/40" />
-                    <span>{m.name}</span>
+                {SERVICES.map((m) => (
+                  <label
+                    key={m.num}
+                    className="flex cursor-pointer items-center gap-2 rounded-xl border border-stroke-soft-200 bg-bg-white-0 p-2 text-xs font-medium text-text-strong-950 hover:bg-bg-weak-50"
+                  >
+                    <input
+                      type="checkbox"
+                      name="modules"
+                      value={m.num}
+                      defaultChecked={m.num === "01" || m.num === "02"}
+                      className="size-3.5 rounded border-stroke-soft-200 text-primary-base focus:ring-primary-base/40"
+                    />
+                    <span>{m.title}</span>
                   </label>
                 ))}
               </div>
             </div>
             <div className="space-y-1.5">
-              <label htmlFor="wt-notes" className="text-xs font-semibold uppercase tracking-wider text-text-sub-600">Notes (Optional)</label>
-              <textarea id="wt-notes" name="notes" rows={3} placeholder="Team size, assets, integrations..."
-                className="w-full resize-none rounded-xl border border-stroke-soft-200 bg-bg-white-0 px-3.5 py-2.5 text-sm text-text-strong-950 placeholder:text-text-soft-400 outline-none focus-visible:ring-2 focus-visible:ring-primary-base/40" />
+              <label
+                htmlFor="wt-notes"
+                className="text-xs font-semibold uppercase tracking-wider text-text-sub-600"
+              >
+                Notes (Optional)
+              </label>
+              <textarea
+                id="wt-notes"
+                name="notes"
+                rows={3}
+                placeholder="Team size, assets, integrations..."
+                className="w-full resize-none rounded-xl border border-stroke-soft-200 bg-bg-white-0 px-3.5 py-2.5 text-sm text-text-strong-950 placeholder:text-text-soft-400 outline-none focus-visible:ring-2 focus-visible:ring-primary-base/40"
+              />
             </div>
             <div className="rounded-xl border border-primary-base/20 bg-primary-lighter/40 p-3 text-xs text-primary-dark">
               <div className="flex items-center gap-2 font-semibold">
@@ -749,42 +1177,11 @@ export default function LandingPage() {
                 <span>Instant Prototype Access</span>
               </div>
               <p className="mt-1 text-[11px] text-text-sub-600">
-                Explore our live environment directly anytime via &quot;Open workspace&quot;.
+                Explore our live environment directly anytime via &quot;Launch
+                workspace&quot;.
               </p>
             </div>
           </form>
-        </ScrollArea>
-      </Drawer>
-
-      {/* ━━━ 5. FAQ DRAWER ━━━ */}
-      <Drawer
-        open={faqOpen}
-        onOpenChange={setFaqOpen}
-        title="Frequently Asked Questions"
-        description="Learn how Maintenance OS connects your field operations and leadership dashboards."
-        closeable={true}
-        className="w-full sm:w-[45%] sm:min-w-[600px] sm:max-w-none lg:max-w-none"
-      >
-        <ScrollArea className="h-[calc(100vh-160px)] pr-4">
-          <div className="space-y-6 py-2">
-            <Accordion type="single" collapsible defaultValue="faq-0" className="w-full space-y-2">
-              {faqs.map((faq, i) => (
-                <AccordionItem key={faq.q} value={`faq-${i}`} className="rounded-xl border border-stroke-soft-200 bg-bg-white-0 px-4">
-                  <AccordionTrigger className="text-left text-sm font-semibold text-text-strong-950 py-3">{faq.q}</AccordionTrigger>
-                  <AccordionContent className="text-xs leading-relaxed text-text-sub-600 pb-3">{faq.a}</AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-            <div className="rounded-xl border border-stroke-soft-200 bg-bg-weak-50/60 p-4">
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-text-sub-600">Direct Access</h4>
-              <p className="mt-1 text-xs text-text-sub-600">Ready to see live work orders, inventory, and equipment?</p>
-              <Button size="sm" variant="primary" className="mt-3 text-xs" asChild>
-                <Link href="/dashboard" onClick={() => setFaqOpen(false)}>
-                  Open Workspace<ArrowRight className="ml-1.5 size-3.5" />
-                </Link>
-              </Button>
-            </div>
-          </div>
         </ScrollArea>
       </Drawer>
     </div>
