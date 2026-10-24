@@ -17,6 +17,7 @@ type SheetContentType = {
   closeText?: string;
   footer?: React.ReactNode;
   showFooter?: boolean;
+  modal?: boolean;
 };
 
 type SheetContextType = {
@@ -62,7 +63,7 @@ export function SheetProvider({ children }: { children: ReactNode }) {
       <Drawer
         open={open}
         onOpenChange={handleSheetOpenChange}
-        modal={false}
+        modal={content?.modal ?? true}
         title={content?.title}
         description={content?.description}
         closeable={content?.closeable ?? true}
