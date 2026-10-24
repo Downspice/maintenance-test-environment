@@ -873,10 +873,188 @@ html {
   }
 }
 
+/* ──────────────────────────────────────────────────────────────────────────
+   LANDING PAGE: Floating Objects (CSS keyframes — runs off main thread)
+   Three distinct drift paths so objects don't move in sync.
+   Properties: transform + opacity ONLY (GPU-composited, no layout/paint).
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* Drift path A — gentle figure-8ish */
+.float-drift-a {
+  animation: floatA 18s cubic-bezier(0.37, 0, 0.63, 1) infinite;
+}
+
+@keyframes floatA {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  25%      { transform: translate(8px, -14px) rotate(2deg); }
+  50%      { transform: translate(-6px, -8px) rotate(-1.5deg); }
+  75%      { transform: translate(4px, 10px) rotate(1deg); }
+}
+
+/* Drift path B — vertical bias */
+.float-drift-b {
+  animation: floatB 22s cubic-bezier(0.37, 0, 0.63, 1) infinite;
+}
+
+@keyframes floatB {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  30%      { transform: translate(-10px, -18px) rotate(-2deg); }
+  60%      { transform: translate(6px, -6px) rotate(1.5deg); }
+  85%      { transform: translate(-4px, 12px) rotate(-0.5deg); }
+}
+
+/* Drift path C — horizontal bias */
+.float-drift-c {
+  animation: floatC 20s cubic-bezier(0.37, 0, 0.63, 1) infinite;
+}
+
+@keyframes floatC {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  20%      { transform: translate(12px, -6px) rotate(1.5deg); }
+  50%      { transform: translate(-8px, -16px) rotate(-2deg); }
+  80%      { transform: translate(10px, 8px) rotate(0.5deg); }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   LANDING PAGE: Orbital Ring
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* Sweeper line rotates around the center */
+.landing-orbital-sweeper {
+  animation: orbitalSweep 12s linear infinite;
+}
+
+@keyframes orbitalSweep {
+  to { transform: rotate(360deg); }
+}
+
+/* Hub breathing pulse — subtle scale */
+.landing-hub-pulse {
+  animation: hubPulse 3s cubic-bezier(0.37, 0, 0.63, 1) infinite;
+}
+
+@keyframes hubPulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.04); }
+}
+
+/* Orbiting node gentle bob */
+.landing-orbit-bob {
+  animation: orbitBob 4s cubic-bezier(0.37, 0, 0.63, 1) infinite;
+}
+
+@keyframes orbitBob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-4px); }
+}
+
+/* Active node pulse ring */
+.landing-active-pulse {
+  animation: activePulse 2s cubic-bezier(0.23, 1, 0.32, 1) infinite;
+}
+
+@keyframes activePulse {
+  0%       { transform: translate(-50%, -50%) scale(1);   opacity: 0.6; }
+  100%     { transform: translate(-50%, -50%) scale(1.8); opacity: 0; }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   LANDING PAGE: Ambient particles
+   ────────────────────────────────────────────────────────────────────────── */
+
+.landing-particle {
+  animation: particleFloat 8s cubic-bezier(0.37, 0, 0.63, 1) infinite;
+}
+
+@keyframes particleFloat {
+  0%, 100% { transform: translate(0, 0);        opacity: 0.4; }
+  25%      { transform: translate(12px, -20px); opacity: 0.7; }
+  50%      { transform: translate(-8px, -30px); opacity: 0.3; }
+  75%      { transform: translate(6px, -10px);  opacity: 0.6; }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   LANDING PAGE: Ambient glow drift
+   ────────────────────────────────────────────────────────────────────────── */
+
+.landing-glow-a {
+  animation: glowDriftA 16s cubic-bezier(0.37, 0, 0.63, 1) infinite;
+}
+
+@keyframes glowDriftA {
+  0%, 100% { transform: translate(0, 0); }
+  50%      { transform: translate(40px, 30px); }
+}
+
+.landing-glow-b {
+  animation: glowDriftB 20s cubic-bezier(0.37, 0, 0.63, 1) infinite;
+}
+
+@keyframes glowDriftB {
+  0%, 100% { transform: translate(0, 0); }
+  50%      { transform: translate(-30px, -20px); }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   LANDING PAGE: CTA button glow
+   ────────────────────────────────────────────────────────────────────────── */
+
+@media (hover: hover) and (pointer: fine) {
+  .landing-btn-glow {
+    position: relative;
+    overflow: visible;
+  }
+
+  .landing-btn-glow::after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    opacity: 0;
+    background: radial-gradient(
+      ellipse at center,
+      var(--color-primary-base) 0%,
+      transparent 70%
+    );
+    filter: blur(12px);
+    z-index: -1;
+    transition: opacity 250ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  .landing-btn-glow:hover::after {
+    opacity: 0.3;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   REDUCED MOTION — keep opacity transitions, remove transform movement
+   (animate skill: "fewer and gentler, not zero")
+   ────────────────────────────────────────────────────────────────────────── */
+
 @media (prefers-reduced-motion: reduce) {
-  .landing-flow-pulse {
+  .landing-flow-pulse,
+  .float-drift-a,
+  .float-drift-b,
+  .float-drift-c,
+  .landing-orbital-sweeper,
+  .landing-hub-pulse,
+  .landing-orbit-bob,
+  .landing-active-pulse,
+  .landing-particle,
+  .landing-glow-a,
+  .landing-glow-b {
     animation: none;
+  }
+
+  .landing-flow-pulse {
     stroke-opacity: 0.25;
+  }
+
+  /* Floating objects still visible, just static */
+  .float-drift-a,
+  .float-drift-b,
+  .float-drift-c {
+    opacity: 0.5;
   }
 }
 
