@@ -268,19 +268,6 @@ const PROCESS_STEPS = [
   },
 ];
 
-const PLAN_FEATURES = [
-  "Unlimited work orders",
-  "Equipment & asset registry",
-  "Inventory management",
-  "Workforce scheduling",
-  "Vendor & procurement",
-  "Analytics dashboards",
-  "Mobile field access",
-  "API & ERP integration",
-  "Dedicated onboarding",
-  "Priority support",
-];
-
 /* ─────────────────────────────────────────────────────────────────────────────
    NAVBAR COMPONENT
    Interactive focus states, button press scale, and smooth sticky transition
@@ -538,9 +525,6 @@ function ServiceAccordion() {
    ─────────────────────────────────────────────────────────────────────────── */
 export default function LandingPage() {
   const [demoOpen, setDemoOpen] = useState(false);
-  const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">(
-    "monthly"
-  );
   const reduceMotion = useReducedMotion();
 
   function handleDemoSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -992,177 +976,59 @@ export default function LandingPage() {
       </section>
 
       {/* ================================================================
-          7. PRICING — Animated sliding billing pill toggle & active states
+          7. PRICING — Undisclosed
           ================================================================ */}
       <section
         id="pricing"
-        className="relative overflow-hidden bg-[#0f0f0f] px-6 py-24 lg:px-10 lg:py-32"
+        className="relative overflow-hidden bg-[#0f0f0f] px-6 py-28 lg:px-10 lg:py-36"
       >
         <div className="mx-auto max-w-[1400px]">
           <FadeUp>
             <div className="mb-4 flex items-center justify-center gap-2 text-sm text-white/40">
               <LogoMark size="xs" variant="white" className="opacity-60" />
-              <span>No hidden fees</span>
+              <span>Investment &amp; Scoping</span>
             </div>
           </FadeUp>
           <FadeUp delay={0.1}>
-            <h2 className="mb-16 text-center text-[clamp(2.5rem,6vw,5rem)] font-bold leading-[1] tracking-tight text-white">
-              Clear{" "}
+            <h2 className="mb-6 text-center text-[clamp(2.5rem,6vw,5.5rem)] font-bold leading-[1] tracking-tight text-white">
+              Pricing{" "}
               <span className="font-serif italic font-normal text-white/60">
-                Pricing,
-              </span>{" "}
-              clear
-              <br />
-              results
+                Undisclosed
+              </span>
             </h2>
           </FadeUp>
-
+          <FadeUp delay={0.15}>
+            <p className="mx-auto max-w-xl text-center text-sm leading-relaxed text-white/60 sm:text-base">
+              Every facility footprint, equipment volume, and integration
+              requirement is unique. We provide tailored scopes and SLA guarantees
+              following an initial operational walkthrough.
+            </p>
+          </FadeUp>
           <FadeUp delay={0.2}>
-            <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
-              {/* Plan card with focus-within highlight */}
-              <div
-                tabIndex={0}
-                className="group relative rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-sm sm:p-8 shadow-xl transition-all duration-300 hover:border-white/20 focus-within:border-white/30 focus-within:ring-1 focus-within:ring-white/20 outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f0f0f]"
-              >
-                <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                  <div>
-                    <h3 className="text-xl font-semibold text-white tracking-tight">
-                      Operations Suite
-                    </h3>
-                    <p className="mt-1 text-sm text-white/50">
-                      Ideal for facilities needing full maintenance coverage.
-                    </p>
-                  </div>
-
-                  {/* Spring-animated Sliding Pill Toggle */}
-                  <div className="relative flex rounded-full border border-white/10 bg-white/5 p-1 backdrop-blur-sm">
-                    <button
-                      type="button"
-                      onClick={() => setBillingCycle("monthly")}
-                      className={cn(
-                        "relative z-10 rounded-full px-4 py-1.5 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-white active:scale-[0.97]",
-                        billingCycle === "monthly"
-                          ? "text-[#0a0a0a]"
-                          : "text-white/60 hover:text-white"
-                      )}
-                    >
-                      {billingCycle === "monthly" && (
-                        <motion.div
-                          layoutId="billingPillIndicator"
-                          className="absolute inset-0 rounded-full bg-white shadow-sm"
-                          transition={{
-                            type: "spring",
-                            stiffness: 420,
-                            damping: 32,
-                          }}
-                        />
-                      )}
-                      <span className="relative z-10">Monthly</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setBillingCycle("annual")}
-                      className={cn(
-                        "relative z-10 rounded-full px-4 py-1.5 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-white active:scale-[0.97]",
-                        billingCycle === "annual"
-                          ? "text-[#0a0a0a]"
-                          : "text-white/60 hover:text-white"
-                      )}
-                    >
-                      {billingCycle === "annual" && (
-                        <motion.div
-                          layoutId="billingPillIndicator"
-                          className="absolute inset-0 rounded-full bg-white shadow-sm"
-                          transition={{
-                            type: "spring",
-                            stiffness: 420,
-                            damping: 32,
-                          }}
-                        />
-                      )}
-                      <span className="relative z-10 flex items-center gap-1.5">
-                        Annual
-                        <span className="rounded-full bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-300">
-                          -17%
-                        </span>
-                      </span>
-                    </button>
-                  </div>
-                </div>
-
-                <div className="mb-6 border-t border-white/10 pt-6">
-                  <p className="mb-3 text-xs font-medium tracking-wider text-white/40 uppercase">
-                    What&apos;s included
-                  </p>
-                  <div className="grid gap-2.5 sm:grid-cols-2">
-                    {PLAN_FEATURES.map((feat) => (
-                      <div
-                        key={feat}
-                        className="flex items-center gap-2 text-sm text-white/70 transition-colors duration-150 hover:text-white"
-                      >
-                        <CheckCircle2 className="size-4 shrink-0 text-white/30" />
-                        {feat}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="flex items-end gap-2">
-                  <AnimatePresence mode="wait">
-                    <motion.span
-                      key={billingCycle}
-                      initial={
-                        reduceMotion ? false : { opacity: 0, y: -6 }
-                      }
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={
-                        reduceMotion ? undefined : { opacity: 0, y: 6 }
-                      }
-                      transition={{ duration: 0.16, ease: EASE_OUT }}
-                      className="text-4xl font-bold text-white tabular-nums"
-                    >
-                      {billingCycle === "monthly" ? "$299" : "$249"}
-                    </motion.span>
-                  </AnimatePresence>
-                  <span className="mb-1 text-sm text-white/40">
-                    /month {billingCycle === "annual" && "(billed annually)"}
-                  </span>
-                </div>
+            <div className="mx-auto mt-12 max-w-2xl rounded-2xl border border-white/10 bg-white/[0.03] p-8 text-center backdrop-blur-sm shadow-xl transition-all duration-300 hover:border-white/20">
+              <div className="mb-4 flex items-center justify-center gap-2">
+                <span className="relative flex size-2">
+                  <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex size-2 rounded-full bg-emerald-400" />
+                </span>
+                <span className="text-xs font-medium text-emerald-400">
+                  Custom Enterprise SLA Scoping
+                </span>
               </div>
-
-              {/* Discovery Call CTA card */}
-              <div
-                tabIndex={0}
-                className="flex flex-col items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] p-8 text-center backdrop-blur-sm shadow-xl transition-all duration-300 hover:border-white/20 focus-within:border-white/30 focus-within:ring-1 focus-within:ring-white/20 outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f0f0f]"
+              <h3 className="mb-3 text-xl font-semibold text-white tracking-tight">
+                Schedule a discovery walkthrough
+              </h3>
+              <p className="mb-8 text-sm text-white/50 max-w-md mx-auto">
+                Connect directly with our engineering lead to map your facility layout and receive a tailored deployment proposal.
+              </p>
+              <button
+                type="button"
+                onClick={() => setDemoOpen(true)}
+                className="inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-medium text-[#0a0a0a] shadow-lg transition-all duration-150 hover:bg-white/90 outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 active:scale-[0.97]"
               >
-                <div className="mb-4 flex size-16 items-center justify-center rounded-full bg-white/5 shadow-inner">
-                  <LogoMark size="sm" />
-                </div>
-                <div className="mb-2 flex items-center gap-2">
-                  <span className="relative flex size-2">
-                    <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                    <span className="relative inline-flex size-2 rounded-full bg-emerald-400" />
-                  </span>
-                  <span className="text-xs font-medium text-emerald-400">
-                    3 Spots Available
-                  </span>
-                </div>
-                <h3 className="mb-2 text-xl font-semibold text-white tracking-tight">
-                  Schedule a discovery call
-                </h3>
-                <p className="mb-6 text-sm text-white/50">
-                  Let&apos;s connect and see how we can bring your vision to
-                  life.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setDemoOpen(true)}
-                  className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-[#0a0a0a] shadow-sm transition-all duration-150 hover:bg-white/90 hover:shadow-md outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 active:scale-[0.97]"
-                >
-                  Book a call
-                  <ArrowRight className="size-4" />
-                </button>
-              </div>
+                Schedule a discovery call
+                <ArrowRight className="size-4" />
+              </button>
             </div>
           </FadeUp>
         </div>
